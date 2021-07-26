@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# npm test
+env FORCE_COLOR=0 TERM=dumb yarn lint-staged
