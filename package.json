@@ -7,8 +7,12 @@
     "yarn": "^1.22.10",
     "node": ">=16.2.0"
   },
+  "scripts": {
+    "typecheck": "yarn workspaces run typecheck"
+  },
   "devDependencies": {
     "prettier": "^2.3.2",
-    "prettier-plugin-packagejson": "^2.2.11"
+    "prettier-plugin-packagejson": "^2.2.11",
+    "typescript": "^4.3.5"
   }
 }
