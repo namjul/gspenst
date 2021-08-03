@@ -1,14 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es6", // compile to es6 and not below
-    "module": "commonjs", // compile to commonjs modules
-    "moduleResolution": "node", // use nodejs style resolution
-    "strict": true, // enable all strict type checking options
-    "noUnusedLocals": true, // enable error reporting when a local variables aren't read.
-    "pretty": true // Enable color and formatting in output to make compiler errors easier to read
-    // "esModuleInterop": true,
+    "target": "es6", // Compile to es6 and not below
+    "module": "commonjs", // Compile to commonjs modules
+    "moduleResolution": "node", // Use nodejs style resolution
+    "strict": true, // Enable all strict type checking options
+    "noUnusedLocals": true, // Enable error reporting when a local variables aren't read.
+    "pretty": true, // Enable color and formatting in output to make compiler errors easier to read
+
+    "skipLibCheck": true, // Skip type checking of declaration files.
+    "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'.
+    "jsx": "react" // Specify what JSX code is generated.
+
     // "isolatedModules": true,
-    // "jsx": "react",
     // "strictFunctionTypes": true,
     // "strictNullChecks": true,
     // "strictPropertyInitialization": true,
