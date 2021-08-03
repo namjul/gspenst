@@ -9,6 +9,32 @@
     "prepare": "husky install",
     "pretest": "tsc --noEmit"
   },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.{ts,tsx,md,json,mdx}": "prettier --write",
+    "*.{ts,tsx}": [
+      "eslint --cache --fix",
+      "git add",
+      "jest --bail --findRelatedTests"
+    ]
+  },
+  "prettier": {
+    "proseWrap": "never",
+    "semi": false,
+    "singleQuote": true
+  },
+  "eslintConfig": {
+    "extends": [
+      "kentcdodds",
+      "kentcdodds/react",
+      "kentcdodds/jest",
+      "kentcdodds/jsx-a11y"
+    ]
+  },
   "devDependencies": {
     "@commitlint/cli": "^13.1.0",
     "@commitlint/config-conventional": "^13.1.0",
