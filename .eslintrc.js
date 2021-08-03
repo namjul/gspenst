@@ -1,10 +1,10 @@
 module.exports = {
-  settings: {
-    react: {
-      version: "detect",
-    },
-  },
-  extends: ["alloy", "alloy/react", "alloy/typescript"],
+  extends: [
+    "kentcdodds",
+    "kentcdodds/react",
+    "kentcdodds/jest",
+    "kentcdodds/jsx-a11y",
+  ],
   env: {
     // Your environments (which contains several predefined global variables)
     //
