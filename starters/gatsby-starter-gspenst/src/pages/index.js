@@ -1,5 +1,6 @@
 import * as React from 'react'
+import { Box } from '@gspenst/components'
 
 export default function IndexPage() {
-  return <div>gatsby-starter-gspent</div>
+  return <Box>gatsby-starter-gspent</Box>
 }
