@@ -1,11 +1,8 @@
-import { styled } from "../../stitches.config";
+import * as React from 'react'
+import { styled } from '../../stitches.config'
 
-/**
- * Box component
- * TODO description
- *
- */
-export const Box = styled("div", {
-  // Reset
-  boxSizing: "border-box",
-});
+export const Box = styled('div', {
+  boxSizing: 'border-box',
+})
+
+export type BoxProps = React.ComponentProps<typeof Box>
