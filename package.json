@@ -1,4 +1,5 @@
 {
+  "name": "@gspenst/root",
   "private": true,
   "workspaces": [
     "packages/**",
