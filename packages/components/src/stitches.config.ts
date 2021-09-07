@@ -1,5 +1,5 @@
-import { createStitches } from '@stitches/react'
-import type * as Stitches from '@stitches/react'
+import { createStitches } from '@stitches/core'
+import type * as Stitches from '@stitches/core'
 
 const LIGHT_THEME = 'light-theme'
 const DARK_THEME = 'dark-theme'
@@ -45,28 +45,11 @@ const stitches = createStitches({
   },
 })
 
-export const {
-  styled,
-  css,
-  globalCss,
-  keyframes,
-  getCssText,
-  createTheme,
-  config,
-} = stitches
+export const { css, globalCss, keyframes, getCssText, createTheme, config } =
+  stitches
 
 export type CSS = Stitches.CSS<typeof stitches>
 export type CSSProps = { css?: CSS }
-
-/**
- * A utility type for use when extracting common styles.
- *
- * The generic parameter should be the `typeof` the variants, this is required to infer the correct props on the component.
- * This API/Typing may change with stitches versions, so only use when required.
- */
-export type StyledConfig<T = undefined> = Parameters<typeof styled>[1] & {
-  variants: T
-}
 
 export const lightTheme = createTheme(LIGHT_THEME, lightThemeConfig)
 export const darkTheme = createTheme(DARK_THEME, darkThemeConfig)
