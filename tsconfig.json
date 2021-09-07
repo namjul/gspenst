@@ -9,7 +9,12 @@
 
     "skipLibCheck": true, // Skip type checking of declaration files.
     "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'.
-    "jsx": "react" // Specify what JSX code is generated.
+    "jsx": "react", // Specify what JSX code is generated.
+
+    "paths": {
+      // Emotion typedefs now point to an empty file, which unsets all declarations
+      "@emotion/core": ["./types/emotion.d.ts"]
+    }
 
     // "isolatedModules": true,
     // "strictFunctionTypes": true,
