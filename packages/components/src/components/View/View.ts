@@ -23,8 +23,7 @@ export type ViewHTMLProps<T extends As = ComponentType> = HTMLProps<
 export type ViewProps<T extends As = ComponentType> = Props<ViewOptions<T>>
 
 export const useView = createHook<ViewOptions>((props) => {
-  props = cssView(props).props
-  return props
+  return cssView(props).props
 })
 
 export const View = createComponent<ViewOptions>(

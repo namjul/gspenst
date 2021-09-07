@@ -16,3 +16,7 @@ export const CSSProp: React.FC = () => (
     This is a View
   </View>
 )
+
+export const AsProp = () => (
+  <View as="article">This is a View as a article</View>
+)
