@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@radix-ui/colors": "^0.1.7",
     "@stitches/core": "^1.0.0",
     "@storybook/addon-essentials": "^6.3.4",
     "@storybook/react": "^6.3.4",

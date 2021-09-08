@@ -8,11 +8,17 @@ import {
   media,
   utils,
 } from './theme'
+import type { Theme } from './theme'
 
 const LIGHT_THEME = 'light-theme'
 const DARK_THEME = 'dark-theme'
 
-const stitches = createStitches({
+type Prefix = ''
+type Media = {}
+type ThemeMap = Stitches.DefaultThemeMap
+type Utils = {}
+
+const stitches = createStitches<Prefix, Media, Theme, ThemeMap, Utils>({
   theme: {
     space,
     colors,
@@ -21,8 +27,15 @@ const stitches = createStitches({
   utils,
 })
 
-export const { css, globalCss, keyframes, getCssText, createTheme, config } =
-  stitches
+export const {
+  css,
+  globalCss,
+  keyframes,
+  getCssText,
+  createTheme,
+  config,
+  theme,
+} = stitches
 
 export type CSS = Stitches.CSS<typeof stitches>
 export type CSSProps = { css?: CSS }

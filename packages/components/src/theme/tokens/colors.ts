@@ -1,4 +1,8 @@
 export const colors = {
-  gray400: 'gainsboro',
-  gray500: 'lightgray',
+  // Defaults
+  white: '#FFFFFF',
+  black: '#000000',
+
+  // Typography
+  text: '#3b3b3b',
 }
