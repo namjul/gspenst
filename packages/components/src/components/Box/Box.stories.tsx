@@ -9,15 +9,4 @@ const meta: Meta = {
 
 export default meta
 
-export const Default: React.FC = () => (
-  <Box
-    css={{
-      backgroundColor: '$gray400',
-      color: '$text',
-      border: '$colors$red500 solid $sizes$3',
-      padding: '$4',
-    }}
-  >
-    Box
-  </Box>
-)
+export const Default: React.FC = () => <Box>I am a Box</Box>
