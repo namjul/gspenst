@@ -2,11 +2,12 @@
   "name": "@gspenst/components",
   "version": "0.0.1",
   "private": true,
+  "main": "dist/gspenst-components.cjs.js",
+  "module": "dist/gspenst-components.esm.js",
   "scripts": {
     "start": "yarn run storybook",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "typecheck": "tsc --noEmit"
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "@radix-ui/colors": "^0.1.7",

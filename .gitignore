@@ -71,3 +71,9 @@ yarn-error.log
 
 # Vim
 Session.vim
+
+# NPM lock files
+package-lock.json
+
+# Other
+dist
