@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6", // Compile to es6 and not below
-    "module": "commonjs", // Compile to commonjs modules
+    "module": "esnext", // Compile to es modules
     "moduleResolution": "node", // Use nodejs style resolution
     "strict": true, // Enable all strict type checking options
     "noUnusedLocals": true, // Enable error reporting when a local variables aren't read.
@@ -17,6 +17,14 @@
     },
     "isolatedModules": true, // Setting the isolatedModules flag tells TypeScript to warn you if you write certain code that can’t be correctly interpreted by a single-file transpilation process (eg babel).
 
+
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ], // types to be included
+    "forceConsistentCasingInFileNames": true, // When this option is set, TypeScript will issue an error if a program tries to include a file by a casing different from the casing on disk.
+
     // "strictFunctionTypes": true,
     // "strictNullChecks": true,
     // "strictPropertyInitialization": true,
@@ -30,7 +38,6 @@
     /* emitDecoratorMetadata: true, */
     /* noUnusedLocals: true, */
     /* pretty: true, */
-    /* lib: ['esnext'], */
 
   }
 }
