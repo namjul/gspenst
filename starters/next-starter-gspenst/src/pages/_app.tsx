@@ -1,4 +1,8 @@
-import '../styles/globals.css'
+/**
+ * For information about this file see https://nextjs.org/docs/advanced-features/custom-app
+ */
+
+import * as React from 'react'
 import type { AppProps } from 'next/app'
 
 function MyApp({ Component, pageProps }: AppProps) {

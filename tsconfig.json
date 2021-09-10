@@ -1,34 +1,9 @@
 {
+  "extends": "./tsconfig.options.json",
   "include": ["./packages"],
   "exclude": [
     "node_modules",
     "./packages/*/dist",
     "./packages/*/node_modules"
   ],
-  "compilerOptions": {
-    "target": "es6", // Compile to es6 and not below
-    "module": "commonjs", // Compile to commonjs modules
-    "moduleResolution": "node", // Use nodejs style resolution
-    "strict": true, // Enable all strict type checking options
-    "noUnusedLocals": true, // Enable error reporting when a local variables aren't read.
-    "pretty": true, // Enable color and formatting in output to make compiler errors easier to read
-    "noEmit": true, //
-    "skipLibCheck": true, // Skip type checking of declaration files.
-    "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'.
-    "jsx": "react", // Specify what JSX code is generated.
-    "resolveJsonModule": true, // Allows importing modules with a ‘.json’ extension. This includes generating a type for the import based on the static JSON shape.
-    "paths": {
-      // Emotion typedefs now point to an empty file, which unsets all declarations
-      "@emotion/core": ["./types/emotion.d.ts"]
-    },
-    "isolatedModules": true, // Setting the isolatedModules flag tells TypeScript to warn you if you write certain code that can’t be correctly interpreted by a single-file transpilation process (eg babel).
-
-    // "strictFunctionTypes": true,
-    // "strictNullChecks": true,
-    // "strictPropertyInitialization": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noImplicitAny": true,
-    // "noImplicitReturns": true,
-    // "noUnusedParameters": true
-  }
 }

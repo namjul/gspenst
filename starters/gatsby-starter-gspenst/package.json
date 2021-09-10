@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "npm run dev",
+    "start": "gatsby build && gatsby serve",
     "dev": "gatsby develop",
     "build": "gatsby build",
     "clean": "gatsby clean",
     "serve": "gatsby serve",
-    "preview": "gatsby build && gatsby serve"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@gspenst/components": "*",
