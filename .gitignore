@@ -61,19 +61,20 @@ public
 # Mac files
 .DS_Store
 
-# Yarn
-yarn-error.log
-.pnp/
-.pnp.js
-
 # Yarn Integrity file
 .yarn-integrity
 
 # Vim
 Session.vim
 
-# NPM lock files
-package-lock.json
+# lock files
+yarn.lock
+pnpm-lock.yaml
 
 # Other
 dist
+Thumbs.db
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

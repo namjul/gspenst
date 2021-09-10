@@ -1,18 +1,16 @@
 {
-  "name": "gatsby-starter-gspenst",
-  "version": "1.0.0",
+  "name": "next-starter-gspenst",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "npm run dev",
-    "dev": "gatsby develop",
-    "build": "gatsby build",
-    "clean": "gatsby clean",
-    "serve": "gatsby serve",
-    "preview": "gatsby build && gatsby serve"
+    "start": "next start",
+    "dev": "next dev",
+    "build": "next build",
+    "export": "npm run build && next export"
   },
   "dependencies": {
     "@gspenst/components": "*",
-    "gatsby": "^3.11.1",
+    "next": "^11.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
