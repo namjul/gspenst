@@ -1,17 +1,19 @@
 {
-  "name": "next-starter-gspenst",
-  "version": "0.1.0",
+  "name": "@gspenst/gatsby-starter-typescript",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "next start",
-    "dev": "next dev",
-    "build": "next build",
-    "export": "npm run build && next export",
+    "start": "gatsby build && gatsby serve",
+    "dev": "gatsby develop",
+    "build": "gatsby build",
+    "clean": "gatsby clean",
+    "serve": "gatsby serve",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@gspenst/components": "*",
-    "next": "^11.1.2",
+    "dotenv": "^10.0.0",
+    "gatsby": "^3.11.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

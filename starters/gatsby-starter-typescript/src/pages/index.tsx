@@ -3,7 +3,7 @@ import type { PageProps } from 'gatsby'
 import { View } from '@gspenst/components'
 
 const IndexPage = (props: PageProps) => {
-  return <View>gatsby-starter-gspent</View>
+  return <View>@gspenst/gatsby-starter</View>
 }
 
 export default IndexPage

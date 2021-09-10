@@ -3,7 +3,7 @@ import type { NextPage } from 'next'
 import { View } from '@gspenst/components'
 
 const IndexPage: NextPage = (props) => {
-  return <View>gatsby-starter-gspent</View>
+  return <View>@gspenst/next-starter</View>
 }
 
 export default IndexPage
