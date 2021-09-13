@@ -1,0 +1,15 @@
+{
+  "name": "@gspenst/audit",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/gspenst-audit.cjs.js",
+  "bin": "./bin.js",
+  "dependencies": {
+    "lighthouse": "^8.4.0"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "cli.ts"
+    ]
+  }
+}
