@@ -1,22 +1,28 @@
-/* eslint-disable @typescript-eslint/no-explicit-any  */
-
 import lighthouse from 'lighthouse'
 import * as chromeLauncher from 'chrome-launcher'
+import yargs from 'yargs/yargs'
 
-const launchChrome = async (url: string) => {
+const argv = yargs(process.argv.slice(2)).options({
+  url: { type: 'string' },
+}).argv
+
+const launchChromeAndRunLighthouse = async (url: string) => {
   const chrome = await chromeLauncher.launch()
 
   const opts = {
     port: chrome.port,
   }
-  const { report } = await lighthouse(url, opts)
+  const result = await lighthouse(url, opts)
 
   await chrome.kill()
-  console.log(report)
 
-  return report
+  return result?.report
 }
 
-void launchChrome('http://localhost:5000').then((result) => {
-  console.log(result)
-})
+if (argv.url) {
+  void launchChromeAndRunLighthouse(argv.url).then((results) => {
+    console.log(results)
+  })
+} else {
+  throw new Error("You haven't passed a URL to Lighthouse")
+}
