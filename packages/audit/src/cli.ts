@@ -73,7 +73,10 @@ async function snapshot(opts: { staticFolder: string; cmd: string }) {
   })
 }
 
-async function createReportFromFolder(folder: string) {
+async function createReportFromFolder(
+  folder: string,
+  view: boolean | undefined
+) {
   const dirName = '.audits'
 
   if (!fs.existsSync(dirName)) {
@@ -103,29 +106,31 @@ async function createReportFromFolder(folder: string) {
   if (js && typeof json === 'string') {
     const fileName = `${dirName}/${js.fetchTime.replace(/:/g, '_')}.json`
     fs.writeFileSync(fileName, json)
-    createLighthouseViewerURL(fileName)
+    if (view) {
+      createLighthouseViewerURL(fileName)
+    }
   }
 }
 
 yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
   .options({
     url: { type: 'string' },
-    view: { type: 'string' },
+    view: { type: 'boolean' },
   })
   .command(
     '$0',
     'the default command',
     () => {},
-    (argv) => {
-      const defaultArg = argv._[0] || './'
-      if (argv.view) {
-        const viewPath = path.resolve(argv.view)
-        const viewFileState = fs.statSync(viewPath, { throwIfNoEntry: false })
-        if (viewFileState?.isFile() && path.extname(viewPath) === '.json') {
-          createLighthouseViewerURL(viewPath)
-        }
-      } else if (typeof defaultArg === 'string') {
-        void createReportFromFolder(defaultArg)
+    async (argv) => {
+      const pathArg = String(argv._[0] || './')
+
+      const fullPath = path.resolve(pathArg)
+      const pathStat = fs.statSync(fullPath, { throwIfNoEntry: false })
+
+      if (pathStat?.isFile() && path.extname(fullPath) === '.json') {
+        createLighthouseViewerURL(fullPath)
+      } else if (pathStat?.isDirectory()) {
+        await createReportFromFolder(fullPath, argv.view)
       } else if (argv.url) {
         const dirName = createDirNameFromUrl(argv.url)
 
@@ -145,7 +150,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
           }
         })
       } else {
-        throw new Error('nothing to do')
+        console.log('Nothing do to')
       }
     }
   ).argv
