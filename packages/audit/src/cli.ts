@@ -9,12 +9,6 @@ import lighthouse from 'lighthouse'
 import * as chromeLauncher from 'chrome-launcher'
 import yargs from 'yargs/yargs'
 
-const argv = yargs(process.argv.slice(2)).options({
-  url: { type: 'string' },
-  path: { type: 'string', default: './' },
-  view: { type: 'string' },
-}).argv
-
 async function launchChromeAndRunLighthouse(url: string) {
   const chrome = await chromeLauncher.launch()
 
@@ -113,32 +107,45 @@ async function createReportFromFolder(folder: string) {
   }
 }
 
-if (argv.view) {
-  const viewPath = path.resolve(argv.view)
-  const viewFileState = fs.statSync(viewPath, { throwIfNoEntry: false })
-  if (viewFileState?.isFile() && path.extname(viewPath) === '.json') {
-    createLighthouseViewerURL(viewPath)
-  }
-} else if (argv.path) {
-  void createReportFromFolder(argv.path)
-} else if (argv.url) {
-  const dirName = createDirNameFromUrl(argv.url)
-
-  if (!fs.existsSync(dirName)) {
-    fs.mkdirSync(dirName)
-  }
-
-  void launchChromeAndRunLighthouse(argv.url).then(({ js, json }) => {
-    if (js && typeof json === 'string') {
-      fs.writeFile(
-        `${dirName}/${js.fetchTime.replace(/:/g, '_')}.json`,
-        json,
-        (err) => {
-          if (err) throw err
-        }
-      )
-    }
+yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
+  .options({
+    url: { type: 'string' },
+    view: { type: 'string' },
   })
-} else {
-  throw new Error('nothing to do')
-}
+  .command(
+    '$0',
+    'the default command',
+    () => {},
+    (argv) => {
+      const defaultArg = argv._[0] || './'
+      if (argv.view) {
+        const viewPath = path.resolve(argv.view)
+        const viewFileState = fs.statSync(viewPath, { throwIfNoEntry: false })
+        if (viewFileState?.isFile() && path.extname(viewPath) === '.json') {
+          createLighthouseViewerURL(viewPath)
+        }
+      } else if (typeof defaultArg === 'string') {
+        void createReportFromFolder(defaultArg)
+      } else if (argv.url) {
+        const dirName = createDirNameFromUrl(argv.url)
+
+        if (!fs.existsSync(dirName)) {
+          fs.mkdirSync(dirName)
+        }
+
+        void launchChromeAndRunLighthouse(argv.url).then(({ js, json }) => {
+          if (js && typeof json === 'string') {
+            fs.writeFile(
+              `${dirName}/${js.fetchTime.replace(/:/g, '_')}.json`,
+              json,
+              (err) => {
+                if (err) throw err
+              }
+            )
+          }
+        })
+      } else {
+        throw new Error('nothing to do')
+      }
+    }
+  ).argv
