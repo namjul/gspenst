@@ -41,7 +41,7 @@ function createDirNameFromUrl(url: string) {
 
 const PORT = 34171
 
-function snapshot(opts: { staticFolder: string; cmd: string }) {
+async function snapshot(opts: { staticFolder: string; cmd: string }) {
   console.log('building site..')
   spawnSync('npm', ['run', opts.cmd])
 
@@ -57,38 +57,48 @@ function snapshot(opts: { staticFolder: string; cmd: string }) {
   })
 
   const url = `http://localhost:${PORT}`
+
+  return launchChromeAndRunLighthouse(url).then(async (result) => {
+    await httpTerminator.terminate()
+    return result
+  })
+}
+
+async function createReportFromFolder(folder: string) {
   const dirName = '.audits'
 
   if (!fs.existsSync(dirName)) {
     fs.mkdirSync(dirName)
   }
 
-  void launchChromeAndRunLighthouse(url).then(async ({ js, json }) => {
-    if (js && typeof json === 'string') {
-      fs.writeFileSync(
-        `${dirName}/${js.fetchTime.replace(/:/g, '_')}.json`,
-        json
-      )
-      await httpTerminator.terminate()
-      console.log('DONE')
-      process.exit()
-    }
-  })
-}
+  let result
 
-if (argv.path) {
-  if (fs.existsSync(path.resolve(argv.path, 'gatsby-config.js'))) {
+  if (fs.existsSync(path.resolve(folder, 'gatsby-config.js'))) {
     console.log('GatsbyJS site detected')
-    snapshot({ staticFolder: 'public', cmd: 'build' })
-  } else if (fs.existsSync(path.resolve(argv.path, 'next.config.js'))) {
+    result = await snapshot({
+      staticFolder: 'public',
+      cmd: 'build',
+    })
+  }
+
+  if (fs.existsSync(path.resolve(folder, 'next.config.js'))) {
     console.log('NextJS site detected')
-    snapshot({ staticFolder: 'out', cmd: 'export' })
-  } else {
-    throw new Error('no gatsby or next project found')
+    result = await snapshot({
+      staticFolder: 'out',
+      cmd: 'export',
+    })
+  }
+
+  const { js, json } = result ?? {}
+
+  if (js && typeof json === 'string') {
+    fs.writeFileSync(`${dirName}/${js.fetchTime.replace(/:/g, '_')}.json`, json)
   }
 }
 
-if (argv.url) {
+if (argv.path) {
+  void createReportFromFolder(argv.path)
+} else if (argv.url) {
   const dirName = createDirNameFromUrl(argv.url)
 
   if (!fs.existsSync(dirName)) {
@@ -106,4 +116,6 @@ if (argv.url) {
       )
     }
   })
+} else {
+  throw new Error('nothing to do')
 }
