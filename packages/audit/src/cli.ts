@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import http from 'http'
 import { spawnSync } from 'child_process'
+import clipboardy from 'clipboardy'
 import { createHttpTerminator } from 'http-terminator'
 import handler from 'serve-handler'
 import lighthouse from 'lighthouse'
@@ -11,6 +12,7 @@ import yargs from 'yargs/yargs'
 const argv = yargs(process.argv.slice(2)).options({
   url: { type: 'string' },
   path: { type: 'string', default: './' },
+  view: { type: 'string', default: './' },
 }).argv
 
 async function launchChromeAndRunLighthouse(url: string) {
@@ -96,7 +98,21 @@ async function createReportFromFolder(folder: string) {
   }
 }
 
-if (argv.path) {
+if (argv.view) {
+  const viewPath = path.resolve(argv.view)
+  const viewFileState = fs.statSync(viewPath, { throwIfNoEntry: false })
+  if (viewFileState?.isFile() && path.extname(viewPath) === '.json') {
+    const string = fs.readFileSync(viewPath, 'utf-8')
+    const lighthouseViewerObject = { lhr: JSON.parse(string) as {} }
+    const base64 = btoa(
+      unescape(encodeURIComponent(JSON.stringify(lighthouseViewerObject)))
+    )
+    clipboardy.writeSync(
+      `https://googlechrome.github.io/lighthouse/viewer/#${base64}`
+    )
+    console.log('Copied to clipboard. Open your browser and paste URL.')
+  }
+} else if (argv.path) {
   void createReportFromFolder(argv.path)
 } else if (argv.url) {
   const dirName = createDirNameFromUrl(argv.url)
