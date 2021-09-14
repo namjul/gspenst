@@ -12,7 +12,7 @@ import yargs from 'yargs/yargs'
 const argv = yargs(process.argv.slice(2)).options({
   url: { type: 'string' },
   path: { type: 'string', default: './' },
-  view: { type: 'string', default: './' },
+  view: { type: 'string' },
 }).argv
 
 async function launchChromeAndRunLighthouse(url: string) {
@@ -20,7 +20,8 @@ async function launchChromeAndRunLighthouse(url: string) {
 
   const opts = {
     port: chrome.port,
-  }
+    // throttlingMethod: 'devtools',
+  } as const
   const result = await lighthouse(url, opts)
 
   await chrome.kill()
@@ -39,6 +40,18 @@ function createDirNameFromUrl(url: string) {
     dirName = `${dirName}${urlObj.pathname.replace(/\//g, '_')}`
   }
   return dirName
+}
+
+function createLighthouseViewerURL(filePath: string) {
+  const string = fs.readFileSync(filePath, 'utf-8')
+  const lighthouseViewerObject = { lhr: JSON.parse(string) as {} }
+  const base64 = btoa(
+    unescape(encodeURIComponent(JSON.stringify(lighthouseViewerObject)))
+  )
+  clipboardy.writeSync(
+    `https://googlechrome.github.io/lighthouse/viewer/#${base64}`
+  )
+  console.log('Copied Lighthouse Viewer URL to clipboard.')
 }
 
 const PORT = 34171
@@ -94,7 +107,9 @@ async function createReportFromFolder(folder: string) {
   const { js, json } = result ?? {}
 
   if (js && typeof json === 'string') {
-    fs.writeFileSync(`${dirName}/${js.fetchTime.replace(/:/g, '_')}.json`, json)
+    const fileName = `${dirName}/${js.fetchTime.replace(/:/g, '_')}.json`
+    fs.writeFileSync(fileName, json)
+    createLighthouseViewerURL(fileName)
   }
 }
 
@@ -102,15 +117,7 @@ if (argv.view) {
   const viewPath = path.resolve(argv.view)
   const viewFileState = fs.statSync(viewPath, { throwIfNoEntry: false })
   if (viewFileState?.isFile() && path.extname(viewPath) === '.json') {
-    const string = fs.readFileSync(viewPath, 'utf-8')
-    const lighthouseViewerObject = { lhr: JSON.parse(string) as {} }
-    const base64 = btoa(
-      unescape(encodeURIComponent(JSON.stringify(lighthouseViewerObject)))
-    )
-    clipboardy.writeSync(
-      `https://googlechrome.github.io/lighthouse/viewer/#${base64}`
-    )
-    console.log('Copied to clipboard. Open your browser and paste URL.')
+    createLighthouseViewerURL(viewPath)
   }
 } else if (argv.path) {
   void createReportFromFolder(argv.path)

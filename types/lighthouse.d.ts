@@ -1,5 +1,8 @@
 declare module 'lighthouse' {
-  import type { RunnerResult } from 'lighthouse/types/externs'
-  function lighthouse(url: string, opts: {}): Promise<RunnerResult | undefined>
+  import type { RunnerResult, Flags } from 'lighthouse/types/externs'
+  function lighthouse(
+    url: string,
+    opts: Flags
+  ): Promise<RunnerResult | undefined>
   export = lighthouse
 }
