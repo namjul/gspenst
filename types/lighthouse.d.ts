@@ -5,5 +5,5 @@ declare module 'lighthouse' {
     opts: Flags
   ): Promise<RunnerResult | undefined>
   export default lighthouse
-  export type { RunnerResult }
+  export type { RunnerResult, Flags }
 }

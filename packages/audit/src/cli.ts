@@ -5,13 +5,14 @@ import { spawnSync } from 'child_process'
 import clipboardy from 'clipboardy'
 import { createHttpTerminator } from 'http-terminator'
 import handler from 'serve-handler'
-import lighthouse, { RunnerResult } from 'lighthouse'
-// import type { RunnerResult } from 'lighthouse'
+import lighthouse from 'lighthouse'
+import type { RunnerResult, Flags } from 'lighthouse'
 import * as chromeLauncher from 'chrome-launcher'
 import yargs from 'yargs/yargs'
 import glob from 'glob'
 
 const PORT = 34171
+const THRESHOLD = 10
 
 type LighthouseResult = RunnerResult['lhr']
 
@@ -20,10 +21,10 @@ async function launchChromeAndRunLighthouse(
 ): Promise<RunnerResult | undefined> {
   const chrome = await chromeLauncher.launch()
 
-  const opts = {
+  const opts: Flags = {
     port: chrome.port,
-    throttlingMethod: 'devtools',
-  } as const
+    throttlingMethod: 'simulate',
+  }
   const result = await lighthouse(url, opts)
 
   await chrome.kill()
@@ -84,51 +85,65 @@ function calcRelativeChange(from: number, to: number) {
   return (to - from) / from
 }
 
-function formatChange(label: string, relativeChange: number) {
+function formatChange(
+  label: string,
+  from: number,
+  to: number,
+  threshold: number
+) {
+  const relativeChange = calcRelativeChange(from, to)
+
   let logColor = '\x1b[37m'
   let formattedValue
 
-  const percentage = Math.round(relativeChange * 100)
+  const percentage = Math.round(relativeChange * 100) // percent as integer
 
-  if (percentage > 0) {
-    logColor = '\x1b[31m'
-    formattedValue = `${Math.abs(percentage)}% slower`
-  } else if (percentage === 0) {
+  const diff = Math.round(to - from)
+
+  if (diff > 0) {
+    logColor = '\x1b[91m'
+    formattedValue = `${Math.abs(diff)}ms slower (+${percentage}%)`
+  } else if (diff === 0) {
     formattedValue = 'unchanged'
-  } else {
+  } else if (diff < 0) {
     logColor = '\x1b[32m'
-    formattedValue = `${Math.abs(percentage)}% faster`
+    formattedValue = `${Math.abs(diff)}ms faster (${percentage}%)`
   }
-  return `${logColor}${label} is ${formattedValue}`
+  if (Math.abs(diff) < threshold) {
+    logColor = '\x1b[37m'
+  }
+  return `${logColor}"${label}" is ${formattedValue}`
 }
 
-function compareReports(from: LighthouseResult, to: LighthouseResult) {
+function compareReports(
+  from: LighthouseResult,
+  to: LighthouseResult,
+  threshold: number
+) {
   const metricFilter = [
     'first-contentful-paint',
-    'first-meaningful-paint',
+    'largest-contentful-paint',
     'speed-index',
-    'estimated-input-latency',
-    'total-blocking-time',
-    'max-potential-fid',
-    'time-to-first-byte',
-    'first-cpu-idle',
     'interactive',
+    'total-blocking-time',
+    'cumulative-layout-shift',
+    'server-response-time',
   ]
   for (const auditObj in from.audits) {
     if (metricFilter.includes(auditObj)) {
       const fromValue = from.audits[auditObj].numericValue
       const toValue = to.audits[auditObj].numericValue
-      if (fromValue && toValue) {
-        const change = calcRelativeChange(fromValue, toValue)
-        console.log(formatChange(auditObj, change))
-      }
+      const title = from.audits[auditObj].title
+      // @ts-expect-error -- `fromValue` and `toValue` can be `undefined` but ignoring that case now
+      console.log(formatChange(title, fromValue, toValue, threshold))
     }
   }
 }
 
 async function createReportFromFolder(
   folder: string,
-  view: boolean | undefined
+  view: boolean | undefined,
+  threshold: number
 ) {
   const dirName = '.audits'
 
@@ -183,7 +198,7 @@ async function createReportFromFolder(
     }
 
     if (recentReport) {
-      compareReports(result.lhr, recentReport)
+      compareReports(result.lhr, recentReport, threshold)
     }
   }
 }
@@ -192,6 +207,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
   .options({
     url: { type: 'string' },
     view: { type: 'boolean' },
+    threshold: { type: 'number', default: THRESHOLD },
   })
   .command(
     '$0',
@@ -206,7 +222,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
       if (pathStat?.isFile() && path.extname(fullPath) === '.json') {
         createLighthouseViewerURL(fullPath)
       } else if (pathStat?.isDirectory()) {
-        await createReportFromFolder(fullPath, argv.view)
+        await createReportFromFolder(fullPath, argv.view, argv.threshold)
       } else if (argv.url) {
         const dirName = createDirNameFromUrl(argv.url)
 
@@ -215,7 +231,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
         }
 
         void launchChromeAndRunLighthouse(argv.url).then((result) => {
-          const { lhr: js, report: json } = result || {}
+          const { lhr: js, report: json } = result ?? {}
           if (js && typeof json === 'string') {
             fs.writeFile(
               `${dirName}/${js.fetchTime.replace(/:/g, '_')}.json`,
