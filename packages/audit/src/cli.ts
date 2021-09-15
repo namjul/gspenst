@@ -15,6 +15,7 @@ const PORT = 34171
 const THRESHOLD = 10
 
 type LighthouseResult = RunnerResult['lhr']
+type AuditResult = LighthouseResult['audits']['x']
 
 async function launchChromeAndRunLighthouse(
   url: string
@@ -85,20 +86,18 @@ function calcRelativeChange(from: number, to: number) {
   return (to - from) / from
 }
 
-function formatChange(
-  label: string,
-  from: number,
-  to: number,
-  threshold: number
-) {
-  const relativeChange = calcRelativeChange(from, to)
+function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
+  const fromValue = from.numericValue as number
+  const toValue = to.numericValue as number
+
+  const relativeChange = calcRelativeChange(fromValue, toValue)
 
   let logColor = '\x1b[37m'
   let formattedValue
 
   const percentage = Math.round(relativeChange * 100) // percent as integer
 
-  const diff = Math.round(to - from)
+  const diff = Math.round(toValue - fromValue)
 
   if (diff > 0) {
     logColor = '\x1b[91m'
@@ -112,7 +111,7 @@ function formatChange(
   if (Math.abs(diff) < threshold) {
     logColor = '\x1b[37m'
   }
-  return `${logColor}"${label}" is ${formattedValue}`
+  return `${logColor}"${from.title}" is ${formattedValue}`
 }
 
 function compareReports(
@@ -131,11 +130,10 @@ function compareReports(
   ]
   for (const auditObj in from.audits) {
     if (metricFilter.includes(auditObj)) {
-      const fromValue = from.audits[auditObj].numericValue
-      const toValue = to.audits[auditObj].numericValue
-      const title = from.audits[auditObj].title
+      const fromResult = from.audits[auditObj]
+      const toResult = to.audits[auditObj]
       // @ts-expect-error -- `fromValue` and `toValue` can be `undefined` but ignoring that case now
-      console.log(formatChange(title, fromValue, toValue, threshold))
+      console.log(formatChange(fromResult, toResult, threshold))
     }
   }
 }
