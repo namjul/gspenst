@@ -230,6 +230,8 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
     url: { type: 'string' },
     view: { type: 'boolean' },
     threshold: { type: 'number', default: THRESHOLD },
+    from: { type: 'string' },
+    to: { type: 'string' },
   })
   .command(
     '$0',
@@ -241,7 +243,13 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
       const fullPath = path.resolve(pathArg)
       const pathStat = fs.statSync(fullPath, { throwIfNoEntry: false })
 
-      if (pathStat?.isFile() && path.extname(fullPath) === '.json') {
+      if (argv.from && argv.to) {
+        compareReports(
+          getFileContent(argv.from) as LighthouseResult,
+          getFileContent(argv.to) as LighthouseResult,
+          argv.threshold
+        )
+      } else if (pathStat?.isFile() && path.extname(fullPath) === '.json') {
         createLighthouseViewerURL(fullPath)
       } else if (pathStat?.isDirectory()) {
         await createReportFromFolder(fullPath, argv.view, argv.threshold)
