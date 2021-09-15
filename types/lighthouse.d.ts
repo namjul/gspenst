@@ -4,5 +4,6 @@ declare module 'lighthouse' {
     url: string,
     opts: Flags
   ): Promise<RunnerResult | undefined>
-  export = lighthouse
+  export default lighthouse
+  export type { RunnerResult }
 }
