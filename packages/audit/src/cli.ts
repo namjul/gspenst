@@ -12,7 +12,7 @@ import yargs from 'yargs/yargs'
 import glob from 'glob'
 
 const PORT = 34171
-const THRESHOLD = 10
+const THRESHOLD = 2
 
 type LighthouseResult = RunnerResult['lhr']
 type AuditResult = LighthouseResult['audits']['x']
@@ -90,28 +90,52 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
   const fromValue = from.numericValue as number
   const toValue = to.numericValue as number
 
+  const fromScore = from.score as number
+  const toScore = to.score as number
+
   const relativeChange = calcRelativeChange(fromValue, toValue)
+  const percentage = Math.abs(Math.round(relativeChange * 100)) // percent as integer
 
   let logColor = '\x1b[37m'
   let formattedValue
 
-  const percentage = Math.round(relativeChange * 100) // percent as integer
+  const colorCodes = {
+    red: '\x1b[91m', // poor,
+    orange: '\x1b[33m', // needs improvement
+    green: '\x1b[32m', // good
+    gray: '\x1b[37m',
+  } as const
 
-  const diff = Math.round(toValue - fromValue)
+  const colorCode =
+    colorCodes[toScore > 0.89 ? 'green' : toScore > 0.49 ? 'orange' : 'red'] // from https://web.dev/performance-scoring/
 
-  if (diff > 0) {
+  const msDiff = Math.round(toValue - fromValue)
+  const scoreDiff = Math.round((toScore - fromScore) * 100)
+
+  const numericUnit = to.numericUnit
+  const formattedAbsoluteMs = `${Math.round(toValue)} ${numericUnit}`
+  const formattedMs = `${Math.abs(msDiff)} ${numericUnit}`
+
+  if (scoreDiff > 0) {
     logColor = '\x1b[91m'
-    formattedValue = `${Math.abs(diff)}ms slower (+${percentage}%)`
-  } else if (diff === 0) {
-    formattedValue = 'unchanged'
-  } else if (diff < 0) {
+    formattedValue = `reduced by ${Math.abs(
+      scoreDiff
+    )} (slower by: ${percentage}% ${formattedMs}) `
+  } else if (scoreDiff === 0) {
+    formattedValue = `unchanged (diff: ${percentage}% ${formattedMs}) `
+  } else if (scoreDiff < 0) {
     logColor = '\x1b[32m'
-    formattedValue = `${Math.abs(diff)}ms faster (${percentage}%)`
+    formattedValue = `increased by ${Math.abs(
+      scoreDiff
+    )} (faster by: ${percentage}% ${formattedMs}) `
   }
-  if (Math.abs(diff) < threshold) {
+
+  if (Math.abs(scoreDiff) < threshold) {
     logColor = '\x1b[37m'
   }
-  return `${logColor}"${from.title}" is ${formattedValue}`
+  return `${colorCodes.gray}${from.title}:${colorCode} ${
+    toScore * 100
+  } (${formattedAbsoluteMs}) ${logColor}${formattedValue}`
 }
 
 function compareReports(
@@ -132,7 +156,6 @@ function compareReports(
     if (metricFilter.includes(auditObj)) {
       const fromResult = from.audits[auditObj]
       const toResult = to.audits[auditObj]
-      // @ts-expect-error -- `fromValue` and `toValue` can be `undefined` but ignoring that case now
       console.log(formatChange(fromResult, toResult, threshold))
     }
   }
