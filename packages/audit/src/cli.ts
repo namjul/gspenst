@@ -94,7 +94,7 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
   const toScore = to.score as number
 
   const relativeChange = calcRelativeChange(fromValue, toValue)
-  const percentage = Math.abs(Math.round(relativeChange * 100)) // percent as integer
+  const percentage = Math.round(relativeChange * 100) // percent as integer
 
   let logColor = '\x1b[37m'
   let formattedValue
@@ -114,20 +114,16 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
 
   const numericUnit = to.numericUnit
   const formattedAbsoluteMs = `${Math.round(toValue)} ${numericUnit}`
-  const formattedMs = `${Math.abs(msDiff)} ${numericUnit}`
+  const formattedMs = `${msDiff} ${numericUnit}`
 
   if (scoreDiff > 0) {
-    logColor = '\x1b[91m'
-    formattedValue = `reduced by ${Math.abs(
-      scoreDiff
-    )} (slower by: ${percentage}% ${formattedMs}) `
-  } else if (scoreDiff === 0) {
-    formattedValue = `unchanged (diff: ${percentage}% ${formattedMs}) `
-  } else if (scoreDiff < 0) {
     logColor = '\x1b[32m'
-    formattedValue = `increased by ${Math.abs(
-      scoreDiff
-    )} (faster by: ${percentage}% ${formattedMs}) `
+    formattedValue = `increased by ${scoreDiff}, ${percentage}%, ${formattedMs}) `
+  } else if (scoreDiff === 0) {
+    formattedValue = `unchanged (${percentage}% ${formattedMs}) `
+  } else if (scoreDiff < 0) {
+    logColor = '\x1b[91m'
+    formattedValue = `decreased by ${scoreDiff}, ${percentage}%, ${formattedMs}) `
   }
 
   if (Math.abs(scoreDiff) < threshold) {
@@ -219,7 +215,7 @@ async function createReportFromFolder(
     }
 
     if (recentReport) {
-      compareReports(result.lhr, recentReport, threshold)
+      compareReports(recentReport, result.lhr, threshold)
     }
   }
 }
