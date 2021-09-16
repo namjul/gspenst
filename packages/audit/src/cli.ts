@@ -233,6 +233,13 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
     from: { type: 'string' },
     to: { type: 'string' },
   })
+  .check((argv) => {
+    if ((argv.from && !argv.to) || (argv.to && !argv.from)) {
+      throw new Error('Missing counterpart')
+    } else {
+      return true
+    }
+  })
   .command(
     '$0',
     'the default command',
