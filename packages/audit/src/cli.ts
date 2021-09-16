@@ -11,6 +11,7 @@ import { computeMedianRun } from 'lighthouse/lighthouse-core/lib/median-run'
 import * as chromeLauncher from 'chrome-launcher'
 import yargs from 'yargs/yargs'
 import glob from 'glob'
+import { table } from 'table'
 
 type LighthouseResult = RunnerResult['lhr']
 type AuditResult = LighthouseResult['audits']['x']
@@ -144,15 +145,21 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
   if (abs(scoreDiff) < threshold) {
     logColor = '\x1b[37m'
   }
-  return `${colorCodes.reset}${from.title}:${colorCode} ${
-    toScore * 100
-  } (${formattedValue}) ${logColor}${formatted} ${colorCodes.reset}`
+  return [
+    `${colorCodes.reset}${from.title}${colorCodes.reset}`, // title
+    `${colorCode}${toScore * 100} (${formattedValue})${colorCodes.reset}`, // score
+    `${logColor}${formatted} ${colorCodes.reset}`, // values
+  ]
+  // return `${colorCodes.reset}${from.title}:${colorCode} ${
+  //   toScore * 100
+  // } (${formattedValue}) ${logColor}${formatted} ${colorCodes.reset}`
 }
 
 function compareReports(
   from: LighthouseResult,
   to: LighthouseResult,
-  threshold: number
+  threshold: number,
+  tableView: boolean
 ) {
   const metricFilter = [
     'first-contentful-paint',
@@ -163,12 +170,18 @@ function compareReports(
     'cumulative-layout-shift',
     'server-response-time',
   ]
+  const data = []
   for (const auditObj in from.audits) {
     if (metricFilter.includes(auditObj)) {
       const fromResult = from.audits[auditObj]
       const toResult = to.audits[auditObj]
-      console.log(formatChange(fromResult, toResult, threshold))
+      data.push(formatChange(fromResult, toResult, threshold))
     }
+  }
+  if (tableView) {
+    console.log(table(data))
+  } else {
+    data.forEach((row) => console.log(row.join(' ')))
   }
   console.log('\n')
 }
@@ -261,6 +274,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
       to: { type: 'string' },
       runs: { type: 'number', default: 5 },
       outDir: { type: 'string', default: '.audits' },
+      table: { type: 'boolean', default: false },
     },
     async (argv) => {
       workingDir = path.resolve(String(argv._[0] || './'))
@@ -313,7 +327,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
         toReport = getPrevReport()
       }
       if (toReport) {
-        compareReports(fromReport, toReport, argv.threshold)
+        compareReports(fromReport, toReport, argv.threshold, argv.table)
       }
       if (argv.view) {
         createLighthouseViewerURL(fromReport)
