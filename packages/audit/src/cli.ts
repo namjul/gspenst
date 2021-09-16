@@ -65,7 +65,6 @@ async function snapshot(opts: {
   if (opts.cmd) {
     console.log(`Building ${opts.type} site..`)
     spawnSync('npm', ['run', opts.cmd])
-    console.log('done')
   }
 
   const server = http.createServer((request, response) => {
@@ -283,11 +282,11 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
       // set global dirName
       dirName = path.resolve(workingDir, argv.outDir)
 
-      let fromReport: LighthouseResult, toReport: LighthouseResult | undefined
+      let fromReport: LighthouseResult | undefined, toReport: LighthouseResult
 
-      if (argv.from) {
-        fromReport = getReport(argv.from)
-        toReport = argv.to ? getReport(argv.to) : getPrevReport()
+      if (argv.to) {
+        fromReport = argv.from ? getReport(argv.from) : getPrevReport()
+        toReport = getReport(argv.to)
       } else {
         if (!fs.existsSync(dirName)) {
           fs.mkdirSync(dirName)
@@ -324,14 +323,14 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
           }
         }
 
-        fromReport = getReport(saveReports(reports))
-        toReport = getPrevReport()
+        fromReport = getPrevReport()
+        toReport = getReport(saveReports(reports))
       }
-      if (toReport) {
+      if (fromReport) {
         compareReports(fromReport, toReport, argv.threshold, argv.table)
       }
       if (argv.view) {
-        createLighthouseViewerURL(fromReport)
+        createLighthouseViewerURL(toReport)
       }
     }
   ).argv
