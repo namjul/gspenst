@@ -56,9 +56,13 @@ function createLighthouseViewerURL(report: LighthouseResult) {
   console.log('Copied Lighthouse Viewer URL to clipboard.')
 }
 
-async function snapshot(opts: { staticFolder: Path; cmd?: string }) {
+async function snapshot(opts: {
+  staticFolder: Path
+  cmd?: string
+  type: string
+}) {
   if (opts.cmd) {
-    console.log('Building site..')
+    console.log(`Building ${opts.type} site..`)
     spawnSync('npm', ['run', opts.cmd])
   }
 
@@ -249,7 +253,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
     'path to project or report',
     {
       // url: { type: 'string' },
-      view: { type: 'boolean' },
+      view: { type: 'boolean', default: true },
       threshold: { type: 'number', default: 2 },
       // TODO rename from/to
       from: { type: 'string' },
@@ -280,16 +284,16 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
           let opts
 
           if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
-            console.log('GatsbyJS site detected')
             opts = {
+              type: 'GatsbyJS',
               staticFolder: 'public',
               cmd: i === 0 ? 'build' : undefined, // only build site in the first run
             }
           } else if (
             fs.existsSync(path.resolve(workingDir, 'next.config.js'))
           ) {
-            console.log('NextJS site detected')
             opts = {
+              type: 'NextJS',
               staticFolder: 'out',
               cmd: i === 0 ? 'export' : undefined, // only build site in the first run
             }
