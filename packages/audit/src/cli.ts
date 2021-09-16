@@ -48,7 +48,9 @@ async function launchChromeAndRunLighthouse(
 
 function createLighthouseViewerURL(report: LighthouseResult) {
   const lighthouseViewerObject = { lhr: report }
-  const base64 = btoa(
+  const toBase64 = (value: string) => Buffer.from(value).toString('base64')
+
+  const base64 = toBase64(
     unescape(encodeURIComponent(JSON.stringify(lighthouseViewerObject)))
   )
   clipboardy.writeSync(
