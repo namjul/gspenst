@@ -57,9 +57,8 @@ function createLighthouseViewerURL(filePath: Path) {
 }
 
 async function snapshot(opts: { staticFolder: Path; cmd?: string }) {
-  console.log('Building site..')
-
   if (opts.cmd) {
+    console.log('Building site..')
     spawnSync('npm', ['run', opts.cmd])
   }
 
