@@ -109,6 +109,7 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
     orange: '\x1b[33m', // needs improvement
     green: '\x1b[32m', // good
     gray: '\x1b[37m',
+    reset: '\x1b[97m',
   } as const
 
   const colorCode =
@@ -141,7 +142,7 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
   }
   return `${colorCodes.gray}${from.title}:${colorCode} ${
     toScore * 100
-  } (${formattedValue}) ${logColor}${formatted}`
+  } (${formattedValue}) ${logColor}${formatted} ${colorCodes.reset}`
 }
 
 function compareReports(
