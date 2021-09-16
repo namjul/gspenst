@@ -41,3 +41,6 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 Session.vim
+
+# @gspenst/audit
+.audits
