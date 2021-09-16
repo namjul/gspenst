@@ -226,24 +226,16 @@ async function createReportFromFolder(
 }
 
 yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
-  .options({
-    url: { type: 'string' },
-    view: { type: 'boolean' },
-    threshold: { type: 'number', default: THRESHOLD },
-    from: { type: 'string' },
-    to: { type: 'string' },
-  })
-  .check((argv) => {
-    if ((argv.from && !argv.to) || (argv.to && !argv.from)) {
-      throw new Error('Missing counterpart')
-    } else {
-      return true
-    }
-  })
   .command(
     '$0',
-    'the default command',
-    () => {},
+    'path to project',
+    {
+      url: { type: 'string' },
+      view: { type: 'boolean' },
+      threshold: { type: 'number', default: THRESHOLD },
+      from: { type: 'string' },
+      to: { type: 'string' },
+    },
     async (argv) => {
       const pathArg = String(argv._[0] || './')
 
@@ -283,4 +275,11 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
         console.log('Nothing do to')
       }
     }
-  ).argv
+  )
+  .check((argv) => {
+    if ((argv.from && !argv.to) || (argv.to && !argv.from)) {
+      throw new Error('Missing counterpart')
+    } else {
+      return true
+    }
+  }).argv
