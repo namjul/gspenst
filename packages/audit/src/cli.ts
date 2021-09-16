@@ -53,7 +53,7 @@ function createLighthouseViewerURL(report: LighthouseResult) {
   clipboardy.writeSync(
     `https://googlechrome.github.io/lighthouse/viewer/#${base64}`
   )
-  console.log('Copied Lighthouse Viewer URL to clipboard.')
+  console.log("Report's Lighthouse Viewer URL copied to clipboard.")
 }
 
 async function snapshot(opts: {
