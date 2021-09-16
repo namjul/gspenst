@@ -235,7 +235,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
       // TODO rename from/to
       from: { type: 'string' },
       to: { type: 'string' },
-      median: { type: 'number', default: 5 },
+      runs: { type: 'number', default: 5 },
       outDir: { type: 'string', default: '.audits' },
     },
     async (argv) => {
@@ -256,7 +256,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
           fs.mkdirSync(dirName)
         }
 
-        const runs = process.argv.includes('--median') ? argv.median : 1
+        const runs = process.argv.includes('--runs') ? argv.runs : 1
 
         const reports: Array<LighthouseResult> = []
         for (let i = 0, len = runs; i < len; i++) {
