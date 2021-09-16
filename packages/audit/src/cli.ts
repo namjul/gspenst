@@ -90,10 +90,6 @@ async function snapshot(opts: {
   return result
 }
 
-function getFileContent(filePath: Path): LighthouseResult {
-  const output = fs.readFileSync(filePath, 'utf8')
-  return JSON.parse(output)
-}
 function calcRelativeChange(from: number, to: number) {
   return (to - from) / from
 }
@@ -225,7 +221,16 @@ function saveReports(reports: LighthouseResult[]) {
     : path.resolve(dir, `${reportToName(reports[0])}.json`)
 }
 
-function getReport(filePath: Path) {
+const getContent = (filePath: Path): LighthouseResult => {
+  const output = fs.readFileSync(`${filePath}.json`, 'utf8')
+  return JSON.parse(output)
+}
+
+function getReport(filePath: Path | undefined) {
+  if (!filePath) {
+    return undefined
+  }
+
   const filePathStat = fs.statSync(filePath, { throwIfNoEntry: false })
 
   let report: LighthouseResult
@@ -235,32 +240,29 @@ function getReport(filePath: Path) {
       .sync(`${filePath}/*.json`, {
         sync: true,
       })
-      .map(getFileContent)
+      .map(getContent)
     report = computeMedianRun(reports)
   } else {
-    report = getFileContent(filePath)
+    report = getContent(filePath)
   }
 
   return report
 }
 
-function getPrevReport() {
-  const allReports = glob.sync(`${dirName}/*`, {
-    sync: true,
-  })
-  if (allReports.length) {
-    const prevReports = allReports.slice(0, -1)
-    const dates = prevReports.map((report) => {
-      return new Date(path.parse(report).name.replace(/_/g, ':'))
+function getReportPaths() {
+  return glob
+    .sync(`${dirName}/*`, {
+      sync: true,
     })
-
-    const max = dates.reduce((a, b) => (a > b ? a : b))
-    const recentReportName = max.toISOString()
-
-    return getFileContent(
-      `${dirName}/${recentReportName.replace(/:/g, '_')}.json`
-    )
-  }
+    .map((reportPath) => {
+      return new Date(path.parse(reportPath).name.replace(/_/g, ':'))
+    })
+    .sort((a, b) => {
+      return Number(b) - Number(a)
+    })
+    .map((date) => {
+      return `${dirName}/${date.toISOString().replace(/:/g, '_')}`
+    })
 }
 
 yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
@@ -284,10 +286,13 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
       // set global dirName
       dirName = path.resolve(workingDir, argv.outDir)
 
-      let fromReport: LighthouseResult | undefined, toReport: LighthouseResult
+      let fromReport: LighthouseResult | undefined,
+        toReport: LighthouseResult | undefined
 
       if (argv.to) {
-        fromReport = argv.from ? getReport(argv.from) : getPrevReport()
+        fromReport = argv.from
+          ? getReport(argv.from)
+          : getReport(getReportPaths()[0]) // get newest report
         toReport = getReport(argv.to)
       } else {
         if (!fs.existsSync(dirName)) {
@@ -296,7 +301,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
 
         const runs = process.argv.includes('--runs') ? argv.runs : 1
 
-        const reports: Array<LighthouseResult> = []
+        const report: Array<LighthouseResult> = []
         for (let i = 0, len = runs; i < len; i++) {
           let opts
 
@@ -320,18 +325,22 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
             log('Creating report..')
             const result = await snapshot(opts) // eslint-disable-line no-await-in-loop -- we want to run in serie
             if (result) {
-              reports.push(result.lhr)
+              report.push(result.lhr)
             }
           }
         }
 
-        fromReport = getPrevReport()
-        toReport = getReport(saveReports(reports))
+        saveReports(report)
+        const reportPaths = getReportPaths()
+        fromReport = getReport(reportPaths[1])
+        toReport = getReport(reportPaths[0])
       }
-      if (fromReport) {
+
+      if (fromReport && toReport) {
         compareReports(fromReport, toReport, argv.threshold, argv.table)
       }
-      if (argv.view) {
+
+      if (argv.view && toReport) {
         createLighthouseViewerURL(toReport)
       }
     }
