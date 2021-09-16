@@ -65,6 +65,7 @@ async function snapshot(opts: {
   if (opts.cmd) {
     console.log(`Building ${opts.type} site..`)
     spawnSync('npm', ['run', opts.cmd])
+    console.log('done')
   }
 
   const server = http.createServer((request, response) => {
