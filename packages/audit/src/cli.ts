@@ -105,9 +105,6 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
   const relativeChange = calcRelativeChange(fromValue, toValue)
   const percentage = Math.round(relativeChange * 100) // percent as integer
 
-  let logColor = '\x1b[37m'
-  let formatted
-
   const colorCodes = {
     red: '\x1b[91m', // poor,
     orange: '\x1b[33m', // needs improvement
@@ -115,6 +112,9 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
     gray: '\x1b[37m',
     reset: '\x1b[97m',
   } as const
+
+  let logColor: string = colorCodes.reset
+  let formatted
 
   const colorCode =
     colorCodes[toScore > 0.89 ? 'green' : toScore > 0.49 ? 'orange' : 'red'] // from https://web.dev/performance-scoring/
@@ -144,7 +144,7 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
   if (abs(scoreDiff) < threshold) {
     logColor = '\x1b[37m'
   }
-  return `${colorCodes.gray}${from.title}:${colorCode} ${
+  return `${colorCodes.reset}${from.title}:${colorCode} ${
     toScore * 100
   } (${formattedValue}) ${logColor}${formatted} ${colorCodes.reset}`
 }
@@ -170,6 +170,7 @@ function compareReports(
       console.log(formatChange(fromResult, toResult, threshold))
     }
   }
+  console.log('\n')
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
