@@ -222,7 +222,7 @@ function saveReports(reports: LighthouseResult[]) {
 }
 
 const getContent = (filePath: Path): LighthouseResult => {
-  const output = fs.readFileSync(`${filePath}.json`, 'utf8')
+  const output = fs.readFileSync(`${filePath}`, 'utf8')
   return JSON.parse(output)
 }
 
@@ -243,7 +243,7 @@ function getReport(filePath: Path | undefined) {
       .map(getContent)
     report = computeMedianRun(reports)
   } else {
-    report = getContent(filePath)
+    report = getContent(`${filePath}`)
   }
 
   return report
@@ -254,14 +254,11 @@ function getReportPaths() {
     .sync(`${dirName}/*`, {
       sync: true,
     })
-    .map((reportPath) => {
-      return new Date(path.parse(reportPath).name.replace(/_/g, ':'))
-    })
     .sort((a, b) => {
-      return Number(b) - Number(a)
-    })
-    .map((date) => {
-      return `${dirName}/${date.toISOString().replace(/:/g, '_')}`
+      return (
+        Number(new Date(path.parse(b).name.replace(/_/g, ':'))) -
+        Number(new Date(path.parse(a).name.replace(/_/g, ':')))
+      )
     })
 }
 
