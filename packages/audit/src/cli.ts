@@ -45,8 +45,8 @@ async function launchChromeAndRunLighthouse(
 //   return dirName
 // }
 
-function createLighthouseViewerURL(filePath: Path) {
-  const lighthouseViewerObject = { lhr: getFileContent(filePath) }
+function createLighthouseViewerURL(report: LighthouseResult) {
+  const lighthouseViewerObject = { lhr: report }
   const base64 = btoa(
     unescape(encodeURIComponent(JSON.stringify(lighthouseViewerObject)))
   )
@@ -224,12 +224,31 @@ function getReport(filePath: Path) {
   return report
 }
 
+function getPrevReport() {
+  const allReports = glob.sync(`${dirName}/*`, {
+    sync: true,
+  })
+  if (allReports.length) {
+    const prevReports = allReports.slice(0, -1)
+    const dates = prevReports.map((report) => {
+      return new Date(path.parse(report).name.replace(/_/g, ':'))
+    })
+
+    const max = dates.reduce((a, b) => (a > b ? a : b))
+    const recentReportName = max.toISOString()
+
+    return getFileContent(
+      `${dirName}/${recentReportName.replace(/:/g, '_')}.json`
+    )
+  }
+}
+
 yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
   .command(
     '$0',
-    'path to project',
+    'path to project or report',
     {
-      url: { type: 'string' },
+      // url: { type: 'string' },
       view: { type: 'boolean' },
       threshold: { type: 'number', default: 2 },
       // TODO rename from/to
@@ -240,17 +259,15 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
     },
     async (argv) => {
       workingDir = path.resolve(String(argv._[0] || './'))
-      const pathStat = fs.statSync(workingDir, { throwIfNoEntry: false })
 
       // set global dirName
       dirName = path.resolve(workingDir, argv.outDir)
 
-      if (argv.from && argv.to) {
-        const fromReport = getReport(argv.from)
-        const toReport = getReport(argv.to)
-        compareReports(fromReport, toReport, argv.threshold)
-      } else if (pathStat?.isFile() && path.extname(workingDir) === '.json') {
-        createLighthouseViewerURL(workingDir)
+      let fromReport: LighthouseResult, toReport: LighthouseResult | undefined
+
+      if (argv.from) {
+        fromReport = getReport(argv.from)
+        toReport = argv.to ? getReport(argv.to) : getPrevReport()
       } else {
         if (!fs.existsSync(dirName)) {
           fs.mkdirSync(dirName)
@@ -287,32 +304,14 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
           }
         }
 
-        const fromReport = getReport(saveReports(reports))
-
-        const allReports = glob.sync(`${dirName}/*`, {
-          sync: true,
-        })
-
-        if (allReports.length) {
-          const prevReports = allReports.slice(0, -1)
-          const dates = prevReports.map((report) => {
-            return new Date(path.parse(report).name.replace(/_/g, ':'))
-          })
-
-          const max = dates.reduce((a, b) => (a > b ? a : b))
-          const recentReportName = max.toISOString()
-
-          const toReport = getFileContent(
-            `${dirName}/${recentReportName.replace(/:/g, '_')}.json`
-          )
-          compareReports(fromReport, toReport, argv.threshold)
-        }
+        fromReport = getReport(saveReports(reports))
+        toReport = getPrevReport()
+      }
+      if (toReport) {
+        compareReports(fromReport, toReport, argv.threshold)
+      }
+      if (argv.view) {
+        createLighthouseViewerURL(fromReport)
       }
     }
-  )
-  .check((argv) => {
-    if ((argv.from && !argv.to) || (argv.to && !argv.from)) {
-      throw new Error('Missing counterpart (from/to)')
-    }
-    return true
-  }).argv
+  ).argv
