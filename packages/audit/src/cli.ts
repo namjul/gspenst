@@ -7,15 +7,17 @@ import { createHttpTerminator } from 'http-terminator'
 import handler from 'serve-handler'
 import lighthouse from 'lighthouse'
 import type { RunnerResult, Flags } from 'lighthouse'
+import { computeMedianRun } from 'lighthouse/lighthouse-core/lib/median-run'
 import * as chromeLauncher from 'chrome-launcher'
 import yargs from 'yargs/yargs'
 import glob from 'glob'
 
-const PORT = 34171
-const THRESHOLD = 2
-
 type LighthouseResult = RunnerResult['lhr']
 type AuditResult = LighthouseResult['audits']['x']
+type Path = string
+
+let workingDir: string, dirName: string
+let portCount = 34171
 
 async function launchChromeAndRunLighthouse(
   url: string
@@ -33,17 +35,17 @@ async function launchChromeAndRunLighthouse(
   return result
 }
 
-function createDirNameFromUrl(url: string) {
-  const urlObj = new URL(url)
-  let dirName = urlObj.host.replace('www.', '')
+// function createDirNameFromUrl(url: string) {
+//   const urlObj = new URL(url)
+//   let dirName = urlObj.host.replace('www.', '')
+//
+//   if (urlObj.pathname !== '/') {
+//     dirName = `${dirName}${urlObj.pathname.replace(/\//g, '_')}`
+//   }
+//   return dirName
+// }
 
-  if (urlObj.pathname !== '/') {
-    dirName = `${dirName}${urlObj.pathname.replace(/\//g, '_')}`
-  }
-  return dirName
-}
-
-function createLighthouseViewerURL(filePath: string) {
+function createLighthouseViewerURL(filePath: Path) {
   const lighthouseViewerObject = { lhr: getFileContent(filePath) }
   const base64 = btoa(
     unescape(encodeURIComponent(JSON.stringify(lighthouseViewerObject)))
@@ -54,8 +56,8 @@ function createLighthouseViewerURL(filePath: string) {
   console.log('Copied Lighthouse Viewer URL to clipboard.')
 }
 
-async function snapshot(opts: { staticFolder: string; cmd: string }) {
-  console.log('building site..')
+async function snapshot(opts: { staticFolder: Path; cmd: string }) {
+  console.log('Building site..')
   spawnSync('npm', ['run', opts.cmd])
 
   const server = http.createServer((request, response) => {
@@ -63,25 +65,26 @@ async function snapshot(opts: { staticFolder: string; cmd: string }) {
     return handler(request, response, { public: opts.staticFolder })
   })
 
-  server.listen(PORT)
+  const port = portCount++
+
+  server.listen(port)
 
   const httpTerminator = createHttpTerminator({
     server,
   })
 
-  const url = `http://localhost:${PORT}`
+  const url = `http://localhost:${port}`
+  const result = await launchChromeAndRunLighthouse(url)
 
-  return launchChromeAndRunLighthouse(url).then(async (result) => {
-    await httpTerminator.terminate()
-    return result
-  })
+  await httpTerminator.terminate()
+
+  return result
 }
 
-function getFileContent(filePath: string) {
+function getFileContent(filePath: Path): LighthouseResult {
   const output = fs.readFileSync(filePath, 'utf8')
-  return JSON.parse(output) as {}
+  return JSON.parse(output)
 }
-
 function calcRelativeChange(from: number, to: number) {
   return (to - from) / from
 }
@@ -162,67 +165,84 @@ function compareReports(
   }
 }
 
-async function createReportFromFolder(
-  folder: string,
-  view: boolean | undefined,
-  threshold: number
-) {
-  const dirName = '.audits'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function log(...args: any[]) {
+  console.log(...args) // eslint-disable-line @typescript-eslint/no-unsafe-argument
+}
 
-  if (!fs.existsSync(dirName)) {
-    fs.mkdirSync(dirName)
-  }
+async function createReport() {
+  let opts
 
-  const prevReports = glob.sync(`${dirName}/*.json`, {
-    sync: true,
-  })
-
-  let result: RunnerResult | undefined,
-    recentReport: LighthouseResult | undefined
-
-  if (prevReports.length) {
-    const dates: Date[] = []
-    prevReports.forEach((report) => {
-      dates.push(new Date(path.parse(report).name.replace(/_/g, ':')))
-    })
-
-    const max = dates.reduce((a, b) => (a > b ? a : b))
-    const recentReportName = max.toISOString()
-
-    recentReport = getFileContent(
-      `${dirName}/${recentReportName.replace(/:/g, '_')}.json`
-    ) as LighthouseResult
-  }
-
-  if (fs.existsSync(path.resolve(folder, 'gatsby-config.js'))) {
+  if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
     console.log('GatsbyJS site detected')
-    result = await snapshot({
+    opts = {
       staticFolder: 'public',
       cmd: 'build',
-    })
-  } else if (fs.existsSync(path.resolve(folder, 'next.config.js'))) {
+    }
+  } else if (fs.existsSync(path.resolve(workingDir, 'next.config.js'))) {
     console.log('NextJS site detected')
-    result = await snapshot({
+    opts = {
       staticFolder: 'out',
       cmd: 'export',
-    })
-  }
-
-  if (result) {
-    const fileName = `${dirName}/${result.lhr.fetchTime.replace(
-      /:/g,
-      '_'
-    )}.json`
-    // @ts-expect-error -- apperently `report` can be string[] but i would not know currently how that case happens
-    fs.writeFileSync(fileName, result.report)
-    if (view) {
-      createLighthouseViewerURL(fileName)
-    }
-
-    if (recentReport) {
-      compareReports(recentReport, result.lhr, threshold)
     }
   }
+
+  if (opts) {
+    log('Creating report..')
+    const result = await snapshot(opts)
+    return result?.lhr
+  }
+}
+
+function saveReports(reports: LighthouseResult[]) {
+  log(`Saving report${reports.length && 's'}..`)
+  const reportToName = ({ fetchTime }: LighthouseResult) =>
+    fetchTime.replace(/:/g, '_')
+
+  const latestReport = reports.reduce((last, current) => {
+    return new Date(last.fetchTime) > new Date(current.fetchTime)
+      ? current
+      : last
+  })
+
+  const dir =
+    reports.length > 1
+      ? path.resolve(dirName, reportToName(latestReport))
+      : dirName
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir)
+  }
+
+  reports.forEach((report) => {
+    fs.writeFileSync(
+      path.resolve(dir, `${reportToName(report)}.json`),
+      JSON.stringify(report, null, 2)
+    )
+  })
+
+  return reports.length > 1
+    ? dir
+    : path.resolve(dir, `${reportToName(reports[0])}.json`)
+}
+
+function getReport(filePath: Path) {
+  const filePathStat = fs.statSync(filePath, { throwIfNoEntry: false })
+
+  let report: LighthouseResult
+
+  if (filePathStat?.isDirectory()) {
+    const reports = glob
+      .sync(`${filePath}/*.json`, {
+        sync: true,
+      })
+      .map(getFileContent)
+    report = computeMedianRun(reports)
+  } else {
+    report = getFileContent(filePath)
+  }
+
+  return report
 }
 
 yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
@@ -232,54 +252,70 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
     {
       url: { type: 'string' },
       view: { type: 'boolean' },
-      threshold: { type: 'number', default: THRESHOLD },
+      threshold: { type: 'number', default: 2 },
+      // TODO rename from/to
       from: { type: 'string' },
       to: { type: 'string' },
+      median: { type: 'number', default: 5 },
+      outDir: { type: 'string', default: '.audits' },
     },
     async (argv) => {
-      const pathArg = String(argv._[0] || './')
+      workingDir = path.resolve(String(argv._[0] || './'))
+      const pathStat = fs.statSync(workingDir, { throwIfNoEntry: false })
 
-      const fullPath = path.resolve(pathArg)
-      const pathStat = fs.statSync(fullPath, { throwIfNoEntry: false })
+      // set global dirName
+      dirName = path.resolve(workingDir, argv.outDir)
 
       if (argv.from && argv.to) {
-        compareReports(
-          getFileContent(argv.from) as LighthouseResult,
-          getFileContent(argv.to) as LighthouseResult,
-          argv.threshold
-        )
-      } else if (pathStat?.isFile() && path.extname(fullPath) === '.json') {
-        createLighthouseViewerURL(fullPath)
-      } else if (pathStat?.isDirectory()) {
-        await createReportFromFolder(fullPath, argv.view, argv.threshold)
-      } else if (argv.url) {
-        const dirName = createDirNameFromUrl(argv.url)
-
+        const fromReport = getReport(argv.from)
+        const toReport = getReport(argv.to)
+        compareReports(fromReport, toReport, argv.threshold)
+      } else if (pathStat?.isFile() && path.extname(workingDir) === '.json') {
+        createLighthouseViewerURL(workingDir)
+      } else {
         if (!fs.existsSync(dirName)) {
           fs.mkdirSync(dirName)
         }
 
-        void launchChromeAndRunLighthouse(argv.url).then((result) => {
-          const { lhr: js, report: json } = result ?? {}
-          if (js && typeof json === 'string') {
-            fs.writeFile(
-              `${dirName}/${js.fetchTime.replace(/:/g, '_')}.json`,
-              json,
-              (err) => {
-                if (err) throw err
-              }
+        const runs = process.argv.includes('--median') ? argv.median : 1
+
+        const reports = []
+        for (let i = 0, len = runs; i < len; i++) {
+          reports.push(await createReport()) // eslint-disable-line no-await-in-loop -- we want to run in serie
+        }
+
+        const fromReport = getReport(
+          saveReports(
+            reports.filter(
+              (report): report is LighthouseResult => report !== undefined
             )
-          }
+          )
+        )
+
+        const allReports = glob.sync(`${dirName}/*`, {
+          sync: true,
         })
-      } else {
-        console.log('Nothing do to')
+
+        if (allReports.length) {
+          const prevReports = allReports.slice(0, -1)
+          const dates = prevReports.map((report) => {
+            return new Date(path.parse(report).name.replace(/_/g, ':'))
+          })
+
+          const max = dates.reduce((a, b) => (a > b ? a : b))
+          const recentReportName = max.toISOString()
+
+          const toReport = getFileContent(
+            `${dirName}/${recentReportName.replace(/:/g, '_')}.json`
+          )
+          compareReports(fromReport, toReport, argv.threshold)
+        }
       }
     }
   )
   .check((argv) => {
     if ((argv.from && !argv.to) || (argv.to && !argv.from)) {
       throw new Error('Missing counterpart')
-    } else {
-      return true
     }
+    return true
   }).argv
