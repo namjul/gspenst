@@ -56,9 +56,12 @@ function createLighthouseViewerURL(filePath: Path) {
   console.log('Copied Lighthouse Viewer URL to clipboard.')
 }
 
-async function snapshot(opts: { staticFolder: Path; cmd: string }) {
+async function snapshot(opts: { staticFolder: Path; cmd?: string }) {
   console.log('Building site..')
-  spawnSync('npm', ['run', opts.cmd])
+
+  if (opts.cmd) {
+    spawnSync('npm', ['run', opts.cmd])
+  }
 
   const server = http.createServer((request, response) => {
     // Details here: https://github.com/vercel/serve-handler#options
@@ -170,30 +173,6 @@ function log(...args: any[]) {
   console.log(...args) // eslint-disable-line @typescript-eslint/no-unsafe-argument
 }
 
-async function createReport() {
-  let opts
-
-  if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
-    console.log('GatsbyJS site detected')
-    opts = {
-      staticFolder: 'public',
-      cmd: 'build',
-    }
-  } else if (fs.existsSync(path.resolve(workingDir, 'next.config.js'))) {
-    console.log('NextJS site detected')
-    opts = {
-      staticFolder: 'out',
-      cmd: 'export',
-    }
-  }
-
-  if (opts) {
-    log('Creating report..')
-    const result = await snapshot(opts)
-    return result?.lhr
-  }
-}
-
 function saveReports(reports: LighthouseResult[]) {
   log(`Saving report${reports.length && 's'}..`)
   const reportToName = ({ fetchTime }: LighthouseResult) =>
@@ -279,18 +258,36 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
 
         const runs = process.argv.includes('--median') ? argv.median : 1
 
-        const reports = []
+        const reports: Array<LighthouseResult> = []
         for (let i = 0, len = runs; i < len; i++) {
-          reports.push(await createReport()) // eslint-disable-line no-await-in-loop -- we want to run in serie
+          let opts
+
+          if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
+            console.log('GatsbyJS site detected')
+            opts = {
+              staticFolder: 'public',
+              cmd: i === 0 ? 'build' : undefined, // only build site in the first run
+            }
+          } else if (
+            fs.existsSync(path.resolve(workingDir, 'next.config.js'))
+          ) {
+            console.log('NextJS site detected')
+            opts = {
+              staticFolder: 'out',
+              cmd: i === 0 ? 'export' : undefined, // only build site in the first run
+            }
+          }
+
+          if (opts) {
+            log('Creating report..')
+            const result = await snapshot(opts) // eslint-disable-line no-await-in-loop -- we want to run in serie
+            if (result) {
+              reports.push(result.lhr)
+            }
+          }
         }
 
-        const fromReport = getReport(
-          saveReports(
-            reports.filter(
-              (report): report is LighthouseResult => report !== undefined
-            )
-          )
-        )
+        const fromReport = getReport(saveReports(reports))
 
         const allReports = glob.sync(`${dirName}/*`, {
           sync: true,
