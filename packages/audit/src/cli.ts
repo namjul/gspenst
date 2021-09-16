@@ -311,7 +311,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
   )
   .check((argv) => {
     if ((argv.from && !argv.to) || (argv.to && !argv.from)) {
-      throw new Error('Missing counterpart')
+      throw new Error('Missing counterpart (from/to)')
     }
     return true
   }).argv
