@@ -273,22 +273,20 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
           fs.mkdirSync(dirName)
         }
 
-        let type: string | undefined,
-          staticFolder: string | undefined,
-          cmd: string | undefined
+        let staticFolder: string | undefined, cmd: string | undefined
 
         if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
-          type = 'GatsbyJS'
+          console.log('GatsbyJS detected')
           staticFolder = 'public'
           cmd = 'build'
         } else if (fs.existsSync(path.resolve(workingDir, 'next.config.js'))) {
-          type = 'NextJS'
+          console.log('NextJS detected')
           staticFolder = 'out'
           cmd = 'export'
         }
 
-        if (cmd && type) {
-          console.log(`Building ${type} site..`)
+        if (cmd) {
+          console.log('Building site..')
           spawnSync('npm', ['run', cmd])
         }
 
