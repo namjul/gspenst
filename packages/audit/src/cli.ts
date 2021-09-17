@@ -172,8 +172,8 @@ function compareReports(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function log(...args: any[]) {
-  console.log(...args) // eslint-disable-line @typescript-eslint/no-unsafe-argument
+function log(msg: string) {
+  process.stdout.write(msg) // eslint-disable-line @typescript-eslint/no-unsafe-argument
 }
 
 function saveReports(reports: LighthouseResult[]) {
@@ -271,11 +271,11 @@ async function main(argv: Argv) {
     let staticFolder: string | undefined, cmd: string | undefined
 
     if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
-      console.log('GatsbyJS detected')
+      log('GatsbyJS detected..')
       staticFolder = 'public'
       cmd = 'build'
     } else if (fs.existsSync(path.resolve(workingDir, 'next.config.js'))) {
-      console.log('NextJS detected')
+      log('NextJS detected..')
       staticFolder = 'out'
       cmd = 'export'
     } else {
@@ -284,7 +284,7 @@ async function main(argv: Argv) {
     }
 
     if (cmd) {
-      console.log('Building site..')
+      log('Building site..')
       spawnSync('npm', ['run', cmd])
     }
 
@@ -320,6 +320,8 @@ async function main(argv: Argv) {
     await httpTerminator.terminate()
 
     saveReports(report)
+    log(`Saving report${report.length && 's'}..`)
+    console.log('done')
 
     const reportPaths = getReportPaths()
 
