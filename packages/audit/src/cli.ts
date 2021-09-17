@@ -13,12 +13,26 @@ import yargs from 'yargs/yargs'
 import glob from 'glob'
 import { table } from 'table'
 
+const _argv = yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
+  .options({
+    // url: { type: 'string' },
+    view: { type: 'boolean', default: true },
+    threshold: { type: 'number', default: 2 },
+    // TODO rename from/to
+    from: { type: 'string' },
+    to: { type: 'string' },
+    runs: { type: 'number', default: 5 },
+    outDir: { type: 'string', default: '.audits' },
+    table: { type: 'boolean', default: false },
+    headless: { type: 'boolean', default: true },
+  }).argv
+
+type Argv = typeof _argv
 type LighthouseResult = RunnerResult['lhr']
 type AuditResult = LighthouseResult['audits']['x']
 type Path = string
 
 const PORT = 34171
-
 let workingDir: string, dirName: string
 
 async function launchChrome({ headless }: { headless: boolean }) {
@@ -235,100 +249,87 @@ function getReportPaths() {
     })
 }
 
-yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
-  .command(
-    '$0',
-    'path to project or report',
-    {
-      // url: { type: 'string' },
-      view: { type: 'boolean', default: true },
-      threshold: { type: 'number', default: 2 },
-      // TODO rename from/to
-      from: { type: 'string' },
-      to: { type: 'string' },
-      runs: { type: 'number', default: 5 },
-      outDir: { type: 'string', default: '.audits' },
-      table: { type: 'boolean', default: false },
-      headless: { type: 'boolean', default: true },
-    },
-    async (argv) => {
-      workingDir = path.resolve(String(argv._[0] || './'))
+async function main(argv: Argv) {
+  workingDir = path.resolve(String(argv._[0] || './'))
 
-      // set global dirName
-      dirName = path.resolve(workingDir, argv.outDir)
+  dirName = path.resolve(workingDir, argv.outDir)
 
-      let fromReport: LighthouseResult | undefined,
-        toReport: LighthouseResult | undefined
+  let fromReport: LighthouseResult | undefined,
+    toReport: LighthouseResult | undefined
 
-      if (argv.to) {
-        fromReport = argv.from
-          ? getReport(argv.from)
-          : getReport(getReportPaths()[0]) // get newest report
-        toReport = getReport(argv.to)
-      } else {
-        if (!fs.existsSync(dirName)) {
-          fs.mkdirSync(dirName)
-        }
+  if (argv.to) {
+    fromReport = argv.from
+      ? getReport(argv.from)
+      : getReport(getReportPaths()[0]) // get newest report
+    toReport = getReport(argv.to)
+  } else {
+    if (!fs.existsSync(dirName)) {
+      fs.mkdirSync(dirName)
+    }
 
-        let staticFolder: string | undefined, cmd: string | undefined
+    let staticFolder: string | undefined, cmd: string | undefined
 
-        if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
-          console.log('GatsbyJS detected')
-          staticFolder = 'public'
-          cmd = 'build'
-        } else if (fs.existsSync(path.resolve(workingDir, 'next.config.js'))) {
-          console.log('NextJS detected')
-          staticFolder = 'out'
-          cmd = 'export'
-        }
+    if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
+      console.log('GatsbyJS detected')
+      staticFolder = 'public'
+      cmd = 'build'
+    } else if (fs.existsSync(path.resolve(workingDir, 'next.config.js'))) {
+      console.log('NextJS detected')
+      staticFolder = 'out'
+      cmd = 'export'
+    } else {
+      console.log('Give me something to do.')
+      process.exit(1)
+    }
 
-        if (cmd) {
-          console.log('Building site..')
-          spawnSync('npm', ['run', cmd])
-        }
+    if (cmd) {
+      console.log('Building site..')
+      spawnSync('npm', ['run', cmd])
+    }
 
-        const server = http.createServer((request, response) => {
-          // Details here: https://github.com/vercel/serve-handler#options
-          return handler(request, response, { public: staticFolder })
-        })
-        server.listen(PORT)
+    const server = http.createServer((request, response) => {
+      // Details here: https://github.com/vercel/serve-handler#options
+      return handler(request, response, { public: staticFolder })
+    })
+    server.listen(PORT)
 
-        const httpTerminator = createHttpTerminator({ server })
+    const httpTerminator = createHttpTerminator({ server })
 
-        const runs = process.argv.includes('--runs') ? argv.runs : 1
-        const report: Array<LighthouseResult> = []
+    const runs = process.argv.includes('--runs') ? argv.runs : 1
+    const report: Array<LighthouseResult> = []
 
-        const chrome = await launchChrome({ headless: argv.headless })
+    const chrome = await launchChrome({ headless: argv.headless })
 
-        for (let i = 0, len = runs; i < len; i++) {
-          log('Creating report..')
-          // eslint-disable-next-line no-await-in-loop -- we want to run in serie
-          const result = await runLighthouse(
-            `http://localhost:${PORT}`,
-            chrome.port
-          )
-          if (result) {
-            report.push(result.lhr)
-          }
-        }
-
-        await chrome.kill()
-        await httpTerminator.terminate()
-
-        saveReports(report)
-
-        const reportPaths = getReportPaths()
-
-        fromReport = getReport(reportPaths[1])
-        toReport = getReport(reportPaths[0])
-      }
-
-      if (fromReport && toReport) {
-        compareReports(fromReport, toReport, argv.threshold, argv.table)
-      }
-
-      if (argv.view && toReport) {
-        createLighthouseViewerURL(toReport)
+    for (let i = 0, len = runs; i < len; i++) {
+      log('Creating report..')
+      // eslint-disable-next-line no-await-in-loop -- we want to run in serie
+      const result = await runLighthouse(
+        `http://localhost:${PORT}`,
+        chrome.port
+      )
+      if (result) {
+        report.push(result.lhr)
       }
     }
-  ).argv
+
+    await chrome.kill()
+    await httpTerminator.terminate()
+
+    saveReports(report)
+
+    const reportPaths = getReportPaths()
+
+    fromReport = getReport(reportPaths[1])
+    toReport = getReport(reportPaths[0])
+  }
+
+  if (fromReport && toReport) {
+    compareReports(fromReport, toReport, argv.threshold, argv.table)
+  }
+
+  if (argv.view && toReport) {
+    createLighthouseViewerURL(toReport)
+  }
+}
+
+void main(_argv)
