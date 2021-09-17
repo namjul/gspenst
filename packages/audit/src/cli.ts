@@ -124,9 +124,6 @@ function formatChange(from: AuditResult, to: AuditResult, threshold: number) {
     `${colorCode}${toScore * 100} (${formattedValue})${colorCodes.reset}`, // score
     `${logColor}${formatted} ${colorCodes.reset}`, // values
   ]
-  // return `${colorCodes.reset}${from.title}:${colorCode} ${
-  //   toScore * 100
-  // } (${formattedValue}) ${logColor}${formatted} ${colorCodes.reset}`
 }
 
 function compareReports(
