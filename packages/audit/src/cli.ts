@@ -177,7 +177,6 @@ function log(...args: any[]) {
 }
 
 function saveReports(reports: LighthouseResult[]) {
-  log(`Saving report${reports.length && 's'}..`)
   const reportToName = ({ fetchTime }: LighthouseResult) =>
     fetchTime.replace(/:/g, '_')
 
@@ -230,7 +229,7 @@ function getReport(filePath: Path | undefined) {
       .map(getContent)
     report = computeMedianRun(reports)
   } else {
-    report = getContent(`${filePath}`)
+    report = getContent(filePath)
   }
 
   return report
@@ -250,19 +249,21 @@ function getReportPaths() {
 }
 
 async function main(argv: Argv) {
-  workingDir = path.resolve(String(argv._[0] || './'))
-
-  dirName = path.resolve(workingDir, argv.outDir)
-
   let fromReport: LighthouseResult | undefined,
     toReport: LighthouseResult | undefined
+  workingDir = path.resolve(String(argv._[0] || './'))
 
   if (argv.to) {
+    workingDir = path.resolve(path.dirname(argv.to), '../')
+    dirName = path.resolve(workingDir, argv.outDir)
+
     fromReport = argv.from
       ? getReport(argv.from)
       : getReport(getReportPaths()[0]) // get newest report
     toReport = getReport(argv.to)
   } else {
+    dirName = path.resolve(workingDir, argv.outDir)
+
     if (!fs.existsSync(dirName)) {
       fs.mkdirSync(dirName)
     }
@@ -279,7 +280,7 @@ async function main(argv: Argv) {
       cmd = 'export'
     } else {
       console.log('Give me something to do.')
-      process.exit(1)
+      return process.exit(1)
     }
 
     if (cmd) {
@@ -287,9 +288,12 @@ async function main(argv: Argv) {
       spawnSync('npm', ['run', cmd])
     }
 
+    const publicPath = path.resolve(workingDir, staticFolder)
     const server = http.createServer((request, response) => {
       // Details here: https://github.com/vercel/serve-handler#options
-      return handler(request, response, { public: staticFolder })
+      return handler(request, response, {
+        public: publicPath,
+      })
     })
     server.listen(PORT)
 
