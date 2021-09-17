@@ -17,23 +17,30 @@ type LighthouseResult = RunnerResult['lhr']
 type AuditResult = LighthouseResult['audits']['x']
 type Path = string
 
+const PORT = 34171
+
 let workingDir: string, dirName: string
-let portCount = 34171
 
-async function launchChromeAndRunLighthouse(
-  url: string
+async function launchChrome({ headless }: { headless: boolean }) {
+  const chromeFlags = []
+  if (headless) {
+    chromeFlags.push('--headless')
+  }
+  return chromeLauncher.launch({
+    chromeFlags,
+    // logLevel: 'info',
+  })
+}
+
+async function runLighthouse(
+  url: string,
+  port: number
 ): Promise<RunnerResult | undefined> {
-  const chrome = await chromeLauncher.launch()
-
   const opts: Flags = {
-    port: chrome.port,
+    port,
     throttlingMethod: 'simulate',
   }
-  const result = await lighthouse(url, opts)
-
-  await chrome.kill()
-
-  return result
+  return lighthouse(url, opts)
 }
 
 // function createDirNameFromUrl(url: string) {
@@ -57,37 +64,6 @@ function createLighthouseViewerURL(report: LighthouseResult) {
     `https://googlechrome.github.io/lighthouse/viewer/#${base64}`
   )
   console.log("Report's Lighthouse Viewer URL copied to clipboard.")
-}
-
-async function snapshot(opts: {
-  staticFolder: Path
-  cmd?: string
-  type: string
-}) {
-  if (opts.cmd) {
-    console.log(`Building ${opts.type} site..`)
-    spawnSync('npm', ['run', opts.cmd])
-  }
-
-  const server = http.createServer((request, response) => {
-    // Details here: https://github.com/vercel/serve-handler#options
-    return handler(request, response, { public: opts.staticFolder })
-  })
-
-  const port = portCount++
-
-  server.listen(port)
-
-  const httpTerminator = createHttpTerminator({
-    server,
-  })
-
-  const url = `http://localhost:${port}`
-  const result = await launchChromeAndRunLighthouse(url)
-
-  await httpTerminator.terminate()
-
-  return result
 }
 
 function calcRelativeChange(from: number, to: number) {
@@ -276,6 +252,7 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
       runs: { type: 'number', default: 5 },
       outDir: { type: 'string', default: '.audits' },
       table: { type: 'boolean', default: false },
+      headless: { type: 'boolean', default: true },
     },
     async (argv) => {
       workingDir = path.resolve(String(argv._[0] || './'))
@@ -296,39 +273,57 @@ yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused
           fs.mkdirSync(dirName)
         }
 
+        let type: string | undefined,
+          staticFolder: string | undefined,
+          cmd: string | undefined
+
+        if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
+          type = 'GatsbyJS'
+          staticFolder = 'public'
+          cmd = 'build'
+        } else if (fs.existsSync(path.resolve(workingDir, 'next.config.js'))) {
+          type = 'NextJS'
+          staticFolder = 'out'
+          cmd = 'export'
+        }
+
+        if (cmd && type) {
+          console.log(`Building ${type} site..`)
+          spawnSync('npm', ['run', cmd])
+        }
+
+        const server = http.createServer((request, response) => {
+          // Details here: https://github.com/vercel/serve-handler#options
+          return handler(request, response, { public: staticFolder })
+        })
+        server.listen(PORT)
+
+        const httpTerminator = createHttpTerminator({ server })
+
         const runs = process.argv.includes('--runs') ? argv.runs : 1
-
         const report: Array<LighthouseResult> = []
+
+        const chrome = await launchChrome({ headless: argv.headless })
+
         for (let i = 0, len = runs; i < len; i++) {
-          let opts
-
-          if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
-            opts = {
-              type: 'GatsbyJS',
-              staticFolder: 'public',
-              cmd: i === 0 ? 'build' : undefined, // only build site in the first run
-            }
-          } else if (
-            fs.existsSync(path.resolve(workingDir, 'next.config.js'))
-          ) {
-            opts = {
-              type: 'NextJS',
-              staticFolder: 'out',
-              cmd: i === 0 ? 'export' : undefined, // only build site in the first run
-            }
-          }
-
-          if (opts) {
-            log('Creating report..')
-            const result = await snapshot(opts) // eslint-disable-line no-await-in-loop -- we want to run in serie
-            if (result) {
-              report.push(result.lhr)
-            }
+          log('Creating report..')
+          // eslint-disable-next-line no-await-in-loop -- we want to run in serie
+          const result = await runLighthouse(
+            `http://localhost:${PORT}`,
+            chrome.port
+          )
+          if (result) {
+            report.push(result.lhr)
           }
         }
 
+        await chrome.kill()
+        await httpTerminator.terminate()
+
         saveReports(report)
+
         const reportPaths = getReportPaths()
+
         fromReport = getReport(reportPaths[1])
         toReport = getReport(reportPaths[0])
       }
