@@ -15,7 +15,6 @@ import { table } from 'table'
 
 const _argv = yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
   .options({
-    view: { type: 'boolean', default: true },
     threshold: { type: 'number', default: 2 },
     // TODO rename from/to
     from: { type: 'string' },
@@ -236,20 +235,20 @@ function getReportPaths() {
 }
 
 async function main(argv: Argv) {
-  let fromReport: LighthouseResult | undefined,
-    toReport: LighthouseResult | undefined
   workingDir = path.resolve(String(argv._[0] || './'))
+  dirName = path.resolve(workingDir, argv.outDir)
+
+  const reportPaths = getReportPaths()
+  let fromReport: LighthouseResult | undefined = getReport(reportPaths[1])
+  let toReport: LighthouseResult | undefined = getReport(reportPaths[0])
 
   if (argv.to) {
     workingDir = path.resolve(path.dirname(argv.to), '../')
     dirName = path.resolve(workingDir, argv.outDir)
 
-    const reportPaths = getReportPaths()
-    fromReport = argv.from ? getReport(argv.from) : getReport(reportPaths[1]) // get newest report
     toReport = getReport(argv.to)
+    fromReport = argv.from ? getReport(argv.from) : fromReport
   } else {
-    dirName = path.resolve(workingDir, argv.outDir)
-
     if (!fs.existsSync(dirName)) {
       fs.mkdirSync(dirName)
     }
@@ -310,17 +309,16 @@ async function main(argv: Argv) {
     log(`Saving report${report.length && 's'}..`)
     console.log('done')
 
-    const reportPaths = getReportPaths()
+    const newReportPaths = getReportPaths()
 
-    fromReport = getReport(reportPaths[1])
-    toReport = getReport(reportPaths[0])
+    fromReport = getReport(newReportPaths[1])
+    toReport = getReport(newReportPaths[0])
   }
 
   if (fromReport && toReport) {
     compareReports(fromReport, toReport, argv.threshold, argv.table)
   }
-
-  if (argv.view && toReport) {
+  if (toReport) {
     createLighthouseViewerURL(toReport)
   }
 }
