@@ -6,7 +6,7 @@ import clipboardy from 'clipboardy'
 import { createHttpTerminator } from 'http-terminator'
 import handler from 'serve-handler'
 import lighthouse from 'lighthouse'
-import type { RunnerResult, Flags } from 'lighthouse'
+import type { RunnerResult } from 'lighthouse'
 import { computeMedianRun } from 'lighthouse/lighthouse-core/lib/median-run'
 import * as chromeLauncher from 'chrome-launcher'
 import yargs from 'yargs/yargs'
@@ -15,7 +15,6 @@ import { table } from 'table'
 
 const _argv = yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
   .options({
-    // url: { type: 'string' },
     view: { type: 'boolean', default: true },
     threshold: { type: 'number', default: 2 },
     // TODO rename from/to
@@ -44,17 +43,6 @@ async function launchChrome({ headless }: { headless: boolean }) {
     chromeFlags,
     // logLevel: 'info',
   })
-}
-
-async function runLighthouse(
-  url: string,
-  port: number
-): Promise<RunnerResult | undefined> {
-  const opts: Flags = {
-    port,
-    throttlingMethod: 'simulate',
-  }
-  return lighthouse(url, opts)
 }
 
 // function createDirNameFromUrl(url: string) {
@@ -305,10 +293,10 @@ async function main(argv: Argv) {
     for (let i = 0, len = runs; i < len; i++) {
       log('Creating report..')
       // eslint-disable-next-line no-await-in-loop -- we want to run in serie
-      const result = await runLighthouse(
-        `http://localhost:${PORT}`,
-        chrome.port
-      )
+      const result = await lighthouse(`http://localhost:${PORT}`, {
+        // throttlingMethod: 'simulate',
+        port: chrome.port,
+      })
       if (result) {
         report.push(result.lhr)
       }

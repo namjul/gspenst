@@ -2,7 +2,8 @@ import type { RunnerResult, Flags } from 'lighthouse/types/externs'
 declare module 'lighthouse' {
   function lighthouse(
     url: string,
-    opts: Flags
+    flags: Flags,
+    configJson?: {}
   ): Promise<RunnerResult | undefined>
   export default lighthouse
   export type { RunnerResult, Flags }
