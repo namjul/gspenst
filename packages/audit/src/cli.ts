@@ -288,21 +288,22 @@ async function main(argv: Argv) {
     const runs = process.argv.includes('--runs') ? argv.runs : 1
     const report: Array<LighthouseResult> = []
 
-    const chrome = await launchChrome({ headless: argv.headless })
-
     for (let i = 0, len = runs; i < len; i++) {
       log('Creating report..')
-      // eslint-disable-next-line no-await-in-loop -- we want to run in serie
+      /* eslint-disable no-await-in-loop -- should run in serie */
+      const chrome = await launchChrome({ headless: argv.headless })
       const result = await lighthouse(`http://localhost:${PORT}`, {
-        // throttlingMethod: 'simulate',
+        throttlingMethod: 'simulate', // 'devtools'
         port: chrome.port,
       })
+      await chrome.kill()
+      /* eslint-enable */
+
       if (result) {
         report.push(result.lhr)
       }
     }
 
-    await chrome.kill()
     await httpTerminator.terminate()
 
     saveReports(report)
