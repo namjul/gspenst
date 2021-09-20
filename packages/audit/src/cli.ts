@@ -1,10 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import http from 'http'
-import { spawnSync } from 'child_process'
 import clipboardy from 'clipboardy'
-import { createHttpTerminator } from 'http-terminator'
-import handler from 'serve-handler'
 import lighthouse from 'lighthouse'
 import type { RunnerResult } from 'lighthouse'
 import { computeMedianRun } from 'lighthouse/lighthouse-core/lib/median-run'
@@ -13,17 +9,19 @@ import yargs from 'yargs/yargs'
 import glob from 'glob'
 import { table } from 'table'
 
-// import lhDesktopConfig from 'lighthouse/lighthouse-core/config/lr-desktop-config'
-// import lhMobileConfig from 'lighthouse/lighthouse-core/config/lr-mobile-config'
+// import desktopConfig from 'lighthouse/lighthouse-core/config/lr-desktop-config'
+// import mobileConfig from 'lighthouse/lighthouse-core/config/lr-mobile-config'
+// import perfConfig from 'lighthouse/lighthouse-core/config/perf-config'
 
 const _argv = yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
   .options({
+    url: { type: 'string', default: 'http://localhost:5000' },
     threshold: { type: 'number', default: 2 },
     // TODO rename from/to
     from: { type: 'string' },
     to: { type: 'string' },
     runs: { type: 'number', default: 5 },
-    outDir: { type: 'string', default: '.audits' },
+    outDir: { type: 'string' },
     table: { type: 'boolean', default: false },
     headless: { type: 'boolean', default: true },
   }).argv
@@ -33,7 +31,6 @@ type LighthouseResult = RunnerResult['lhr']
 type AuditResult = LighthouseResult['audits']['x']
 type Path = string
 
-const PORT = 34171
 let workingDir: string, dirName: string
 
 async function launchChrome({ headless }: { headless: boolean }) {
@@ -47,15 +44,15 @@ async function launchChrome({ headless }: { headless: boolean }) {
   })
 }
 
-// function createDirNameFromUrl(url: string) {
-//   const urlObj = new URL(url)
-//   let dirName = urlObj.host.replace('www.', '')
-//
-//   if (urlObj.pathname !== '/') {
-//     dirName = `${dirName}${urlObj.pathname.replace(/\//g, '_')}`
-//   }
-//   return dirName
-// }
+function createDirNameFromUrl(url: string) {
+  const urlObj = new URL(url)
+  let _dirName = urlObj.host.replace('www.', '')
+
+  if (urlObj.pathname !== '/') {
+    _dirName = `${_dirName}${urlObj.pathname.replace(/\//g, '_')}`
+  }
+  return _dirName
+}
 
 function createLighthouseViewerURL(report: LighthouseResult) {
   const lighthouseViewerObject = { lhr: report }
@@ -238,8 +235,10 @@ function getReportPaths() {
 }
 
 async function main(argv: Argv) {
+  const _dirName = argv.outDir ?? createDirNameFromUrl(argv.url)
+
   workingDir = path.resolve(String(argv._[0] || './'))
-  dirName = path.resolve(workingDir, argv.outDir)
+  dirName = path.resolve(workingDir, _dirName)
 
   const reportPaths = getReportPaths()
   let fromReport: LighthouseResult | undefined = getReport(reportPaths[1])
@@ -247,7 +246,7 @@ async function main(argv: Argv) {
 
   if (argv.to) {
     workingDir = path.resolve(path.dirname(argv.to), '../')
-    dirName = path.resolve(workingDir, argv.outDir)
+    dirName = path.resolve(workingDir, _dirName)
 
     toReport = getReport(argv.to)
     fromReport = argv.from ? getReport(argv.from) : fromReport
@@ -255,37 +254,6 @@ async function main(argv: Argv) {
     if (!fs.existsSync(dirName)) {
       fs.mkdirSync(dirName)
     }
-
-    let staticFolder: string | undefined, cmd: string | undefined
-
-    if (fs.existsSync(path.resolve(workingDir, 'gatsby-config.js'))) {
-      log('GatsbyJS detected..')
-      staticFolder = 'public'
-      cmd = 'build'
-    } else if (fs.existsSync(path.resolve(workingDir, 'next.config.js'))) {
-      log('NextJS detected..')
-      staticFolder = 'out'
-      cmd = 'export'
-    } else {
-      console.log('Give me something to do.')
-      return process.exit(1)
-    }
-
-    if (cmd) {
-      log('Building site..')
-      spawnSync('npm', ['run', cmd])
-    }
-
-    const publicPath = path.resolve(workingDir, staticFolder)
-    const server = http.createServer((request, response) => {
-      // Details here: https://github.com/vercel/serve-handler#options
-      return handler(request, response, {
-        public: publicPath,
-      })
-    })
-    server.listen(PORT)
-
-    const httpTerminator = createHttpTerminator({ server })
 
     const runs = process.argv.includes('--runs') ? argv.runs : 1
     const report: Array<LighthouseResult> = []
@@ -295,13 +263,14 @@ async function main(argv: Argv) {
       /* eslint-disable no-await-in-loop -- should run in serie */
       const chrome = await launchChrome({ headless: argv.headless })
       const result = await lighthouse(
-        `http://localhost:${PORT}`,
+        argv.url,
         {
           throttlingMethod: 'simulate', // 'devtools'
           port: chrome.port,
         }
-        // lhMobileConfig as {}
-        // lhDesktopConfig as {}
+        // desktopConfig as {}
+        // mobileConfig as {}
+        // perfConfig as {}
       )
       await chrome.kill()
       /* eslint-enable */
@@ -310,8 +279,6 @@ async function main(argv: Argv) {
         report.push(result.lhr)
       }
     }
-
-    await httpTerminator.terminate()
 
     saveReports(report)
     log(`Saving report${report.length && 's'}..`)
