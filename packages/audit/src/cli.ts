@@ -241,10 +241,9 @@ function getReportPaths() {
       sync: true,
     })
     .sort((a, b) => {
-      return (
-        Number(new Date(path.parse(b).name.replace(/_/g, ':'))) -
-        Number(new Date(path.parse(a).name.replace(/_/g, ':')))
-      )
+      const bName = path.parse(b).base.replace('.json', '').replace(/_/g, ':')
+      const aName = path.parse(a).base.replace('.json', '').replace(/_/g, ':')
+      return Number(new Date(bName)) - Number(new Date(aName))
     })
 }
 
@@ -257,9 +256,8 @@ async function main(argv: Argv) {
     workingDir = path.resolve(path.dirname(argv.to), '../')
     dirName = path.resolve(workingDir, argv.outDir)
 
-    fromReport = argv.from
-      ? getReport(argv.from)
-      : getReport(getReportPaths()[0]) // get newest report
+    const reportPaths = getReportPaths()
+    fromReport = argv.from ? getReport(argv.from) : getReport(reportPaths[1]) // get newest report
     toReport = getReport(argv.to)
   } else {
     dirName = path.resolve(workingDir, argv.outDir)
