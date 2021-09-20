@@ -13,6 +13,9 @@ import yargs from 'yargs/yargs'
 import glob from 'glob'
 import { table } from 'table'
 
+// import lhDesktopConfig from 'lighthouse/lighthouse-core/config/lr-desktop-config'
+// import lhMobileConfig from 'lighthouse/lighthouse-core/config/lr-mobile-config'
+
 const _argv = yargs(process.argv.slice(2)) // eslint-disable-line @typescript-eslint/no-unused-expressions
   .options({
     threshold: { type: 'number', default: 2 },
@@ -291,10 +294,15 @@ async function main(argv: Argv) {
       log('Creating report..')
       /* eslint-disable no-await-in-loop -- should run in serie */
       const chrome = await launchChrome({ headless: argv.headless })
-      const result = await lighthouse(`http://localhost:${PORT}`, {
-        throttlingMethod: 'simulate', // 'devtools'
-        port: chrome.port,
-      })
+      const result = await lighthouse(
+        `http://localhost:${PORT}`,
+        {
+          throttlingMethod: 'simulate', // 'devtools'
+          port: chrome.port,
+        }
+        // lhMobileConfig as {}
+        // lhDesktopConfig as {}
+      )
       await chrome.kill()
       /* eslint-enable */
 
