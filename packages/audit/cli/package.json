@@ -1,3 +1,4 @@
 {
-  "main": "dist/gspenst-audit-cli.cjs.js"
+  "main": "dist/gspenst-audit-cli.cjs.js",
+  "module": "dist/gspenst-audit-cli.esm.js"
 }
