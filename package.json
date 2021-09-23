@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "pretest": "npm run typecheck",
     "test": "jest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "npm run typecheck --workspaces"
   },
   "commitlint": {
     "extends": [

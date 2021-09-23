@@ -7,7 +7,8 @@
   "scripts": {
     "start": "yarn run storybook",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/colors": "^0.1.7",

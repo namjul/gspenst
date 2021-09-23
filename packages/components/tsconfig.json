@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"]
+  "include": ["src"],
   "compilerOptions": {
     "paths": {
       // Emotion typedefs now point to an empty file, which unsets all declarations

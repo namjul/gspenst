@@ -4,6 +4,9 @@
   "private": true,
   "main": "dist/gspenst-audit.cjs.js",
   "bin": "./bin.js",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "babel": {
     "plugins": [
       "@babel/plugin-transform-runtime"
