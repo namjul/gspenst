@@ -1,7 +1,12 @@
+const { default: withGspenst } = require('@gspenst/next')
+
 /**
  * @type {import('next').NextConfig}
  */
-module.exports = {
+module.exports = withGspenst({
+  theme: '@gspenst/theme-minimal',
+  themeConfig: './theme.config.ts',
+})({
   // experimental: {
   //   externalDir: true,
   // },
@@ -14,4 +19,9 @@ module.exports = {
   //   return config
   // },
   reactStrictMode: true,
-}
+
+  experimental: {
+    // Prefer loading of ES Modules over CommonJS
+    esmExternals: true,
+  },
+})
