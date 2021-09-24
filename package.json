@@ -3,7 +3,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "starters/*"
+    "site"
   ],
   "scripts": {
     "build": "preconstruct build",
