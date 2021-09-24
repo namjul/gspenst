@@ -6,5 +6,3 @@ export * from './utils'
 
 export * from './lighTheme'
 export * from './darkTheme'
-
-export type { Theme } from './types'
