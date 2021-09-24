@@ -1,0 +1,15 @@
+{
+  "name": "@gspenst/next",
+  "version": "0.0.1",
+  "main": "dist/gspenst-next.cjs.js",
+  "module": "dist/gspenst-next.esm.js",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "nextra": "^1.1.0"
+  },
+  "peerDependencies": {
+    "next": "^11.1.2"
+  }
+}

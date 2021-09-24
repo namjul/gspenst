@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "paths": {
+      "nextra": ["./types/nextra.d.ts"],
+    },
+  }
+}

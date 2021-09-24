@@ -1,0 +1,18 @@
+{
+  "name": "@gspenst/theme-minimal",
+  "version": "0.0.1",
+  "main": "dist/gspenst-theme-minimal.cjs.js",
+  "module": "dist/gspenst-theme-minimal.esm.js",
+  "scripts": {
+    "typecheck": "echo \"Error: no typecheck specified\" && exit 1"
+  },
+  "dependencies": {
+    "@gspenst/components": "^0.0.1",
+    "@gspenst/next": "^0.0.1"
+  },
+  "peerDependencies": {
+    "next": "^11.1.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}
