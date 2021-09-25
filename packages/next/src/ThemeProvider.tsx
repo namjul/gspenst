@@ -8,7 +8,7 @@ import type { Theme } from '@gspenst/components'
 type ThemeChoice = 'light' | 'dark'
 
 export const useTheme = (): [ThemeChoice, () => void] => {
-  const { theme: choice = 'light', setTheme } = useNextTheme()
+  const { theme: choice, setTheme } = useNextTheme()
 
   const toggleThemeChoice = () => {
     if (choice === 'light') {
