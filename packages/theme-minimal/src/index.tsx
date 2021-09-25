@@ -7,6 +7,7 @@ import type { NextPage } from 'next'
 import type { Config } from '@gspenst/next'
 
 export type ThemeOptions = {
+  darkMode?: boolean
   head?: JSX.Element
   footer?: JSX.Element
 }
@@ -26,7 +27,7 @@ const Layout = ({
       </Head>
       <Box as="article" css={{ color: '$gray11', backgroundColor: '$gray2' }}>
         {children}
-        <ThemeSwitch />
+        {options.darkMode && <ThemeSwitch />}
         {options.footer}
       </Box>
     </React.Fragment>
