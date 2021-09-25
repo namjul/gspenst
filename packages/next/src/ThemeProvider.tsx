@@ -59,7 +59,10 @@ export const ThemeProvider = ({
       attribute="class"
       themes={themes}
       forcedTheme={choice}
-      value={{ ...(dark && { dark }), ...(light && { light }) }}
+      value={{
+        ...(dark && { dark: dark.toString() }),
+        ...(light && { light: light.toString() }),
+      }}
       enableSystem
       enableColorScheme={false}
       defaultTheme="light"
