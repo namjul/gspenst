@@ -4,7 +4,7 @@
   "main": "dist/gspenst-theme-minimal.cjs.js",
   "module": "dist/gspenst-theme-minimal.esm.js",
   "scripts": {
-    "typecheck": "echo \"Error: no typecheck specified\" && exit 1"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@gspenst/components": "^0.0.1",

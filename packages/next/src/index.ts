@@ -1,7 +1,7 @@
-import type { NextConfig } from 'next'
 import withNextra from 'nextra'
+import type { NextConfig } from 'next'
 
-export type ThemeConfig = {
+export type Config = {
   filename: string
   route: string
   meta: string

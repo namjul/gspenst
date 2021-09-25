@@ -7,9 +7,18 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@gspenst/components": "^0.0.1",
+    "next-themes": "^0.0.15",
     "nextra": "^1.1.0"
   },
   "peerDependencies": {
-    "next": "^11.1.2"
+    "next": "^11.1.2",
+    "react": "^17.0.2"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts",
+      "components.ts"
+    ]
   }
 }

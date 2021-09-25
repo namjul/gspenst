@@ -33,6 +33,7 @@ export const {
 
 export type CSS = Stitches.CSS<typeof stitches>
 export type CSSProps = { css?: CSS }
+export type Theme = ReturnType<typeof createTheme>
 
 export const lightTheme = createTheme(LIGHT_THEME, lightThemeConfig)
 export const darkTheme = createTheme(DARK_THEME, darkThemeConfig)
