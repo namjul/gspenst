@@ -12,7 +12,7 @@ export const ThemeSwitch = React.forwardRef<
   const [choice, toggle] = useTheme()
 
   const isLight = choice === 'light'
-  const icon = isLight ? <div>LightMode</div> : <div>DarkMode</div>
+  const icon = isLight ? 'LightMode' : 'DarkMode'
   const title = isLight ? 'Use dark theme' : 'Use light theme'
 
   return (
