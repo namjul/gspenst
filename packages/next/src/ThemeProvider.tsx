@@ -60,6 +60,9 @@ export const ThemeProvider = ({
       themes={themes}
       forcedTheme={choice}
       value={{ ...(dark && { dark }), ...(light && { light }) }}
+      enableSystem
+      enableColorScheme={false}
+      defaultTheme="light"
       {...props}
     />
   )
