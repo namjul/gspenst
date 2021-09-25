@@ -32,7 +32,7 @@ type ThemeProviderProps = {
    */
   dark?: Theme
   /**
-   * Force the theme choice, if null use browser preference
+   * Force the theme choice
    */
   choice?: ThemeChoice
   /**
