@@ -65,7 +65,6 @@ export const ThemeProvider = ({
       }}
       enableSystem
       enableColorScheme={false}
-      defaultTheme="light"
       {...props}
     />
   )
