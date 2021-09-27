@@ -1,11 +1,8 @@
-import * as React from 'react'
+import type { ElementType } from 'react'
 import { isRenderProp } from '../utils/isRenderProp'
 import { HTMLProps, Options } from './types'
 
-export function createElement(
-  Type: React.ElementType,
-  props: HTMLProps<Options>
-) {
+export function createElement(Type: ElementType, props: HTMLProps<Options>) {
   const { as: As, children, wrapElement, ...rest } = props
   let element: JSX.Element
   if (As && typeof As !== 'string') {

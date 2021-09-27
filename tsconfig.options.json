@@ -9,7 +9,7 @@
     "noEmit": true, //
     "skipLibCheck": true, // Skip type checking of declaration files.
     "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'.
-    "jsx": "react", // Specify what JSX code is generated.
+    "jsx": "react-jsx", // Specify what JSX code is generated.
     "resolveJsonModule": true, // Allows importing modules with a ‘.json’ extension. This includes generating a type for the import based on the static JSON shape.
     "isolatedModules": true, // Setting the isolatedModules flag tells TypeScript to warn you if you write certain code that can’t be correctly interpreted by a single-file transpilation process (eg babel).
     "lib": [

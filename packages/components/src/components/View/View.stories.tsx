@@ -1,4 +1,4 @@
-import React from 'react'
+import type { FC } from 'react'
 import { Meta } from '@storybook/react'
 import { View } from '.'
 
@@ -9,9 +9,9 @@ const meta: Meta = {
 
 export default meta
 
-export const Default: React.FC = () => <View>This is a View</View>
+export const Default: FC = () => <View>This is a View</View>
 
-export const CSSProp: React.FC = () => (
+export const CSSProp: FC = () => (
   <View css={{ backgroundColor: 'blue', color: 'white', padding: 12 }}>
     This is a View
   </View>

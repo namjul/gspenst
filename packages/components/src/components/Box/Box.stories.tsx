@@ -1,4 +1,4 @@
-import React from 'react'
+import type { FC } from 'react'
 import { Meta } from '@storybook/react'
 import { Box } from '.'
 
@@ -9,4 +9,4 @@ const meta: Meta = {
 
 export default meta
 
-export const Default: React.FC = () => <Box>I am a Box</Box>
+export const Default: FC = () => <Box>I am a Box</Box>

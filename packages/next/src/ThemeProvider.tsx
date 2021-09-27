@@ -1,4 +1,4 @@
-import * as React from 'react'
+import type { ReactNode } from 'react'
 import {
   ThemeProvider as NextThemeProvider,
   useTheme as useNextTheme,
@@ -38,7 +38,7 @@ type ThemeProviderProps = {
   /**
    * Elements to be themed
    */
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 export const ThemeProvider = ({

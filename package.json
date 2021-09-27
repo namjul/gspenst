@@ -59,7 +59,11 @@
       "kentcdodds/react",
       "kentcdodds/jest",
       "kentcdodds/jsx-a11y"
-    ]
+    ],
+    "rules": {
+      "react/jsx-uses-react": "off",
+      "react/react-in-jsx-scope": "off"
+    }
   },
   "jest": {
     "preset": "ts-jest",

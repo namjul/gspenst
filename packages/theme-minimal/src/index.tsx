@@ -1,4 +1,3 @@
-import * as React from 'react'
 import Head from 'next/head'
 import { Box, lightTheme, darkTheme } from '@gspenst/components'
 import { ThemeProvider, ThemeSwitch } from '@gspenst/next/components'
@@ -20,7 +19,7 @@ const Layout = ({
   children?: ReactNode | undefined
 }) => {
   return (
-    <React.Fragment>
+    <>
       <Head>
         <title>title placeholder</title>
         {options.head}
@@ -30,7 +29,7 @@ const Layout = ({
         {options.darkMode && <ThemeSwitch />}
         {options.footer}
       </Box>
-    </React.Fragment>
+    </>
   )
 }
 
