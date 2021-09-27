@@ -1,32 +1,36 @@
 {
   "compilerOptions": {
-    "target": "es6", // Compile to es6 and not below
-    "module": "esnext", // Compile to es modules
-    "moduleResolution": "node", // Use nodejs style resolution
-    "strict": true, // Enable all strict type checking options
-    "noUnusedLocals": true, // Enable error reporting when a local variables aren't read.
-    "pretty": true, // Enable color and formatting in output to make compiler errors easier to read
-    "noEmit": true, //
-    "skipLibCheck": true, // Skip type checking of declaration files.
-    "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'.
-    "jsx": "react-jsx", // Specify what JSX code is generated.
-    "resolveJsonModule": true, // Allows importing modules with a ‘.json’ extension. This includes generating a type for the import based on the static JSON shape.
-    "isolatedModules": true, // Setting the isolatedModules flag tells TypeScript to warn you if you write certain code that can’t be correctly interpreted by a single-file transpilation process (eg babel).
+
+    // Basic Options
+    "target": "es6",                          // Compile to es6 and not below
+    "module": "esnext",                       // Compile to es modules
+    "strict": true,                           // Enable all strict type checking options
+    "noUnusedLocals": true,                   // Enable error reporting when a local variables aren't read.
+    "pretty": true,                           // Enable color and formatting in output to make compiler errors easier to read
+    "noEmit": true,                           // This uses babel for compilation
+    "skipLibCheck": true,                     // Skip type checking of declaration files.
+    "jsx": "react-jsx",                       // Specify what JSX code is generated.
+    "isolatedModules": true,                  // Setting the isolatedModules flag tells TypeScript to warn you if you write certain code that can’t be correctly interpreted by a single-file transpilation process (eg babel).
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
-    ], // types to be included
-    "forceConsistentCasingInFileNames": true, // When this option is set, TypeScript will issue an error if a program tries to include a file by a casing different from the casing on disk.
+    ],                                        // types to be included
 
-    // "strictFunctionTypes": true,
-    // "strictNullChecks": true,
-    // "strictPropertyInitialization": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noImplicitAny": true,
-    // "noImplicitReturns": true,
-    // "noUnusedParameters": true
-    // "forceConsistentCasingInFileNames": true,
+    // Module Resolution Options
+    "moduleResolution": "node",               // Use nodejs style resolution
+    "resolveJsonModule": true,                // Allows importing modules with a ‘.json’ extension. This includes generating a type for the import based on the static JSON shape.
+    "esModuleInterop": true,                  // Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'.
+    "forceConsistentCasingInFileNames": true, // When this option is set, TypeScript will issue an error if a program tries to include a file by a casing different from the casing on disk. (makes it case-sensitive)
+
+    // Typechecking Options
+    /* "strictFunctionTypes": true, */
+    /* "strictNullChecks": true, */
+    /* "strictPropertyInitialization": true, */
+    /* "noFallthroughCasesInSwitch": true, */
+    /* "noImplicitAny": true, */
+    /* "noImplicitReturns": true, */
+    /* "noUnusedParameters": true */
 
     /* experimentalDecorators: true, */
     /* emitDecoratorMetadata: true, */
