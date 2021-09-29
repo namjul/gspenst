@@ -1,19 +1,26 @@
-import { getOptions } from 'loader-utils';
+import type { LoaderDefinition } from 'webpack'
 
 /* eslint-disable @typescript-eslint/no-invalid-this */
 
 // lookup: https://webpack.js.org/api/loaders/
-var loader = function loader(source) {
+
+type Options = {}
+
+const loader: LoaderDefinition<Options> = function loader(source) {
   // Tells the loader-runner that the loader intends to call back asynchronously. Returns this.callback.
-  var callback = this.async(); // make this loader non cacheable
+  const callback = this.async()
 
-  this.cacheable(false); // get options passed to loader
+  // make this loader non cacheable
+  this.cacheable(false)
 
-  var options = getOptions(this);
-  console.log(options); // return value
+  // get options passed to loader
+  const options = this.getOptions()
 
-  callback === null || callback === void 0 ? void 0 : callback(null, source);
-  return undefined;
-};
+  console.log(options)
 
-export { loader as default };
+  callback(null, source)
+
+  return undefined
+}
+
+export default loader

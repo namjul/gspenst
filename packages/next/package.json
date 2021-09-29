@@ -10,10 +10,11 @@
     "@gspenst/components": "^0.0.1",
     "@mdx-js/loader": "^2.0.0-next.9",
     "@mdx-js/mdx": "^2.0.0-next.9",
-    "@types/loader-utils": "^2.0.3",
-    "loader-utils": "^2.0.0",
     "next-themes": "^0.0.15",
     "remark-gfm": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/webpack": "^5.0.0"
   },
   "peerDependencies": {
     "next": "^11.1.2",
