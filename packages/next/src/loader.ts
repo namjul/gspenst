@@ -6,6 +6,8 @@ import type { LoaderDefinition } from 'webpack'
 
 type Options = {}
 
+const dynamicPage = /\[.*\]/
+
 const loader: LoaderDefinition<Options> = function loader(source) {
   // Tells the loader-runner that the loader intends to call back asynchronously. Returns this.callback.
   const callback = this.async()
@@ -16,7 +18,51 @@ const loader: LoaderDefinition<Options> = function loader(source) {
   // get options passed to loader
   const options = this.getOptions()
 
-  console.log(options)
+  const { resourcePath } = this
+
+  const filename = resourcePath.slice(resourcePath.lastIndexOf('/') + 1)
+
+  console.log(options, filename)
+
+  const prefix = `
+# Prefix
+`
+
+  let suffix = `
+# Suffix
+`
+
+  if (
+    dynamicPage.test(filename) &&
+    (source.includes('getStaticPaths') || source.includes('getStaticProps'))
+  ) {
+    const staticFunctions = `
+export async function getStaticPaths() {
+  const paths = { paths: [
+    {
+      params: { slug: ['1'] },
+    },
+    {
+      params: { slug: ['2'] },
+    },
+    {
+      params: { slug: ['3'] },
+    },
+  ], fallback: false };
+  console.log(JSON.stringify(paths, null, 2));
+  return paths
+}
+
+export async function getStaticProps({ params }) {
+  const props = { params, foo: 'bar' }
+  return { props };
+}
+`
+    suffix = `${suffix}${staticFunctions}`
+  }
+
+  // Add imports and exports to the source
+  source = `${prefix}\n${source}\n${suffix}`
 
   callback(null, source)
 
