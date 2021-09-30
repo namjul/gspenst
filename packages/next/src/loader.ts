@@ -34,9 +34,18 @@ const loader: LoaderDefinition<Options> = function loader(source) {
 
   if (
     dynamicPage.test(filename) &&
-    (source.includes('getStaticPaths') || source.includes('getStaticProps'))
+    !['getStaticPaths', 'getStaticProps'].some((condition) =>
+      source.includes(condition)
+    )
   ) {
-    const staticFunctions = `
+    const getStaticPropsPart = `
+export async function getStaticProps({ params }) {
+  const props = { params, foo: 'bar' }
+  return { props };
+}
+`
+
+    const getStaticPathsPart = `
 export async function getStaticPaths() {
   const paths = { paths: [
     {
@@ -52,16 +61,11 @@ export async function getStaticPaths() {
   console.log(JSON.stringify(paths, null, 2));
   return paths
 }
-
-export async function getStaticProps({ params }) {
-  const props = { params, foo: 'bar' }
-  return { props };
-}
 `
-    suffix = `${suffix}${staticFunctions}`
+
+    suffix = suffix.concat(getStaticPropsPart, getStaticPathsPart)
   }
 
-  // Add imports and exports to the source
   source = `${prefix}\n${source}\n${suffix}`
 
   callback(null, source)
