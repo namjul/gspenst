@@ -1,10 +1,10 @@
+import path from 'path'
 import type { LoaderDefinition } from 'webpack'
+import type { Options, Config } from './types'
 
 /* eslint-disable @typescript-eslint/no-invalid-this */
 
 // lookup: https://webpack.js.org/api/loaders/
-
-type Options = {}
 
 const dynamicPage = /\[.*\]/
 
@@ -17,14 +17,26 @@ const loader: LoaderDefinition<Options> = function loader(source) {
 
   // get options passed to loader
   const options = this.getOptions()
+  let { theme, themeConfig } = options
+
+  // Relative path instead of a package name
+  if (theme.startsWith('.') || theme.startsWith('/')) {
+    theme = path.resolve(theme)
+  }
+  if (themeConfig) {
+    themeConfig = path.resolve(themeConfig)
+  }
 
   const { resourcePath } = this
-
   const filename = resourcePath.slice(resourcePath.lastIndexOf('/') + 1)
 
+  const config: Config = {}
   console.log(options, filename)
 
   const prefix = `
+import withTheme from '${theme}'
+${themeConfig ? `import themeConfig from '${themeConfig}'` : ''}
+
 # Prefix
 `
 
@@ -38,14 +50,14 @@ const loader: LoaderDefinition<Options> = function loader(source) {
       source.includes(condition)
     )
   ) {
-    const getStaticPropsPart = `
+    const getStaticProps = `
 export async function getStaticProps({ params }) {
   const props = { params, foo: 'bar' }
   return { props };
 }
 `
 
-    const getStaticPathsPart = `
+    const getStaticPaths = `
 export async function getStaticPaths() {
   const paths = { paths: [
     {
@@ -63,8 +75,18 @@ export async function getStaticPaths() {
 }
 `
 
-    suffix = suffix.concat(getStaticPropsPart, getStaticPathsPart)
+    suffix = suffix.concat(getStaticProps, getStaticPaths)
   }
+
+  const layout = `
+export default function TemplatePage (props) {
+    return withTheme(${JSON.stringify(config)}, ${
+    themeConfig ? 'themeConfig' : 'null'
+  })(props)
+}
+`
+
+  suffix = suffix.concat(layout)
 
   source = `${prefix}\n${source}\n${suffix}`
 

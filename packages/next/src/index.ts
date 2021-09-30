@@ -1,18 +1,9 @@
 import type { NextConfig } from 'next'
 import type { Configuration } from 'webpack'
-import type { Options as MDXOptions } from '@mdx-js/mdx'
 import remarkGfm from 'remark-gfm'
+import type { Options, Config, RemarkPlugin } from './types'
 
-export type Config = {
-  filename: string
-  route: string
-  meta: string
-  pageMap: string
-}
-
-type Unpacked<T> = T extends Array<infer U> ? U : T
-type Options = { theme: string; themeConfig: string; mdxOptions?: MDXOptions }
-type RemarkPlugin = Unpacked<Exclude<MDXOptions['remarkPlugins'], undefined>>
+export type { Options, Config }
 
 const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 const markdownExtensions = ['md', 'mdx']
@@ -20,7 +11,7 @@ const markdownExtensionTest = /\.mdx?$/
 
 export default (...args: Array<string | Options>) =>
   (nextConfig: NextConfig = {}): NextConfig => {
-    const pkgConfig =
+    const options =
       typeof args[0] === 'string'
         ? {
             theme: args[0],
@@ -44,15 +35,15 @@ export default (...args: Array<string | Options>) =>
             {
               loader: '@mdx-js/loader',
               options: {
-                ...pkgConfig.mdxOptions,
-                remarkPlugins: (
-                  pkgConfig.mdxOptions?.remarkPlugins ?? []
-                ).concat([remarkGfm as RemarkPlugin]),
+                ...options.mdxOptions,
+                remarkPlugins: (options.mdxOptions?.remarkPlugins ?? []).concat(
+                  [remarkGfm as RemarkPlugin]
+                ),
               },
             },
             {
               loader: '@gspenst/next/loader',
-              options: { ...pkgConfig },
+              options: { ...options },
             },
           ],
         })
