@@ -1,4 +1,3 @@
-
 /*
 *
     gray3?: string
@@ -91,5 +90,5 @@ export const colors = {
   black: '#000000',
 
   // Typography
-  text: '#3b3b3b',
+  text: '$gray11',
 }
