@@ -7,13 +7,13 @@
   ],
   "scripts": {
     "build": "preconstruct build",
-    "watch": "preconstruct watch",
     "clean": "rimraf packages/*/dist",
-    "prepare": "husky install && preconstruct dev",
     "lint": "eslint .",
+    "prepare": "husky install && preconstruct dev",
     "pretest": "npm run typecheck",
     "test": "jest",
-    "typecheck": "npm run typecheck --workspaces"
+    "typecheck": "npm run typecheck --workspaces",
+    "watch": "preconstruct watch"
   },
   "commitlint": {
     "extends": [
@@ -63,7 +63,26 @@
     "rules": {
       "react/jsx-uses-react": "off",
       "react/react-in-jsx-scope": "off"
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.ts?(x)"
+        ],
+        "parser": "@typescript-eslint/parser",
+        "parserOptions": {
+          "project": [
+            "./tsconfig.json",
+            "./packages/*/tsconfig.json",
+            "./starters/*/tsconfig.json"
+          ]
+        },
+        "plugins": [
+          "@typescript-eslint"
+        ]
+      }
+    ],
+    "root": true
   },
   "jest": {
     "preset": "ts-jest",

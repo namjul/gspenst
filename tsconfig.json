@@ -1,9 +1,4 @@
 {
   "extends": "./tsconfig.options.json",
-  "include": ["./packages", "./starters"],
-  "exclude": [
-    "node_modules",
-    "./packages/*/dist",
-    "./packages/*/node_modules"
-  ],
+  "include": [".eslintrc.js"]
 }
