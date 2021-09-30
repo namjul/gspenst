@@ -1,27 +1,20 @@
 const { default: withGspenst } = require('@gspenst/next')
 
 /**
- * @type {import('next').NextConfig}
+ * @type {import('@gspenst/next')}
  */
 module.exports = withGspenst({
   theme: '@gspenst/theme-minimal',
   themeConfig: './theme.config.ts',
+  sources: {
+    ghost: true,
+    local: true,
+  },
 })({
-  // experimental: {
-  //   externalDir: true,
-  // },
-  // webpack: (config) => {
-  //   config.module.rules.push({
-  //     test: /\.ts?$/,
-  //     use: ['ts-loader'],
-  //   })
-  //
-  //   return config
-  // },
   reactStrictMode: true,
-
   experimental: {
     // Prefer loading of ES Modules over CommonJS
     esmExternals: true,
+    // externalDir: true,
   },
 })
