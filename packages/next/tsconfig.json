@@ -1,4 +1,10 @@
 {
   "extends": "../../tsconfig.options.json",
-  "include": ["src"]
+  "include": ["src"],
+  "compilerOptions": {
+    "paths": {
+      "sourcebit": ["./types/sourcebit.d.ts"],
+      "sourcebit-target-next": ["./types/sourcebit-target-next.d.ts"]
+    }
+  }
 }

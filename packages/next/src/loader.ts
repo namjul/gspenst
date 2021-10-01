@@ -34,7 +34,7 @@ const loader: LoaderDefinition<Options> = function loader(source) {
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const config: Config = {}
+  const config: Config = { filename }
   console.log(options, filename, param)
 
   let prefix = ``
@@ -42,6 +42,7 @@ const loader: LoaderDefinition<Options> = function loader(source) {
   let suffix = ``
 
   const imports = `
+import { sourcebitDataClient } from "sourcebit-target-next";
 import withTheme from '${theme}'
 ${themeConfig ? `import themeConfig from '${themeConfig}'` : ''}
 `
@@ -56,29 +57,19 @@ ${themeConfig ? `import themeConfig from '${themeConfig}'` : ''}
   ) {
     const getStaticProps = `
 export async function getStaticProps({ params }) {
-  const props = { params, foo: 'bar' }
+  const pagePath = '/' + (params.${param}?.join('/') ?? '')
+  console.log('pagePath', pagePath);
+  const props = await sourcebitDataClient.getStaticPropsForPageAtPath(pagePath);
   return { props };
 }
 `
 
     const getStaticPaths = `
 export async function getStaticPaths() {
-  const paths = { paths: [
-    {
-      params: { ${param}: [] },
-    },
-    {
-      params: { ${param}: ['1'] },
-    },
-    {
-      params: { ${param}: ['2'] },
-    },
-    {
-      params: { ${param}: ['3'] },
-    },
-  ], fallback: false };
-  console.log(JSON.stringify(paths, null, 2));
-  return paths
+  const paths = await sourcebitDataClient.getStaticPaths();
+  const result = { paths, fallback: false };
+  console.log(JSON.stringify(result, null, 2));
+  return result
 }
 `
 

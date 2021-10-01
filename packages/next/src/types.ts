@@ -13,7 +13,7 @@ export type RemarkPlugin = Unpacked<
 >
 
 export type Config = {
-  // filename: string
+  filename: string
   // route: string
   // meta: string
   // pageMap: string

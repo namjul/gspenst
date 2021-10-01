@@ -1,6 +1,11 @@
+import sourcebit from 'sourcebit'
+import remarkGfm from 'remark-gfm'
+// import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
+
 import type { NextConfig } from 'next'
 import type { Configuration } from 'webpack'
-import remarkGfm from 'remark-gfm'
+import type { SourcebitConfig, SourcebitPlugin } from 'sourcebit'
+import type { SourcebitNextOptions } from 'sourcebit-target-next'
 import type { Options, Config, RemarkPlugin } from './types'
 
 export type { Options, Config }
@@ -10,7 +15,11 @@ const markdownExtensions = ['md', 'mdx']
 const markdownExtensionTest = /\.mdx?$/
 
 export default (...args: Array<string | Options>) =>
-  (nextConfig: NextConfig = {}): NextConfig => {
+  (nextConfig: NextConfig = {}) =>
+  (
+    phase: string,
+    { defaultConfig }: { defaultConfig: NextConfig }
+  ): NextConfig => {
     const options =
       typeof args[0] === 'string'
         ? {
@@ -24,7 +33,65 @@ export default (...args: Array<string | Options>) =>
       ...markdownExtensions,
     ]
 
+    // type SampleObject = {
+    //   userId: string
+    //   id: string
+    //   title: string
+    //   body: string
+    // }
+
+    const sampleSourcePlugin: SourcebitPlugin = {
+      module: require('sourcebit-sample-plugin'),
+      options: {
+        titleCase: false,
+        // watch: phase == PHASE_DEVELOPMENT_SERVER,
+      },
+    }
+    const targetPlugin: SourcebitPlugin<SourcebitNextOptions> = {
+      module: require('sourcebit-target-next'),
+      options: {
+        pages: [
+          {
+            path: '/posts/{id}',
+            predicate: (object) => {
+              if (object.__metadata.modelName === 'sample-data') {
+                return true
+              }
+              return false
+            },
+          },
+          {
+            path: '/posts',
+            predicate: (object) => {
+              if (object.id === 97) {
+                console.log('FOUND 97', object)
+                return true
+              }
+              return false
+            },
+          },
+          {
+            path: '/',
+            predicate: (object) => {
+              if (object.id === 97) {
+                console.log('FOUND 97', object)
+                return true
+              }
+              return false
+            },
+          },
+        ],
+      },
+    }
+
+    const sourcebitConfig: SourcebitConfig = {
+      plugins: [sampleSourcePlugin, targetPlugin],
+    }
+
+    sourcebit.fetch(sourcebitConfig)
+
     return {
+      ...defaultConfig,
       ...nextConfig,
       pageExtensions,
       webpack(config: Configuration, context) {

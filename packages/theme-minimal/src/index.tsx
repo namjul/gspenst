@@ -38,10 +38,17 @@ const defaultOptions = {}
 export default (config: Config, opts: ThemeOptions) => {
   const options = { ...defaultOptions, ...opts }
 
-  const Page: NextPage = (props) => {
+  const Page: NextPage<{ page: { [field: string]: string | number } }> = (
+    props
+  ) => {
+    const { page } = props
     return (
       <ThemeProvider light={lightTheme} dark={darkTheme}>
-        <Layout options={options} {...config} {...props} />
+        <Layout options={options} {...config} {...props}>
+          <h1>{page.title}</h1>
+          <h2>{page.id}</h2>
+          <section>{page.body}</section>
+        </Layout>
       </ThemeProvider>
     )
   }
