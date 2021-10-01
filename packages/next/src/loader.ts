@@ -1,6 +1,7 @@
 import path from 'path'
 import type { LoaderDefinition } from 'webpack'
 import type { Options, Config } from './types'
+// import { withRemoteDataUpdates } from 'sourcebit-target-next/with-remote-data-updates';
 
 /* eslint-disable @typescript-eslint/no-invalid-this */
 
@@ -57,8 +58,8 @@ ${themeConfig ? `import themeConfig from '${themeConfig}'` : ''}
   ) {
     const getStaticProps = `
 export async function getStaticProps({ params }) {
+  console.log('Page ${filename} getStaticProps, params: ', params);
   const pagePath = '/' + (params.${param}?.join('/') ?? '')
-  console.log('pagePath', pagePath);
   const props = await sourcebitDataClient.getStaticPropsForPageAtPath(pagePath);
   return { props };
 }
@@ -66,10 +67,10 @@ export async function getStaticProps({ params }) {
 
     const getStaticPaths = `
 export async function getStaticPaths() {
+  console.log('Page ${filename} getStaticPaths');
   const paths = await sourcebitDataClient.getStaticPaths();
-  const result = { paths, fallback: false };
-  console.log(JSON.stringify(result, null, 2));
-  return result
+  console.log(JSON.stringify(paths, null, 2));
+  return { paths, fallback: false };
 }
 `
 

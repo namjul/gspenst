@@ -28,6 +28,8 @@ export default (...args: Array<string | Options>) =>
           }
         : args[0]
 
+    // const isDev = phase === PHASE_DEVELOPMENT_SERVER
+
     const pageExtensions = nextConfig.pageExtensions ?? [
       ...defaultExtensions,
       ...markdownExtensions,
@@ -44,7 +46,7 @@ export default (...args: Array<string | Options>) =>
       module: require('sourcebit-sample-plugin'),
       options: {
         titleCase: false,
-        // watch: phase == PHASE_DEVELOPMENT_SERVER,
+        // watch: isDev
       },
     }
     const targetPlugin: SourcebitPlugin<SourcebitNextOptions> = {
@@ -52,7 +54,7 @@ export default (...args: Array<string | Options>) =>
       options: {
         pages: [
           {
-            path: '/posts/{id}',
+            path: '/{id}',
             predicate: (object) => {
               if (object.__metadata.modelName === 'sample-data') {
                 return true
@@ -60,27 +62,17 @@ export default (...args: Array<string | Options>) =>
               return false
             },
           },
-          {
-            path: '/posts',
-            predicate: (object) => {
-              if (object.id === 97) {
-                console.log('FOUND 97', object)
-                return true
-              }
-              return false
-            },
-          },
-          {
-            path: '/',
-            predicate: (object) => {
-              if (object.id === 97) {
-                console.log('FOUND 97', object)
-                return true
-              }
-              return false
-            },
-          },
         ],
+        commonProps: {
+          posts: {
+            predicate: (object) => {
+              if (object.__metadata.modelName === 'sample-data') {
+                return true
+              }
+              return false
+            },
+          },
+        },
       },
     }
 
