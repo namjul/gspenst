@@ -7,7 +7,7 @@ import type { Options, Config } from './types'
 // lookup: https://webpack.js.org/api/loaders/
 
 const dynamicPage = /\[.*\]/
-const paramRegExp = /\[\[?\.*(.*)\]\]?/ // match dynamic routes
+const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
 
 const loader: LoaderDefinition<Options> = function loader(source) {
   // Tells the loader-runner that the loader intends to call back asynchronously. Returns this.callback.
@@ -37,16 +37,16 @@ const loader: LoaderDefinition<Options> = function loader(source) {
   const config: Config = {}
   console.log(options, filename, param)
 
-  const prefix = `
+  let prefix = ``
+
+  let suffix = ``
+
+  const imports = `
 import withTheme from '${theme}'
 ${themeConfig ? `import themeConfig from '${themeConfig}'` : ''}
-
-# Prefix
 `
 
-  let suffix = `
-# Suffix
-`
+  prefix = prefix.concat(imports)
 
   if (
     dynamicPage.test(filename) &&
