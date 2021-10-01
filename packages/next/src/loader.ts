@@ -7,6 +7,7 @@ import type { Options, Config } from './types'
 // lookup: https://webpack.js.org/api/loaders/
 
 const dynamicPage = /\[.*\]/
+const slugPattern = /\[\[?\.*(.*)\]\]?/ // match dynamic routes
 
 const loader: LoaderDefinition<Options> = function loader(source) {
   // Tells the loader-runner that the loader intends to call back asynchronously. Returns this.callback.
@@ -29,9 +30,12 @@ const loader: LoaderDefinition<Options> = function loader(source) {
 
   const { resourcePath } = this
   const filename = resourcePath.slice(resourcePath.lastIndexOf('/') + 1)
+  const slug = (
+    (slugPattern.exec(filename) ?? []) as Array<string | undefined>
+  )[1]
 
   const config: Config = {}
-  console.log(options, filename)
+  console.log(options, filename, slug)
 
   const prefix = `
 import withTheme from '${theme}'
@@ -61,13 +65,16 @@ export async function getStaticProps({ params }) {
 export async function getStaticPaths() {
   const paths = { paths: [
     {
-      params: { slug: ['1'] },
+      params: { ${slug}: [] },
     },
     {
-      params: { slug: ['2'] },
+      params: { ${slug}: ['1'] },
     },
     {
-      params: { slug: ['3'] },
+      params: { ${slug}: ['2'] },
+    },
+    {
+      params: { ${slug}: ['3'] },
     },
   ], fallback: false };
   console.log(JSON.stringify(paths, null, 2));
