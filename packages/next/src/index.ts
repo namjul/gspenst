@@ -1,6 +1,5 @@
 import sourcebit from 'sourcebit'
 import remarkGfm from 'remark-gfm'
-// import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
 
 import type { NextConfig } from 'next'
 import type { Configuration } from 'webpack'
@@ -15,11 +14,7 @@ const markdownExtensions = ['md', 'mdx']
 const markdownExtensionTest = /\.mdx?$/
 
 export default (...args: Array<string | Options>) =>
-  (nextConfig: NextConfig = {}) =>
-  (
-    phase: string,
-    { defaultConfig }: { defaultConfig: NextConfig }
-  ): NextConfig => {
+  (nextConfig: NextConfig = {}): NextConfig => {
     const options =
       typeof args[0] === 'string'
         ? {
@@ -27,8 +22,6 @@ export default (...args: Array<string | Options>) =>
             themeConfig: args[1] as string,
           }
         : args[0]
-
-    // const isDev = phase === PHASE_DEVELOPMENT_SERVER
 
     const pageExtensions = nextConfig.pageExtensions ?? [
       ...defaultExtensions,
@@ -83,7 +76,6 @@ export default (...args: Array<string | Options>) =>
     sourcebit.fetch(sourcebitConfig)
 
     return {
-      ...defaultConfig,
       ...nextConfig,
       pageExtensions,
       webpack(config: Configuration, context) {
