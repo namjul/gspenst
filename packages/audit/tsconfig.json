@@ -1,11 +1,4 @@
 {
-  "extends": "../../tsconfig.options.json",
-  "include": ["src"],
-  "compilerOptions": {
-    "paths": {
-      // lighthouse currently does not expose types https://github.com/GoogleChrome/lighthouse/issues/1773
-      "lighthouse/lighthouse-core/lib/median-run": ["./types/lighthouse.d.ts"],
-      "lighthouse": ["./types/lighthouse.d.ts"]
-    }
-  }
+  "extends": "../../tsconfig.json",
+  "include": ["src"]
 }

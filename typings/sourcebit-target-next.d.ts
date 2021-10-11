@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { MetaData } from 'sourcebit'
 
 declare module 'sourcebit-target-next' {
