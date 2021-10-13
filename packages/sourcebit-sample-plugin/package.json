@@ -1,0 +1,27 @@
+{
+  "name": "@gspenst/sourcebit-sample-plugin",
+  "version": "0.0.1",
+  "description": "",
+  "homepage": "https://github.com/namjul/gspenst#readme",
+  "bugs": {
+    "url": "https://github.com/namjul/gspenst/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/namjul/gspenst.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "main": "dist/gspenst-sourcebit-sample-plugin.cjs.js",
+  "module": "dist/gspenst-sourcebit-sample-plugin.esm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "sourcebit": "^0.11.0"
+  },
+  "dependencies": {
+    "dreamjs": "^0.2.0"
+  }
+}

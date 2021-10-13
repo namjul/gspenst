@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { MetaData } from 'sourcebit'
+import type { MetaData, ISourcebitPlugin } from 'sourcebit'
 
 declare module 'sourcebit-target-next' {
   export type SourcebitNextOptions = {
     // A flag indicating if page should reload its data when remote data changed. Defaults to true when NODE_ENV is set to development.
     liveUpdate?: boolean
     // An object mapping entries fetched by one of the source plugins to props that will be provided to all page components via getStaticProps.
-    commonProps: {
+    commonProps?: {
       [prop: string]: {
         single?: boolean
         predicate: (
@@ -16,11 +16,20 @@ declare module 'sourcebit-target-next' {
       }
     }
     // An array of objects mapping entries fetched by one of the source plugins to props that will be provided to a specific page identified by its path via getStaticProps.
-    pages: Array<{
+    pages?: Array<{
       path: string
       predicate: (
         obj: { __metadata: MetaData } & { [key: string]: any }
       ) => boolean
     }>
   }
+
+  type SourcebitNextPlugin = ISourcebitPlugin<SourcebitNextOptions>
+
+  export const name: SourcebitNextPlugin['name'],
+    options: SourcebitNextPlugin['options'],
+    bootstrap: SourcebitNextPlugin['bootstrap'],
+    transform: SourcebitNextPlugin['transform'],
+    getSetup: SourcebitNextPlugin['getSetup'],
+    getOptionsFromSetup: SourcebitNextPlugin['getOptionsFromSetup']
 }

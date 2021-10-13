@@ -1,11 +1,15 @@
 declare module 'sourcebit' {
+  import type { Dict } from '@gspenst/utils'
+
+  type Primitive = null | undefined | string | number | boolean | bigint
+
   export type ModelData = {
+    fieldNames: string[]
     source: string
     modelName: string
     modelLabel: string
     projectId: string
     projectEnvironment: string
-    fieldNames: string[]
   }
   export type MetaData = {
     id: string
@@ -16,6 +20,11 @@ declare module 'sourcebit' {
     projectEnvironment: string
     createdAt: string
     updatedAt: string
+  }
+
+  type Data = {
+    models: Array<ModelData>
+    objects: Array<{ __metadata: MetaData } & Record<string, any>> // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
   // https://github.com/stackbit/sourcebit/wiki/Plugin-API
@@ -45,14 +54,14 @@ declare module 'sourcebit' {
       debug: (msg: string) => void
       getPluginContext: () => Context
       options: SourcebitPluginOptions
-      data: {}
-    }) => void
+      data: Data
+    }) => Data
     getSetup?: (opj: {}) => void
     getOptionsFromSetup?: (opj: {}) => void
   }
 
-  export type SourcebitPlugin<Options = {}> = {
-    module: ISourcebitPlugin
+  export type SourcebitPlugin<Options = Dict> = {
+    module: ISourcebitPlugin<Options>
     options: Options
   }
 

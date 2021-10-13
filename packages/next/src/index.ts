@@ -1,4 +1,5 @@
 import sourcebit from 'sourcebit'
+import * as sourcebitTargetNext from 'sourcebit-target-next'
 import remarkGfm from 'remark-gfm'
 
 import type { NextConfig } from 'next'
@@ -28,22 +29,15 @@ export default (...args: Array<string | Options>) =>
       ...markdownExtensions,
     ]
 
-    // type SampleObject = {
-    //   userId: string
-    //   id: string
-    //   title: string
-    //   body: string
-    // }
-
     const sampleSourcePlugin: SourcebitPlugin = {
-      module: require('sourcebit-sample-plugin'),
+      module: require('@gspenst/sourcebit-sample-plugin'),
       options: {
         titleCase: false,
         // watch: isDev
       },
     }
     const targetPlugin: SourcebitPlugin<SourcebitNextOptions> = {
-      module: require('sourcebit-target-next'),
+      module: sourcebitTargetNext,
       options: {
         pages: [
           {

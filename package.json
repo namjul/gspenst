@@ -44,7 +44,6 @@
     "*.{ts,tsx,md,json,mdx}": "prettier --write",
     "*.{ts,tsx}": [
       "eslint --cache",
-      "git add",
       "jest --bail --findRelatedTests"
     ]
   },
