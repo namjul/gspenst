@@ -62,7 +62,7 @@ declare module 'sourcebit' {
 
   export type SourcebitPlugin<Options = Dict> = {
     module: ISourcebitPlugin<Options>
-    options: Options
+    options?: Options
   }
 
   export type SourcebitConfig = {

@@ -2,7 +2,14 @@
 
 import type { MetaData, ISourcebitPlugin } from 'sourcebit'
 
+type Dict<T = any> = Record<string, T>
+
 declare module 'sourcebit-target-next' {
+  export type Props = {
+    path: string
+    page: Dict
+  }
+
   export type SourcebitNextOptions = {
     // A flag indicating if page should reload its data when remote data changed. Defaults to true when NODE_ENV is set to development.
     liveUpdate?: boolean
@@ -10,17 +17,13 @@ declare module 'sourcebit-target-next' {
     commonProps?: {
       [prop: string]: {
         single?: boolean
-        predicate: (
-          obj: { __metadata: MetaData } & { [key: string]: any }
-        ) => boolean
+        predicate: (obj: { __metadata: MetaData } & Dict) => boolean
       }
     }
     // An array of objects mapping entries fetched by one of the source plugins to props that will be provided to a specific page identified by its path via getStaticProps.
     pages?: Array<{
       path: string
-      predicate: (
-        obj: { __metadata: MetaData } & { [key: string]: any }
-      ) => boolean
+      predicate: (obj: { __metadata: MetaData } & Dict) => boolean
     }>
   }
 

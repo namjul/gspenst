@@ -3,7 +3,7 @@ import { Box, lightTheme, darkTheme } from '@gspenst/components'
 import { ThemeProvider, ThemeSwitch } from '@gspenst/next/components'
 import type { ReactNode } from 'react'
 import type { NextPage } from 'next'
-import type { Config } from '@gspenst/next'
+import type { Config, PageProps } from '@gspenst/next'
 
 export type ThemeOptions = {
   darkMode?: boolean
@@ -38,11 +38,7 @@ const defaultOptions = {}
 export default (config: Config, opts: ThemeOptions) => {
   const options = { ...defaultOptions, ...opts }
 
-  type Page = {
-    [field: string]: string | number
-  }
-
-  const Page: NextPage<{ page: Page; posts: Array<Page> }> = (props) => {
+  const Page: NextPage<PageProps> = (props) => {
     const { page, posts } = props
     return (
       <ThemeProvider light={lightTheme} dark={darkTheme}>

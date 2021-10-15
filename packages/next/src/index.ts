@@ -5,8 +5,10 @@ import remarkGfm from 'remark-gfm'
 import type { NextConfig } from 'next'
 import type { Configuration } from 'webpack'
 import type { SourcebitConfig, SourcebitPlugin } from 'sourcebit'
-import type { SourcebitNextOptions } from 'sourcebit-target-next'
-import type { Options, Config, RemarkPlugin } from './types'
+import type { SourcebitNextOptions, Props } from 'sourcebit-target-next'
+import type { Options, Config, RemarkPlugin, Post } from './types'
+
+export type PageProps = Props & { settings: {}; posts: Post[] }
 
 export type { Options, Config }
 
@@ -31,19 +33,16 @@ export default (...args: Array<string | Options>) =>
 
     const sampleSourcePlugin: SourcebitPlugin = {
       module: require('@gspenst/sourcebit-sample-plugin'),
-      options: {
-        titleCase: false,
-        // watch: isDev
-      },
     }
+
     const targetPlugin: SourcebitPlugin<SourcebitNextOptions> = {
       module: sourcebitTargetNext,
       options: {
         pages: [
           {
-            path: '/{id}',
+            path: '/posts/{id}',
             predicate: (object) => {
-              if (object.__metadata.modelName === 'sample-data') {
+              if (object.__metadata.modelName === 'post') {
                 return true
               }
               return false
@@ -53,13 +52,23 @@ export default (...args: Array<string | Options>) =>
         commonProps: {
           posts: {
             predicate: (object) => {
-              if (object.__metadata.modelName === 'sample-data') {
+              if (object.__metadata.modelName === 'post') {
+                return true
+              }
+              return false
+            },
+          },
+          settings: {
+            single: true,
+            predicate: (object) => {
+              if (object.__metadata.modelName === 'setting') {
                 return true
               }
               return false
             },
           },
         },
+        liveUpdate: false,
       },
     }
 
