@@ -1,6 +1,6 @@
 export type Tag = {
   type: 'tag'
-  id: string
+  id: UniqueId
   name: string
   description: string
   slug: string
@@ -9,7 +9,7 @@ export type Tag = {
 
 export type Author = {
   type: 'author'
-  id: string
+  id: UniqueId
   name: string
   title: string
   description: string
@@ -19,12 +19,12 @@ export type Author = {
 
 export type Post = {
   type: 'post'
-  id: string
+  id: UniqueId
   title: string
   slug: string
   body: string
-  updated: string
-  created: string
+  updated: DateTimeString
+  created: DateTimeString
   // tags: []
 }
 
@@ -32,7 +32,7 @@ export type Page = Exclude<Post, 'type'> & { type: 'page' }
 
 export type Setting = {
   type: 'setting'
-  id: string
+  id: UniqueId
   title: string
   name: string
   description: string

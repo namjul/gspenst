@@ -3,6 +3,7 @@
   "include": ["./packages", "./starters"],
   "exclude": ["node_modules"],
   "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./typings"],
     "paths": {
       "*": ["./typings/*"],
       // lighthouse currently does not expose types https://github.com/GoogleChrome/lighthouse/issues/1773
