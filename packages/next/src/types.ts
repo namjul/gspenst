@@ -1,5 +1,6 @@
 import { Dict } from '@gspenst/utils'
 import type { Options as MDXOptions } from '@mdx-js/mdx'
+import type { Props } from 'sourcebit-target-next'
 
 type Unpacked<T> = T extends Array<infer U> ? U : T
 
@@ -69,3 +70,47 @@ export type Setting = {
   description: string
   // navigation: []
 }
+
+export type PageProps = Props & { setting: Setting; posts: Post[] }
+
+// import { MdxNode } from "next-mdx"
+//
+// interface Post
+//   extends MdxNode<{
+//     title: string
+//     date?: string
+//     excerpt?: string
+//     featured?: boolean
+//     image?: string
+//     caption?: string
+//   }> {
+//   readingTime?: {
+//     text: string
+//     time: number
+//     words: number
+//     minutes: number
+//   }
+//   relationships: {
+//     author: Author[]
+//     category: Category[]
+//   }
+// }
+//
+// interface Page
+//   extends MdxNode<{
+//     title: string
+//     excerpt?: string
+//   }> {}
+//
+// interface Author
+//   extends MdxNode<{
+//     name: string
+//     bio?: string
+//     picture?: string
+//   }> {}
+//
+// interface Category
+//   extends MdxNode<{
+//     name: string
+//     excerpt?: string
+//   }> {}
