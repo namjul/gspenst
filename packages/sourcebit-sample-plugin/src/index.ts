@@ -18,6 +18,8 @@ export type ContextType = {
 
 type SourebitPluginType = ISourcebitPlugin<Options, ContextType>
 
+export const options: Exclude<SourebitPluginType['options'], undefined> = {}
+
 export const bootstrap: Exclude<SourebitPluginType['bootstrap'], undefined> = ({
   // debug,
   getPluginContext,

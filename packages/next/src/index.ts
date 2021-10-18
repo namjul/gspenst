@@ -31,9 +31,10 @@ export default (...args: Array<string | Options>) =>
       ...markdownExtensions,
     ]
 
-    const sampleSourcePlugin: SourcebitPlugin = {
-      module: require('@gspenst/sourcebit-sample-plugin'),
-    }
+    const sourcePlugins = (options.plugins ?? []).map((plugin) => ({
+      module: require(plugin.resolve), // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+      options: plugin.options,
+    }))
 
     const targetPlugin: SourcebitPlugin<SourcebitNextOptions> = {
       module: sourcebitTargetNext,
@@ -73,7 +74,7 @@ export default (...args: Array<string | Options>) =>
     }
 
     const sourcebitConfig: SourcebitConfig = {
-      plugins: [sampleSourcePlugin, targetPlugin],
+      plugins: [...sourcePlugins, targetPlugin],
     }
 
     sourcebit.fetch(sourcebitConfig)
