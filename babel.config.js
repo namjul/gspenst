@@ -1,6 +1,13 @@
 module.exports = {
   presets: [
-    '@babel/preset-env',
+    [
+      '@babel/preset-env',
+      {
+        targets: {
+          esmodules: true, // let nextjs handle/decide transpiliation ECMAScript features
+        },
+      },
+    ],
     [
       '@babel/preset-react',
       {
