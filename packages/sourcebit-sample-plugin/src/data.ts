@@ -81,7 +81,7 @@ dream.schema('Setting', {
   // navigation: []
 })
 
-const settings = [
+const setting = [
   {
     ...dream.useSchema('Setting').generateRnd(1).output(),
     type: 'setting',
@@ -93,5 +93,5 @@ export default {
   pages,
   tags,
   authors,
-  settings,
+  setting,
 }

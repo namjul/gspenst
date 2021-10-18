@@ -39,7 +39,7 @@ export default (config: Config, opts: ThemeOptions) => {
   const options = { ...defaultOptions, ...opts }
 
   const Page: NextPage<PageProps> = (props) => {
-    const { page, posts } = props
+    const { page, posts, setting, children } = props
     return (
       <ThemeProvider light={lightTheme} dark={darkTheme}>
         <Layout options={options} {...config} {...props}>
@@ -49,6 +49,8 @@ export default (config: Config, opts: ThemeOptions) => {
           {posts.map((post, index) => (
             <div key={index}>{post.title}</div>
           ))}
+          {JSON.stringify(setting, null, 2)}
+          {children}
         </Layout>
       </ThemeProvider>
     )

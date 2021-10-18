@@ -38,7 +38,7 @@ export const bootstrap: Exclude<SourebitPluginType['bootstrap'], undefined> = ({
       dataEntries.pages,
       dataEntries.authors,
       dataEntries.tags,
-      dataEntries.settings
+      dataEntries.setting
     )
 
     const models = [

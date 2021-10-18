@@ -6,9 +6,9 @@ import type { NextConfig } from 'next'
 import type { Configuration } from 'webpack'
 import type { SourcebitConfig, SourcebitPlugin } from 'sourcebit'
 import type { SourcebitNextOptions, Props } from 'sourcebit-target-next'
-import type { Options, Config, RemarkPlugin, Post } from './types'
+import type { Options, Config, RemarkPlugin, Post, Setting } from './types'
 
-export type PageProps = Props & { settings: {}; posts: Post[] }
+export type PageProps = Props & { setting: Setting; posts: Post[] }
 
 export type { Options, Config }
 
