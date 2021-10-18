@@ -33,11 +33,4 @@ module.exports = withGspenst({
     //   options: {},
     // },
   ],
-})({
-  reactStrictMode: true,
-  experimental: {
-    // Prefer loading of ES Modules over CommonJS
-    esmExternals: true,
-    // externalDir: true,
-  },
-})
+})({})

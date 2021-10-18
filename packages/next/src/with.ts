@@ -123,5 +123,11 @@ export default (...args: Array<string | Options>) =>
 
         return config
       },
+      reactStrictMode: true,
+      experimental: {
+        // Prefer loading of ES Modules over CommonJS
+        esmExternals: true,
+        // externalDir: true,
+      },
     }
   }
