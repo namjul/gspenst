@@ -12,19 +12,21 @@ declare module 'sourcebit' {
     projectEnvironment: string
   }
   export type MetaData = {
-    id: string
-    source: string
-    modelName: string
-    modelLabel: string
-    projectId: string
-    projectEnvironment: string
-    createdAt: string
-    updatedAt: string
+    __metadata: {
+      id: string
+      source: string
+      modelName: string
+      modelLabel: string
+      projectId: string
+      projectEnvironment: string
+      createdAt: DateTimeString
+      updatedAt: DateTimeString
+    }
   }
 
   type Data = {
     models: Array<ModelData>
-    objects: Array<{ __metadata: MetaData } & Record<string, any>> // eslint-disable-line @typescript-eslint/no-explicit-any
+    objects: Array<MetaData & Record<string, any>> // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
   // https://github.com/stackbit/sourcebit/wiki/Plugin-API

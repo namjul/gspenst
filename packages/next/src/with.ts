@@ -35,48 +35,14 @@ export default (...args: Array<string | Options>) =>
     const targetPlugin: SourcebitPlugin<SourcebitNextOptions> = {
       module: sourcebitTargetNext,
       options: {
-        pages: [
-          {
-            path: '/posts/{id}',
-            predicate: (object) => {
-              if (object.__metadata.modelName === 'post') {
-                return true
-              }
-              return false
-            },
-          },
-          {
-            path: '/authors/{id}',
-            predicate: (object) => {
-              if (object.__metadata.modelName === 'author') {
-                return true
-              }
-              return false
-            },
-          },
-          {
-            path: '/tags/{id}',
-            predicate: (object) => {
-              if (object.__metadata.modelName === 'tag') {
-                return true
-              }
-              return false
-            },
-          },
-        ],
         commonProps: {
-          posts: {
+          entries: {
             predicate: (object) => {
-              if (object.__metadata.modelName === 'post') {
-                return true
-              }
-              return false
-            },
-          },
-          settings: {
-            single: true,
-            predicate: (object) => {
-              if (object.__metadata.modelName === 'setting') {
+              if (
+                ['author', 'tag', 'page', 'post', 'setting'].includes(
+                  object.__metadata.modelName
+                )
+              ) {
                 return true
               }
               return false

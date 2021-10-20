@@ -17,22 +17,30 @@ declare module 'sourcebit-target-next' {
     commonProps?: {
       [prop: string]: {
         single?: boolean
-        predicate: (obj: { __metadata: MetaData } & Dict) => boolean
+        predicate: (obj: MetaData & Dict) => boolean
       }
     }
     // An array of objects mapping entries fetched by one of the source plugins to props that will be provided to a specific page identified by its path via getStaticProps.
     pages?: Array<{
       path: string
-      predicate: (obj: { __metadata: MetaData } & Dict) => boolean
+      predicate: (obj: MetaData & Dict) => boolean
     }>
   }
 
   type SourcebitNextPlugin = ISourcebitPlugin<SourcebitNextOptions>
+
+  export type SourcebitEntry<T = unknown> = T & MetaData
 
   export const name: SourcebitNextPlugin['name'],
     options: SourcebitNextPlugin['options'],
     bootstrap: SourcebitNextPlugin['bootstrap'],
     transform: SourcebitNextPlugin['transform'],
     getSetup: SourcebitNextPlugin['getSetup'],
-    getOptionsFromSetup: SourcebitNextPlugin['getOptionsFromSetup']
+    getOptionsFromSetup: SourcebitNextPlugin['getOptionsFromSetup'],
+    sourcebitDataClient: {
+      getData: <T extends MetaData>() => {
+        pages: { path: string; page: T }[]
+        props: NodeJS.Dict<T | T[]>
+      }
+    }
 }

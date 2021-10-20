@@ -18,7 +18,9 @@
     "sourcebit-target-next": "^0.6.4"
   },
   "devDependencies": {
-    "@types/webpack": "^5.0.0"
+    "@types/mock-fs": "^4.13.1",
+    "@types/webpack": "^5.0.0",
+    "mock-fs": "^5.1.1"
   },
   "peerDependencies": {
     "next": "^11.1.2",
