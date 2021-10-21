@@ -4,10 +4,18 @@ import dream from 'dreamjs'
 import type { Dict } from '@gspenst/utils'
 import type { Tag, Author, Post, Page, Setting } from './types'
 
+dream.customType(
+  'incrementalId',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (helper: { previousItem?: Record<string, any> }) => {
+    return helper.previousItem ? Number(helper.previousItem.id) + 1 : 1
+  }
+)
+
 // ------------ Tags --------------
 
 dream.schema('Tag', {
-  id: 'guid',
+  id: 'incrementalId',
   name: 'name',
   description: 'sentence',
   slug: 'word',
@@ -23,7 +31,7 @@ const tags = dream
 // ------------ Authors --------------
 
 dream.schema('Author', {
-  id: 'guid',
+  id: 'incrementalId',
   name: 'name',
   title: 'sentence',
   description: 'sentence',
@@ -44,7 +52,7 @@ const authors = dream
 // ------------ Posts --------------
 
 const postSchema = {
-  id: 'guid',
+  id: 'incrementalId',
   title: 'sentence',
   slug: 'word',
   body: 'paragraph',
@@ -72,9 +80,8 @@ const pages = dream
   .map((page: Dict) => ({ ...page, type: 'page' })) as Page[]
 
 // ------------ Setting --------------
-
 dream.schema('Setting', {
-  id: 'guid',
+  id: 'incrementalId',
   title: 'sentence',
   name: 'name',
   description: 'sentence',
