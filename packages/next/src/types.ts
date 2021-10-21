@@ -39,6 +39,12 @@ export type EntryRelationship<T = Entry> = {
   [key: string]: T[]
 }
 
+export type EntryPath = Entry & {
+  params: {
+    slug: string[]
+  }
+}
+
 /* ------------------------------ Domain Type ------------------------------ */
 
 export type Article = Entry<{

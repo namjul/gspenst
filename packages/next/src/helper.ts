@@ -1,6 +1,6 @@
 import { sourcebitDataClient } from 'sourcebit-target-next'
 import type { GetStaticPropsContext } from 'next'
-import type { Entry, EntryRelationship } from './types'
+import type { Entry, EntryRelationship, EntryPath } from './types'
 
 // export type NodeFrontMatter = Record<string, unknown>
 //
@@ -26,11 +26,6 @@ import type { Entry, EntryRelationship } from './types'
 //     relationships?: NodeRelationships
 //   }
 //
-// export type NodePath = Node & {
-//   params: {
-//     slug: string[]
-//   }
-// }
 
 export async function getData<T extends Entry>() {
   return sourcebitDataClient.getData<T>()
@@ -119,27 +114,26 @@ async function getEntryRelationships(entry: Entry): Promise<EntryRelationship> {
   return relationships
 }
 
-//
-// export async function getPathsRaw(sourceName: string): Promise<NodePath[]> {
-//   const nodes = await getNodes(sourceName)
-//
-//   if (!nodes.length) return []
-//
-//   return await Promise.all<NodePath>(
-//     nodes.map(async (node) => {
-//       return {
-//         ...node,
-//         params: {
-//           slug: node.slug.split('/'),
-//         },
-//       }
-//     })
-//   )
-// }
+export async function getPathsRaw(modelName?: string): Promise<EntryPath[]> {
+  const entries = await getEntries(modelName)
 
-// export async function getPaths(
-//   sourceName: string
-// ): Promise<Pick<NodePath, 'params'>[]> {
-//   const paths = await getPathsRaw(sourceName)
-//   return paths.map(({ params }) => ({ params }))
-// }
+  if (!entries.length) return []
+
+  return Promise.all<EntryPath>(
+    entries.map(async (entry) => {
+      return {
+        ...entry,
+        params: {
+          slug: [String(entry.slug)],
+        },
+      }
+    })
+  )
+}
+
+export async function getPaths(
+  modelName?: string
+): Promise<Pick<EntryPath, 'params'>[]> {
+  const paths = await getPathsRaw(modelName)
+  return paths.map(({ params }) => ({ params }))
+}
