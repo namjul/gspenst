@@ -32,8 +32,6 @@ describe('bootstrap()', () => {
 
     const { models, objects } = output
 
-    console.log(objects)
-
     expect(models).toHaveLength(5)
     expect(objects).toHaveLength(41)
     expect(objects).toHaveLength(41)

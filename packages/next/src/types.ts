@@ -31,8 +31,13 @@ export type Config = {
 
 export type Entry<T = Record<string, unknown>> = {
   id: UniqueId
+  relationships?: EntryRelationship
 } & MetaData &
   T
+
+export type EntryRelationship<T = Entry> = {
+  [key: string]: T[]
+}
 
 /* ------------------------------ Domain Type ------------------------------ */
 

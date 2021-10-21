@@ -1,6 +1,7 @@
 import path from 'path'
 import mock from 'mock-fs'
 import { getData, getEntries, getEntry } from './helper'
+import type { Post } from './types'
 
 beforeEach(() => {
   mock({
@@ -33,4 +34,13 @@ test('get all nodes for specific source type', async () => {
 test('gets a node using slug', async () => {
   const author = await getEntry('author', 'ujtecoci')
   expect(author?.name).toBe('Kevin Clarke')
+})
+
+test('entries relationships are properly attached', async () => {
+  const post = await getEntry<Post>('post', 'jejvovfet')
+  expect(post?.slug).toBe('jejvovfet')
+  expect(post?.relationships).toBeTruthy()
+  expect(post?.relationships?.tag.length).toBe(2)
+  expect(post?.relationships?.tag[0].name).toBe('Steve Chavez')
+  expect(post?.relationships?.tag[1].name).toBe('Claudia Sullivan')
 })
