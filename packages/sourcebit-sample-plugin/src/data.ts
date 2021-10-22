@@ -58,6 +58,7 @@ const postSchema = {
   body: 'paragraph',
   created: 'timestamp',
   updated: 'timestamp',
+  featured: 'boolean',
   // tags: []
 }
 

@@ -53,6 +53,7 @@ export type Article = Entry<{
   url: string
   updated: DateTimeString
   created: DateTimeString
+  featured: boolean
 }>
 
 export type Tag = Entry<{
