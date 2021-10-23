@@ -1,7 +1,6 @@
 import path from 'path'
 import type { LoaderDefinition } from 'webpack'
 import type { Options, Config } from './types'
-// import { withRemoteDataUpdates } from 'sourcebit-target-next/with-remote-data-updates';
 
 /* eslint-disable @typescript-eslint/no-invalid-this */
 
@@ -36,7 +35,6 @@ const loader: LoaderDefinition<Options> = function loader(source) {
   )[1]
 
   const config: Config = { filename }
-  console.log(options, filename, param)
 
   let prefix = ``
 
