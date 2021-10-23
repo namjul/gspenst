@@ -1,6 +1,6 @@
 import path from 'path'
 import mock from 'mock-fs'
-import { getData, getEntries, getEntry, getPaths } from './helper'
+import { getData, getEntries, getEntry, getPaths } from './server'
 import type { Post, Author } from './types'
 
 beforeEach(() => {

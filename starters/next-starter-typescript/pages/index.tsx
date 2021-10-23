@@ -1,6 +1,6 @@
 import type { NextPage, InferGetStaticPropsType } from 'next'
 import { View } from '@gspenst/components'
-import { getEntries } from '@gspenst/next'
+import { getEntries } from '@gspenst/next/server'
 import type { Post } from '@gspenst/next'
 
 export const getStaticProps = async () => {
