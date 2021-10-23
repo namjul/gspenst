@@ -39,13 +39,13 @@ export default (config: Config, opts: ThemeOptions) => {
   const options = { ...defaultOptions, ...opts }
 
   const Page: NextPage<PageProps> = (props) => {
-    const { page, posts, setting, children } = props
+    const { page, posts = [], setting, children } = props
     return (
       <ThemeProvider light={lightTheme} dark={darkTheme}>
         <Layout options={options} {...config} {...props}>
-          <h1>{page.title}</h1>
-          <h2>{page.id}</h2>
-          <section>{page.body}</section>
+          <h1>{page?.title}</h1>
+          <h2>{page?.id}</h2>
+          <section>{page?.body}</section>
           {posts.map((post, index) => (
             <div key={index}>{post.title}</div>
           ))}

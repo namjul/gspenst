@@ -41,7 +41,6 @@ const loader: LoaderDefinition<Options> = function loader(source) {
   let suffix = ``
 
   const imports = `
-import { sourcebitDataClient } from "sourcebit-target-next";
 import withTheme from '${theme}'
 ${themeConfig ? `import themeConfig from '${themeConfig}'` : ''}
 `
@@ -54,6 +53,10 @@ ${themeConfig ? `import themeConfig from '${themeConfig}'` : ''}
       source.includes(condition)
     )
   ) {
+    const serverImports = `
+import { sourcebitDataClient } from "sourcebit-target-next";
+`
+
     const getStaticProps = `
 export async function getStaticProps({ params }) {
   console.log('Page ${filename} getStaticProps, params: ', params);
@@ -72,6 +75,7 @@ export async function getStaticPaths() {
 }
 `
 
+    prefix = prefix.concat(serverImports)
     suffix = suffix.concat(getStaticProps, getStaticPaths)
   }
 

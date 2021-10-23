@@ -82,4 +82,4 @@ export type Setting = Entry<{
   // navigation: []
 }>
 
-export type PageProps = Props & { setting: Setting; posts: Post[] }
+export type PageProps = Partial<Props & { setting: Setting; posts: Post[] }>
