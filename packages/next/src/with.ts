@@ -27,8 +27,12 @@ export default (...args: Array<string | Options>) =>
       ...markdownExtensions,
     ]
 
+    const pluginSuffix = '@gspenst/sourcebit'
     const sourcePlugins = (options.plugins ?? []).map((plugin) => ({
-      module: require(plugin.resolve), // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+      module: require(`${pluginSuffix}-${plugin.resolve.replace(
+        `${pluginSuffix}-`,
+        ''
+      )}`), // eslint - disable - line @typescript-eslint / no - unsafe - assignment
       options: plugin.options,
     }))
 

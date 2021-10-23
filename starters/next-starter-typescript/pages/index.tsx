@@ -19,6 +19,7 @@ export const getStaticProps = async () => {
     },
   }
 }
+
 const IndexPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   posts = [],
   recentPosts = [],

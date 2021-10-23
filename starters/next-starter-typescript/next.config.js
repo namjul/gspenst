@@ -13,7 +13,7 @@ module.exports = withGspenst({
   },
   plugins: [
     {
-      resolve: '@gspenst/sourcebit-sample-plugin',
+      resolve: 'sample-plugin',
       options: {},
     },
     // {
