@@ -1,34 +1,29 @@
 import sourcebit from 'sourcebit'
 import * as sourcebitTargetNext from 'sourcebit-target-next'
-import remarkGfm from 'remark-gfm'
+// import remarkGfm from 'remark-gfm'
 
 import type { NextConfig } from 'next'
-import type { Configuration } from 'webpack'
+// import type { Configuration } from 'webpack'
 import type { SourcebitConfig, SourcebitPlugin } from 'sourcebit'
 import type { SourcebitNextOptions } from 'sourcebit-target-next'
-import type { Options, RemarkPlugin } from './types'
+import type { Options /* RemarkPlugin */ } from './types'
 
-const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
-const markdownExtensions = ['md', 'mdx']
-const markdownExtensionTest = /\.mdx?$/
+// const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
+// const markdownExtensions = ['md', 'mdx']
+// const markdownExtensionTest = /\.mdx?$/
 
-export default (...args: Array<string | Options>) =>
+export default (options: Options) =>
   (nextConfig: NextConfig = {}): NextConfig => {
-    const options =
-      typeof args[0] === 'string'
-        ? {
-            theme: args[0],
-            themeConfig: args[1] as string,
-          }
-        : args[0]
-
-    const pageExtensions = nextConfig.pageExtensions ?? [
-      ...defaultExtensions,
-      ...markdownExtensions,
-    ]
+    // const pageExtensions = nextConfig.pageExtensions ?? [
+    //   ...defaultExtensions,
+    //   ...markdownExtensions,
+    // ]
 
     const pluginSuffix = '@gspenst/sourcebit'
-    const sourcePlugins = (options.plugins ?? []).map((plugin) => ({
+    const sourcePlugins: SourcebitPlugin<SourcebitNextOptions>[] = (
+      options.plugins ?? []
+    ).map((plugin) => ({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       module: require(`${pluginSuffix}-${plugin.resolve.replace(
         `${pluginSuffix}-`,
         ''
@@ -65,34 +60,34 @@ export default (...args: Array<string | Options>) =>
 
     return {
       ...nextConfig,
-      pageExtensions,
-      webpack(config: Configuration, context) {
-        config.module?.rules?.push({
-          test: markdownExtensionTest,
-          use: [
-            context.defaultLoaders.babel,
-            {
-              loader: '@mdx-js/loader',
-              options: {
-                ...options.mdxOptions,
-                remarkPlugins: (options.mdxOptions?.remarkPlugins ?? []).concat(
-                  [remarkGfm as RemarkPlugin]
-                ),
-              },
-            },
-            {
-              loader: '@gspenst/next/loader',
-              options: { ...options },
-            },
-          ],
-        })
-
-        if (typeof nextConfig.webpack === 'function') {
-          return nextConfig.webpack(config, context)
-        }
-
-        return config
-      },
+      // pageExtensions,
+      // webpack(config: Configuration, context) {
+      //   config.module?.rules?.push({
+      //     test: markdownExtensionTest,
+      //     use: [
+      //       context.defaultLoaders.babel,
+      //       {
+      //         loader: '@mdx-js/loader',
+      //         options: {
+      //           ...options.mdxOptions,
+      //           remarkPlugins: (options.mdxOptions?.remarkPlugins ?? []).concat(
+      //             [remarkGfm as RemarkPlugin]
+      //           ),
+      //         },
+      //       },
+      //       {
+      //         loader: '@gspenst/next/loader',
+      //         options: { ...options },
+      //       },
+      //     ],
+      //   })
+      //
+      //   if (typeof nextConfig.webpack === 'function') {
+      //     return nextConfig.webpack(config, context)
+      //   }
+      //
+      //   return config
+      // },
       reactStrictMode: true,
       experimental: {
         // Prefer loading of ES Modules over CommonJS
