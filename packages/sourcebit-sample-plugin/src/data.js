@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment */
+#!/usr/bin/node
 
-import dream from 'dreamjs'
-import type { Dict } from '@gspenst/utils'
-import type { Tag, Author, Post, Page, Setting } from './types'
+const fs = require('fs')
+const dream = require('dreamjs')
 
 // ------------ Tags --------------
 
@@ -18,7 +17,7 @@ const tags = dream
   .useSchema('Tag')
   .generateRnd(10)
   .output()
-  .map((tag: Dict) => ({ ...tag, type: 'tag' })) as Tag[]
+  .map((tag) => ({ ...tag, type: 'tag' }))
 
 // ------------ Authors --------------
 
@@ -39,7 +38,7 @@ const authors = dream
   .useSchema('Author')
   .generateRnd(10)
   .output()
-  .map((author: Dict) => ({ ...author, type: 'author' })) as Author[]
+  .map((author) => ({ ...author, type: 'author' }))
 
 // ------------ Posts --------------
 
@@ -60,7 +59,7 @@ const posts = dream
   .useSchema('Post')
   .generateRnd(10)
   .output()
-  .map((post: Dict) => ({ ...post, type: 'post' })) as Post[]
+  .map((post) => ({ ...post, type: 'post' }))
 
 // ------------ Pages --------------
 
@@ -70,7 +69,7 @@ const pages = dream
   .useSchema('Page')
   .generateRnd(10)
   .output()
-  .map((page: Dict) => ({ ...page, type: 'page' })) as Page[]
+  .map((page) => ({ ...page, type: 'page' }))
 
 // ------------ Setting --------------
 dream.schema('Setting', {
@@ -86,12 +85,14 @@ const setting = [
     ...dream.useSchema('Setting').generateRnd(1).output(),
     type: 'setting',
   },
-] as Setting[]
+]
 
-export default {
+const data = {
   posts,
   pages,
   tags,
   authors,
   setting,
 }
+
+fs.writeFileSync(`${__dirname}/data.json`, JSON.stringify(data))

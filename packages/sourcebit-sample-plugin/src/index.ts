@@ -2,7 +2,7 @@
 
 import type { ISourcebitPlugin, ModelData } from 'sourcebit'
 import pkg from '../package.json'
-import dataEntries from './data'
+import dataEntries from './data.json'
 import type { Tag, Author, Post, Page, Setting } from './types'
 
 export const name: ISourcebitPlugin['name'] = pkg.name
@@ -42,13 +42,13 @@ export const bootstrap: Exclude<SourebitPluginType['bootstrap'], undefined> = ({
   if (context.entries) {
     log(`Loaded ${context.entries.length} entries from cache`)
   } else {
-    const entries = ([] as Entry[]).concat(
-      dataEntries.posts,
-      dataEntries.pages,
-      dataEntries.authors,
-      dataEntries.tags,
-      dataEntries.setting
-    )
+    const entries = ([] as Entry[]).concat([
+      ...dataEntries.posts,
+      ...dataEntries.pages,
+      ...dataEntries.authors,
+      ...dataEntries.tags,
+      ...dataEntries.setting,
+    ] as Entry[])
 
     const models: Models = [
       {
