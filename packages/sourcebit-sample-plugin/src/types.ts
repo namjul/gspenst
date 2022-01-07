@@ -28,7 +28,7 @@ export type Post = {
   // tags: []
 }
 
-export type Page = Exclude<Post, 'type'> & { type: 'page' }
+export type Page = Omit<Post, 'type'> & { type: 'page' }
 
 export type Setting = {
   type: 'setting'

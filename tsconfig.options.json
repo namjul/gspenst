@@ -4,7 +4,6 @@
     "target": "es6", // Compile to es6 and not below
     "module": "esnext", // Compile to es modules
     "strict": true, // Enable all strict type checking options
-    "noUnusedLocals": true, // Enable error reporting when a local variables aren't read.
     "pretty": true, // Enable color and formatting in output to make compiler errors easier to read
     "noEmit": true, // This uses babel for compilation
     "skipLibCheck": true, // Skip type checking of declaration files.
@@ -30,7 +29,6 @@
 
     /* experimentalDecorators: true, */
     /* emitDecoratorMetadata: true, */
-    /* noUnusedLocals: true, */
     /* pretty: true, */
   }
 }

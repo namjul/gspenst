@@ -30,6 +30,7 @@ describe('bootstrap()', () => {
       getPluginContext: () => context,
     })
 
+    // @ts-expect-error -- ouput will not be a promise
     const { models, objects } = output
 
     expect(models).toHaveLength(5)

@@ -1,11 +1,12 @@
 import path from 'path'
 import mock from 'mock-fs'
-import { getData, getEntries, getEntry, getPaths } from './server'
+import { getData, getEntries, getEntry, getPaths, getAllPaths } from './server'
+import { FILE_CACHE_PATH } from './sourcebitNextTarget'
 import type { Post, Author } from './types'
 
 beforeEach(() => {
   mock({
-    '.sourcebit-nextjs-cache.json': mock.load(
+    [FILE_CACHE_PATH]: mock.load(
       path.resolve(__dirname, '__fixtures__/data.json')
     ),
   })
@@ -18,7 +19,7 @@ afterEach(() => {
 test('get data', async () => {
   const data = await getData()
   expect(data).toHaveProperty('pages')
-  expect(data).toHaveProperty('props')
+  expect(data).toHaveProperty('entries')
 })
 
 test('get all entries', async () => {
@@ -32,30 +33,30 @@ test('get entries for specific model', async () => {
 })
 
 test('gets an entry using slug', async () => {
-  const author = await getEntry<Author>('author', 'ujtecoci')
-  expect(author?.name).toBe('Kevin Clarke')
+  const author = await getEntry<Author>('author', 'ovjunih')
+  expect(author?.name).toBe('Danny Marsh')
 })
 
 test('entry can be retrieved using both and context', async () => {
-  const postFromSlug = await getEntry<Post>('post', 'jejvovfet')
+  const postFromSlug = await getEntry<Post>('post', 'lewus')
   const postFromContext = await getEntry<Post>('post', {
     params: {
-      slug: ['jejvovfet'],
+      slug: ['lewus'],
     },
   })
   expect(postFromSlug?.id).toEqual(postFromContext?.id)
 })
 
 test('entries relationships are properly attached', async () => {
-  const post = await getEntry<Post>('post', 'jejvovfet')
-  expect(post?.slug).toBe('jejvovfet')
+  const post = await getEntry<Post>('post', 'lewus')
+  expect(post?.slug).toBe('lewus')
   expect(post?.relationships).toBeTruthy()
   expect(post?.relationships?.tag.length).toBe(2)
-  expect(post?.relationships?.tag[0].name).toBe('Steve Chavez')
-  expect(post?.relationships?.tag[1].name).toBe('Claudia Sullivan')
+  expect(post?.relationships?.tag[0].name).toBe('Jerome Neal')
+  expect(post?.relationships?.tag[1].name).toBe('Terry Armstrong')
 })
 
-test('gets all paths', async () => {
+test('gets all entry paths', async () => {
   const paths = await getPaths()
   expect(paths).toHaveLength(41)
   expect(paths[0].params.slug).toBeTruthy()
@@ -65,4 +66,9 @@ test('get paths for specific model', async () => {
   const paths = await getPaths('post')
   expect(paths).toHaveLength(10)
   expect(paths[0].params.slug).toBeTruthy()
+})
+
+test('getAllPaths', async () => {
+  const paths = await getAllPaths()
+  expect(paths).toHaveLength(40)
 })

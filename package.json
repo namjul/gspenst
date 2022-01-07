@@ -10,7 +10,6 @@
     "clean": "rimraf packages/*/dist",
     "lint": "eslint_d . --ext .ts,.tsx",
     "prepare": "husky install && preconstruct dev",
-    "pretest": "npm run typecheck",
     "test": "jest",
     "typecheck": "npm run typecheck --workspaces",
     "watch": "preconstruct watch"
@@ -79,6 +78,14 @@
         "plugins": [
           "@typescript-eslint"
         ]
+      },
+      {
+        "files": [
+          "packages/**/*.ts?(x)"
+        ],
+        "rules": {
+          "@typescript-eslint/no-explicit-any": "off"
+        }
       }
     ],
     "root": true
@@ -108,7 +115,7 @@
     "jest": "^27.0.6",
     "jest-watch-typeahead": "^0.6.4",
     "lint-staged": ">=10",
-    "prettier": "^2.5.2",
+    "prettier": "^2.5.1",
     "prettier-plugin-packagejson": "^2.2.11",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.4",

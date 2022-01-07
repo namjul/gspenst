@@ -11,9 +11,18 @@ type Options = {}
 
 type Entry = Tag | Author | Post | Page | Setting
 
+type TagFields = Array<keyof Tag>
+type AuthorFields = Array<keyof Author>
+type PageFields = Array<keyof Page>
+type PostFields = Array<keyof Post>
+type SettingFields = Array<keyof Setting>
+type Models = ModelData<
+  TagFields | AuthorFields | PageFields | PostFields | SettingFields
+>[]
+
 export type ContextType = {
   entries?: Entry[]
-  models?: ModelData[]
+  models?: Models
 }
 
 type SourebitPluginType = ISourcebitPlugin<Options, ContextType>
@@ -41,62 +50,44 @@ export const bootstrap: Exclude<SourebitPluginType['bootstrap'], undefined> = ({
       dataEntries.setting
     )
 
-    const models = [
+    const models: Models = [
       {
-        id: 1,
         source: pkg.name,
         modelName: 'tag',
         modelLabel: 'Tags',
-        fieldNames: [
-          'id',
-          'name',
-          'description',
-          'slug',
-          'color',
-        ] as (keyof Tag)[],
+        fieldNames: ['id', 'name', 'description', 'slug', 'color'],
         projectId: '',
         projectEnvironment: '',
       },
       {
-        id: 2,
         source: pkg.name,
         modelName: 'author',
         modelLabel: 'Authors',
-        fieldNames: [
-          'id',
-          'name',
-          'title',
-          'description',
-          'slug',
-          'thumbnail',
-        ] as (keyof Author)[],
+        fieldNames: ['id', 'name', 'title', 'description', 'slug', 'thumbnail'],
         projectId: '',
         projectEnvironment: '',
       },
       {
-        id: 3,
         source: pkg.name,
         modelName: 'page',
         modelLabel: 'Pages',
-        fieldNames: ['id', 'title', 'slug', 'body'] as (keyof Post)[],
+        fieldNames: ['id', 'title', 'slug', 'body'],
         projectId: '',
         projectEnvironment: '',
       },
       {
-        id: 4,
         source: pkg.name,
         modelName: 'post',
         modelLabel: 'Posts',
-        fieldNames: ['id', 'title', 'slug', 'body'] as (keyof Post)[],
+        fieldNames: ['id', 'title', 'slug', 'body'],
         projectId: '',
         projectEnvironment: '',
       },
       {
-        id: 5,
         source: pkg.name,
         modelName: 'setting',
         modelLabel: 'Settings',
-        fieldNames: ['title', 'name', 'description'] as (keyof Setting)[],
+        fieldNames: ['title', 'name', 'description'],
         projectId: '',
         projectEnvironment: '',
       },

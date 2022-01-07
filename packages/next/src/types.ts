@@ -1,7 +1,6 @@
 import type { MetaData } from 'sourcebit'
 import type { Options as MDXOptions } from '@mdx-js/mdx'
 import { Dict, Unpacked } from '@gspenst/utils'
-import type { Props } from 'sourcebit-target-next'
 
 type Plugin = {
   resolve: string
@@ -45,6 +44,23 @@ export type EntryPath = Entry & {
   }
 }
 
+export type PageDef = {
+  path: string
+  type: string
+}
+
+export type CacheData = {
+  entries: {
+    [id: UniqueId]: Entry
+  }
+  pages: { path: string; id: UniqueId }[]
+  // props: {
+  //   posts: UniqueId[],
+  //   pags: UniqueId[],
+  //   config: Settings
+  // }
+}
+
 /* ------------------------------ Domain Type ------------------------------ */
 
 export type Article = Entry<{
@@ -64,7 +80,6 @@ export type Tag = Entry<{
 }>
 
 export type Author = Entry<{
-  type: 'author'
   name: string
   description: string
   slug: string
@@ -76,10 +91,9 @@ export type Post = Article
 export type Page = Article
 
 export type Setting = Entry<{
-  type: 'setting'
   title: string
   description: string
   // navigation: []
 }>
 
-export type PageProps = Partial<Props & { setting: Setting; posts: Post[] }>
+export type PageProps = { setting: Setting; posts: Post[] }

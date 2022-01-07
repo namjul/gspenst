@@ -3,8 +3,8 @@ declare module 'sourcebit' {
 
   type Primitive = null | undefined | string | number | boolean | bigint
 
-  export type ModelData = {
-    fieldNames: string[]
+  export type ModelData<Fields extends string[] = string[]> = {
+    fieldNames: Fields
     source: string
     modelName: string
     modelLabel: string
@@ -57,7 +57,7 @@ declare module 'sourcebit' {
       getPluginContext: () => Context
       options: SourcebitPluginOptions
       data: Data
-    }) => Data
+    }) => Data | Promise<Data>
     getSetup?: (opj: {}) => void
     getOptionsFromSetup?: (opj: {}) => void
   }

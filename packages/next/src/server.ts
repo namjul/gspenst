@@ -1,6 +1,8 @@
-import { sourcebitDataClient } from 'sourcebit-target-next'
+import fse from 'fs-extra'
 import type { GetStaticPropsContext } from 'next'
-import type { Entry, EntryRelationship, EntryPath } from './types'
+import { toArray } from '@gspenst/utils'
+import { FILE_CACHE_PATH } from './sourcebitNextTarget'
+import type { Entry, EntryRelationship, EntryPath, CacheData } from './types'
 
 // export type NodeFrontMatter = Record<string, unknown>
 //
@@ -27,18 +29,56 @@ import type { Entry, EntryRelationship, EntryPath } from './types'
 //   }
 //
 
-export async function getData<T extends Entry>() {
-  return sourcebitDataClient.getData<T>()
+export async function getData(): Promise<CacheData> {
+  // from https://github.com/stackbit/sourcebit-target-next/blob/master/lib/data-client.js
+
+  // Every time getStaticPaths is called, the page re-imports all required
+  // modules causing this singleton to be reconstructed loosing any in
+  // memory cache.
+  // https://github.com/zeit/next.js/issues/10933
+  //
+  // For now, we are reading the changes from filesystem until re-import
+  // of this module will be fixed: https://github.com/zeit/next.js/issues/10933
+  // TODO: FILE_CACHE_PATH won't work if default cache file path
+  //   was changed, but also can't access the specified path because
+  //   nextjs re-imports the whole module when this method is called
+
+  const cacheFileExists = new Promise<void>((resolve, reject) => {
+    const retryDelay = 500
+    const maxNumOfRetries = 10
+    let numOfRetries = 0
+    const checkPathExists = async () => {
+      const pathExists = await fse.pathExists(FILE_CACHE_PATH)
+      if (!pathExists && numOfRetries < maxNumOfRetries) {
+        numOfRetries += 1
+        console.log(
+          `error in server.getData(), cache file '${FILE_CACHE_PATH}' was not found, waiting ${retryDelay}ms and retry #${numOfRetries}`
+        )
+        setTimeout(checkPathExists, retryDelay)
+      } else if (pathExists) {
+        resolve()
+      } else {
+        reject(
+          new Error(
+            `sourcebitDataClient of the sourcebit-target-next plugin did not find '${FILE_CACHE_PATH}' file. Please check that other Sourcebit plugins are executed successfully.`
+          )
+        )
+      }
+    }
+    void checkPathExists()
+  })
+
+  await cacheFileExists
+
+  return fse.readJson(FILE_CACHE_PATH)
 }
 
 export async function getEntries<T extends Entry>(
   modelName?: string
 ): Promise<T[]> {
-  let {
-    props: { entries = [] },
-  } = await getData()
+  const data = await getData()
 
-  entries = Array.isArray(entries) ? entries : [entries]
+  const entries = Object.values(data.entries)
 
   if (modelName) {
     return entries.filter(
@@ -56,7 +96,7 @@ export async function getEntries<T extends Entry>(
 
 export async function getEntry<T extends Entry>(
   modelName: string,
-  context: string | GetStaticPropsContext<NodeJS.Dict<string[]>>
+  context: string | GetStaticPropsContext<NodeJS.Dict<string | string[]>>
 ): Promise<T | null> {
   const entries = await getEntries()
 
@@ -66,7 +106,7 @@ export async function getEntry<T extends Entry>(
     typeof context === 'string'
       ? context
       : context.params?.slug
-      ? context.params.slug.join('/')
+      ? toArray(context.params.slug).join('/')
       : ''
 
   const entry =
@@ -86,7 +126,7 @@ export async function getEntry<T extends Entry>(
 async function getEntryRelationships(entry: Entry): Promise<EntryRelationship> {
   const relationships: EntryRelationship = {}
 
-  const modelNames = ['post', 'page', 'author', 'tag']
+  const modelNames = ['post', 'page', 'author', 'tag'] // TODO from cache file
 
   for (const fieldName of Object.keys(entry)) {
     if (!modelNames.includes(fieldName)) {
@@ -113,7 +153,6 @@ async function getEntryRelationships(entry: Entry): Promise<EntryRelationship> {
 
   return relationships
 }
-
 export async function getPathsRaw(modelName?: string): Promise<EntryPath[]> {
   const entries = await getEntries(modelName)
 
@@ -124,7 +163,8 @@ export async function getPathsRaw(modelName?: string): Promise<EntryPath[]> {
       return {
         ...entry,
         params: {
-          slug: [String(entry.slug)],
+          // TODO make field(slug)
+          slug: [entry.__metadata.modelName, String(entry.slug)],
         },
       }
     })
@@ -136,4 +176,28 @@ export async function getPaths(
 ): Promise<Pick<EntryPath, 'params'>[]> {
   const paths = await getPathsRaw(modelName)
   return paths.map(({ params }) => ({ params }))
+}
+
+export async function getAllPaths(): Promise<string[]> {
+  const { pages } = await getData()
+  return pages.map((page) => page.path).filter(Boolean)
+}
+
+export async function getPageProps(
+  context: string | GetStaticPropsContext<NodeJS.Dict<string | string[]>>
+): Promise<Record<string, unknown>> {
+  const { entries, pages } = await getData()
+
+  const slug =
+    typeof context === 'string'
+      ? context
+      : context.params?.slug
+      ? toArray(context.params.slug).join('/')
+      : ''
+
+  const pagePath = `/${slug}`
+
+  const page = pages.find(({ path }) => path === pagePath)
+  const entry = page ? entries[page.id] : undefined
+  return { ...entry }
 }

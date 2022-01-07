@@ -1,12 +1,11 @@
 import sourcebit from 'sourcebit'
-import * as sourcebitTargetNext from 'sourcebit-target-next'
 // import remarkGfm from 'remark-gfm'
 
 import type { NextConfig } from 'next'
 // import type { Configuration } from 'webpack'
 import type { SourcebitConfig, SourcebitPlugin } from 'sourcebit'
-import type { SourcebitNextOptions } from 'sourcebit-target-next'
 import type { Options /* RemarkPlugin */ } from './types'
+import * as sourcebitNextTarget from './sourcebitNextTarget'
 
 // const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 // const markdownExtensions = ['md', 'mdx']
@@ -20,40 +19,24 @@ export default (options: Options) =>
     // ]
 
     const pluginSuffix = '@gspenst/sourcebit'
-    const sourcePlugins: SourcebitPlugin<SourcebitNextOptions>[] = (
-      options.plugins ?? []
-    ).map((plugin) => ({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      module: require(`${pluginSuffix}-${plugin.resolve.replace(
-        `${pluginSuffix}-`,
-        ''
-      )}`), // eslint - disable - line @typescript-eslint / no - unsafe - assignment
-      options: plugin.options,
-    }))
-
-    const targetPlugin: SourcebitPlugin<SourcebitNextOptions> = {
-      module: sourcebitTargetNext,
-      options: {
-        commonProps: {
-          entries: {
-            predicate: (object) => {
-              if (
-                ['author', 'tag', 'page', 'post', 'setting'].includes(
-                  object.__metadata.modelName
-                )
-              ) {
-                return true
-              }
-              return false
-            },
-          },
-        },
-        liveUpdate: false,
-      },
-    }
+    const sourcePlugins: SourcebitPlugin[] = (options.plugins ?? []).map(
+      (plugin) => ({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        module: require(`${pluginSuffix}-${plugin.resolve.replace(
+          `${pluginSuffix}-`,
+          ''
+        )}`), // eslint - disable - line @typescript-eslint / no - unsafe - assignment
+        options: plugin.options,
+      })
+    )
 
     const sourcebitConfig: SourcebitConfig = {
-      plugins: [...sourcePlugins, targetPlugin],
+      plugins: [
+        ...sourcePlugins,
+        {
+          module: sourcebitNextTarget,
+        },
+      ],
     }
 
     sourcebit.fetch(sourcebitConfig)

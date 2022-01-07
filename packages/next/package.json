@@ -12,12 +12,15 @@
     "@gspenst/utils": "^0.0.1",
     "@mdx-js/loader": "^2.0.0-next.9",
     "@mdx-js/mdx": "^2.0.0-next.9",
+    "find-cache-dir": "^3.3.2",
+    "fs-extra": "^10.0.0",
     "next-themes": "^0.0.15",
     "remark-gfm": "^1.0.0",
-    "sourcebit": "^0.11.0",
-    "sourcebit-target-next": "^0.6.4"
+    "sourcebit": "^0.11.0"
   },
   "devDependencies": {
+    "@types/find-cache-dir": "^3.2.1",
+    "@types/fs-extra": "^9.0.13",
     "@types/mock-fs": "^4.13.1",
     "@types/webpack": "^5.0.0",
     "mock-fs": "^5.1.1"
