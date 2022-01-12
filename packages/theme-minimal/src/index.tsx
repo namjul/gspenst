@@ -1,62 +1,30 @@
-import Head from 'next/head'
-import { Box, lightTheme, darkTheme } from '@gspenst/components'
-import { ThemeProvider, ThemeSwitch } from '@gspenst/next/components'
-import type { ReactNode } from 'react'
+import * as React from 'react'
+import { lightTheme, darkTheme } from '@gspenst/components'
+import { ThemeProvider } from '@gspenst/next/components'
 import type { NextPage } from 'next'
-import type { Config, PageProps } from '@gspenst/next'
+import type { Entry } from '@gspenst/next'
+import { get } from '@gspenst/utils'
+import getComponent from './components-registry'
 
-export type ThemeOptions = {
-  darkMode?: boolean
-  head?: JSX.Element
-  footer?: JSX.Element
-}
+export const Page: NextPage<Entry> = (entry) => {
+  const { children } = entry
 
-const Layout = ({
-  options,
-  children,
-}: {
-  options: ThemeOptions
-  children?: ReactNode | undefined
-}) => {
+  const layout = get(entry, '__metadata.modelName')
+
+  const PageLayout = getComponent(layout)
+
+  // if (!PageLayout) {
+  //   throw new Error(`no page layout matching the layout: ${layout}`)
+  // }
+
   return (
-    <>
-      <Head>
-        <title>title placeholder</title>
-        {options.head}
-      </Head>
-      <Box as="article" css={{ color: '$gray11', backgroundColor: '$gray2' }}>
+    <ThemeProvider light={lightTheme} dark={darkTheme}>
+      <PageLayout>
+        <pre>{JSON.stringify(entry, null, 2)}</pre>
         {children}
-        {options.darkMode && <ThemeSwitch />}
-        {options.footer}
-      </Box>
-    </>
+      </PageLayout>
+    </ThemeProvider>
   )
 }
 
-const defaultOptions = {}
-
-export default (config: Config, opts: ThemeOptions) => {
-  const options = { ...defaultOptions, ...opts }
-
-  const Page: NextPage<PageProps> = (props) => {
-    const { /*page, */ posts = [], setting, children } = props
-    return (
-      <ThemeProvider light={lightTheme} dark={darkTheme}>
-        <Layout options={options} {...config} {...props}>
-          {
-            // <h1>{page?.title}</h1>
-            // <h2>{page?.id}</h2>
-            // <section>{page?.body}</section>
-          }
-          {posts.map((post, index) => (
-            <div key={index}>{post.title}</div>
-          ))}
-          {JSON.stringify(setting, null, 2)}
-          {children}
-        </Layout>
-      </ThemeProvider>
-    )
-  }
-
-  return Page
-}
+export { getComponent }

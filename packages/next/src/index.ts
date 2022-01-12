@@ -1,2 +1,2 @@
 export { default } from './with'
-export type { Options, Config, Post, Setting, PageProps } from './types'
+export type { Entry, Options, Config, Post, Setting, PageProps } from './types'
