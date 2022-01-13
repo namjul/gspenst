@@ -3,7 +3,7 @@ import findCacheDir from 'find-cache-dir'
 import fse from 'fs-extra'
 import type { ISourcebitPlugin } from 'sourcebit'
 import { get } from '@gspenst/utils'
-import type { CacheData, PageDef, Entry, CommonPropsDef } from './types'
+import type { CacheData, PageDef, Entry, CommonPropsDef } from '../types'
 
 type SourebitPluginType = ISourcebitPlugin<{}, {}>
 
@@ -12,7 +12,7 @@ type Page = CacheData['pages'][0]
 export const FILE_CACHE_PATH = findCacheDir({
   name: '@gspenst/next',
   thunk: true,
-})?.('sourcebit-nextjs-cache.json') as string
+})?.('sourcebit-nextjs-cache.json')
 
 export const name: SourebitPluginType['name'] = 'gspenst-target-next'
 
@@ -20,7 +20,11 @@ export const bootstrap: Exclude<
   SourebitPluginType['bootstrap'],
   undefined
 > = async () => {
-  await fse.remove(FILE_CACHE_PATH)
+  if (FILE_CACHE_PATH) {
+    await fse.remove(FILE_CACHE_PATH)
+  } else {
+    throw new Error('`find-cache-dir` could not find valid cache dir')
+  }
 }
 
 export const transform: Exclude<
@@ -99,8 +103,10 @@ export const transform: Exclude<
 
   // console.log(JSON.stringify(transformedData, null, 2))
 
-  await fse.ensureFile(FILE_CACHE_PATH)
-  await fse.writeJson(FILE_CACHE_PATH, transformedData)
+  if (FILE_CACHE_PATH) {
+    await fse.ensureFile(FILE_CACHE_PATH)
+    await fse.writeJson(FILE_CACHE_PATH, transformedData)
+  }
 
   return data
 }

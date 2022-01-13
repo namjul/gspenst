@@ -5,8 +5,8 @@ import type { NextConfig } from 'next'
 // import type { Configuration } from 'webpack'
 import type { SourcebitConfig, SourcebitPlugin } from 'sourcebit'
 import type { Options /* RemarkPlugin */ } from './types'
-import * as sourcebitTargetNext from './sourcebitTargetNext'
-import * as sourcebitSourceTheme from './sourcebitSourceTheme'
+import * as sourcebitTargetNext from './sourcebit/targetNext'
+import * as sourcebitSourceTheme from './sourcebit/sourceTheme'
 
 // const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 // const markdownExtensions = ['md', 'mdx']

@@ -1,7 +1,7 @@
 import fse from 'fs-extra'
 import type { GetStaticPropsContext } from 'next'
 import { toArray } from '@gspenst/utils'
-import { FILE_CACHE_PATH } from './sourcebitTargetNext'
+import { FILE_CACHE_PATH } from './sourcebit/targetNext'
 import type {
   Entry,
   EntryRelationship,
@@ -51,12 +51,12 @@ export async function getData(): Promise<CacheData> {
   //   was changed, but also can't access the specified path because
   //   nextjs re-imports the whole module when this method is called
 
-  const cacheFileExists = new Promise<void>((resolve, reject) => {
+  const cacheFileExists = new Promise<string>((resolve, reject) => {
     const retryDelay = 500
     const maxNumOfRetries = 10
     let numOfRetries = 0
     const checkPathExists = async () => {
-      const pathExists = await fse.pathExists(FILE_CACHE_PATH)
+      const pathExists = await fse.pathExists(FILE_CACHE_PATH ?? '')
       if (!pathExists && numOfRetries < maxNumOfRetries) {
         numOfRetries += 1
         console.log(
@@ -64,7 +64,7 @@ export async function getData(): Promise<CacheData> {
         )
         setTimeout(checkPathExists, retryDelay)
       } else if (pathExists) {
-        resolve()
+        resolve(FILE_CACHE_PATH as string)
       } else {
         reject(
           new Error(
@@ -76,9 +76,9 @@ export async function getData(): Promise<CacheData> {
     void checkPathExists()
   })
 
-  await cacheFileExists
+  const fileCachePath = await cacheFileExists
 
-  return fse.readJson(FILE_CACHE_PATH)
+  return fse.readJson(fileCachePath)
 }
 
 export async function getEntries<T extends Entry>(

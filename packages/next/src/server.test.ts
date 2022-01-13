@@ -1,12 +1,12 @@
 import path from 'path'
 import mock from 'mock-fs'
 import { getData, getEntries, getEntry, getPaths, getAllPaths } from './server'
-import { FILE_CACHE_PATH } from './sourcebitTargetNext'
+import { FILE_CACHE_PATH } from './sourcebit/targetNext'
 import type { Post, Author } from './types'
 
 beforeEach(() => {
   mock({
-    [FILE_CACHE_PATH]: mock.load(
+    [FILE_CACHE_PATH as string]: mock.load(
       path.resolve(__dirname, '__fixtures__/data.json')
     ),
   })
