@@ -1,6 +1,6 @@
 import type { MetaData } from 'sourcebit'
-import type { Options as MDXOptions } from '@mdx-js/mdx'
-import { Dict, Unpacked } from '@gspenst/utils'
+// import type { Options as MDXOptions } from '@mdx-js/mdx'
+import { Dict /*, Unpacked */ } from '@gspenst/utils'
 
 type Plugin = {
   resolve: string
@@ -10,16 +10,16 @@ type Plugin = {
 export type Options = {
   theme: string
   themeConfig?: string
-  mdxOptions?: MDXOptions
+  // mdxOptions?: MDXOptions
   sources?: {
     sample: boolean
   }
   plugins?: Plugin[]
 }
 
-export type RemarkPlugin = Unpacked<
-  Exclude<MDXOptions['remarkPlugins'], undefined>
->
+// export type RemarkPlugin = Unpacked<
+//   Exclude<MDXOptions['remarkPlugins'], undefined>
+// >
 
 export type Config = {
   filename: string
@@ -49,16 +49,18 @@ export type PageDef = {
   type: string
 }
 
+export type CommonPropsDef = {
+  [key: string]: { single?: boolean; type: string }
+}
+
 export type CacheData = {
   entries: {
     [id: UniqueId]: Entry
   }
   pages: { path: string; id: UniqueId }[]
-  // props: {
-  //   posts: UniqueId[],
-  //   pags: UniqueId[],
-  //   config: Settings
-  // }
+  props: {
+    [propName: string]: Dict | Dict[]
+  }
 }
 
 /* ------------------------------ Domain Type ------------------------------ */
@@ -96,4 +98,4 @@ export type Setting = Entry<{
   // navigation: []
 }>
 
-export type PageProps = { setting: Setting; posts: Post[] }
+export type PageProps = { entry?: Entry; props: Dict }

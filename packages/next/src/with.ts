@@ -5,14 +5,23 @@ import type { NextConfig } from 'next'
 // import type { Configuration } from 'webpack'
 import type { SourcebitConfig, SourcebitPlugin } from 'sourcebit'
 import type { Options /* RemarkPlugin */ } from './types'
-import * as sourcebitNextTarget from './sourcebitNextTarget'
+import * as sourcebitTargetNext from './sourcebitTargetNext'
+import * as sourcebitSourceTheme from './sourcebitSourceTheme'
 
 // const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 // const markdownExtensions = ['md', 'mdx']
 // const markdownExtensionTest = /\.mdx?$/
 
-export default (options: Options) =>
+export default (...args: Array<string | Options>) =>
   (nextConfig: NextConfig = {}): NextConfig => {
+    const options =
+      typeof args[0] === 'string'
+        ? {
+            theme: args[0],
+            themeConfig: args[1] as string,
+          }
+        : args[0]
+
     // const pageExtensions = nextConfig.pageExtensions ?? [
     //   ...defaultExtensions,
     //   ...markdownExtensions,
@@ -34,7 +43,11 @@ export default (options: Options) =>
       plugins: [
         ...sourcePlugins,
         {
-          module: sourcebitNextTarget,
+          module: sourcebitSourceTheme,
+          options,
+        },
+        {
+          module: sourcebitTargetNext,
         },
       ],
     }

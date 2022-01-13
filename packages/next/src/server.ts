@@ -1,8 +1,16 @@
 import fse from 'fs-extra'
 import type { GetStaticPropsContext } from 'next'
 import { toArray } from '@gspenst/utils'
-import { FILE_CACHE_PATH } from './sourcebitNextTarget'
-import type { Entry, EntryRelationship, EntryPath, CacheData } from './types'
+import { FILE_CACHE_PATH } from './sourcebitTargetNext'
+import type {
+  Entry,
+  EntryRelationship,
+  EntryPath,
+  CacheData,
+  PageProps,
+} from './types'
+
+// See for possible other data-server utils https://github.com/stackbit-themes/starter-nextjs-theme/blob/e2ea382944a211b36d3c23a071cbe51d724d4b9c/src/utils/data-utils.js
 
 // export type NodeFrontMatter = Record<string, unknown>
 //
@@ -185,8 +193,8 @@ export async function getAllPaths(): Promise<string[]> {
 
 export async function getPageProps(
   context: string | GetStaticPropsContext<NodeJS.Dict<string | string[]>>
-): Promise<Record<string, unknown>> {
-  const { entries, pages } = await getData()
+): Promise<PageProps> {
+  const { entries, pages, props } = await getData()
 
   const slug =
     typeof context === 'string'
@@ -199,5 +207,5 @@ export async function getPageProps(
 
   const page = pages.find(({ path }) => path === pagePath)
   const entry = page ? entries[page.id] : undefined
-  return { ...entry }
+  return { entry, props }
 }

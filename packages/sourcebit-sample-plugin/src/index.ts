@@ -5,10 +5,6 @@ import pkg from '../package.json'
 import dataEntries from './data.json'
 import type { Tag, Author, Post, Page, Setting } from './types'
 
-export const name: ISourcebitPlugin['name'] = pkg.name
-
-type Options = {}
-
 type Entry = Tag | Author | Post | Page | Setting
 
 type TagFields = Array<keyof Tag>
@@ -25,7 +21,9 @@ export type ContextType = {
   models?: Models
 }
 
-type SourebitPluginType = ISourcebitPlugin<Options, ContextType>
+type SourebitPluginType = ISourcebitPlugin<{}, ContextType>
+
+export const name: SourebitPluginType['name'] = pkg.name
 
 export const options: Exclude<SourebitPluginType['options'], undefined> = {}
 

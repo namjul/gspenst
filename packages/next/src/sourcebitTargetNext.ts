@@ -3,9 +3,9 @@ import findCacheDir from 'find-cache-dir'
 import fse from 'fs-extra'
 import type { ISourcebitPlugin } from 'sourcebit'
 import { get } from '@gspenst/utils'
-import type { CacheData, PageDef, Entry } from './types'
+import type { CacheData, PageDef, Entry, CommonPropsDef } from './types'
 
-type SourebitPluginType = ISourcebitPlugin
+type SourebitPluginType = ISourcebitPlugin<{}, {}>
 
 type Page = CacheData['pages'][0]
 
@@ -14,7 +14,7 @@ export const FILE_CACHE_PATH = findCacheDir({
   thunk: true,
 })?.('sourcebit-nextjs-cache.json') as string
 
-export const name: ISourcebitPlugin['name'] = 'gspenst-target-next'
+export const name: SourebitPluginType['name'] = 'gspenst-target-next'
 
 export const bootstrap: Exclude<
   SourebitPluginType['bootstrap'],
@@ -58,6 +58,7 @@ export const transform: Exclude<
       type: 'tag',
     },
   ]
+
   const pages = pageDefs.reduce<Page[]>((accum, pageDef) => {
     const pageObjects = objects.filter(
       (object) => object.__metadata.modelName === pageDef.type
@@ -76,12 +77,27 @@ export const transform: Exclude<
     }, accum)
   }, [])
 
+  const commonPropsDefs: CommonPropsDef = {
+    settings: { single: true, type: 'theme-config' },
+  }
+
+  const props = Object.entries(commonPropsDefs).reduce((accum, commonDef) => {
+    const [propName, { single, type }] = commonDef
+    return {
+      ...accum,
+      [propName]: single
+        ? objects.find((object) => object.__metadata.modelName === type)
+        : objects.filter((object) => object.__metadata.modelName === type),
+    }
+  }, {})
+
   const transformedData: CacheData = {
     entries,
     pages,
+    props,
   }
 
-  console.log(JSON.stringify(transformedData, null, 2))
+  // console.log(JSON.stringify(transformedData, null, 2))
 
   await fse.ensureFile(FILE_CACHE_PATH)
   await fse.writeJson(FILE_CACHE_PATH, transformedData)

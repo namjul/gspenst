@@ -81,7 +81,8 @@
       },
       {
         "files": [
-          "packages/**/*.ts?(x)"
+          "packages/**/*.ts?(x)",
+          "typings/**/*.ts?(x)"
         ],
         "rules": {
           "@typescript-eslint/no-explicit-any": "off"

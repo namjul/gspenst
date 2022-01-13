@@ -4,6 +4,8 @@ const { default: withGspenst } = require('@gspenst/next')
  * @type {import('@gspenst/next')}
  */
 module.exports = withGspenst({
+  theme: '@gspenst/theme-minimal',
+  themeConfig: './theme.config.js',
   sources: {
     // ghost: true,
     // local: true,

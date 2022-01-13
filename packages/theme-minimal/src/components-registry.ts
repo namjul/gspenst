@@ -19,8 +19,12 @@ const components = {
 
 export default function getComponent<
   T extends LiteralUnion<keyof typeof components, string>
->(key: T) {
-  return (
-    components as typeof components & { [componentName: string]: ComponentType }
-  )[key]
+>(key: T | undefined | null) {
+  return key
+    ? (
+        components as typeof components & {
+          [componentName: string]: ComponentType
+        }
+      )[key]
+    : undefined
 }
