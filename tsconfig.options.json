@@ -18,8 +18,8 @@
     "forceConsistentCasingInFileNames": true, // When this option is set, TypeScript will issue an error if a program tries to include a file by a casing different from the casing on disk. (makes it case-sensitive)
 
     // Typechecking Options
-    "strictNullChecks": true
-    // "noUncheckedIndexedAccess": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
     // "strictFunctionTypes": true,
     // "strictPropertyInitialization": true,
     // "noFallthroughCasesInSwitch": true,

@@ -147,7 +147,9 @@ function compareReports(
     if (metricFilter.includes(auditObj)) {
       const fromResult = from.audits[auditObj]
       const toResult = to.audits[auditObj]
-      data.push(formatChange(fromResult, toResult, threshold))
+      if (fromResult && toResult) {
+        data.push(formatChange(fromResult, toResult, threshold))
+      }
     }
   }
   if (tableView) {
@@ -191,7 +193,7 @@ function saveReports(reports: LighthouseResult[]) {
 
   return reports.length > 1
     ? dir
-    : path.resolve(dir, `${reportToName(reports[0])}.json`)
+    : path.resolve(dir, `${reportToName(reports[0] as LighthouseResult)}.json`)
 }
 
 const getContent = (filePath: Path): LighthouseResult => {

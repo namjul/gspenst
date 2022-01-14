@@ -49,23 +49,24 @@ test('entry can be retrieved using both and context', async () => {
 
 test('entries relationships are properly attached', async () => {
   const post = await getEntry<Post>('post', 'lewus')
+  const tag = post?.relationships?.tag
   expect(post?.slug).toBe('lewus')
   expect(post?.relationships).toBeTruthy()
-  expect(post?.relationships?.tag.length).toBe(2)
-  expect(post?.relationships?.tag[0].name).toBe('Jerome Neal')
-  expect(post?.relationships?.tag[1].name).toBe('Terry Armstrong')
+  expect(tag?.length).toBe(2)
+  expect(tag?.[0]?.name).toBe('Jerome Neal')
+  expect(tag?.[1]?.name).toBe('Terry Armstrong')
 })
 
 test('gets all entry paths', async () => {
   const paths = await getPaths()
   expect(paths).toHaveLength(41)
-  expect(paths[0].params.slug).toBeTruthy()
+  expect(paths[0]?.params.slug).toBeTruthy()
 })
 
 test('get paths for specific model', async () => {
   const paths = await getPaths('post')
   expect(paths).toHaveLength(10)
-  expect(paths[0].params.slug).toBeTruthy()
+  expect(paths[0]?.params.slug).toBeTruthy()
 })
 
 test('getAllPaths', async () => {

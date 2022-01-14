@@ -28,7 +28,7 @@ export default (...args: Array<string | Options>) =>
     // ]
 
     const pluginSuffix = '@gspenst/sourcebit'
-    const sourcePlugins: SourcebitPlugin[] = (options.plugins ?? []).map(
+    const sourcePlugins: SourcebitPlugin[] = (options?.plugins ?? []).map(
       (plugin) => ({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         module: require(`${pluginSuffix}-${plugin.resolve.replace(
