@@ -237,7 +237,7 @@ function getReportPaths() {
 async function main(argv: Argv) {
   const _dirName = argv.outDir ?? createDirNameFromUrl(argv.url)
 
-  workingDir = path.resolve(String(argv._[0] || './'))
+  workingDir = path.resolve(String(argv._[0] ?? './'))
   dirName = path.resolve(workingDir, _dirName)
 
   const reportPaths = getReportPaths()
