@@ -11,6 +11,14 @@ const components = {
     const Comp = import('./components/PageLayout').then((mod) => mod.default)
     return Comp
   }),
+  author: dynamic(() => {
+    const Comp = import('./components/PageLayout').then((mod) => mod.default)
+    return Comp
+  }),
+  tag: dynamic(() => {
+    const Comp = import('./components/PageLayout').then((mod) => mod.default)
+    return Comp
+  }),
   post: dynamic(() => {
     const Comp = import('./components/PostLayout').then((mod) => mod.default)
     return Comp
