@@ -1,3 +1,4 @@
+import withPreconstruct from '@preconstruct/next'
 import sourcebit from 'sourcebit'
 // import remarkGfm from 'remark-gfm'
 
@@ -54,7 +55,7 @@ export default (...args: Array<string | Options>) =>
 
     sourcebit.fetch(sourcebitConfig)
 
-    return {
+    return withPreconstruct({
       ...nextConfig,
       // pageExtensions,
       // webpack(config: Configuration, context) {
@@ -90,5 +91,5 @@ export default (...args: Array<string | Options>) =>
         esmExternals: true,
         // externalDir: true,
       },
-    }
+    })
   }
