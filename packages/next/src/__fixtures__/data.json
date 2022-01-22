@@ -10,7 +10,7 @@
       "featured": false,
       "type": "post",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "e5a63f2e-4972-5932-bdd0-a9b7cd059e6c",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -31,7 +31,7 @@
       "type": "post",
       "tag": ["buje", "fuegu"],
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "efdf0871-9ca3-5245-ac7d-c4b52eb79b63",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -51,7 +51,7 @@
       "featured": true,
       "type": "post",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "3f86b815-f433-5c06-9e02-dc300bbf1f45",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -71,7 +71,7 @@
       "featured": true,
       "type": "post",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "4f24afbd-de79-5cd9-b103-36a37bed3656",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -91,7 +91,7 @@
       "featured": true,
       "type": "post",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "1eb1c2ec-a593-5cf7-9326-cab341fa910f",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -111,7 +111,7 @@
       "featured": true,
       "type": "post",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "740164e3-316c-5cfd-aa59-99fb96a124c1",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -131,7 +131,7 @@
       "featured": true,
       "type": "post",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "b6c99317-1303-52d6-9f2b-a6b735863ed1",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -151,7 +151,7 @@
       "featured": true,
       "type": "post",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "b8c96004-0f38-5f25-ac57-6f86a6563172",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -171,7 +171,7 @@
       "featured": true,
       "type": "post",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "79d859e6-100e-5b88-a737-801bb6180bc8",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -191,7 +191,7 @@
       "featured": false,
       "type": "post",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "3d9c5eee-4a22-5624-b92e-b989eaee525d",
         "modelName": "post",
         "modelLabel": "Posts",
@@ -211,7 +211,7 @@
       "featured": true,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "238a9def-44a0-5a41-854c-96aa51129f0f",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -231,7 +231,7 @@
       "featured": true,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "b0afba5a-bf02-52cf-9a1a-a4efc41fe147",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -251,7 +251,7 @@
       "featured": true,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "301a400e-372f-5858-93c2-f0df1726d935",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -271,7 +271,7 @@
       "featured": true,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "38540559-5bed-5041-b153-c3957e8eb68a",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -291,7 +291,7 @@
       "featured": false,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "a0f55711-e452-54ba-8f33-d64d05da7128",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -311,7 +311,7 @@
       "featured": false,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "6a5cccdf-7967-5dea-9001-a69eb7ac5847",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -331,7 +331,7 @@
       "featured": false,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "11e95d16-83fe-5570-9f0e-4759ecc9e435",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -351,7 +351,7 @@
       "featured": true,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "ecfa03a9-6806-5aa3-9ad1-2d72cf5c6beb",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -371,7 +371,7 @@
       "featured": false,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "86144fca-c61a-556a-a28f-aca8f8ad298e",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -391,7 +391,7 @@
       "featured": false,
       "type": "page",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "c1a54763-d0c3-5b27-8bc3-9d363d8da1ef",
         "modelName": "page",
         "modelLabel": "Pages",
@@ -410,7 +410,7 @@
       "thumbnail": "//www.gravatar.com/avatar/f27a41b501c4665d3f7cb87da69e9da8",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "1bfa072a-6155-502c-a310-0f48b6a6b272",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -429,7 +429,7 @@
       "thumbnail": "//www.gravatar.com/avatar/5de15aa7d7948779bd2cf7ca0e340109",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "d9c1118f-c6e5-53fa-b470-9ef58796f957",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -448,7 +448,7 @@
       "thumbnail": "//www.gravatar.com/avatar/4533cbcadba190107048d7952d0c5649",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "20b8147e-d805-5687-8535-25e73290584d",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -467,7 +467,7 @@
       "thumbnail": "//www.gravatar.com/avatar/40c06ec1f091d844b3cd95b13bf9da23",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "f50d961a-7b70-55a3-a7eb-529771cb3b75",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -486,7 +486,7 @@
       "thumbnail": "//www.gravatar.com/avatar/c9c3017d0e483b9f058119e6a0fe4242",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "baa27bc0-dd3b-574a-b933-8b1dd32c8ddf",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -505,7 +505,7 @@
       "thumbnail": "//www.gravatar.com/avatar/2ecb9e0cfca3eafd39ca0f6c85959796",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "6d6249d5-d707-5d91-899f-b2ca66d363bb",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -524,7 +524,7 @@
       "thumbnail": "//www.gravatar.com/avatar/297f586792b27ac32837729bfb0eeda1",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "47bcb2d5-5711-5045-a595-68c8bcd78b24",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -543,7 +543,7 @@
       "thumbnail": "//www.gravatar.com/avatar/753ad70ab0941374cbd01cf36ed48998",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "b526f345-91d4-5046-9533-34a3bfc34d08",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -562,7 +562,7 @@
       "thumbnail": "//www.gravatar.com/avatar/47218e08d5bd75a59632117920a2fe4f",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "9f8e249a-1460-513d-8cea-564129442b03",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -581,7 +581,7 @@
       "thumbnail": "//www.gravatar.com/avatar/d6b2f62134256840044ceb96e73b1221",
       "type": "author",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "8482c6e3-c0a6-5e69-b8b0-d06201fb6310",
         "modelName": "author",
         "modelLabel": "Authors",
@@ -599,7 +599,7 @@
       "color": "rgba(185,234,190,0.4406)",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "fb118743-af96-5f4e-984c-471dc6a9507d",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -617,7 +617,7 @@
       "color": "LightSkyBlue",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "472396ef-19e0-5f1f-911b-b6a480699bf2",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -635,7 +635,7 @@
       "color": "#b8791c",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "504e0f92-8637-50a2-9a31-9b8183f0c112",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -653,7 +653,7 @@
       "color": "#3bd",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "dc6f81b7-5d2e-5b30-948a-98ae791fe06c",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -671,7 +671,7 @@
       "color": "0x216ced",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "41e89a5a-9cf1-53c6-a766-cbf06a2def6c",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -689,7 +689,7 @@
       "color": "LightYellow",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "af59dc8e-d79b-55f9-87b4-76bc67619b7a",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -707,7 +707,7 @@
       "color": "Olive",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "bdc0a69b-c54c-5617-8e65-f4d3950e269f",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -725,7 +725,7 @@
       "color": "0x471858",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "95c5d087-6eee-59af-9c20-cd7087d7cc91",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -743,7 +743,7 @@
       "color": "#c5a",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "72607ec1-be9d-5a42-a4ae-e86efb4eb219",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -761,7 +761,7 @@
       "color": "0xc9c70e",
       "type": "tag",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "e2d40768-0148-5465-a85c-a716c165529f",
         "modelName": "tag",
         "modelLabel": "Tags",
@@ -778,7 +778,7 @@
       "description": "Rare hoza kejfup al mij zitojig tu duh fom fidenhan soac acjam te.",
       "type": "setting",
       "__metadata": {
-        "source": "@gspenst/sourcebit-sample-plugin",
+        "source": "@gspenst/source-sample",
         "id": "ae6ff7ed-8bba-5fc4-9c16-55331ede4f78",
         "modelName": "setting",
         "modelLabel": "Settings",

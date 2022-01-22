@@ -6,15 +6,12 @@ const { default: withGspenst } = require('@gspenst/next')
 module.exports = withGspenst({
   theme: '@gspenst/theme-minimal',
   themeConfig: './theme.config.js',
-  sources: {
-    // ghost: true,
-    // local: true,
-    sample: true,
-  },
-  plugins: [
+  sources: [
     {
-      resolve: 'sample-plugin',
-      options: {},
+      resolve: 'sample',
+      options: {
+        // disable: true
+      },
     },
     // {
     //   resolve: '@gspenst/source-ghost-plugin',

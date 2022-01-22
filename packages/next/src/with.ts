@@ -28,15 +28,15 @@ export default (...args: Array<string | Options>) =>
     //   ...markdownExtensions,
     // ]
 
-    const pluginSuffix = '@gspenst/sourcebit'
-    const sourcePlugins: SourcebitPlugin[] = (options?.plugins ?? []).map(
-      (plugin) => ({
+    const pluginSuffix = '@gspenst/source'
+    const sourcePlugins: SourcebitPlugin[] = (options?.sources ?? []).map(
+      (source) => ({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        module: require(`${pluginSuffix}-${plugin.resolve.replace(
+        module: require(`${pluginSuffix}-${source.resolve.replace(
           `${pluginSuffix}-`,
           ''
         )}`), // eslint - disable - line @typescript-eslint / no - unsafe - assignment
-        options: plugin.options,
+        options: source.options,
       })
     )
 

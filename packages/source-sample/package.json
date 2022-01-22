@@ -1,5 +1,5 @@
 {
-  "name": "@gspenst/sourcebit-sample-plugin",
+  "name": "@gspenst/source-sample",
   "version": "0.0.1",
   "description": "",
   "homepage": "https://github.com/namjul/gspenst#readme",
@@ -12,11 +12,10 @@
   },
   "license": "ISC",
   "author": "",
-  "main": "dist/gspenst-sourcebit-sample-plugin.cjs.js",
-  "module": "dist/gspenst-sourcebit-sample-plugin.esm.js",
+  "main": "dist/gspenst-source-sample.cjs.js",
+  "module": "dist/gspenst-source-sample.esm.js",
   "scripts": {
     "gen": "./src/data.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
