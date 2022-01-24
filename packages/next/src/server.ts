@@ -94,19 +94,30 @@ export async function getEntries<T extends Entry>(
     ) as T[]
   }
 
-  entries.map(async (entry) => ({
-    ...entry,
-    relationships: await getEntryRelationships(entry),
-  }))
-
-  return entries as T[]
+  return Promise.all<T>(
+    entries.map(
+      async (entry) =>
+        ({
+          ...entry,
+          relationships: await getEntryRelationships(entry),
+        } as T)
+    )
+  )
 }
 
 export async function getEntry<T extends Entry>(
   modelName: string,
   context: string | GetStaticPropsContext<NodeJS.Dict<string | string[]>>
 ): Promise<T | null> {
-  const entries = await getEntries()
+  const data = await getData()
+
+  let entries = Object.values(data.entries)
+
+  if (modelName) {
+    entries = entries.filter(
+      (entry) => entry.__metadata.modelName === modelName
+    ) as T[]
+  }
 
   if (!entries.length) return null
 
@@ -152,10 +163,7 @@ async function getEntryRelationships(entry: Entry): Promise<EntryRelationship> {
     // @ts-expect-error -- getEntry can be `null` but we don't care here
     // eslint-disable-next-line no-await-in-loop
     relationships[fieldName] = await Promise.all(
-      valueAsArray.map(async (value) => {
-        const x = await getEntry(fieldName, String(value))
-        return x
-      })
+      valueAsArray.map(async (value) => getEntry(fieldName, String(value)))
     )
   }
 
