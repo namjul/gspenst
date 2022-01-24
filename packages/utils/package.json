@@ -9,5 +9,8 @@
   },
   "devDependencies": {
     "type-fest": "^2.8.0"
+  },
+  "dependencies": {
+    "dot-prop": "^7.1.0"
   }
 }

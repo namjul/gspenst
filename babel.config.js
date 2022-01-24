@@ -23,4 +23,9 @@ module.exports = {
     // Also consider monorepo packages "root" and load their .babelrc.json files.
     './packages/*',
   ],
+  env: {
+    test: {
+      plugins: ['@babel/plugin-transform-modules-commonjs'],
+    },
+  },
 }
