@@ -36,9 +36,9 @@ declare module 'sourcebit' {
     options?: {
       [key in keyof SourcebitPluginOptions]?: {
         default: typeof SourcebitPluginOptions[key] // The value to be used for this option in case one hasn't been supplied
-        env: string // The name of an environment variable to read the value from
-        private: boolean // Whether the option represents sensitive information and therefore should be stored in a .env file, rather than the main configuration file
-        runtimeParameter: string // The name of a runtime parameter (e.g. CLI parameter) to read the value from. When present, the value of the parameter overrides any value defined in the configuration file.
+        env?: string // The name of an environment variable to read the value from
+        private?: boolean // Whether the option represents sensitive information and therefore should be stored in a .env file, rather than the main configuration file
+        runtimeParameter?: string // The name of a runtime parameter (e.g. CLI parameter) to read the value from. When present, the value of the parameter overrides any value defined in the configuration file.
       }
     }
     bootstrap?: (obj: {
@@ -48,7 +48,7 @@ declare module 'sourcebit' {
       setPluginContext: (opts: Context) => void
       options: SourcebitPluginOptions
       refresh: () => void
-    }) => void
+    }) => void | Promise<void>
     transform?: (obj: {
       log: (msg: string) => void
       debug: (msg: string) => void

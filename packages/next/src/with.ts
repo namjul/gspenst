@@ -56,6 +56,7 @@ export default (...args: Array<string | Options>) =>
     sourcebit.fetch(sourcebitConfig)
 
     return withPreconstruct({
+      // eslint-disable-line @typescript-eslint/no-unsafe-call
       ...nextConfig,
       // pageExtensions,
       // webpack(config: Configuration, context) {
