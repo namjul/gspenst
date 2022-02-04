@@ -1,7 +1,8 @@
 import { staticRequest } from "tinacms";
 import { TinaMarkdown } from "tinacms/dist/rich-text";
-import { Layout } from "../components/Layout";
+import { View } from '@gspenst/components'
 import { useTina } from "tinacms/dist/edit-state";
+import { Layout } from "../components/Layout";
 
 const query = `{
   getPageDocument(relativePath: "home.mdx"){
@@ -22,6 +23,7 @@ export default function Home(props) {
   const content = data.getPageDocument.data.body;
   return (
     <Layout>
+      <View>component from @gspenst/components</View>
       <TinaMarkdown content={content} />
     </Layout>
   );
