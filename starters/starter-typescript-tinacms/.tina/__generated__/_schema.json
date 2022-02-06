@@ -17,10 +17,15 @@
           "label": "Main Content",
           "type": "rich-text",
           "isBody": true,
-          "namespace": ["page", "body"]
+          "namespace": [
+            "page",
+            "body"
+          ]
         }
       ],
-      "namespace": ["page"]
+      "namespace": [
+        "page"
+      ]
     },
     {
       "label": "Blog Posts",
@@ -31,7 +36,10 @@
           "type": "string",
           "label": "Title",
           "name": "title",
-          "namespace": ["post", "title"]
+          "namespace": [
+            "post",
+            "title"
+          ]
         },
         {
           "type": "string",
@@ -41,10 +49,15 @@
           "ui": {
             "component": "textarea"
           },
-          "namespace": ["post", "body"]
+          "namespace": [
+            "post",
+            "body"
+          ]
         }
       ],
-      "namespace": ["post"]
+      "namespace": [
+        "post"
+      ]
     }
   ]
 }
