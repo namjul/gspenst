@@ -146,7 +146,7 @@ async function readDirRecursively(
   return result.flat()
 }
 
-// TODO use https://www.npmjs.com/package/slash
+// TODO use https://www.npmjs.com/package/slash or normalize-path
 function convertPathToPosix(p: string) {
   if (path.sep === path.posix.sep) {
     return p

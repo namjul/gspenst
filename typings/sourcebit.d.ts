@@ -29,8 +29,8 @@ declare module 'sourcebit' {
 
   // https://github.com/stackbit/sourcebit/wiki/Plugin-API
   export type ISourcebitPlugin<
-    SourcebitPluginOptions extends { [key: string]: unknown },
-    Context
+    SourcebitPluginOptions extends { [key: string]: unknown } = {},
+    Context = {}
   > = {
     name: string
     options?: {

@@ -4,49 +4,22 @@ import sourcebit from 'sourcebit'
 
 import type { NextConfig } from 'next'
 // import type { Configuration } from 'webpack'
-import type { SourcebitConfig, SourcebitPlugin } from 'sourcebit'
-import type { Options /* RemarkPlugin */ } from './types'
+import type { SourcebitConfig } from 'sourcebit'
 import * as sourcebitTargetNext from './sourcebit/targetNext'
-import * as sourcebitSourceTheme from './sourcebit/sourceTheme'
 
 // const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 // const markdownExtensions = ['md', 'mdx']
 // const markdownExtensionTest = /\.mdx?$/
 
-export default (...args: Array<string | Options>) =>
+export default () =>
   (nextConfig: NextConfig = {}): NextConfig => {
-    const options =
-      typeof args[0] === 'string'
-        ? {
-            theme: args[0],
-            themeConfig: args[1] as string,
-          }
-        : args[0]
-
     // const pageExtensions = nextConfig.pageExtensions ?? [
     //   ...defaultExtensions,
     //   ...markdownExtensions,
     // ]
 
-    const pluginSuffix = '@gspenst/source'
-    const sourcePlugins: SourcebitPlugin[] = (options?.sources ?? []).map(
-      (source) => ({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        module: require(`${pluginSuffix}-${source.resolve.replace(
-          `${pluginSuffix}-`,
-          ''
-        )}`), // eslint - disable - line @typescript-eslint / no - unsafe - assignment
-        options: source.options,
-      })
-    )
-
     const sourcebitConfig: SourcebitConfig = {
       plugins: [
-        ...sourcePlugins,
-        {
-          module: sourcebitSourceTheme,
-          options,
-        },
         {
           module: sourcebitTargetNext,
         },
