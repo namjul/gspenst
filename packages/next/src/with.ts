@@ -5,6 +5,7 @@ import sourcebit from 'sourcebit'
 import type { NextConfig } from 'next'
 // import type { Configuration } from 'webpack'
 import type { SourcebitConfig } from 'sourcebit'
+import * as sourcebitSourceTina from '@gspenst/source-tina'
 import * as sourcebitTargetNext from './sourcebit/targetNext'
 
 // const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
@@ -20,6 +21,9 @@ export default () =>
 
     const sourcebitConfig: SourcebitConfig = {
       plugins: [
+        {
+          module: sourcebitSourceTina,
+        },
         {
           module: sourcebitTargetNext,
         },
