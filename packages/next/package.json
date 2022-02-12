@@ -8,12 +8,13 @@
   },
   "dependencies": {
     "@gspenst/components": "^0.0.1",
-    "@gspenst/source-tina": "^0.0.1",
     "@gspenst/utils": "^0.0.1",
     "@mdx-js/loader": "^2.0.0-next.9",
     "@mdx-js/mdx": "^2.0.0-next.9",
     "@preconstruct/next": "^3.0.1",
+    "@tinacms/cli": "^0.60.5",
     "cross-spawn": "^7.0.3",
+    "debug": "^4.3.3",
     "find-cache-dir": "^3.3.2",
     "fs-extra": "^10.0.0",
     "gray-matter": "^4.0.3",
@@ -21,6 +22,7 @@
     "remark-gfm": "^1.0.0"
   },
   "devDependencies": {
+    "@types/cross-spawn": "^6.0.2",
     "@types/find-cache-dir": "^3.2.1",
     "@types/fs-extra": "^9.0.13",
     "@types/mock-fs": "^4.13.1",

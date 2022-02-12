@@ -2,7 +2,10 @@ import path from 'path'
 import { once } from 'events'
 import fse from 'fs-extra'
 import spawn from 'cross-spawn'
+import debug from 'debug'
 import type { Options } from './types'
+
+const log = debug('@gspenst/next')
 
 export async function startTinaServer(options?: Options) {
   if (!options?.theme) {
@@ -25,7 +28,6 @@ export async function startTinaServer(options?: Options) {
     fse.removeSync(dest)
   })
 
-  console.debug('spawning tina graphql server')
   const ps = spawn('tinacms', ['server:start', '--noSDK', '--noWatch'], {
     cwd: packagePath,
   })
@@ -36,13 +38,11 @@ export async function startTinaServer(options?: Options) {
       const [data] = (await once(ps.stdout, 'data')) as Buffer[] // eslint-disable-line no-await-in-loop
       const msg = data?.toString().trim()
       if (msg) {
-        console.debug(msg)
+        log(msg)
         if (msg.includes('port: 4001')) {
           flag = false
         }
       }
     }
   }
-
-  console.log('Tina graphql server ready to serve!')
 }
