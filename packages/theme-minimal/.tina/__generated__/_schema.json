@@ -17,26 +17,40 @@
           "type": "string",
           "label": "Title",
           "name": "title",
-          "namespace": ["posts", "title"]
+          "namespace": [
+            "posts",
+            "title"
+          ]
         },
         {
           "type": "image",
           "name": "heroImg",
           "label": "Hero Image",
-          "namespace": ["posts", "heroImg"]
+          "namespace": [
+            "posts",
+            "heroImg"
+          ]
         },
         {
           "type": "rich-text",
           "label": "Excerpt",
           "name": "excerpt",
-          "namespace": ["posts", "excerpt"]
+          "namespace": [
+            "posts",
+            "excerpt"
+          ]
         },
         {
           "type": "reference",
           "label": "Author",
           "name": "author",
-          "collections": ["authors"],
-          "namespace": ["posts", "author"]
+          "collections": [
+            "authors"
+          ],
+          "namespace": [
+            "posts",
+            "author"
+          ]
         },
         {
           "type": "datetime",
@@ -46,7 +60,10 @@
             "dateFormat": "MMMM DD YYYY",
             "timeFormat": "hh:mm A"
           },
-          "namespace": ["posts", "date"]
+          "namespace": [
+            "posts",
+            "date"
+          ]
         },
         {
           "type": "rich-text",
@@ -54,10 +71,15 @@
           "name": "_body",
           "templates": [],
           "isBody": true,
-          "namespace": ["posts", "_body"]
+          "namespace": [
+            "posts",
+            "_body"
+          ]
         }
       ],
-      "namespace": ["posts"]
+      "namespace": [
+        "posts"
+      ]
     },
     {
       "label": "Authors",
@@ -68,16 +90,24 @@
           "type": "string",
           "label": "Name",
           "name": "name",
-          "namespace": ["authors", "name"]
+          "namespace": [
+            "authors",
+            "name"
+          ]
         },
         {
           "type": "string",
           "label": "Avatar",
           "name": "avatar",
-          "namespace": ["authors", "avatar"]
+          "namespace": [
+            "authors",
+            "avatar"
+          ]
         }
       ],
-      "namespace": ["authors"]
+      "namespace": [
+        "authors"
+      ]
     },
     {
       "label": "Pages",
@@ -103,16 +133,30 @@
                   "type": "rich-text",
                   "label": "Body",
                   "name": "body",
-                  "namespace": ["pages", "sections", "content", "body"]
+                  "namespace": [
+                    "pages",
+                    "sections",
+                    "content",
+                    "body"
+                  ]
                 }
               ],
-              "namespace": ["pages", "sections", "content"]
+              "namespace": [
+                "pages",
+                "sections",
+                "content"
+              ]
             }
           ],
-          "namespace": ["pages", "sections"]
+          "namespace": [
+            "pages",
+            "sections"
+          ]
         }
       ],
-      "namespace": ["pages"]
+      "namespace": [
+        "pages"
+      ]
     }
   ]
 }
