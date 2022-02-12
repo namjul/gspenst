@@ -1,4 +1,5 @@
 import withPreconstruct from '@preconstruct/next'
+import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
 import type { Options } from './types'
 import { startTinaServer } from './server'
@@ -43,6 +44,7 @@ export default (...args: [string | Options]) =>
     //   return config
     // },
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     return withPreconstruct({
       // eslint-disable-line @typescript-eslint/no-unsafe-call
       ...nextConfig,
@@ -51,38 +53,26 @@ export default (...args: [string | Options]) =>
         await startTinaServer(options)
         return nextConfig.redirects?.() ?? []
       },
-      // webpack(config: Configuration, context) {
-      //   // config.module?.rules?.push({
-      //   //   test: markdownExtensionTest,
-      //   //   use: [
-      //   //     context.defaultLoaders.babel,
-      //   //     {
-      //   //       loader: '@mdx-js/loader',
-      //   //       options: {
-      //   //         ...options.mdxOptions,
-      //   //         remarkPlugins: (options.mdxOptions?.remarkPlugins ?? []).concat(
-      //   //           [remarkGfm as RemarkPlugin]
-      //   //         ),
-      //   //       },
-      //   //     },
-      //   //     {
-      //   //       loader: '@gspenst/next/loader',
-      //   //       options: { ...options },
-      //   //     },
-      //   //   ],
-      //   // })
-      //
-      //   if (typeof nextConfig.webpack === 'function') {
-      //     return nextConfig.webpack(config, context)
-      //   }
-      //
-      //   return config
-      // },
+      webpack(config: Configuration, context) {
+        // [Prefer `module` over `main`](https://github.com/vercel/next.js/issues/9323#issuecomment-550560435)
+        // This solves the Warning: Did not expect server HTML to contain a ...
+        // Note: main/cjs entry has `require()` and module/esm `import()`
+        config.resolve = {
+          ...config.resolve,
+          mainFields: context.isServer
+            ? ['module', 'main']
+            : ['browser', 'module', 'main'],
+        }
+
+        if (typeof nextConfig.webpack === 'function') {
+          return nextConfig.webpack(config, context)
+        }
+
+        return config
+      },
       reactStrictMode: true,
       // experimental: {
-      //   // Prefer loading of ES Modules over CommonJS
-      //   esmExternals: 'loose',
-      //   externalDir: true,
+      //   externalDir: true, // seems to replace @preconstruc/next https://github.com/preconstruct/preconstruct/issues/444#issuecomment-1029218560
       // },
-    })
+    } as NextConfig)
   }
