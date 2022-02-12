@@ -1,4 +1,26 @@
 fragment PostsParts on Posts {
   title
-  body
+  heroImg
+  excerpt
+  author {
+    ... on Document {
+      id
+    }
+  }
+  date
+  _body
+}
+
+fragment AuthorsParts on Authors {
+  name
+  avatar
+}
+
+fragment PagesParts on Pages {
+  sections {
+    __typename
+    ... on PagesSectionsContent {
+      body
+    }
+  }
 }

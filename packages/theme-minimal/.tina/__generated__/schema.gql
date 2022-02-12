@@ -50,6 +50,10 @@ type Query {
   getDocumentFields: JSON!
   getPostsDocument(relativePath: String): PostsDocument!
   getPostsList(before: String, after: String, first: Float, last: Float): PostsConnection!
+  getAuthorsDocument(relativePath: String): AuthorsDocument!
+  getAuthorsList(before: String, after: String, first: Float, last: Float): AuthorsConnection!
+  getPagesDocument(relativePath: String): PagesDocument!
+  getPagesList(before: String, after: String, first: Float, last: Float): PagesConnection!
 }
 
 type DocumentConnectionEdges {
@@ -75,11 +79,17 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float): DocumentConnection!
 }
 
-union DocumentNode = PostsDocument
+union DocumentNode = PostsDocument | AuthorsDocument | PagesDocument
+
+union PostsAuthorDocument = AuthorsDocument
 
 type Posts {
   title: String
-  body: String
+  heroImg: String
+  excerpt: JSON
+  author: PostsAuthorDocument
+  date: String
+  _body: JSON
 }
 
 type PostsDocument implements Node & Document {
@@ -102,21 +112,103 @@ type PostsConnection implements Connection {
   edges: [PostsConnectionEdges]
 }
 
+type Authors {
+  name: String
+  avatar: String
+}
+
+type AuthorsDocument implements Node & Document {
+  id: ID!
+  sys: SystemInfo!
+  data: Authors!
+  form: JSON!
+  values: JSON!
+  dataJSON: JSON!
+}
+
+type AuthorsConnectionEdges {
+  cursor: String
+  node: AuthorsDocument
+}
+
+type AuthorsConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Float!
+  edges: [AuthorsConnectionEdges]
+}
+
+type PagesSectionsContent {
+  body: JSON
+}
+
+union PagesSections = PagesSectionsContent
+
+type Pages {
+  sections: [PagesSections]
+}
+
+type PagesDocument implements Node & Document {
+  id: ID!
+  sys: SystemInfo!
+  data: Pages!
+  form: JSON!
+  values: JSON!
+  dataJSON: JSON!
+}
+
+type PagesConnectionEdges {
+  cursor: String
+  node: PagesDocument
+}
+
+type PagesConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Float!
+  edges: [PagesConnectionEdges]
+}
+
 type Mutation {
   addPendingDocument(collection: String!, relativePath: String!, template: String): DocumentNode!
   updateDocument(collection: String, relativePath: String!, params: DocumentMutation!): DocumentNode!
   createDocument(collection: String, relativePath: String!, params: DocumentMutation!): DocumentNode!
   updatePostsDocument(relativePath: String!, params: PostsMutation!): PostsDocument!
   createPostsDocument(relativePath: String!, params: PostsMutation!): PostsDocument!
+  updateAuthorsDocument(relativePath: String!, params: AuthorsMutation!): AuthorsDocument!
+  createAuthorsDocument(relativePath: String!, params: AuthorsMutation!): AuthorsDocument!
+  updatePagesDocument(relativePath: String!, params: PagesMutation!): PagesDocument!
+  createPagesDocument(relativePath: String!, params: PagesMutation!): PagesDocument!
 }
 
 input DocumentMutation {
   posts: PostsMutation
+  authors: AuthorsMutation
+  pages: PagesMutation
 }
 
 input PostsMutation {
   title: String
-  body: String
+  heroImg: String
+  excerpt: JSON
+  author: String
+  date: String
+  _body: JSON
+}
+
+input AuthorsMutation {
+  name: String
+  avatar: String
+}
+
+input PagesSectionsContentMutation {
+  body: JSON
+}
+
+input PagesSectionsMutation {
+  content: PagesSectionsContentMutation
+}
+
+input PagesMutation {
+  sections: [PagesSectionsMutation]
 }
 
 schema {

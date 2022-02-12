@@ -11,6 +11,7 @@
       "label": "Blog Posts",
       "name": "posts",
       "path": "content/posts",
+      "format": "mdx",
       "fields": [
         {
           "type": "string",
@@ -19,17 +20,99 @@
           "namespace": ["posts", "title"]
         },
         {
-          "type": "string",
-          "label": "Blog Post Body",
-          "name": "body",
-          "isBody": true,
+          "type": "image",
+          "name": "heroImg",
+          "label": "Hero Image",
+          "namespace": ["posts", "heroImg"]
+        },
+        {
+          "type": "rich-text",
+          "label": "Excerpt",
+          "name": "excerpt",
+          "namespace": ["posts", "excerpt"]
+        },
+        {
+          "type": "reference",
+          "label": "Author",
+          "name": "author",
+          "collections": ["authors"],
+          "namespace": ["posts", "author"]
+        },
+        {
+          "type": "datetime",
+          "label": "Posted Date",
+          "name": "date",
           "ui": {
-            "component": "textarea"
+            "dateFormat": "MMMM DD YYYY",
+            "timeFormat": "hh:mm A"
           },
-          "namespace": ["posts", "body"]
+          "namespace": ["posts", "date"]
+        },
+        {
+          "type": "rich-text",
+          "label": "Body",
+          "name": "_body",
+          "templates": [],
+          "isBody": true,
+          "namespace": ["posts", "_body"]
         }
       ],
       "namespace": ["posts"]
+    },
+    {
+      "label": "Authors",
+      "name": "authors",
+      "path": "content/authors",
+      "fields": [
+        {
+          "type": "string",
+          "label": "Name",
+          "name": "name",
+          "namespace": ["authors", "name"]
+        },
+        {
+          "type": "string",
+          "label": "Avatar",
+          "name": "avatar",
+          "namespace": ["authors", "avatar"]
+        }
+      ],
+      "namespace": ["authors"]
+    },
+    {
+      "label": "Pages",
+      "name": "pages",
+      "path": "content/pages",
+      "fields": [
+        {
+          "type": "object",
+          "list": true,
+          "name": "sections",
+          "label": "Sections",
+          "templates": [
+            {
+              "name": "content",
+              "label": "Content",
+              "ui": {
+                "defaultItem": {
+                  "body": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede."
+                }
+              },
+              "fields": [
+                {
+                  "type": "rich-text",
+                  "label": "Body",
+                  "name": "body",
+                  "namespace": ["pages", "sections", "content", "body"]
+                }
+              ],
+              "namespace": ["pages", "sections", "content"]
+            }
+          ],
+          "namespace": ["pages", "sections"]
+        }
+      ],
+      "namespace": ["pages"]
     }
   ]
 }

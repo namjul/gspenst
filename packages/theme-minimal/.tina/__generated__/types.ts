@@ -74,6 +74,10 @@ export type Query = {
   getDocumentFields: Scalars['JSON']
   getPostsDocument: PostsDocument
   getPostsList: PostsConnection
+  getAuthorsDocument: AuthorsDocument
+  getAuthorsList: AuthorsConnection
+  getPagesDocument: PagesDocument
+  getPagesList: PagesConnection
 }
 
 export type QueryGetCollectionArgs = {
@@ -101,6 +105,28 @@ export type QueryGetPostsDocumentArgs = {
 }
 
 export type QueryGetPostsListArgs = {
+  before?: InputMaybe<Scalars['String']>
+  after?: InputMaybe<Scalars['String']>
+  first?: InputMaybe<Scalars['Float']>
+  last?: InputMaybe<Scalars['Float']>
+}
+
+export type QueryGetAuthorsDocumentArgs = {
+  relativePath?: InputMaybe<Scalars['String']>
+}
+
+export type QueryGetAuthorsListArgs = {
+  before?: InputMaybe<Scalars['String']>
+  after?: InputMaybe<Scalars['String']>
+  first?: InputMaybe<Scalars['Float']>
+  last?: InputMaybe<Scalars['Float']>
+}
+
+export type QueryGetPagesDocumentArgs = {
+  relativePath?: InputMaybe<Scalars['String']>
+}
+
+export type QueryGetPagesListArgs = {
   before?: InputMaybe<Scalars['String']>
   after?: InputMaybe<Scalars['String']>
   first?: InputMaybe<Scalars['Float']>
@@ -140,12 +166,18 @@ export type CollectionDocumentsArgs = {
   last?: InputMaybe<Scalars['Float']>
 }
 
-export type DocumentNode = PostsDocument
+export type DocumentNode = PostsDocument | AuthorsDocument | PagesDocument
+
+export type PostsAuthorDocument = AuthorsDocument
 
 export type Posts = {
   __typename?: 'Posts'
   title?: Maybe<Scalars['String']>
-  body?: Maybe<Scalars['String']>
+  heroImg?: Maybe<Scalars['String']>
+  excerpt?: Maybe<Scalars['JSON']>
+  author?: Maybe<PostsAuthorDocument>
+  date?: Maybe<Scalars['String']>
+  _body?: Maybe<Scalars['JSON']>
 }
 
 export type PostsDocument = Node &
@@ -172,6 +204,72 @@ export type PostsConnection = Connection & {
   edges?: Maybe<Array<Maybe<PostsConnectionEdges>>>
 }
 
+export type Authors = {
+  __typename?: 'Authors'
+  name?: Maybe<Scalars['String']>
+  avatar?: Maybe<Scalars['String']>
+}
+
+export type AuthorsDocument = Node &
+  Document & {
+    __typename?: 'AuthorsDocument'
+    id: Scalars['ID']
+    sys: SystemInfo
+    data: Authors
+    form: Scalars['JSON']
+    values: Scalars['JSON']
+    dataJSON: Scalars['JSON']
+  }
+
+export type AuthorsConnectionEdges = {
+  __typename?: 'AuthorsConnectionEdges'
+  cursor?: Maybe<Scalars['String']>
+  node?: Maybe<AuthorsDocument>
+}
+
+export type AuthorsConnection = Connection & {
+  __typename?: 'AuthorsConnection'
+  pageInfo?: Maybe<PageInfo>
+  totalCount: Scalars['Float']
+  edges?: Maybe<Array<Maybe<AuthorsConnectionEdges>>>
+}
+
+export type PagesSectionsContent = {
+  __typename?: 'PagesSectionsContent'
+  body?: Maybe<Scalars['JSON']>
+}
+
+export type PagesSections = PagesSectionsContent
+
+export type Pages = {
+  __typename?: 'Pages'
+  sections?: Maybe<Array<Maybe<PagesSections>>>
+}
+
+export type PagesDocument = Node &
+  Document & {
+    __typename?: 'PagesDocument'
+    id: Scalars['ID']
+    sys: SystemInfo
+    data: Pages
+    form: Scalars['JSON']
+    values: Scalars['JSON']
+    dataJSON: Scalars['JSON']
+  }
+
+export type PagesConnectionEdges = {
+  __typename?: 'PagesConnectionEdges'
+  cursor?: Maybe<Scalars['String']>
+  node?: Maybe<PagesDocument>
+}
+
+export type PagesConnection = Connection & {
+  __typename?: 'PagesConnection'
+  pageInfo?: Maybe<PageInfo>
+  totalCount: Scalars['Float']
+  edges?: Maybe<Array<Maybe<PagesConnectionEdges>>>
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
   addPendingDocument: DocumentNode
@@ -179,6 +277,10 @@ export type Mutation = {
   createDocument: DocumentNode
   updatePostsDocument: PostsDocument
   createPostsDocument: PostsDocument
+  updateAuthorsDocument: AuthorsDocument
+  createAuthorsDocument: AuthorsDocument
+  updatePagesDocument: PagesDocument
+  createPagesDocument: PagesDocument
 }
 
 export type MutationAddPendingDocumentArgs = {
@@ -209,13 +311,56 @@ export type MutationCreatePostsDocumentArgs = {
   params: PostsMutation
 }
 
+export type MutationUpdateAuthorsDocumentArgs = {
+  relativePath: Scalars['String']
+  params: AuthorsMutation
+}
+
+export type MutationCreateAuthorsDocumentArgs = {
+  relativePath: Scalars['String']
+  params: AuthorsMutation
+}
+
+export type MutationUpdatePagesDocumentArgs = {
+  relativePath: Scalars['String']
+  params: PagesMutation
+}
+
+export type MutationCreatePagesDocumentArgs = {
+  relativePath: Scalars['String']
+  params: PagesMutation
+}
+
 export type DocumentMutation = {
   posts?: InputMaybe<PostsMutation>
+  authors?: InputMaybe<AuthorsMutation>
+  pages?: InputMaybe<PagesMutation>
 }
 
 export type PostsMutation = {
   title?: InputMaybe<Scalars['String']>
-  body?: InputMaybe<Scalars['String']>
+  heroImg?: InputMaybe<Scalars['String']>
+  excerpt?: InputMaybe<Scalars['JSON']>
+  author?: InputMaybe<Scalars['String']>
+  date?: InputMaybe<Scalars['String']>
+  _body?: InputMaybe<Scalars['JSON']>
+}
+
+export type AuthorsMutation = {
+  name?: InputMaybe<Scalars['String']>
+  avatar?: InputMaybe<Scalars['String']>
+}
+
+export type PagesSectionsContentMutation = {
+  body?: InputMaybe<Scalars['JSON']>
+}
+
+export type PagesSectionsMutation = {
+  content?: InputMaybe<PagesSectionsContentMutation>
+}
+
+export type PagesMutation = {
+  sections?: InputMaybe<Array<InputMaybe<PagesSectionsMutation>>>
 }
 
 export type Requester<C = {}> = <R, V>(
