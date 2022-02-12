@@ -2,16 +2,16 @@ import type { MetaData } from 'sourcebit'
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
 import { Dict /*, Unpacked */ } from '@gspenst/utils'
 
-type Source = {
-  resolve: string
-  options: Dict
-}
+// type Source = {
+//   resolve: string
+//   options: Dict
+// }
 
 export type Options = {
   theme: string
-  themeConfig?: string
+  // themeConfig?: string
   // mdxOptions?: MDXOptions
-  sources?: Source[]
+  // sources?: Source[]
 }
 
 // export type RemarkPlugin = Unpacked<

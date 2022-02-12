@@ -1,6 +1,12 @@
 import path from 'path'
 import mock from 'mock-fs'
-import { getData, getEntries, getEntry, getPaths, getAllPaths } from './server'
+import {
+  getData,
+  getEntries,
+  getEntry,
+  getPaths,
+  getAllPaths,
+} from './old.server'
 import { FILE_CACHE_PATH } from './sourcebit/targetNext'
 import type { Post, Author } from './types'
 

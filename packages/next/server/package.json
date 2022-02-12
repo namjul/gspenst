@@ -1,4 +1,0 @@
-{
-  "main": "dist/gspenst-next-server.cjs.js",
-  "module": "dist/gspenst-next-server.esm.js"
-}

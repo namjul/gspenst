@@ -1,15 +1,16 @@
 import { View } from '@gspenst/components'
-import type { PageProps } from '@gspenst/next'
+import Layout from './Layout'
 
-export type PostLayoutProps = React.PropsWithChildren<PageProps>
+export type PostLayoutProps = React.PropsWithChildren<{}>
 
-const PostLayout = ({ entry, props, children }: PostLayoutProps) => {
+const PostLayout = ({ children, ...props }: PostLayoutProps) => {
   return (
-    <View>
-      <pre>{JSON.stringify(entry, null, 2)}</pre>
-      <pre>{JSON.stringify(props, null, 2)}</pre>
-      {children}
-    </View>
+    <Layout>
+      <View>
+        <pre>{JSON.stringify(props, null, 2)}</pre>
+        {children}
+      </View>
+    </Layout>
   )
 }
 
