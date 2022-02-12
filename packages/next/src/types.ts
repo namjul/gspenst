@@ -1,4 +1,3 @@
-import type { MetaData } from 'sourcebit'
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
 import { Dict /*, Unpacked */ } from '@gspenst/utils'
 
@@ -27,38 +26,7 @@ export type Config = {
 
 export type Entry<T = Record<string, unknown>> = {
   id: UniqueId
-  relationships?: EntryRelationship
-} & MetaData &
-  T
-
-export type EntryRelationship<T = Entry> = {
-  [key: string]: T[]
-}
-
-export type EntryPath = Entry & {
-  params: {
-    slug: string[]
-  }
-}
-
-export type PageDef = {
-  path: string
-  type: string
-}
-
-export type CommonPropsDef = {
-  [key: string]: { single?: boolean; type: string }
-}
-
-export type CacheData = {
-  entries: {
-    [id: UniqueId]: Entry
-  }
-  pages: { path: string; id: UniqueId }[]
-  props: {
-    [propName: string]: Dict | Dict[]
-  }
-}
+} & T
 
 /* ------------------------------ Domain Type ------------------------------ */
 

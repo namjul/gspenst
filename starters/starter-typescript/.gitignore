@@ -33,7 +33,3 @@ yarn-error.log*
 
 # vercel
 .vercel
-
-# sourcebit
-.sourcebit-cache.json
-.sourcebit-nextjs-cache.json
