@@ -3,7 +3,7 @@ import { ThemeProvider } from '@gspenst/next/components'
 import type { PageProps } from '@gspenst/next'
 import type { NextPage } from 'next'
 import { get } from '@gspenst/utils'
-import getComponent from '../components-registry'
+import getComponent from '../componentsRegistry'
 
 // import type { PropsWithChildren } from 'react'
 // import NextLink from 'next/link'

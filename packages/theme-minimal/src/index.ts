@@ -1,3 +1,3 @@
 export { default } from './components/Page'
-export { default as getComponent } from './components-registry'
+export { default as getComponent } from './componentsRegistry'
 export * from './types'
