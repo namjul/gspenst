@@ -437,10 +437,24 @@ export type PagesMutation = {
   sections?: InputMaybe<Array<InputMaybe<PagesSectionsMutation>>>;
 };
 
+export type PostsDocumentQueryFragmentFragment = { __typename?: 'PostsDocument', id: string, data: { __typename?: 'Posts', title?: string | null, date?: string | null, heroImg?: string | null, excerpt?: any | null, author?: { __typename?: 'AuthorsDocument', data: { __typename?: 'Authors', name?: string | null, avatar?: string | null } } | null } };
+
+export type PagesDocumentQueryFragmentFragment = { __typename?: 'PagesDocument', id: string };
+
+export type AuthorsDocumentQueryFragmentFragment = { __typename?: 'AuthorsDocument', id: string, data: { __typename?: 'Authors', name?: string | null, avatar?: string | null } };
+
 export type GetCollectionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCollectionsQuery = { __typename: 'Query', getCollections: Array<{ __typename: 'Collection', name: string, slug: string, path: string, matches?: string | null, documents: { __typename?: 'DocumentConnection', totalCount: number, edges?: Array<{ __typename?: 'DocumentConnectionEdges', node?: { __typename: 'GlobalDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PostsDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'AuthorsDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PagesDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } }> };
+
+export type GetCollectionDocumentQueryVariables = Exact<{
+  relativePath: Scalars['String'];
+  name: Scalars['String'];
+}>;
+
+
+export type GetCollectionDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'GlobalDocument' } | { __typename?: 'PostsDocument', id: string, data: { __typename?: 'Posts', title?: string | null, date?: string | null, heroImg?: string | null, excerpt?: any | null, author?: { __typename?: 'AuthorsDocument', data: { __typename?: 'Authors', name?: string | null, avatar?: string | null } } | null } } | { __typename?: 'AuthorsDocument', id: string, data: { __typename?: 'Authors', name?: string | null, avatar?: string | null } } | { __typename?: 'PagesDocument', id: string } };
 
 export type GlobalPartsFragment = { __typename?: 'Global', color?: string | null };
 
@@ -498,6 +512,39 @@ export type GetPagesListQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetPagesListQuery = { __typename?: 'Query', getPagesList: { __typename?: 'PagesConnection', totalCount: number, edges?: Array<{ __typename?: 'PagesConnectionEdges', node?: { __typename?: 'PagesDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Pages', sections?: Array<{ __typename: 'PagesSectionsContent', body?: any | null } | null> | null } } | null } | null> | null } };
 
+export const PostsDocumentQueryFragmentFragmentDoc = gql`
+    fragment PostsDocumentQueryFragment on PostsDocument {
+  id
+  data {
+    title
+    date
+    heroImg
+    excerpt
+    author {
+      ... on AuthorsDocument {
+        data {
+          name
+          avatar
+        }
+      }
+    }
+  }
+}
+    `;
+export const PagesDocumentQueryFragmentFragmentDoc = gql`
+    fragment PagesDocumentQueryFragment on PagesDocument {
+  id
+}
+    `;
+export const AuthorsDocumentQueryFragmentFragmentDoc = gql`
+    fragment AuthorsDocumentQueryFragment on AuthorsDocument {
+  id
+  data {
+    name
+    avatar
+  }
+}
+    `;
 export const GlobalPartsFragmentDoc = gql`
     fragment GlobalParts on Global {
   color
@@ -597,6 +644,17 @@ export const GetCollectionsDocument = gql`
   }
 }
     `;
+export const GetCollectionDocumentDocument = gql`
+    query getCollectionDocument($relativePath: String!, $name: String!) {
+  getDocument(collection: $name, relativePath: $relativePath) {
+    ...PostsDocumentQueryFragment
+    ...PagesDocumentQueryFragment
+    ...AuthorsDocumentQueryFragment
+  }
+}
+    ${PostsDocumentQueryFragmentFragmentDoc}
+${PagesDocumentQueryFragmentFragmentDoc}
+${AuthorsDocumentQueryFragmentFragmentDoc}`;
 export const GetGlobalDocumentDocument = gql`
     query getGlobalDocument($relativePath: String!) {
   getGlobalDocument(relativePath: $relativePath) {
@@ -766,6 +824,9 @@ export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) 
     return {
       getCollections(variables?: GetCollectionsQueryVariables, options?: C): Promise<{data: GetCollectionsQuery, variables: GetCollectionsQueryVariables, query: string}> {
         return requester<{data: GetCollectionsQuery, variables: GetCollectionsQueryVariables, query: string}, GetCollectionsQueryVariables>(GetCollectionsDocument, variables, options);
+      },
+    getCollectionDocument(variables: GetCollectionDocumentQueryVariables, options?: C): Promise<{data: GetCollectionDocumentQuery, variables: GetCollectionDocumentQueryVariables, query: string}> {
+        return requester<{data: GetCollectionDocumentQuery, variables: GetCollectionDocumentQueryVariables, query: string}, GetCollectionDocumentQueryVariables>(GetCollectionDocumentDocument, variables, options);
       },
     getGlobalDocument(variables: GetGlobalDocumentQueryVariables, options?: C): Promise<{data: GetGlobalDocumentQuery, variables: GetGlobalDocumentQueryVariables, query: string}> {
         return requester<{data: GetGlobalDocumentQuery, variables: GetGlobalDocumentQueryVariables, query: string}, GetGlobalDocumentQueryVariables>(GetGlobalDocumentDocument, variables, options);

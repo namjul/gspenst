@@ -60,3 +60,12 @@ query getCollections {
     }
   }
 }
+
+
+query getCollectionDocument($relativePath: String!, $name: String!) {
+  getDocument(collection: $name, relativePath: $relativePath) {
+    ...PostsDocumentQueryFragment
+    ...PagesDocumentQueryFragment
+    ...AuthorsDocumentQueryFragment
+  }
+}

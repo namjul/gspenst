@@ -1,5 +1,6 @@
 import slugify from 'slugify'
-import type { GetCollectionsQuery, ThemeOptions } from '../types'
+import type { GetCollectionsQuery } from '../../.tina/__generated__/types'
+import type { ThemeOptions } from '../types'
 
 const themeOptions: ThemeOptions = {
   sitePaths: {

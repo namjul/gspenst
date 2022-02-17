@@ -1,0 +1,29 @@
+fragment PostsDocumentQueryFragment on PostsDocument {
+  id
+  data {
+    title
+    date
+    heroImg
+    excerpt
+    author {
+      ... on AuthorsDocument {
+        data {
+          name
+          avatar
+        }
+      }
+    }
+  }
+}
+
+fragment PagesDocumentQueryFragment on PagesDocument {
+  id
+}
+
+fragment AuthorsDocumentQueryFragment on AuthorsDocument {
+  id
+  data {
+    name
+    avatar
+  }
+}

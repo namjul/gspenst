@@ -3,6 +3,7 @@ import { toArray } from '@gspenst/utils'
 import { ExperimentalGetTinaClient } from '../.tina/__generated__/types'
 import * as cache from './cache'
 import { resolveStaticPaths } from './utils/staticPathResolver'
+import { resolveStaticProps } from './utils/staticPropsResolver'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   console.log('Page [...slug].js getStaticPaths')
@@ -31,48 +32,15 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slug = toArray(params?.slug ?? []).join('/')
   const { name, relativePath } = cacheData[slug] ?? {}
 
-  let props
+  if (!name || !relativePath) {
+    throw new Error('Something went wrong with accessing cached slug data.')
+  }
 
   const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
 
-  switch (name) {
-    case 'posts':
-      if (relativePath) {
-        const { data } = await client.getPostsDocument({
-          relativePath,
-        })
-        props = data
-      } else {
-        const { data } = await client.getPostsList()
-        props = data
-      }
-      break
-    case 'pages':
-      if (relativePath) {
-        const { data } = await client.getPagesDocument({
-          relativePath,
-        })
-        props = data
-      } else {
-        const { data } = await client.getPagesList()
-        props = data
-      }
-      break
-    case 'authors':
-      if (relativePath) {
-        const { data } = await client.getAuthorsDocument({
-          relativePath,
-        })
-        props = data
-      } else {
-        const { data } = await client.getAuthorsList()
-        props = data
-      }
-      break
+  const data = await client.getCollectionDocument({ name, relativePath })
 
-    default:
-      throw new Error('Something went wrong with accessing cached slug data.')
-  }
+  const props = resolveStaticProps(data)
 
   return { props }
 }
