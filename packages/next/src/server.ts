@@ -28,7 +28,7 @@ export async function startTinaServer(options?: Options) {
     fse.removeSync(dest)
   })
 
-  const ps = spawn('tinacms', ['server:start', '--noSDK', '--noWatch'], {
+  const ps = spawn('tinacms', ['server:start'], {
     cwd: packagePath,
   })
 

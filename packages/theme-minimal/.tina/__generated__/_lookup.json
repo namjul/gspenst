@@ -14,6 +14,24 @@
     "createDocument": "create",
     "updateDocument": "update"
   },
+  "GlobalDocument": {
+    "type": "GlobalDocument",
+    "resolveType": "collectionDocument",
+    "collection": "global",
+    "createGlobalDocument": "create",
+    "updateGlobalDocument": "update"
+  },
+  "GlobalConnection": {
+    "type": "GlobalConnection",
+    "resolveType": "collectionDocumentList",
+    "collection": "global"
+  },
+  "PostsAuthorDocument": {
+    "type": "PostsAuthorDocument",
+    "resolveType": "multiCollectionDocument",
+    "createDocument": "create",
+    "updateDocument": "update"
+  },
   "PostsDocument": {
     "type": "PostsDocument",
     "resolveType": "collectionDocument",
@@ -25,12 +43,6 @@
     "type": "PostsConnection",
     "resolveType": "collectionDocumentList",
     "collection": "posts"
-  },
-  "PostsAuthorDocument": {
-    "type": "PostsAuthorDocument",
-    "resolveType": "multiCollectionDocument",
-    "createDocument": "create",
-    "updateDocument": "update"
   },
   "AuthorsDocument": {
     "type": "AuthorsDocument",
@@ -62,17 +74,5 @@
     "type": "PagesConnection",
     "resolveType": "collectionDocumentList",
     "collection": "pages"
-  },
-  "GlobalDocument": {
-    "type": "GlobalDocument",
-    "resolveType": "collectionDocument",
-    "collection": "global",
-    "createGlobalDocument": "create",
-    "updateGlobalDocument": "update"
-  },
-  "GlobalConnection": {
-    "type": "GlobalConnection",
-    "resolveType": "collectionDocumentList",
-    "collection": "global"
   }
 }
