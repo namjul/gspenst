@@ -1,3 +1,7 @@
+fragment GlobalParts on Global {
+  color
+}
+
 fragment PostsParts on Posts {
   title
   heroImg

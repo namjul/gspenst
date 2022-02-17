@@ -4,17 +4,32 @@
   "main": "dist/gspenst-theme-minimal.cjs.js",
   "module": "dist/gspenst-theme-minimal.esm.js",
   "scripts": {
+    "gen": "tinacms schema:compile",
+    "postgen": "tinacms schema:types",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@gspenst/components": "^0.0.1",
     "@gspenst/next": "^0.0.1",
     "@gspenst/utils": "^0.0.1",
+    "find-cache-dir": "^3.3.2",
+    "fs-extra": "^10.0.0",
+    "slugify": "^1.6.5",
     "tinacms": "^0.66.2"
+  },
+  "devDependencies": {
+    "@types/find-cache-dir": "^3.2.1",
+    "@types/fs-extra": "^9.0.13"
   },
   "peerDependencies": {
     "next": "^12.0.10",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts",
+      "server.ts"
+    ]
   }
 }

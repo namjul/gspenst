@@ -1,0 +1,62 @@
+query getCollections {
+  __typename
+  getCollections {
+    __typename
+    name
+    slug
+    path
+    matches
+    documents {
+      totalCount
+      edges {
+        node {
+          __typename
+          ... on GlobalDocument {
+            id
+            sys {
+              filename
+              basename
+              breadcrumbs
+              path
+              relativePath
+              extension
+            }
+          }
+          ... on PostsDocument {
+            id
+            sys {
+              filename
+              basename
+              breadcrumbs
+              path
+              relativePath
+              extension
+            }
+          }
+          ... on PagesDocument {
+            id
+            sys {
+              filename
+              basename
+              breadcrumbs
+              path
+              relativePath
+              extension
+            }
+          }
+          ... on AuthorsDocument {
+            id
+            sys {
+              filename
+              basename
+              breadcrumbs
+              path
+              relativePath
+              extension
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -48,6 +48,8 @@ type Query {
   getDocument(collection: String, relativePath: String): DocumentNode!
   getDocumentList(before: String, after: String, first: Float, last: Float): DocumentConnection!
   getDocumentFields: JSON!
+  getGlobalDocument(relativePath: String): GlobalDocument!
+  getGlobalList(before: String, after: String, first: Float, last: Float): GlobalConnection!
   getPostsDocument(relativePath: String): PostsDocument!
   getPostsList(before: String, after: String, first: Float, last: Float): PostsConnection!
   getAuthorsDocument(relativePath: String): AuthorsDocument!
@@ -79,7 +81,31 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float): DocumentConnection!
 }
 
-union DocumentNode = PostsDocument | AuthorsDocument | PagesDocument
+union DocumentNode = GlobalDocument | PostsDocument | AuthorsDocument | PagesDocument
+
+type Global {
+  color: String
+}
+
+type GlobalDocument implements Node & Document {
+  id: ID!
+  sys: SystemInfo!
+  data: Global!
+  form: JSON!
+  values: JSON!
+  dataJSON: JSON!
+}
+
+type GlobalConnectionEdges {
+  cursor: String
+  node: GlobalDocument
+}
+
+type GlobalConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Float!
+  edges: [GlobalConnectionEdges]
+}
 
 union PostsAuthorDocument = AuthorsDocument
 
@@ -171,6 +197,8 @@ type Mutation {
   addPendingDocument(collection: String!, relativePath: String!, template: String): DocumentNode!
   updateDocument(collection: String, relativePath: String!, params: DocumentMutation!): DocumentNode!
   createDocument(collection: String, relativePath: String!, params: DocumentMutation!): DocumentNode!
+  updateGlobalDocument(relativePath: String!, params: GlobalMutation!): GlobalDocument!
+  createGlobalDocument(relativePath: String!, params: GlobalMutation!): GlobalDocument!
   updatePostsDocument(relativePath: String!, params: PostsMutation!): PostsDocument!
   createPostsDocument(relativePath: String!, params: PostsMutation!): PostsDocument!
   updateAuthorsDocument(relativePath: String!, params: AuthorsMutation!): AuthorsDocument!
@@ -180,9 +208,14 @@ type Mutation {
 }
 
 input DocumentMutation {
+  global: GlobalMutation
   posts: PostsMutation
   authors: AuthorsMutation
   pages: PagesMutation
+}
+
+input GlobalMutation {
+  color: String
 }
 
 input PostsMutation {

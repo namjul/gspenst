@@ -25,7 +25,7 @@ export type Config = {
 }
 
 export type Entry<T = Record<string, unknown>> = {
-  id: UniqueId
+  id: ID
 } & T
 
 /* ------------------------------ Domain Type ------------------------------ */

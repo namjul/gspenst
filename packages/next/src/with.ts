@@ -53,6 +53,14 @@ export default (...args: [string | Options]) =>
         await startTinaServer(options)
         return nextConfig.redirects?.() ?? []
       },
+      async rewrites() {
+        return [
+          {
+            source: '/',
+            destination: '/home',
+          },
+        ]
+      },
       webpack(config: Configuration, context) {
         // [Prefer `module` over `main`](https://github.com/vercel/next.js/issues/9323#issuecomment-550560435)
         // This solves the Warning: Did not expect server HTML to contain a ...

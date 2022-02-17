@@ -21,6 +21,23 @@ const contentSectionSchema: TinaTemplate = {
 export default defineSchema({
   collections: [
     {
+      label: 'Global',
+      name: 'global',
+      path: 'content/global',
+      format: 'json',
+      fields: [
+        {
+          type: 'string',
+          label: 'Color',
+          name: 'color',
+          options: [
+            { label: 'Default', value: 'default' },
+            { label: 'Primary', value: 'primary' },
+          ],
+        },
+      ],
+    },
+    {
       label: 'Blog Posts',
       name: 'posts',
       path: 'content/posts',
