@@ -5,7 +5,7 @@ import spawn from 'cross-spawn'
 import debug from 'debug'
 import type { Options } from './types'
 
-const log = debug('@gspenst/next')
+const log = debug('@gspenst/next:tinacms:server:start')
 
 export async function startTinaServer(options?: Options) {
   if (!options?.theme) {
@@ -28,7 +28,7 @@ export async function startTinaServer(options?: Options) {
     fse.removeSync(dest)
   })
 
-  const ps = spawn('tinacms', ['server:start'], {
+  const ps = spawn('tinacms', ['server:start', '--noWatch'], {
     cwd: packagePath,
   })
 
