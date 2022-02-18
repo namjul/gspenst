@@ -11,29 +11,39 @@ const themeOptions: ThemeOptions = {
 }
 
 export function resolveStaticPaths(collectionQuery: GetCollectionsQuery) {
-  const paths = collectionQuery.getCollections.flatMap(({ documents, name }) =>
-    (documents.edges ?? []).flatMap((document) => {
+  const paths = collectionQuery.getCollections
+    .filter(({ name }) => name !== 'global')
+    .flatMap(({ documents, name }) => {
       const collectionSlug = themeOptions.sitePaths?.[name] ?? name
 
-      if (document?.node?.sys) {
-        const { filename, relativePath } = document.node.sys
+      const collectionPath = collectionSlug
+        ? [{ params: { name, slug: [collectionSlug] } }]
+        : []
 
-        const slug = [
-          ...(collectionSlug ? [collectionSlug] : []),
-          slugify(filename),
-        ]
+      const documentPaths = (documents.edges ?? []).flatMap((document) => {
+        if (document?.node?.sys) {
+          const { filename, relativePath } = document.node.sys
 
-        return {
-          params: {
-            name,
-            relativePath,
-            slug,
-          },
+          const slug = [
+            ...(collectionSlug ? [collectionSlug] : []),
+            slugify(filename),
+          ]
+
+          return {
+            params: {
+              name,
+              relativePath,
+              slug,
+            },
+          }
         }
-      }
 
-      return []
+        return []
+      })
+
+      return [...collectionPath, ...documentPaths] as Array<{
+        params: { slug: Array<string>; name: string; relativePath?: string }
+      }>
     })
-  )
   return paths
 }

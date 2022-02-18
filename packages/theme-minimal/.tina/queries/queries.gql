@@ -69,3 +69,17 @@ query getCollectionDocument($relativePath: String!, $name: String!) {
     ...AuthorsDocumentQueryFragment
   }
 }
+query getCollection($name: String!) {
+  getCollection(collection: $name) {
+    documents {
+      totalCount
+      edges {
+        node {
+          ...PostsDocumentQueryFragment
+          ...PagesDocumentQueryFragment
+          ...AuthorsDocumentQueryFragment
+        }
+      }
+    }
+  }
+}

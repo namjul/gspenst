@@ -32,13 +32,17 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slug = toArray(params?.slug ?? []).join('/')
   const { name, relativePath } = cacheData[slug] ?? {}
 
-  if (!name || !relativePath) {
-    throw new Error('Something went wrong with accessing cached slug data.')
+  if (!name) {
+    throw new Error(
+      'Something went wrong with accessing cached slug data. At leat collection name must exist.'
+    )
   }
 
   const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
 
-  const data = await client.getCollectionDocument({ name, relativePath })
+  const data = relativePath
+    ? await client.getCollectionDocument({ name, relativePath })
+    : await client.getCollection({ name })
 
   const props = resolveStaticProps(data)
 
