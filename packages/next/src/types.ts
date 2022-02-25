@@ -1,5 +1,5 @@
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
-import { Dict /*, Unpacked */ } from '@gspenst/utils'
+// import { Dict /*, Unpacked */ } from '@gspenst/utils'
 
 // type Source = {
 //   resolve: string
@@ -62,5 +62,3 @@ export type Setting = Entry<{
   description: string
   // navigation: []
 }>
-
-export type PageProps = { entry?: Entry; props: Dict }

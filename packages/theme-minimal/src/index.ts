@@ -1,3 +1,5 @@
+export { TinaAdmin } from 'tinacms'
 export { default } from './components/Page'
+export { default as App } from './components/App'
 export { default as getComponent } from './componentsRegistry'
 export * from './types'

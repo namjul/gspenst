@@ -13,6 +13,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   const paths = resolveStaticPaths(data)
 
+  console.log('PATHS: ', JSON.stringify(paths, null, 2))
+
   await cache.setData(
     paths.reduce((acc, { params: { slug, name, relativePath } }) => {
       return { ...acc, [slug.join('/')]: { name, relativePath } }
@@ -32,17 +34,30 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slug = toArray(params?.slug ?? []).join('/')
   const { name, relativePath } = cacheData[slug] ?? {}
 
-  if (!name) {
-    throw new Error(
-      'Something went wrong with accessing cached slug data. At leat collection name must exist.'
-    )
-  }
-
   const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
 
-  const data = relativePath
-    ? await client.getCollectionDocument({ name, relativePath })
-    : await client.getCollection({ name })
+  console.log(name, relativePath)
+
+  const data = await (() => {
+    switch (name) {
+      case 'posts':
+        return relativePath
+          ? client.getPostsDocument({ relativePath })
+          : client.getPostsList()
+      case 'pages':
+        return relativePath
+          ? client.getPagesDocument({ relativePath })
+          : client.getPagesList()
+      case 'authors':
+        return relativePath
+          ? client.getAuthorsDocument({ relativePath })
+          : client.getAuthorsList()
+      default:
+        throw new Error(
+          'Something went wrong with accessing cached slug data. At leat collection name must exist.'
+        )
+    }
+  })()
 
   const props = resolveStaticProps(data)
 

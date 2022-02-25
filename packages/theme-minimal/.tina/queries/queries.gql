@@ -71,6 +71,7 @@ query getCollectionDocument($relativePath: String!, $name: String!) {
 }
 query getCollection($name: String!) {
   getCollection(collection: $name) {
+    name
     documents {
       totalCount
       edges {

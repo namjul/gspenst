@@ -2,9 +2,7 @@ import Head from 'next/head'
 import { View } from '@gspenst/components'
 import { ThemeSwitch } from '@gspenst/next/components'
 
-export type LayoutProps = {
-  children: React.ReactNode
-}
+export type LayoutProps = React.PropsWithChildren<{}>
 
 const Layout = ({ children }: LayoutProps) => {
   const meta = {
@@ -27,8 +25,7 @@ const Layout = ({ children }: LayoutProps) => {
     <>
       <Head>
         <title>{meta.title || meta.site_name}</title>
-        <meta content={meta.description} name="description" />
-        {options.head}
+        <meta name="description" content={meta.description} />
       </Head>
       <View as="main" css={{ color: '$gray11', backgroundColor: '$gray2' }}>
         {children}

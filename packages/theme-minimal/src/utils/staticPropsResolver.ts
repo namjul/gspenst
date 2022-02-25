@@ -1,14 +1,11 @@
-import type {
-  GetCollectionDocumentQuery,
-  GetCollectionQuery,
-} from '../../.tina/__generated__/types'
+import type { Data } from '../types'
 
 export function resolveStaticProps({
   data,
   query,
   variables,
 }: {
-  data: GetCollectionDocumentQuery | GetCollectionQuery
+  data: Data
   query: any
   variables: any
 }) {

@@ -427,7 +427,7 @@ export type PagesMutation = {
 }
 
 export type PostsDocumentQueryFragmentFragment = {
-  __typename?: 'PostsDocument'
+  __typename: 'PostsDocument'
   id: string
   data: {
     __typename?: 'Posts'
@@ -447,12 +447,12 @@ export type PostsDocumentQueryFragmentFragment = {
 }
 
 export type PagesDocumentQueryFragmentFragment = {
-  __typename?: 'PagesDocument'
+  __typename: 'PagesDocument'
   id: string
 }
 
 export type AuthorsDocumentQueryFragmentFragment = {
-  __typename?: 'AuthorsDocument'
+  __typename: 'AuthorsDocument'
   id: string
   data: { __typename?: 'Authors'; name?: string | null; avatar?: string | null }
 }
@@ -541,7 +541,7 @@ export type GetCollectionDocumentQuery = {
   getDocument:
     | { __typename?: 'GlobalDocument' }
     | {
-        __typename?: 'PostsDocument'
+        __typename: 'PostsDocument'
         id: string
         data: {
           __typename?: 'Posts'
@@ -560,7 +560,7 @@ export type GetCollectionDocumentQuery = {
         }
       }
     | {
-        __typename?: 'AuthorsDocument'
+        __typename: 'AuthorsDocument'
         id: string
         data: {
           __typename?: 'Authors'
@@ -568,7 +568,7 @@ export type GetCollectionDocumentQuery = {
           avatar?: string | null
         }
       }
-    | { __typename?: 'PagesDocument'; id: string }
+    | { __typename: 'PagesDocument'; id: string }
 }
 
 export type GetCollectionQueryVariables = Exact<{
@@ -579,6 +579,7 @@ export type GetCollectionQuery = {
   __typename?: 'Query'
   getCollection: {
     __typename?: 'Collection'
+    name: string
     documents: {
       __typename?: 'DocumentConnection'
       totalCount: number
@@ -587,7 +588,7 @@ export type GetCollectionQuery = {
         node?:
           | { __typename?: 'GlobalDocument' }
           | {
-              __typename?: 'PostsDocument'
+              __typename: 'PostsDocument'
               id: string
               data: {
                 __typename?: 'Posts'
@@ -606,7 +607,7 @@ export type GetCollectionQuery = {
               }
             }
           | {
-              __typename?: 'AuthorsDocument'
+              __typename: 'AuthorsDocument'
               id: string
               data: {
                 __typename?: 'Authors'
@@ -614,7 +615,7 @@ export type GetCollectionQuery = {
                 avatar?: string | null
               }
             }
-          | { __typename?: 'PagesDocument'; id: string }
+          | { __typename: 'PagesDocument'; id: string }
           | null
       } | null> | null
     }
@@ -884,6 +885,7 @@ export type GetPagesListQuery = {
 
 export const PostsDocumentQueryFragmentFragmentDoc = gql`
   fragment PostsDocumentQueryFragment on PostsDocument {
+    __typename
     id
     data {
       title
@@ -903,11 +905,13 @@ export const PostsDocumentQueryFragmentFragmentDoc = gql`
 `
 export const PagesDocumentQueryFragmentFragmentDoc = gql`
   fragment PagesDocumentQueryFragment on PagesDocument {
+    __typename
     id
   }
 `
 export const AuthorsDocumentQueryFragmentFragmentDoc = gql`
   fragment AuthorsDocumentQueryFragment on AuthorsDocument {
+    __typename
     id
     data {
       name
@@ -1029,6 +1033,7 @@ export const GetCollectionDocumentDocument = gql`
 export const GetCollectionDocument = gql`
   query getCollection($name: String!) {
     getCollection(collection: $name) {
+      name
       documents {
         totalCount
         edges {

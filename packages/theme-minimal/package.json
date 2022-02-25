@@ -15,13 +15,15 @@
     "find-cache-dir": "^3.3.2",
     "fs-extra": "^10.0.0",
     "slugify": "^1.6.5",
-    "tinacms": "^0.66.2"
+    "tinacms": "^0.66.5"
   },
   "devDependencies": {
+    "@tinacms/cli": "^0.60.6",
     "@types/find-cache-dir": "^3.2.1",
     "@types/fs-extra": "^9.0.13"
   },
   "peerDependencies": {
+    "@tinacms/cli": "^0.60.6",
     "next": "^12.0.10",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
