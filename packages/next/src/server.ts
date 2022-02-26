@@ -24,12 +24,15 @@ export async function startTinaServer(options?: Options) {
   const src = path.resolve(process.cwd(), 'content')
 
   await fse.ensureSymlink(src, dest)
-  process.on('exit', () => {
-    fse.removeSync(dest)
-  })
 
   const ps = spawn('tinacms', ['server:start', '--noWatch'], {
     cwd: packagePath,
+  })
+
+  process.on('exit', () => {
+    // cleanup
+    fse.removeSync(dest)
+    ps.kill()
   })
 
   if (ps.stdout) {
@@ -39,7 +42,7 @@ export async function startTinaServer(options?: Options) {
       const msg = data?.toString().trim()
       if (msg) {
         log(msg)
-        if (msg.includes('port: 4001')) {
+        if (msg.includes('4001')) {
           flag = false
         }
       }
