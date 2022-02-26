@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import { View } from '@gspenst/components'
-import { ThemeSwitch } from '@gspenst/next/components'
+import { ThemeSwitch } from '../patterns/ThemeSwitch'
+import { EditButton } from '../patterns/EditButton'
 
 export type LayoutProps = React.PropsWithChildren<{}>
 
@@ -31,6 +32,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
         {options.darkMode && <ThemeSwitch />}
         {options.footer}
+        <EditButton />
       </View>
     </>
   )

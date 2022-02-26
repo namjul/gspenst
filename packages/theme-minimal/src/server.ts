@@ -36,8 +36,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
 
-  console.log(name, relativePath)
-
   const data = await (() => {
     switch (name) {
       case 'posts':

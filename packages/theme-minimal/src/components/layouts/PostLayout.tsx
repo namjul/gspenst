@@ -1,10 +1,10 @@
 import { View } from '@gspenst/components'
-import type { Pages } from '../types'
+import type { Posts } from '../../types'
 import Layout from './Layout'
 
-export type PageLayoutProps = React.PropsWithChildren<Pages>
+export type PostLayoutProps = React.PropsWithChildren<Posts>
 
-const PageLayout = ({ children, ...props }: PageLayoutProps) => {
+const PostLayout = ({ children, ...props }: PostLayoutProps) => {
   return (
     <Layout>
       <View>
@@ -15,4 +15,4 @@ const PageLayout = ({ children, ...props }: PageLayoutProps) => {
   )
 }
 
-export default PageLayout
+export default PostLayout

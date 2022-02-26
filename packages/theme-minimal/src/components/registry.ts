@@ -1,5 +1,4 @@
 import dynamic from 'next/dynamic'
-import { ComponentType } from 'react'
 import type { LiteralUnion } from '@gspenst/utils'
 // import PageLayout from './components/PageLayout';
 
@@ -9,12 +8,12 @@ import type { LiteralUnion } from '@gspenst/utils'
 // preconstruct does not add `__esmodule` flag therefore mapping to `mod.default`
 
 const components = {
-  page: dynamic(() => {
-    const Comp = import('./components/PageLayout').then((mod) => mod.default)
+  PageLayout: dynamic(() => {
+    const Comp = import('./layouts/PageLayout').then((mod) => mod.default)
     return Comp
   }),
-  post: dynamic(() => {
-    const Comp = import('./components/PostLayout').then((mod) => mod.default)
+  PostLayout: dynamic(() => {
+    const Comp = import('./layouts/PostLayout').then((mod) => mod.default)
     return Comp
   }),
 }
@@ -25,7 +24,7 @@ export default function getComponent<
   return key
     ? (
         components as typeof components & {
-          [componentName: string]: ComponentType
+          [componentName: string]: undefined
         }
       )[key]
     : undefined

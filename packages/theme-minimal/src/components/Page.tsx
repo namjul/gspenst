@@ -1,10 +1,10 @@
 import { lightTheme, darkTheme } from '@gspenst/components'
-import { ThemeProvider } from '@gspenst/next/components'
 import type { NextPage } from 'next'
 import { useTina } from 'tinacms/dist/edit-state'
 import { get } from '@gspenst/utils'
 import type { Data, PageProps } from '../types'
-import getComponent from '../componentsRegistry'
+import getComponent from './registry'
+import { ThemeProvider } from './patterns/ThemeProvider'
 
 // import type { PropsWithChildren } from 'react'
 // import NextLink from 'next/link'
@@ -22,7 +22,7 @@ import getComponent from '../componentsRegistry'
 const resolveData = (data: Data) => {
   if ('getPostsList' in data) {
     return {
-      layout: 'post',
+      layout: 'PostLayout',
       pageProps: get(data, 'getPostsList.edges')?.map(
         (edge) => edge?.node?.data
       ),
@@ -31,7 +31,7 @@ const resolveData = (data: Data) => {
 
   if ('getPagesList' in data) {
     return {
-      layout: 'page',
+      layout: 'PageLayout',
       pageProps: get(data, 'getPagesList.edges')?.map(
         (edge) => edge?.node?.data
       ),
@@ -40,7 +40,7 @@ const resolveData = (data: Data) => {
 
   if ('getAuthorsList' in data) {
     return {
-      layout: 'page',
+      layout: 'PageLayout',
       pageProps: get(data, 'getAuthorsList.edges')?.map(
         (edge) => edge?.node?.data
       ),
@@ -49,27 +49,27 @@ const resolveData = (data: Data) => {
 
   if ('getPagesDocument' in data) {
     return {
-      layout: 'page',
+      layout: 'PageLayout',
       pageProps: get(data, 'getPagesDocument.data'),
     } as const
   }
 
   if ('getPostsDocument' in data) {
     return {
-      layout: 'page',
+      layout: 'PostLayout',
       pageProps: get(data, 'getPostsDocument.data'),
     } as const
   }
 
   if ('getAuthorsDocument' in data) {
     return {
-      layout: 'page',
+      layout: 'PageLayout',
       pageProps: get(data, 'getAuthorsDocument.data'),
     } as const
   }
 
   return {
-    layout: 'page',
+    layout: 'PageLayout',
     pageProps: {},
   } as const
 }
