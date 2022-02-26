@@ -1,7 +1,7 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import { toArray } from '@gspenst/utils'
 import { ExperimentalGetTinaClient } from '../.tina/__generated__/types'
-import * as cache from './cache'
+import * as cache from './utils/cache'
 import { resolveStaticPaths } from './utils/staticPathResolver'
 import { resolveStaticProps } from './utils/staticPropsResolver'
 
@@ -31,33 +31,20 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   )
 
   const cacheData = await cache.getData()
-  const slug = toArray(params?.slug ?? []).join('/')
-  const { name, relativePath } = cacheData[slug] ?? {}
+  const { name, relativePath } =
+    cacheData[toArray(params?.slug).join('/')] ?? {}
 
-  const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
+  if (!name || !relativePath) {
+    throw new Error(
+      'Something went wrong with accessing cached slug data. `name` or `relativePath` is nulish.'
+    )
+  }
 
-  const data = await (() => {
-    switch (name) {
-      case 'post':
-        return relativePath
-          ? client.getPostDocument({ relativePath })
-          : client.getPostList()
-      case 'page':
-        return relativePath
-          ? client.getPageDocument({ relativePath })
-          : client.getPageList()
-      case 'author':
-        return relativePath
-          ? client.getAuthorDocument({ relativePath })
-          : client.getAuthorList()
-      default:
-        throw new Error(
-          'Something went wrong with accessing cached slug data. At leat collection name must exist.'
-        )
-    }
-  })()
+  const props = await resolveStaticProps({ name, relativePath })
 
-  const props = resolveStaticProps(data)
+  if (!props) {
+    throw new Error('Something went wrong with resolving static props')
+  }
 
   return { props }
 }

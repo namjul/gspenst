@@ -1,18 +1,26 @@
-import type { Data } from '../types'
+import { ExperimentalGetTinaClient } from '../../.tina/__generated__/types'
 
-export function resolveStaticProps({
-  data,
-  query,
-  variables,
+export async function resolveStaticProps({
+  name,
+  relativePath,
 }: {
-  data: Data
-  query: any
-  variables: any
+  name: string
+  relativePath: string
 }) {
-  // TODO make transformations
-  return {
-    data,
-    query,
-    variables,
-  }
+  const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
+
+  const data = (() => {
+    switch (name) {
+      case 'post':
+        return client.getPost({ relativePath })
+      case 'page':
+        return client.getPage({ relativePath })
+      case 'author':
+        return client.getAuthor({ relativePath })
+      default:
+        return undefined
+    }
+  })()
+
+  return data
 }

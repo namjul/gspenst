@@ -62,25 +62,23 @@ query getCollections {
 }
 
 
-query getCollectionDocument($relativePath: String!, $name: String!) {
-  getDocument(collection: $name, relativePath: $relativePath) {
+query getPost($relativePath: String!) {
+  ...GlobalQueryFragment
+  getPostDocument(relativePath: $relativePath) {
     ...PostDocumentQueryFragment
-    ...PageDocumentQueryFragment
-    ...AuthorDocumentQueryFragment
   }
 }
-query getCollection($name: String!) {
-  getCollection(collection: $name) {
-    name
-    documents {
-      totalCount
-      edges {
-        node {
-          ...PostDocumentQueryFragment
-          ...PageDocumentQueryFragment
-          ...AuthorDocumentQueryFragment
-        }
-      }
-    }
+
+query getPage($relativePath: String!) {
+  ...GlobalQueryFragment
+  getPageDocument(relativePath: $relativePath) {
+    ...PageDocumentQueryFragment
+  }
+}
+
+query getAuthor($relativePath: String!) {
+  ...GlobalQueryFragment
+  getAuthorDocument(relativePath: $relativePath) {
+    ...AuthorDocumentQueryFragment
   }
 }

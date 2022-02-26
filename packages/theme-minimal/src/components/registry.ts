@@ -8,7 +8,7 @@ import type { LiteralUnion } from '@gspenst/utils'
 // https://nextjs.org/docs/advanced-features/dynamic-import
 // preconstruct does not add `__esmodule` flag therefore mapping to `mod.default`
 
-const components = {
+export const components = {
   PageLayout: dynamic(() => {
     const Comp = import('./layouts/PageLayout').then((mod) => mod.default)
     return Comp

@@ -16,6 +16,13 @@ const Provider = ({ children }: React.PropsWithChildren<{}>) => (
       cms.flags.set('tina-admin', true)
       return cms
     }}
+    formifyCallback={({ formConfig, createForm, createGlobalForm }) => {
+      if (formConfig.id === 'getGlobalDocument') {
+        return createGlobalForm(formConfig)
+      }
+
+      return createForm(formConfig)
+    }}
   >
     {children}
   </TinaCMS>

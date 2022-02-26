@@ -16,9 +16,9 @@ export function resolveStaticPaths(collectionQuery: GetCollectionsQuery) {
     .flatMap(({ documents, name }) => {
       const collectionSlug = themeOptions.sitePaths?.[name] ?? name
 
-      const collectionPath = collectionSlug
-        ? [{ params: { name, slug: [collectionSlug] } }]
-        : []
+      // const collectionPath = collectionSlug
+      //   ? [{ params: { name, slug: [collectionSlug] } }]
+      //   : []
 
       const documentPaths = (documents.edges ?? []).flatMap((document) => {
         if (document?.node?.sys) {
@@ -41,7 +41,7 @@ export function resolveStaticPaths(collectionQuery: GetCollectionsQuery) {
         return []
       })
 
-      return [...collectionPath, ...documentPaths] as Array<{
+      return [...documentPaths] as Array<{
         params: { slug: Array<string>; name: string; relativePath?: string }
       }>
     })

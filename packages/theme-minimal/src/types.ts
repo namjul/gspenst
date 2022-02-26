@@ -1,23 +1,14 @@
 import type {
-  GetPostListQuery,
-  GetPostDocumentQuery,
-  GetPageListQuery,
-  GetPageDocumentQuery,
-  GetAuthorListQuery,
-  GetAuthorDocumentQuery,
+  GetPostQuery,
+  GetPageQuery,
+  GetAuthorQuery,
   Page,
   Post,
   Author,
+  Global,
 } from '../.tina/__generated__/types'
 
-type GetListQuery = GetPostListQuery | GetPageListQuery | GetAuthorListQuery
-
-type GetDocumentQuery =
-  | GetPostDocumentQuery
-  | GetPageDocumentQuery
-  | GetAuthorDocumentQuery
-
-export type Data = GetListQuery | GetDocumentQuery
+export type Data = GetPostQuery | GetPageQuery | GetAuthorQuery
 
 export type ThemeOptions = {
   sitePaths?: {
@@ -26,10 +17,9 @@ export type ThemeOptions = {
   darkMode?: Scalars['Boolean']
 }
 
-export type PageProps = {
-  data: Data
-  query: string
-  variables: { [key: string]: any }
+export type PageProps<T> = {
+  page: T
+  global: Global
 }
 
 export type { Page, Post, Author }

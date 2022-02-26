@@ -1,8 +1,8 @@
 import { View } from '@gspenst/components'
-import type { Page } from '../../types'
+import type { PageProps, Page } from '../../types'
 import Layout from './Layout'
 
-export type PageLayoutProps = React.PropsWithChildren<Page>
+export type PageLayoutProps = React.PropsWithChildren<PageProps<Page>>
 
 const PageLayout = ({ children, ...props }: PageLayoutProps) => {
   return (

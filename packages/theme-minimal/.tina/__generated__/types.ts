@@ -426,17 +426,27 @@ export type PageMutation = {
   sections?: InputMaybe<Array<InputMaybe<PageSectionsMutation>>>
 }
 
+export type GlobalQueryFragmentFragment = {
+  __typename?: 'Query'
+  getGlobalDocument: {
+    __typename?: 'GlobalDocument'
+    data: { __typename?: 'Global'; color?: string | null }
+  }
+}
+
 export type PostDocumentQueryFragmentFragment = {
   __typename: 'PostDocument'
   id: string
   data: {
     __typename?: 'Post'
     title?: string | null
-    date?: string | null
     heroImg?: string | null
     excerpt?: any | null
+    date?: string | null
+    _body?: any | null
     author?: {
       __typename?: 'AuthorDocument'
+      id: string
       data: {
         __typename?: 'Author'
         name?: string | null
@@ -449,6 +459,13 @@ export type PostDocumentQueryFragmentFragment = {
 export type PageDocumentQueryFragmentFragment = {
   __typename: 'PageDocument'
   id: string
+  data: {
+    __typename?: 'Page'
+    sections?: Array<{
+      __typename: 'PageSectionsContent'
+      body?: any | null
+    } | null> | null
+  }
 }
 
 export type AuthorDocumentQueryFragmentFragment = {
@@ -531,94 +548,80 @@ export type GetCollectionsQuery = {
   }>
 }
 
-export type GetCollectionDocumentQueryVariables = Exact<{
+export type GetPostQueryVariables = Exact<{
   relativePath: Scalars['String']
-  name: Scalars['String']
 }>
 
-export type GetCollectionDocumentQuery = {
+export type GetPostQuery = {
   __typename?: 'Query'
-  getDocument:
-    | { __typename?: 'GlobalDocument' }
-    | {
-        __typename: 'PostDocument'
-        id: string
-        data: {
-          __typename?: 'Post'
-          title?: string | null
-          date?: string | null
-          heroImg?: string | null
-          excerpt?: any | null
-          author?: {
-            __typename?: 'AuthorDocument'
-            data: {
-              __typename?: 'Author'
-              name?: string | null
-              avatar?: string | null
-            }
-          } | null
-        }
-      }
-    | {
-        __typename: 'AuthorDocument'
+  getPostDocument: {
+    __typename: 'PostDocument'
+    id: string
+    data: {
+      __typename?: 'Post'
+      title?: string | null
+      heroImg?: string | null
+      excerpt?: any | null
+      date?: string | null
+      _body?: any | null
+      author?: {
+        __typename?: 'AuthorDocument'
         id: string
         data: {
           __typename?: 'Author'
           name?: string | null
           avatar?: string | null
         }
-      }
-    | { __typename: 'PageDocument'; id: string }
+      } | null
+    }
+  }
+  getGlobalDocument: {
+    __typename?: 'GlobalDocument'
+    data: { __typename?: 'Global'; color?: string | null }
+  }
 }
 
-export type GetCollectionQueryVariables = Exact<{
-  name: Scalars['String']
+export type GetPageQueryVariables = Exact<{
+  relativePath: Scalars['String']
 }>
 
-export type GetCollectionQuery = {
+export type GetPageQuery = {
   __typename?: 'Query'
-  getCollection: {
-    __typename?: 'Collection'
-    name: string
-    documents: {
-      __typename?: 'DocumentConnection'
-      totalCount: number
-      edges?: Array<{
-        __typename?: 'DocumentConnectionEdges'
-        node?:
-          | { __typename?: 'GlobalDocument' }
-          | {
-              __typename: 'PostDocument'
-              id: string
-              data: {
-                __typename?: 'Post'
-                title?: string | null
-                date?: string | null
-                heroImg?: string | null
-                excerpt?: any | null
-                author?: {
-                  __typename?: 'AuthorDocument'
-                  data: {
-                    __typename?: 'Author'
-                    name?: string | null
-                    avatar?: string | null
-                  }
-                } | null
-              }
-            }
-          | {
-              __typename: 'AuthorDocument'
-              id: string
-              data: {
-                __typename?: 'Author'
-                name?: string | null
-                avatar?: string | null
-              }
-            }
-          | { __typename: 'PageDocument'; id: string }
-          | null
+  getPageDocument: {
+    __typename: 'PageDocument'
+    id: string
+    data: {
+      __typename?: 'Page'
+      sections?: Array<{
+        __typename: 'PageSectionsContent'
+        body?: any | null
       } | null> | null
     }
+  }
+  getGlobalDocument: {
+    __typename?: 'GlobalDocument'
+    data: { __typename?: 'Global'; color?: string | null }
+  }
+}
+
+export type GetAuthorQueryVariables = Exact<{
+  relativePath: Scalars['String']
+}>
+
+export type GetAuthorQuery = {
+  __typename?: 'Query'
+  getAuthorDocument: {
+    __typename: 'AuthorDocument'
+    id: string
+    data: {
+      __typename?: 'Author'
+      name?: string | null
+      avatar?: string | null
+    }
+  }
+  getGlobalDocument: {
+    __typename?: 'GlobalDocument'
+    data: { __typename?: 'Global'; color?: string | null }
   }
 }
 
@@ -883,45 +886,13 @@ export type GetPageListQuery = {
   }
 }
 
-export const PostDocumentQueryFragmentFragmentDoc = gql`
-  fragment PostDocumentQueryFragment on PostDocument {
-    __typename
-    id
-    data {
-      title
-      date
-      heroImg
-      excerpt
-      author {
-        ... on AuthorDocument {
-          data {
-            name
-            avatar
-          }
-        }
+export const GlobalQueryFragmentFragmentDoc = gql`
+  fragment GlobalQueryFragment on Query {
+    getGlobalDocument(relativePath: "index.json") {
+      data {
+        color
       }
     }
-  }
-`
-export const PageDocumentQueryFragmentFragmentDoc = gql`
-  fragment PageDocumentQueryFragment on PageDocument {
-    __typename
-    id
-  }
-`
-export const AuthorDocumentQueryFragmentFragmentDoc = gql`
-  fragment AuthorDocumentQueryFragment on AuthorDocument {
-    __typename
-    id
-    data {
-      name
-      avatar
-    }
-  }
-`
-export const GlobalPartsFragmentDoc = gql`
-  fragment GlobalParts on Global {
-    color
   }
 `
 export const PostPartsFragmentDoc = gql`
@@ -944,6 +915,24 @@ export const AuthorPartsFragmentDoc = gql`
     avatar
   }
 `
+export const PostDocumentQueryFragmentFragmentDoc = gql`
+  fragment PostDocumentQueryFragment on PostDocument {
+    __typename
+    id
+    data {
+      ...PostParts
+      author {
+        ... on AuthorDocument {
+          data {
+            ...AuthorParts
+          }
+        }
+      }
+    }
+  }
+  ${PostPartsFragmentDoc}
+  ${AuthorPartsFragmentDoc}
+`
 export const PagePartsFragmentDoc = gql`
   fragment PageParts on Page {
     sections {
@@ -952,6 +941,31 @@ export const PagePartsFragmentDoc = gql`
         body
       }
     }
+  }
+`
+export const PageDocumentQueryFragmentFragmentDoc = gql`
+  fragment PageDocumentQueryFragment on PageDocument {
+    __typename
+    id
+    data {
+      ...PageParts
+    }
+  }
+  ${PagePartsFragmentDoc}
+`
+export const AuthorDocumentQueryFragmentFragmentDoc = gql`
+  fragment AuthorDocumentQueryFragment on AuthorDocument {
+    __typename
+    id
+    data {
+      ...AuthorParts
+    }
+  }
+  ${AuthorPartsFragmentDoc}
+`
+export const GlobalPartsFragmentDoc = gql`
+  fragment GlobalParts on Global {
+    color
   }
 `
 export const GetCollectionsDocument = gql`
@@ -1018,36 +1032,34 @@ export const GetCollectionsDocument = gql`
     }
   }
 `
-export const GetCollectionDocumentDocument = gql`
-  query getCollectionDocument($relativePath: String!, $name: String!) {
-    getDocument(collection: $name, relativePath: $relativePath) {
+export const GetPostDocument = gql`
+  query getPost($relativePath: String!) {
+    ...GlobalQueryFragment
+    getPostDocument(relativePath: $relativePath) {
       ...PostDocumentQueryFragment
+    }
+  }
+  ${GlobalQueryFragmentFragmentDoc}
+  ${PostDocumentQueryFragmentFragmentDoc}
+`
+export const GetPageDocument = gql`
+  query getPage($relativePath: String!) {
+    ...GlobalQueryFragment
+    getPageDocument(relativePath: $relativePath) {
       ...PageDocumentQueryFragment
+    }
+  }
+  ${GlobalQueryFragmentFragmentDoc}
+  ${PageDocumentQueryFragmentFragmentDoc}
+`
+export const GetAuthorDocument = gql`
+  query getAuthor($relativePath: String!) {
+    ...GlobalQueryFragment
+    getAuthorDocument(relativePath: $relativePath) {
       ...AuthorDocumentQueryFragment
     }
   }
-  ${PostDocumentQueryFragmentFragmentDoc}
-  ${PageDocumentQueryFragmentFragmentDoc}
-  ${AuthorDocumentQueryFragmentFragmentDoc}
-`
-export const GetCollectionDocument = gql`
-  query getCollection($name: String!) {
-    getCollection(collection: $name) {
-      name
-      documents {
-        totalCount
-        edges {
-          node {
-            ...PostDocumentQueryFragment
-            ...PageDocumentQueryFragment
-            ...AuthorDocumentQueryFragment
-          }
-        }
-      }
-    }
-  }
-  ${PostDocumentQueryFragmentFragmentDoc}
-  ${PageDocumentQueryFragmentFragmentDoc}
+  ${GlobalQueryFragmentFragmentDoc}
   ${AuthorDocumentQueryFragmentFragmentDoc}
 `
 export const GetGlobalDocumentDocument = gql`
@@ -1246,39 +1258,48 @@ export function getSdk<C>(requester: Requester<C>) {
         GetCollectionsQueryVariables
       >(GetCollectionsDocument, variables, options)
     },
-    getCollectionDocument(
-      variables: GetCollectionDocumentQueryVariables,
+    getPost(
+      variables: GetPostQueryVariables,
       options?: C
     ): Promise<{
-      data: GetCollectionDocumentQuery
-      variables: GetCollectionDocumentQueryVariables
+      data: GetPostQuery
+      variables: GetPostQueryVariables
       query: string
     }> {
       return requester<
-        {
-          data: GetCollectionDocumentQuery
-          variables: GetCollectionDocumentQueryVariables
-          query: string
-        },
-        GetCollectionDocumentQueryVariables
-      >(GetCollectionDocumentDocument, variables, options)
+        { data: GetPostQuery; variables: GetPostQueryVariables; query: string },
+        GetPostQueryVariables
+      >(GetPostDocument, variables, options)
     },
-    getCollection(
-      variables: GetCollectionQueryVariables,
+    getPage(
+      variables: GetPageQueryVariables,
       options?: C
     ): Promise<{
-      data: GetCollectionQuery
-      variables: GetCollectionQueryVariables
+      data: GetPageQuery
+      variables: GetPageQueryVariables
+      query: string
+    }> {
+      return requester<
+        { data: GetPageQuery; variables: GetPageQueryVariables; query: string },
+        GetPageQueryVariables
+      >(GetPageDocument, variables, options)
+    },
+    getAuthor(
+      variables: GetAuthorQueryVariables,
+      options?: C
+    ): Promise<{
+      data: GetAuthorQuery
+      variables: GetAuthorQueryVariables
       query: string
     }> {
       return requester<
         {
-          data: GetCollectionQuery
-          variables: GetCollectionQueryVariables
+          data: GetAuthorQuery
+          variables: GetAuthorQueryVariables
           query: string
         },
-        GetCollectionQueryVariables
-      >(GetCollectionDocument, variables, options)
+        GetAuthorQueryVariables
+      >(GetAuthorDocument, variables, options)
     },
     getGlobalDocument(
       variables: GetGlobalDocumentQueryVariables,
