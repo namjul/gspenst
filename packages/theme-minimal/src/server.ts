@@ -38,18 +38,18 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const data = await (() => {
     switch (name) {
-      case 'posts':
+      case 'post':
         return relativePath
-          ? client.getPostsDocument({ relativePath })
-          : client.getPostsList()
-      case 'pages':
+          ? client.getPostDocument({ relativePath })
+          : client.getPostList()
+      case 'page':
         return relativePath
-          ? client.getPagesDocument({ relativePath })
-          : client.getPagesList()
-      case 'authors':
+          ? client.getPageDocument({ relativePath })
+          : client.getPageList()
+      case 'author':
         return relativePath
-          ? client.getAuthorsDocument({ relativePath })
-          : client.getAuthorsList()
+          ? client.getAuthorDocument({ relativePath })
+          : client.getAuthorList()
       default:
         throw new Error(
           'Something went wrong with accessing cached slug data. At leat collection name must exist.'

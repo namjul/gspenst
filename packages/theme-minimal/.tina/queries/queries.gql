@@ -22,7 +22,7 @@ query getCollections {
               extension
             }
           }
-          ... on PostsDocument {
+          ... on PostDocument {
             id
             sys {
               filename
@@ -33,7 +33,7 @@ query getCollections {
               extension
             }
           }
-          ... on PagesDocument {
+          ... on PageDocument {
             id
             sys {
               filename
@@ -44,7 +44,7 @@ query getCollections {
               extension
             }
           }
-          ... on AuthorsDocument {
+          ... on AuthorDocument {
             id
             sys {
               filename
@@ -64,9 +64,9 @@ query getCollections {
 
 query getCollectionDocument($relativePath: String!, $name: String!) {
   getDocument(collection: $name, relativePath: $relativePath) {
-    ...PostsDocumentQueryFragment
-    ...PagesDocumentQueryFragment
-    ...AuthorsDocumentQueryFragment
+    ...PostDocumentQueryFragment
+    ...PageDocumentQueryFragment
+    ...AuthorDocumentQueryFragment
   }
 }
 query getCollection($name: String!) {
@@ -76,9 +76,9 @@ query getCollection($name: String!) {
       totalCount
       edges {
         node {
-          ...PostsDocumentQueryFragment
-          ...PagesDocumentQueryFragment
-          ...AuthorsDocumentQueryFragment
+          ...PostDocumentQueryFragment
+          ...PageDocumentQueryFragment
+          ...AuthorDocumentQueryFragment
         }
       }
     }

@@ -1,4 +1,4 @@
-fragment PostsDocumentQueryFragment on PostsDocument {
+fragment PostDocumentQueryFragment on PostDocument {
   __typename
   id
   data {
@@ -7,7 +7,7 @@ fragment PostsDocumentQueryFragment on PostsDocument {
     heroImg
     excerpt
     author {
-      ... on AuthorsDocument {
+      ... on AuthorDocument {
         data {
           name
           avatar
@@ -17,12 +17,12 @@ fragment PostsDocumentQueryFragment on PostsDocument {
   }
 }
 
-fragment PagesDocumentQueryFragment on PagesDocument {
+fragment PageDocumentQueryFragment on PageDocument {
   __typename
   id
 }
 
-fragment AuthorsDocumentQueryFragment on AuthorsDocument {
+fragment AuthorDocumentQueryFragment on AuthorDocument {
   __typename
   id
   data {

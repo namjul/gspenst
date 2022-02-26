@@ -34,7 +34,7 @@
     },
     {
       "label": "Blog Posts",
-      "name": "posts",
+      "name": "post",
       "path": "content/posts",
       "format": "mdx",
       "fields": [
@@ -42,26 +42,26 @@
           "type": "string",
           "label": "Title",
           "name": "title",
-          "namespace": ["posts", "title"]
+          "namespace": ["post", "title"]
         },
         {
           "type": "image",
           "name": "heroImg",
           "label": "Hero Image",
-          "namespace": ["posts", "heroImg"]
+          "namespace": ["post", "heroImg"]
         },
         {
           "type": "rich-text",
           "label": "Excerpt",
           "name": "excerpt",
-          "namespace": ["posts", "excerpt"]
+          "namespace": ["post", "excerpt"]
         },
         {
           "type": "reference",
           "label": "Author",
           "name": "author",
-          "collections": ["authors"],
-          "namespace": ["posts", "author"]
+          "collections": ["author"],
+          "namespace": ["post", "author"]
         },
         {
           "type": "datetime",
@@ -71,7 +71,7 @@
             "dateFormat": "MMMM DD YYYY",
             "timeFormat": "hh:mm A"
           },
-          "namespace": ["posts", "date"]
+          "namespace": ["post", "date"]
         },
         {
           "type": "rich-text",
@@ -79,34 +79,34 @@
           "name": "_body",
           "templates": [],
           "isBody": true,
-          "namespace": ["posts", "_body"]
+          "namespace": ["post", "_body"]
         }
       ],
-      "namespace": ["posts"]
+      "namespace": ["post"]
     },
     {
       "label": "Authors",
-      "name": "authors",
+      "name": "author",
       "path": "content/authors",
       "fields": [
         {
           "type": "string",
           "label": "Name",
           "name": "name",
-          "namespace": ["authors", "name"]
+          "namespace": ["author", "name"]
         },
         {
           "type": "string",
           "label": "Avatar",
           "name": "avatar",
-          "namespace": ["authors", "avatar"]
+          "namespace": ["author", "avatar"]
         }
       ],
-      "namespace": ["authors"]
+      "namespace": ["author"]
     },
     {
       "label": "Pages",
-      "name": "pages",
+      "name": "page",
       "path": "content/pages",
       "fields": [
         {
@@ -128,16 +128,16 @@
                   "type": "rich-text",
                   "label": "Body",
                   "name": "body",
-                  "namespace": ["pages", "sections", "content", "body"]
+                  "namespace": ["page", "sections", "content", "body"]
                 }
               ],
-              "namespace": ["pages", "sections", "content"]
+              "namespace": ["page", "sections", "content"]
             }
           ],
-          "namespace": ["pages", "sections"]
+          "namespace": ["page", "sections"]
         }
       ],
-      "namespace": ["pages"]
+      "namespace": ["page"]
     }
   ]
 }

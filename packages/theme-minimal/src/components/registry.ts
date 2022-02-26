@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic'
+import { ComponentType } from 'react'
 import type { LiteralUnion } from '@gspenst/utils'
 // import PageLayout from './components/PageLayout';
 
@@ -24,7 +25,7 @@ export default function getComponent<
   return key
     ? (
         components as typeof components & {
-          [componentName: string]: undefined
+          [componentName: string]: ComponentType
         }
       )[key]
     : undefined

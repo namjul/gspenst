@@ -1,21 +1,21 @@
 import type {
-  GetPostsListQuery,
-  GetPostsDocumentQuery,
-  GetPagesListQuery,
-  GetPagesDocumentQuery,
-  GetAuthorsListQuery,
-  GetAuthorsDocumentQuery,
-  Pages,
-  Posts,
-  Authors,
+  GetPostListQuery,
+  GetPostDocumentQuery,
+  GetPageListQuery,
+  GetPageDocumentQuery,
+  GetAuthorListQuery,
+  GetAuthorDocumentQuery,
+  Page,
+  Post,
+  Author,
 } from '../.tina/__generated__/types'
 
-type GetListQuery = GetPostsListQuery | GetPagesListQuery | GetAuthorsListQuery
+type GetListQuery = GetPostListQuery | GetPageListQuery | GetAuthorListQuery
 
 type GetDocumentQuery =
-  | GetPostsDocumentQuery
-  | GetPagesDocumentQuery
-  | GetAuthorsDocumentQuery
+  | GetPostDocumentQuery
+  | GetPageDocumentQuery
+  | GetAuthorDocumentQuery
 
 export type Data = GetListQuery | GetDocumentQuery
 
@@ -32,5 +32,4 @@ export type PageProps = {
   variables: { [key: string]: any }
 }
 
-
-export type { Pages, Posts, Authors }
+export type { Page, Post, Author }

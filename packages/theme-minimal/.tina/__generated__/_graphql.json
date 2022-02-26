@@ -785,7 +785,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "getPostsDocument"
+            "value": "getPostDocument"
           },
           "arguments": [
             {
@@ -809,7 +809,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PostsDocument"
+                "value": "PostDocument"
               }
             }
           }
@@ -818,7 +818,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "getPostsList"
+            "value": "getPostList"
           },
           "arguments": [
             {
@@ -884,7 +884,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PostsConnection"
+                "value": "PostConnection"
               }
             }
           }
@@ -893,7 +893,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "getAuthorsDocument"
+            "value": "getAuthorDocument"
           },
           "arguments": [
             {
@@ -917,7 +917,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "AuthorsDocument"
+                "value": "AuthorDocument"
               }
             }
           }
@@ -926,7 +926,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "getAuthorsList"
+            "value": "getAuthorList"
           },
           "arguments": [
             {
@@ -992,7 +992,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "AuthorsConnection"
+                "value": "AuthorConnection"
               }
             }
           }
@@ -1001,7 +1001,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "getPagesDocument"
+            "value": "getPageDocument"
           },
           "arguments": [
             {
@@ -1025,7 +1025,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PagesDocument"
+                "value": "PageDocument"
               }
             }
           }
@@ -1034,7 +1034,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "getPagesList"
+            "value": "getPageList"
           },
           "arguments": [
             {
@@ -1100,7 +1100,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PagesConnection"
+                "value": "PageConnection"
               }
             }
           }
@@ -1458,21 +1458,21 @@
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "PostsDocument"
+            "value": "PostDocument"
           }
         },
         {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "AuthorsDocument"
+            "value": "AuthorDocument"
           }
         },
         {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "PagesDocument"
+            "value": "PageDocument"
           }
         }
       ]
@@ -1752,7 +1752,7 @@
       "kind": "UnionTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "PostsAuthorDocument"
+        "value": "PostAuthorDocument"
       },
       "directives": [],
       "types": [
@@ -1760,7 +1760,7 @@
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "AuthorsDocument"
+            "value": "AuthorDocument"
           }
         }
       ]
@@ -1771,7 +1771,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "Posts"
+        "value": "Post"
       },
       "fields": [
         {
@@ -1830,7 +1830,7 @@
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "PostsAuthorDocument"
+              "value": "PostAuthorDocument"
             }
           }
         },
@@ -1887,7 +1887,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "PostsDocument"
+        "value": "PostDocument"
       },
       "fields": [
         {
@@ -1939,7 +1939,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "Posts"
+                "value": "Post"
               }
             }
           }
@@ -2006,7 +2006,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "PostsConnectionEdges"
+        "value": "PostConnectionEdges"
       },
       "fields": [
         {
@@ -2035,7 +2035,7 @@
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "PostsDocument"
+              "value": "PostDocument"
             }
           }
         }
@@ -2055,7 +2055,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "PostsConnection"
+        "value": "PostConnection"
       },
       "fields": [
         {
@@ -2104,7 +2104,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PostsConnectionEdges"
+                "value": "PostConnectionEdges"
               }
             }
           }
@@ -2117,7 +2117,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "Authors"
+        "value": "Author"
       },
       "fields": [
         {
@@ -2173,7 +2173,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "AuthorsDocument"
+        "value": "AuthorDocument"
       },
       "fields": [
         {
@@ -2225,7 +2225,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "Authors"
+                "value": "Author"
               }
             }
           }
@@ -2292,7 +2292,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "AuthorsConnectionEdges"
+        "value": "AuthorConnectionEdges"
       },
       "fields": [
         {
@@ -2321,7 +2321,7 @@
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "AuthorsDocument"
+              "value": "AuthorDocument"
             }
           }
         }
@@ -2341,7 +2341,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "AuthorsConnection"
+        "value": "AuthorConnection"
       },
       "fields": [
         {
@@ -2390,7 +2390,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "AuthorsConnectionEdges"
+                "value": "AuthorConnectionEdges"
               }
             }
           }
@@ -2403,7 +2403,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "PagesSectionsContent"
+        "value": "PageSectionsContent"
       },
       "fields": [
         {
@@ -2427,7 +2427,7 @@
       "kind": "UnionTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "PagesSections"
+        "value": "PageSections"
       },
       "directives": [],
       "types": [
@@ -2435,7 +2435,7 @@
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "PagesSectionsContent"
+            "value": "PageSectionsContent"
           }
         }
       ]
@@ -2446,7 +2446,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "Pages"
+        "value": "Page"
       },
       "fields": [
         {
@@ -2462,7 +2462,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PagesSections"
+                "value": "PageSections"
               }
             }
           }
@@ -2490,7 +2490,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "PagesDocument"
+        "value": "PageDocument"
       },
       "fields": [
         {
@@ -2542,7 +2542,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "Pages"
+                "value": "Page"
               }
             }
           }
@@ -2609,7 +2609,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "PagesConnectionEdges"
+        "value": "PageConnectionEdges"
       },
       "fields": [
         {
@@ -2638,7 +2638,7 @@
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "PagesDocument"
+              "value": "PageDocument"
             }
           }
         }
@@ -2658,7 +2658,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "PagesConnection"
+        "value": "PageConnection"
       },
       "fields": [
         {
@@ -2707,7 +2707,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PagesConnectionEdges"
+                "value": "PageConnectionEdges"
               }
             }
           }
@@ -3034,7 +3034,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "updatePostsDocument"
+            "value": "updatePostDocument"
           },
           "arguments": [
             {
@@ -3066,7 +3066,7 @@
                   "kind": "NamedType",
                   "name": {
                     "kind": "Name",
-                    "value": "PostsMutation"
+                    "value": "PostMutation"
                   }
                 }
               }
@@ -3078,7 +3078,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PostsDocument"
+                "value": "PostDocument"
               }
             }
           }
@@ -3087,7 +3087,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "createPostsDocument"
+            "value": "createPostDocument"
           },
           "arguments": [
             {
@@ -3119,7 +3119,7 @@
                   "kind": "NamedType",
                   "name": {
                     "kind": "Name",
-                    "value": "PostsMutation"
+                    "value": "PostMutation"
                   }
                 }
               }
@@ -3131,7 +3131,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PostsDocument"
+                "value": "PostDocument"
               }
             }
           }
@@ -3140,7 +3140,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "updateAuthorsDocument"
+            "value": "updateAuthorDocument"
           },
           "arguments": [
             {
@@ -3172,7 +3172,7 @@
                   "kind": "NamedType",
                   "name": {
                     "kind": "Name",
-                    "value": "AuthorsMutation"
+                    "value": "AuthorMutation"
                   }
                 }
               }
@@ -3184,7 +3184,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "AuthorsDocument"
+                "value": "AuthorDocument"
               }
             }
           }
@@ -3193,7 +3193,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "createAuthorsDocument"
+            "value": "createAuthorDocument"
           },
           "arguments": [
             {
@@ -3225,7 +3225,7 @@
                   "kind": "NamedType",
                   "name": {
                     "kind": "Name",
-                    "value": "AuthorsMutation"
+                    "value": "AuthorMutation"
                   }
                 }
               }
@@ -3237,7 +3237,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "AuthorsDocument"
+                "value": "AuthorDocument"
               }
             }
           }
@@ -3246,7 +3246,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "updatePagesDocument"
+            "value": "updatePageDocument"
           },
           "arguments": [
             {
@@ -3278,7 +3278,7 @@
                   "kind": "NamedType",
                   "name": {
                     "kind": "Name",
-                    "value": "PagesMutation"
+                    "value": "PageMutation"
                   }
                 }
               }
@@ -3290,7 +3290,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PagesDocument"
+                "value": "PageDocument"
               }
             }
           }
@@ -3299,7 +3299,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "createPagesDocument"
+            "value": "createPageDocument"
           },
           "arguments": [
             {
@@ -3331,7 +3331,7 @@
                   "kind": "NamedType",
                   "name": {
                     "kind": "Name",
-                    "value": "PagesMutation"
+                    "value": "PageMutation"
                   }
                 }
               }
@@ -3343,7 +3343,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PagesDocument"
+                "value": "PageDocument"
               }
             }
           }
@@ -3375,13 +3375,13 @@
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "posts"
+            "value": "post"
           },
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "PostsMutation"
+              "value": "PostMutation"
             }
           }
         },
@@ -3389,13 +3389,13 @@
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "authors"
+            "value": "author"
           },
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "AuthorsMutation"
+              "value": "AuthorMutation"
             }
           }
         },
@@ -3403,13 +3403,13 @@
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "pages"
+            "value": "page"
           },
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "PagesMutation"
+              "value": "PageMutation"
             }
           }
         }
@@ -3442,7 +3442,7 @@
       "kind": "InputObjectTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "PostsMutation"
+        "value": "PostMutation"
       },
       "fields": [
         {
@@ -3535,7 +3535,7 @@
       "kind": "InputObjectTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "AuthorsMutation"
+        "value": "AuthorMutation"
       },
       "fields": [
         {
@@ -3572,7 +3572,7 @@
       "kind": "InputObjectTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "PagesSectionsContentMutation"
+        "value": "PageSectionsContentMutation"
       },
       "fields": [
         {
@@ -3595,7 +3595,7 @@
       "kind": "InputObjectTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "PagesSectionsMutation"
+        "value": "PageSectionsMutation"
       },
       "fields": [
         {
@@ -3608,7 +3608,7 @@
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "PagesSectionsContentMutation"
+              "value": "PageSectionsContentMutation"
             }
           }
         }
@@ -3618,7 +3618,7 @@
       "kind": "InputObjectTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "PagesMutation"
+        "value": "PageMutation"
       },
       "fields": [
         {
@@ -3633,7 +3633,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "PagesSectionsMutation"
+                "value": "PageSectionsMutation"
               }
             }
           }

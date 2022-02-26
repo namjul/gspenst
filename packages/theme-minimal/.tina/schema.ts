@@ -39,7 +39,7 @@ export default defineSchema({
     },
     {
       label: 'Blog Posts',
-      name: 'posts',
+      name: 'post',
       path: 'content/posts',
       format: 'mdx',
       fields: [
@@ -62,7 +62,7 @@ export default defineSchema({
           type: 'reference',
           label: 'Author',
           name: 'author',
-          collections: ['authors'],
+          collections: ['author'],
         },
         {
           type: 'datetime',
@@ -84,7 +84,7 @@ export default defineSchema({
     },
     {
       label: 'Authors',
-      name: 'authors',
+      name: 'author',
       path: 'content/authors',
       fields: [
         {
@@ -101,7 +101,7 @@ export default defineSchema({
     },
     {
       label: 'Pages',
-      name: 'pages',
+      name: 'page',
       path: 'content/pages',
       fields: [
         {

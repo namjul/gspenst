@@ -20,51 +20,51 @@ import { ThemeProvider } from './patterns/ThemeProvider'
 // }
 
 const resolveData = (data: Data) => {
-  if ('getPostsList' in data) {
+  if ('getPostList' in data) {
     return {
       layout: 'PostLayout',
-      pageProps: get(data, 'getPostsList.edges')?.map(
+      pageProps: get(data, 'getPostList.edges')?.map(
         (edge) => edge?.node?.data
       ),
     } as const
   }
 
-  if ('getPagesList' in data) {
+  if ('getPageList' in data) {
     return {
       layout: 'PageLayout',
-      pageProps: get(data, 'getPagesList.edges')?.map(
+      pageProps: get(data, 'getPageList.edges')?.map(
         (edge) => edge?.node?.data
       ),
     } as const
   }
 
-  if ('getAuthorsList' in data) {
+  if ('getAuthorList' in data) {
     return {
       layout: 'PageLayout',
-      pageProps: get(data, 'getAuthorsList.edges')?.map(
+      pageProps: get(data, 'getAuthorList.edges')?.map(
         (edge) => edge?.node?.data
       ),
     } as const
   }
 
-  if ('getPagesDocument' in data) {
+  if ('getPageDocument' in data) {
     return {
       layout: 'PageLayout',
-      pageProps: get(data, 'getPagesDocument.data'),
+      pageProps: get(data, 'getPageDocument.data'),
     } as const
   }
 
-  if ('getPostsDocument' in data) {
+  if ('getPostDocument' in data) {
     return {
       layout: 'PostLayout',
-      pageProps: get(data, 'getPostsDocument.data'),
+      pageProps: get(data, 'getPostDocument.data'),
     } as const
   }
 
-  if ('getAuthorsDocument' in data) {
+  if ('getAuthorDocument' in data) {
     return {
       layout: 'PageLayout',
-      pageProps: get(data, 'getAuthorsDocument.data'),
+      pageProps: get(data, 'getAuthorDocument.data'),
     } as const
   }
 

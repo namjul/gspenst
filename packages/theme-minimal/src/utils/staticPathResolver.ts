@@ -4,9 +4,9 @@ import type { ThemeOptions } from '../types'
 
 const themeOptions: ThemeOptions = {
   sitePaths: {
-    // authors: 'author',
-    // posts: 'post',
-    pages: '',
+    author: 'authors',
+    post: 'posts',
+    page: '',
   },
 }
 

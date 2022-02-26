@@ -2,12 +2,7 @@
   "DocumentConnection": {
     "type": "DocumentConnection",
     "resolveType": "multiCollectionDocumentList",
-    "collections": [
-      "global",
-      "posts",
-      "authors",
-      "pages"
-    ]
+    "collections": ["global", "post", "author", "page"]
   },
   "Node": {
     "type": "Node",
@@ -31,53 +26,53 @@
     "resolveType": "collectionDocumentList",
     "collection": "global"
   },
-  "PostsAuthorDocument": {
-    "type": "PostsAuthorDocument",
+  "PostAuthorDocument": {
+    "type": "PostAuthorDocument",
     "resolveType": "multiCollectionDocument",
     "createDocument": "create",
     "updateDocument": "update"
   },
-  "PostsDocument": {
-    "type": "PostsDocument",
+  "PostDocument": {
+    "type": "PostDocument",
     "resolveType": "collectionDocument",
-    "collection": "posts",
-    "createPostsDocument": "create",
-    "updatePostsDocument": "update"
+    "collection": "post",
+    "createPostDocument": "create",
+    "updatePostDocument": "update"
   },
-  "PostsConnection": {
-    "type": "PostsConnection",
+  "PostConnection": {
+    "type": "PostConnection",
     "resolveType": "collectionDocumentList",
-    "collection": "posts"
+    "collection": "post"
   },
-  "AuthorsDocument": {
-    "type": "AuthorsDocument",
+  "AuthorDocument": {
+    "type": "AuthorDocument",
     "resolveType": "collectionDocument",
-    "collection": "authors",
-    "createAuthorsDocument": "create",
-    "updateAuthorsDocument": "update"
+    "collection": "author",
+    "createAuthorDocument": "create",
+    "updateAuthorDocument": "update"
   },
-  "AuthorsConnection": {
-    "type": "AuthorsConnection",
+  "AuthorConnection": {
+    "type": "AuthorConnection",
     "resolveType": "collectionDocumentList",
-    "collection": "authors"
+    "collection": "author"
   },
-  "PagesSections": {
-    "type": "PagesSections",
+  "PageSections": {
+    "type": "PageSections",
     "resolveType": "unionData",
     "typeMap": {
-      "content": "PagesSectionsContent"
+      "content": "PageSectionsContent"
     }
   },
-  "PagesDocument": {
-    "type": "PagesDocument",
+  "PageDocument": {
+    "type": "PageDocument",
     "resolveType": "collectionDocument",
-    "collection": "pages",
-    "createPagesDocument": "create",
-    "updatePagesDocument": "update"
+    "collection": "page",
+    "createPageDocument": "create",
+    "updatePageDocument": "update"
   },
-  "PagesConnection": {
-    "type": "PagesConnection",
+  "PageConnection": {
+    "type": "PageConnection",
     "resolveType": "collectionDocumentList",
-    "collection": "pages"
+    "collection": "page"
   }
 }

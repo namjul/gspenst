@@ -37,8 +37,8 @@ query getGlobalList {
   }
 }
 
-query getPostsDocument($relativePath: String!) {
-  getPostsDocument(relativePath: $relativePath) {
+query getPostDocument($relativePath: String!) {
+  getPostDocument(relativePath: $relativePath) {
     sys {
       filename
       basename
@@ -49,13 +49,13 @@ query getPostsDocument($relativePath: String!) {
     }
     id
     data {
-      ...PostsParts
+      ...PostParts
     }
   }
 }
 
-query getPostsList {
-  getPostsList {
+query getPostList {
+  getPostList {
     totalCount
     edges {
       node {
@@ -69,15 +69,15 @@ query getPostsList {
           extension
         }
         data {
-          ...PostsParts
+          ...PostParts
         }
       }
     }
   }
 }
 
-query getAuthorsDocument($relativePath: String!) {
-  getAuthorsDocument(relativePath: $relativePath) {
+query getAuthorDocument($relativePath: String!) {
+  getAuthorDocument(relativePath: $relativePath) {
     sys {
       filename
       basename
@@ -88,13 +88,13 @@ query getAuthorsDocument($relativePath: String!) {
     }
     id
     data {
-      ...AuthorsParts
+      ...AuthorParts
     }
   }
 }
 
-query getAuthorsList {
-  getAuthorsList {
+query getAuthorList {
+  getAuthorList {
     totalCount
     edges {
       node {
@@ -108,15 +108,15 @@ query getAuthorsList {
           extension
         }
         data {
-          ...AuthorsParts
+          ...AuthorParts
         }
       }
     }
   }
 }
 
-query getPagesDocument($relativePath: String!) {
-  getPagesDocument(relativePath: $relativePath) {
+query getPageDocument($relativePath: String!) {
+  getPageDocument(relativePath: $relativePath) {
     sys {
       filename
       basename
@@ -127,13 +127,13 @@ query getPagesDocument($relativePath: String!) {
     }
     id
     data {
-      ...PagesParts
+      ...PageParts
     }
   }
 }
 
-query getPagesList {
-  getPagesList {
+query getPageList {
+  getPageList {
     totalCount
     edges {
       node {
@@ -147,7 +147,7 @@ query getPagesList {
           extension
         }
         data {
-          ...PagesParts
+          ...PageParts
         }
       }
     }

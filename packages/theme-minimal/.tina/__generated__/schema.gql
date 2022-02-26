@@ -50,12 +50,12 @@ type Query {
   getDocumentFields: JSON!
   getGlobalDocument(relativePath: String): GlobalDocument!
   getGlobalList(before: String, after: String, first: Float, last: Float): GlobalConnection!
-  getPostsDocument(relativePath: String): PostsDocument!
-  getPostsList(before: String, after: String, first: Float, last: Float): PostsConnection!
-  getAuthorsDocument(relativePath: String): AuthorsDocument!
-  getAuthorsList(before: String, after: String, first: Float, last: Float): AuthorsConnection!
-  getPagesDocument(relativePath: String): PagesDocument!
-  getPagesList(before: String, after: String, first: Float, last: Float): PagesConnection!
+  getPostDocument(relativePath: String): PostDocument!
+  getPostList(before: String, after: String, first: Float, last: Float): PostConnection!
+  getAuthorDocument(relativePath: String): AuthorDocument!
+  getAuthorList(before: String, after: String, first: Float, last: Float): AuthorConnection!
+  getPageDocument(relativePath: String): PageDocument!
+  getPageList(before: String, after: String, first: Float, last: Float): PageConnection!
 }
 
 type DocumentConnectionEdges {
@@ -81,7 +81,7 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float): DocumentConnection!
 }
 
-union DocumentNode = GlobalDocument | PostsDocument | AuthorsDocument | PagesDocument
+union DocumentNode = GlobalDocument | PostDocument | AuthorDocument | PageDocument
 
 type Global {
   color: String
@@ -107,90 +107,90 @@ type GlobalConnection implements Connection {
   edges: [GlobalConnectionEdges]
 }
 
-union PostsAuthorDocument = AuthorsDocument
+union PostAuthorDocument = AuthorDocument
 
-type Posts {
+type Post {
   title: String
   heroImg: String
   excerpt: JSON
-  author: PostsAuthorDocument
+  author: PostAuthorDocument
   date: String
   _body: JSON
 }
 
-type PostsDocument implements Node & Document {
+type PostDocument implements Node & Document {
   id: ID!
   sys: SystemInfo!
-  data: Posts!
+  data: Post!
   form: JSON!
   values: JSON!
   dataJSON: JSON!
 }
 
-type PostsConnectionEdges {
+type PostConnectionEdges {
   cursor: String
-  node: PostsDocument
+  node: PostDocument
 }
 
-type PostsConnection implements Connection {
+type PostConnection implements Connection {
   pageInfo: PageInfo
   totalCount: Float!
-  edges: [PostsConnectionEdges]
+  edges: [PostConnectionEdges]
 }
 
-type Authors {
+type Author {
   name: String
   avatar: String
 }
 
-type AuthorsDocument implements Node & Document {
+type AuthorDocument implements Node & Document {
   id: ID!
   sys: SystemInfo!
-  data: Authors!
+  data: Author!
   form: JSON!
   values: JSON!
   dataJSON: JSON!
 }
 
-type AuthorsConnectionEdges {
+type AuthorConnectionEdges {
   cursor: String
-  node: AuthorsDocument
+  node: AuthorDocument
 }
 
-type AuthorsConnection implements Connection {
+type AuthorConnection implements Connection {
   pageInfo: PageInfo
   totalCount: Float!
-  edges: [AuthorsConnectionEdges]
+  edges: [AuthorConnectionEdges]
 }
 
-type PagesSectionsContent {
+type PageSectionsContent {
   body: JSON
 }
 
-union PagesSections = PagesSectionsContent
+union PageSections = PageSectionsContent
 
-type Pages {
-  sections: [PagesSections]
+type Page {
+  sections: [PageSections]
 }
 
-type PagesDocument implements Node & Document {
+type PageDocument implements Node & Document {
   id: ID!
   sys: SystemInfo!
-  data: Pages!
+  data: Page!
   form: JSON!
   values: JSON!
   dataJSON: JSON!
 }
 
-type PagesConnectionEdges {
+type PageConnectionEdges {
   cursor: String
-  node: PagesDocument
+  node: PageDocument
 }
 
-type PagesConnection implements Connection {
+type PageConnection implements Connection {
   pageInfo: PageInfo
   totalCount: Float!
-  edges: [PagesConnectionEdges]
+  edges: [PageConnectionEdges]
 }
 
 type Mutation {
@@ -199,26 +199,26 @@ type Mutation {
   createDocument(collection: String, relativePath: String!, params: DocumentMutation!): DocumentNode!
   updateGlobalDocument(relativePath: String!, params: GlobalMutation!): GlobalDocument!
   createGlobalDocument(relativePath: String!, params: GlobalMutation!): GlobalDocument!
-  updatePostsDocument(relativePath: String!, params: PostsMutation!): PostsDocument!
-  createPostsDocument(relativePath: String!, params: PostsMutation!): PostsDocument!
-  updateAuthorsDocument(relativePath: String!, params: AuthorsMutation!): AuthorsDocument!
-  createAuthorsDocument(relativePath: String!, params: AuthorsMutation!): AuthorsDocument!
-  updatePagesDocument(relativePath: String!, params: PagesMutation!): PagesDocument!
-  createPagesDocument(relativePath: String!, params: PagesMutation!): PagesDocument!
+  updatePostDocument(relativePath: String!, params: PostMutation!): PostDocument!
+  createPostDocument(relativePath: String!, params: PostMutation!): PostDocument!
+  updateAuthorDocument(relativePath: String!, params: AuthorMutation!): AuthorDocument!
+  createAuthorDocument(relativePath: String!, params: AuthorMutation!): AuthorDocument!
+  updatePageDocument(relativePath: String!, params: PageMutation!): PageDocument!
+  createPageDocument(relativePath: String!, params: PageMutation!): PageDocument!
 }
 
 input DocumentMutation {
   global: GlobalMutation
-  posts: PostsMutation
-  authors: AuthorsMutation
-  pages: PagesMutation
+  post: PostMutation
+  author: AuthorMutation
+  page: PageMutation
 }
 
 input GlobalMutation {
   color: String
 }
 
-input PostsMutation {
+input PostMutation {
   title: String
   heroImg: String
   excerpt: JSON
@@ -227,21 +227,21 @@ input PostsMutation {
   _body: JSON
 }
 
-input AuthorsMutation {
+input AuthorMutation {
   name: String
   avatar: String
 }
 
-input PagesSectionsContentMutation {
+input PageSectionsContentMutation {
   body: JSON
 }
 
-input PagesSectionsMutation {
-  content: PagesSectionsContentMutation
+input PageSectionsMutation {
+  content: PageSectionsContentMutation
 }
 
-input PagesMutation {
-  sections: [PagesSectionsMutation]
+input PageMutation {
+  sections: [PageSectionsMutation]
 }
 
 schema {

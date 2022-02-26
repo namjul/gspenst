@@ -2,7 +2,7 @@ fragment GlobalParts on Global {
   color
 }
 
-fragment PostsParts on Posts {
+fragment PostParts on Post {
   title
   heroImg
   excerpt
@@ -15,15 +15,15 @@ fragment PostsParts on Posts {
   _body
 }
 
-fragment AuthorsParts on Authors {
+fragment AuthorParts on Author {
   name
   avatar
 }
 
-fragment PagesParts on Pages {
+fragment PageParts on Page {
   sections {
     __typename
-    ... on PagesSectionsContent {
+    ... on PageSectionsContent {
       body
     }
   }
