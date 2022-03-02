@@ -430,6 +430,7 @@ export type GlobalQueryFragmentFragment = {
   __typename?: 'Query'
   getGlobalDocument: {
     __typename?: 'GlobalDocument'
+    id: string
     data: { __typename?: 'Global'; color?: string | null }
   }
 }
@@ -577,6 +578,7 @@ export type GetPostQuery = {
   }
   getGlobalDocument: {
     __typename?: 'GlobalDocument'
+    id: string
     data: { __typename?: 'Global'; color?: string | null }
   }
 }
@@ -600,6 +602,7 @@ export type GetPageQuery = {
   }
   getGlobalDocument: {
     __typename?: 'GlobalDocument'
+    id: string
     data: { __typename?: 'Global'; color?: string | null }
   }
 }
@@ -621,6 +624,7 @@ export type GetAuthorQuery = {
   }
   getGlobalDocument: {
     __typename?: 'GlobalDocument'
+    id: string
     data: { __typename?: 'Global'; color?: string | null }
   }
 }
@@ -886,14 +890,21 @@ export type GetPageListQuery = {
   }
 }
 
+export const GlobalPartsFragmentDoc = gql`
+  fragment GlobalParts on Global {
+    color
+  }
+`
 export const GlobalQueryFragmentFragmentDoc = gql`
   fragment GlobalQueryFragment on Query {
     getGlobalDocument(relativePath: "index.json") {
+      id
       data {
-        color
+        ...GlobalParts
       }
     }
   }
+  ${GlobalPartsFragmentDoc}
 `
 export const PostPartsFragmentDoc = gql`
   fragment PostParts on Post {
@@ -962,11 +973,6 @@ export const AuthorDocumentQueryFragmentFragmentDoc = gql`
     }
   }
   ${AuthorPartsFragmentDoc}
-`
-export const GlobalPartsFragmentDoc = gql`
-  fragment GlobalParts on Global {
-    color
-  }
 `
 export const GetCollectionsDocument = gql`
   query getCollections {

@@ -2,11 +2,13 @@ import type {
   GetPostQuery,
   GetPageQuery,
   GetAuthorQuery,
-  Page,
-  Post,
-  Author,
-  Global,
+  GlobalQueryFragmentFragment,
 } from '../.tina/__generated__/types'
+
+export type PageDocument = GetPageQuery['getPageDocument']
+export type PostDocument = GetPostQuery['getPostDocument']
+export type AuthorDocument = GetAuthorQuery['getAuthorDocument']
+export type GlobalDocument = GlobalQueryFragmentFragment['getGlobalDocument']
 
 export type Data = GetPostQuery | GetPageQuery | GetAuthorQuery
 
@@ -16,10 +18,3 @@ export type ThemeOptions = {
   }
   darkMode?: Scalars['Boolean']
 }
-
-export type PageProps<T> = {
-  page: T
-  global: Global
-}
-
-export type { Page, Post, Author }

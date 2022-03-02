@@ -1,8 +1,11 @@
 import { View } from '@gspenst/components'
-import type { PageProps, Post } from '../../types'
+import type { PageProps } from '../../utils/dataTransformer'
+import type { PostDocument, GlobalDocument } from '../../types'
 import Layout from './Layout'
 
-export type PostLayoutProps = React.PropsWithChildren<PageProps<Post>>
+export type PostLayoutProps = React.PropsWithChildren<
+  Extract<PageProps, { global: GlobalDocument; page: PostDocument }>
+>
 
 const PostLayout = ({ children, ...props }: PostLayoutProps) => {
   return (

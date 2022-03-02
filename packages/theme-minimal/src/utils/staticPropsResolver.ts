@@ -1,4 +1,7 @@
+import type { AsyncReturnType } from '@gspenst/utils'
 import { ExperimentalGetTinaClient } from '../../.tina/__generated__/types'
+
+export type StaticProps = AsyncReturnType<typeof resolveStaticProps>
 
 export async function resolveStaticProps({
   name,

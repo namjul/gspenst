@@ -1,8 +1,8 @@
 import { lightTheme, darkTheme } from '@gspenst/components'
 import type { NextPage } from 'next'
 import { useTina } from 'tinacms/dist/edit-state'
-import type { Data } from '../types'
 import { transformData } from '../utils/dataTransformer'
+import type { StaticProps } from '../utils/staticPropsResolver'
 import { ThemeProvider } from './patterns/ThemeProvider'
 import getComponent from './registry'
 
@@ -19,20 +19,22 @@ import getComponent from './registry'
 //   )
 // }
 
-const Page: NextPage<{
-  data: Data
-  query: string
-  variables: { [key: string]: any }
-}> = (props) => {
+const Page: NextPage<StaticProps> = (props) => {
+  if (typeof props === 'undefined') {
+    throw new Error('TODO')
+  }
+
   const { data } = useTina({
     query: props.query,
     variables: props.variables,
     data: props.data,
   })
 
-  const { page, global } = transformData(data) ?? {}
+  const { page, global } = transformData(data)
 
-  const PageLayout = getComponent(page?.layout)
+  const { layout } = page ?? {}
+
+  const PageLayout = getComponent(layout)
 
   if (!PageLayout) {
     throw new Error(`no page layout matching the layout: ${page?.layout}`)
@@ -40,8 +42,11 @@ const Page: NextPage<{
 
   return (
     <ThemeProvider light={lightTheme} dark={darkTheme}>
-      {/* @ts-expect-error -- PageLayout is dynamically retrieved */}
-      <PageLayout page={page} global={global} />
+      <PageLayout
+        global={global}
+        /* @ts-expect-error -- PageLayout is dynamically retrieved */
+        page={page}
+      />
     </ThemeProvider>
   )
 }

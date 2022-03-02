@@ -5,7 +5,7 @@ import spawn from 'cross-spawn'
 import debug from 'debug'
 import type { Options } from './types'
 
-const log = debug('@gspenst/next:tinacms:server:start')
+const log = debug('@gspenst/next:tinacms')
 
 export async function startTinaServer(options?: Options) {
   if (!options?.theme) {

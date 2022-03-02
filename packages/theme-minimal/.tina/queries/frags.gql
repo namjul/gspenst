@@ -1,7 +1,8 @@
 fragment GlobalQueryFragment on Query {
   getGlobalDocument(relativePath: "index.json") {
+    id
     data {
-      color
+      ...GlobalParts
     }
   }
 }
