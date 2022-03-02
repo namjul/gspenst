@@ -2,7 +2,7 @@
   "DocumentConnection": {
     "type": "DocumentConnection",
     "resolveType": "multiCollectionDocumentList",
-    "collections": ["global", "post", "author", "page"]
+    "collections": ["config", "post", "author", "page"]
   },
   "Node": {
     "type": "Node",
@@ -74,5 +74,17 @@
     "type": "PageConnection",
     "resolveType": "collectionDocumentList",
     "collection": "page"
+  },
+  "ConfigDocument": {
+    "type": "ConfigDocument",
+    "resolveType": "collectionDocument",
+    "collection": "config",
+    "createConfigDocument": "create",
+    "updateConfigDocument": "update"
+  },
+  "ConfigConnection": {
+    "type": "ConfigConnection",
+    "resolveType": "collectionDocumentList",
+    "collection": "config"
   }
 }

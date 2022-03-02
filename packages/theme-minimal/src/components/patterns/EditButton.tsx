@@ -14,7 +14,7 @@ export const EditButton = (props: React.PropsWithChildren<{}>) => {
       {...props}
       css={{ color: '$gray11', backgroundColor: '$gray2' }}
     >
-      {edit ? 'exit exit mode' : 'Enter edit mode'}
+      {edit ? 'Exit edit mode' : 'Enter edit mode'}
     </View>
   )
 }

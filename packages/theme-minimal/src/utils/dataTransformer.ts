@@ -1,14 +1,14 @@
 import { get } from '@gspenst/utils'
 import type { Data } from '../types'
 
-export type PageProps = ReturnType<typeof transformData>
+export type TransformedDataType = ReturnType<typeof transformData>
 
 export function transformData(data: Data) {
-  const global = get(data, 'getGlobalDocument', {})
+  const config = get(data, 'getConfigDocument', {})
 
   if ('getPageDocument' in data) {
     return {
-      global,
+      config,
       page: {
         layout: 'PageLayout',
         ...get(data, 'getPageDocument'),
@@ -18,7 +18,7 @@ export function transformData(data: Data) {
 
   if ('getPostDocument' in data) {
     return {
-      global,
+      config,
       page: {
         layout: 'PostLayout',
         ...get(data, 'getPostDocument'),
@@ -28,7 +28,7 @@ export function transformData(data: Data) {
 
   if ('getAuthorDocument' in data) {
     return {
-      global,
+      config,
       page: {
         layout: 'PageLayout',
         ...get(data, 'getAuthorDocument'),
@@ -37,6 +37,6 @@ export function transformData(data: Data) {
   }
 
   return {
-    global,
+    config,
   }
 }

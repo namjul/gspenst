@@ -2,19 +2,18 @@ import type {
   GetPostQuery,
   GetPageQuery,
   GetAuthorQuery,
-  GlobalQueryFragmentFragment,
+  ConfigQueryFragmentFragment,
 } from '../.tina/__generated__/types'
 
 export type PageDocument = GetPageQuery['getPageDocument']
 export type PostDocument = GetPostQuery['getPostDocument']
 export type AuthorDocument = GetAuthorQuery['getAuthorDocument']
-export type GlobalDocument = GlobalQueryFragmentFragment['getGlobalDocument']
+export type ConfigDocument = ConfigQueryFragmentFragment['getConfigDocument']
 
 export type Data = GetPostQuery | GetPageQuery | GetAuthorQuery
 
-export type ThemeOptions = {
+export type ThemeConfig = ConfigDocument & {
   sitePaths?: {
     [name: Scalars['String']]: Scalars['String']
   }
-  darkMode?: Scalars['Boolean']
 }

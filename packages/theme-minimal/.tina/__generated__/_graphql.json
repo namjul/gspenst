@@ -677,7 +677,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "getGlobalDocument"
+            "value": "getConfigDocument"
           },
           "arguments": [
             {
@@ -701,7 +701,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "GlobalDocument"
+                "value": "ConfigDocument"
               }
             }
           }
@@ -710,7 +710,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "getGlobalList"
+            "value": "getConfigList"
           },
           "arguments": [
             {
@@ -776,7 +776,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "GlobalConnection"
+                "value": "ConfigConnection"
               }
             }
           }
@@ -1451,7 +1451,7 @@
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "GlobalDocument"
+            "value": "ConfigDocument"
           }
         },
         {
@@ -1483,21 +1483,21 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "Global"
+        "value": "Config"
       },
       "fields": [
         {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "color"
+            "value": "darkMode"
           },
           "arguments": [],
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "String"
+              "value": "Boolean"
             }
           }
         }
@@ -1524,7 +1524,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "GlobalDocument"
+        "value": "ConfigDocument"
       },
       "fields": [
         {
@@ -1576,7 +1576,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "Global"
+                "value": "Config"
               }
             }
           }
@@ -1643,7 +1643,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "GlobalConnectionEdges"
+        "value": "ConfigConnectionEdges"
       },
       "fields": [
         {
@@ -1672,7 +1672,7 @@
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "GlobalDocument"
+              "value": "ConfigDocument"
             }
           }
         }
@@ -1692,7 +1692,7 @@
       "directives": [],
       "name": {
         "kind": "Name",
-        "value": "GlobalConnection"
+        "value": "ConfigConnection"
       },
       "fields": [
         {
@@ -1741,7 +1741,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "GlobalConnectionEdges"
+                "value": "ConfigConnectionEdges"
               }
             }
           }
@@ -2139,6 +2139,21 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
+            "value": "title"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          }
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
             "value": "avatar"
           },
           "arguments": [],
@@ -2449,6 +2464,21 @@
         "value": "Page"
       },
       "fields": [
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "title"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          }
+        },
         {
           "kind": "FieldDefinition",
           "name": {
@@ -2928,7 +2958,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "updateGlobalDocument"
+            "value": "updateConfigDocument"
           },
           "arguments": [
             {
@@ -2960,7 +2990,7 @@
                   "kind": "NamedType",
                   "name": {
                     "kind": "Name",
-                    "value": "GlobalMutation"
+                    "value": "ConfigMutation"
                   }
                 }
               }
@@ -2972,7 +3002,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "GlobalDocument"
+                "value": "ConfigDocument"
               }
             }
           }
@@ -2981,7 +3011,7 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "createGlobalDocument"
+            "value": "createConfigDocument"
           },
           "arguments": [
             {
@@ -3013,7 +3043,7 @@
                   "kind": "NamedType",
                   "name": {
                     "kind": "Name",
-                    "value": "GlobalMutation"
+                    "value": "ConfigMutation"
                   }
                 }
               }
@@ -3025,7 +3055,7 @@
               "kind": "NamedType",
               "name": {
                 "kind": "Name",
-                "value": "GlobalDocument"
+                "value": "ConfigDocument"
               }
             }
           }
@@ -3361,13 +3391,13 @@
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "global"
+            "value": "config"
           },
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "GlobalMutation"
+              "value": "ConfigMutation"
             }
           }
         },
@@ -3419,20 +3449,20 @@
       "kind": "InputObjectTypeDefinition",
       "name": {
         "kind": "Name",
-        "value": "GlobalMutation"
+        "value": "ConfigMutation"
       },
       "fields": [
         {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "color"
+            "value": "darkMode"
           },
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "String"
+              "value": "Boolean"
             }
           }
         }
@@ -3556,6 +3586,20 @@
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
+            "value": "title"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
             "value": "avatar"
           },
           "type": {
@@ -3621,6 +3665,20 @@
         "value": "PageMutation"
       },
       "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "title"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          }
+        },
         {
           "kind": "InputValueDefinition",
           "name": {

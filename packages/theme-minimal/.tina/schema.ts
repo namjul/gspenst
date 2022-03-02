@@ -16,19 +16,15 @@ const contentSectionSchema: TinaTemplate = {
 export default defineSchema({
   collections: [
     {
-      label: 'Global',
-      name: 'global',
-      path: 'content/global',
+      label: 'Config',
+      name: 'config',
+      path: 'content/config',
       format: 'json',
       fields: [
         {
-          type: 'string',
-          label: 'Color',
-          name: 'color',
-          options: [
-            { label: 'Default', value: 'default' },
-            { label: 'Primary', value: 'primary' },
-          ],
+          type: 'boolean',
+          label: 'Dark Mode',
+          name: 'darkMode',
         },
       ],
     },
@@ -89,6 +85,11 @@ export default defineSchema({
         },
         {
           type: 'string',
+          label: 'Title',
+          name: 'title',
+        },
+        {
+          type: 'string',
           label: 'Avatar',
           name: 'avatar',
         },
@@ -99,6 +100,11 @@ export default defineSchema({
       name: 'page',
       path: 'content/pages',
       fields: [
+        {
+          type: 'string',
+          label: 'Title',
+          name: 'title',
+        },
         {
           type: 'object',
           list: true,

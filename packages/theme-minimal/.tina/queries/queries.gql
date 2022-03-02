@@ -11,7 +11,7 @@ query getCollections {
       edges {
         node {
           __typename
-          ... on GlobalDocument {
+          ... on ConfigDocument {
             id
             sys {
               filename
@@ -63,21 +63,21 @@ query getCollections {
 
 
 query getPost($relativePath: String!) {
-  ...GlobalQueryFragment
+  ...ConfigQueryFragment
   getPostDocument(relativePath: $relativePath) {
     ...PostDocumentQueryFragment
   }
 }
 
 query getPage($relativePath: String!) {
-  ...GlobalQueryFragment
+  ...ConfigQueryFragment
   getPageDocument(relativePath: $relativePath) {
     ...PageDocumentQueryFragment
   }
 }
 
 query getAuthor($relativePath: String!) {
-  ...GlobalQueryFragment
+  ...ConfigQueryFragment
   getAuthorDocument(relativePath: $relativePath) {
     ...AuthorDocumentQueryFragment
   }

@@ -72,8 +72,8 @@ export type Query = {
   getDocument: DocumentNode
   getDocumentList: DocumentConnection
   getDocumentFields: Scalars['JSON']
-  getGlobalDocument: GlobalDocument
-  getGlobalList: GlobalConnection
+  getConfigDocument: ConfigDocument
+  getConfigList: ConfigConnection
   getPostDocument: PostDocument
   getPostList: PostConnection
   getAuthorDocument: AuthorDocument
@@ -102,11 +102,11 @@ export type QueryGetDocumentListArgs = {
   last?: InputMaybe<Scalars['Float']>
 }
 
-export type QueryGetGlobalDocumentArgs = {
+export type QueryGetConfigDocumentArgs = {
   relativePath?: InputMaybe<Scalars['String']>
 }
 
-export type QueryGetGlobalListArgs = {
+export type QueryGetConfigListArgs = {
   before?: InputMaybe<Scalars['String']>
   after?: InputMaybe<Scalars['String']>
   first?: InputMaybe<Scalars['Float']>
@@ -180,38 +180,38 @@ export type CollectionDocumentsArgs = {
 }
 
 export type DocumentNode =
-  | GlobalDocument
+  | ConfigDocument
   | PostDocument
   | AuthorDocument
   | PageDocument
 
-export type Global = {
-  __typename?: 'Global'
-  color?: Maybe<Scalars['String']>
+export type Config = {
+  __typename?: 'Config'
+  darkMode?: Maybe<Scalars['Boolean']>
 }
 
-export type GlobalDocument = Node &
+export type ConfigDocument = Node &
   Document & {
-    __typename?: 'GlobalDocument'
+    __typename?: 'ConfigDocument'
     id: Scalars['ID']
     sys: SystemInfo
-    data: Global
+    data: Config
     form: Scalars['JSON']
     values: Scalars['JSON']
     dataJSON: Scalars['JSON']
   }
 
-export type GlobalConnectionEdges = {
-  __typename?: 'GlobalConnectionEdges'
+export type ConfigConnectionEdges = {
+  __typename?: 'ConfigConnectionEdges'
   cursor?: Maybe<Scalars['String']>
-  node?: Maybe<GlobalDocument>
+  node?: Maybe<ConfigDocument>
 }
 
-export type GlobalConnection = Connection & {
-  __typename?: 'GlobalConnection'
+export type ConfigConnection = Connection & {
+  __typename?: 'ConfigConnection'
   pageInfo?: Maybe<PageInfo>
   totalCount: Scalars['Float']
-  edges?: Maybe<Array<Maybe<GlobalConnectionEdges>>>
+  edges?: Maybe<Array<Maybe<ConfigConnectionEdges>>>
 }
 
 export type PostAuthorDocument = AuthorDocument
@@ -253,6 +253,7 @@ export type PostConnection = Connection & {
 export type Author = {
   __typename?: 'Author'
   name?: Maybe<Scalars['String']>
+  title?: Maybe<Scalars['String']>
   avatar?: Maybe<Scalars['String']>
 }
 
@@ -289,6 +290,7 @@ export type PageSections = PageSectionsContent
 
 export type Page = {
   __typename?: 'Page'
+  title?: Maybe<Scalars['String']>
   sections?: Maybe<Array<Maybe<PageSections>>>
 }
 
@@ -321,8 +323,8 @@ export type Mutation = {
   addPendingDocument: DocumentNode
   updateDocument: DocumentNode
   createDocument: DocumentNode
-  updateGlobalDocument: GlobalDocument
-  createGlobalDocument: GlobalDocument
+  updateConfigDocument: ConfigDocument
+  createConfigDocument: ConfigDocument
   updatePostDocument: PostDocument
   createPostDocument: PostDocument
   updateAuthorDocument: AuthorDocument
@@ -349,14 +351,14 @@ export type MutationCreateDocumentArgs = {
   params: DocumentMutation
 }
 
-export type MutationUpdateGlobalDocumentArgs = {
+export type MutationUpdateConfigDocumentArgs = {
   relativePath: Scalars['String']
-  params: GlobalMutation
+  params: ConfigMutation
 }
 
-export type MutationCreateGlobalDocumentArgs = {
+export type MutationCreateConfigDocumentArgs = {
   relativePath: Scalars['String']
-  params: GlobalMutation
+  params: ConfigMutation
 }
 
 export type MutationUpdatePostDocumentArgs = {
@@ -390,14 +392,14 @@ export type MutationCreatePageDocumentArgs = {
 }
 
 export type DocumentMutation = {
-  global?: InputMaybe<GlobalMutation>
+  config?: InputMaybe<ConfigMutation>
   post?: InputMaybe<PostMutation>
   author?: InputMaybe<AuthorMutation>
   page?: InputMaybe<PageMutation>
 }
 
-export type GlobalMutation = {
-  color?: InputMaybe<Scalars['String']>
+export type ConfigMutation = {
+  darkMode?: InputMaybe<Scalars['Boolean']>
 }
 
 export type PostMutation = {
@@ -411,6 +413,7 @@ export type PostMutation = {
 
 export type AuthorMutation = {
   name?: InputMaybe<Scalars['String']>
+  title?: InputMaybe<Scalars['String']>
   avatar?: InputMaybe<Scalars['String']>
 }
 
@@ -423,15 +426,16 @@ export type PageSectionsMutation = {
 }
 
 export type PageMutation = {
+  title?: InputMaybe<Scalars['String']>
   sections?: InputMaybe<Array<InputMaybe<PageSectionsMutation>>>
 }
 
-export type GlobalQueryFragmentFragment = {
+export type ConfigQueryFragmentFragment = {
   __typename?: 'Query'
-  getGlobalDocument: {
-    __typename?: 'GlobalDocument'
+  getConfigDocument: {
+    __typename?: 'ConfigDocument'
     id: string
-    data: { __typename?: 'Global'; color?: string | null }
+    data: { __typename?: 'Config'; darkMode?: boolean | null }
   }
 }
 
@@ -451,6 +455,7 @@ export type PostDocumentQueryFragmentFragment = {
       data: {
         __typename?: 'Author'
         name?: string | null
+        title?: string | null
         avatar?: string | null
       }
     } | null
@@ -462,6 +467,7 @@ export type PageDocumentQueryFragmentFragment = {
   id: string
   data: {
     __typename?: 'Page'
+    title?: string | null
     sections?: Array<{
       __typename: 'PageSectionsContent'
       body?: any | null
@@ -472,7 +478,12 @@ export type PageDocumentQueryFragmentFragment = {
 export type AuthorDocumentQueryFragmentFragment = {
   __typename: 'AuthorDocument'
   id: string
-  data: { __typename?: 'Author'; name?: string | null; avatar?: string | null }
+  data: {
+    __typename?: 'Author'
+    name?: string | null
+    title?: string | null
+    avatar?: string | null
+  }
 }
 
 export type GetCollectionsQueryVariables = Exact<{ [key: string]: never }>
@@ -492,7 +503,7 @@ export type GetCollectionsQuery = {
         __typename?: 'DocumentConnectionEdges'
         node?:
           | {
-              __typename: 'GlobalDocument'
+              __typename: 'ConfigDocument'
               id: string
               sys: {
                 __typename?: 'SystemInfo'
@@ -571,15 +582,16 @@ export type GetPostQuery = {
         data: {
           __typename?: 'Author'
           name?: string | null
+          title?: string | null
           avatar?: string | null
         }
       } | null
     }
   }
-  getGlobalDocument: {
-    __typename?: 'GlobalDocument'
+  getConfigDocument: {
+    __typename?: 'ConfigDocument'
     id: string
-    data: { __typename?: 'Global'; color?: string | null }
+    data: { __typename?: 'Config'; darkMode?: boolean | null }
   }
 }
 
@@ -594,16 +606,17 @@ export type GetPageQuery = {
     id: string
     data: {
       __typename?: 'Page'
+      title?: string | null
       sections?: Array<{
         __typename: 'PageSectionsContent'
         body?: any | null
       } | null> | null
     }
   }
-  getGlobalDocument: {
-    __typename?: 'GlobalDocument'
+  getConfigDocument: {
+    __typename?: 'ConfigDocument'
     id: string
-    data: { __typename?: 'Global'; color?: string | null }
+    data: { __typename?: 'Config'; darkMode?: boolean | null }
   }
 }
 
@@ -619,19 +632,20 @@ export type GetAuthorQuery = {
     data: {
       __typename?: 'Author'
       name?: string | null
+      title?: string | null
       avatar?: string | null
     }
   }
-  getGlobalDocument: {
-    __typename?: 'GlobalDocument'
+  getConfigDocument: {
+    __typename?: 'ConfigDocument'
     id: string
-    data: { __typename?: 'Global'; color?: string | null }
+    data: { __typename?: 'Config'; darkMode?: boolean | null }
   }
 }
 
-export type GlobalPartsFragment = {
-  __typename?: 'Global'
-  color?: string | null
+export type ConfigPartsFragment = {
+  __typename?: 'Config'
+  darkMode?: boolean | null
 }
 
 export type PostPartsFragment = {
@@ -647,25 +661,27 @@ export type PostPartsFragment = {
 export type AuthorPartsFragment = {
   __typename?: 'Author'
   name?: string | null
+  title?: string | null
   avatar?: string | null
 }
 
 export type PagePartsFragment = {
   __typename?: 'Page'
+  title?: string | null
   sections?: Array<{
     __typename: 'PageSectionsContent'
     body?: any | null
   } | null> | null
 }
 
-export type GetGlobalDocumentQueryVariables = Exact<{
+export type GetConfigDocumentQueryVariables = Exact<{
   relativePath: Scalars['String']
 }>
 
-export type GetGlobalDocumentQuery = {
+export type GetConfigDocumentQuery = {
   __typename?: 'Query'
-  getGlobalDocument: {
-    __typename?: 'GlobalDocument'
+  getConfigDocument: {
+    __typename?: 'ConfigDocument'
     id: string
     sys: {
       __typename?: 'SystemInfo'
@@ -676,21 +692,21 @@ export type GetGlobalDocumentQuery = {
       relativePath: string
       extension: string
     }
-    data: { __typename?: 'Global'; color?: string | null }
+    data: { __typename?: 'Config'; darkMode?: boolean | null }
   }
 }
 
-export type GetGlobalListQueryVariables = Exact<{ [key: string]: never }>
+export type GetConfigListQueryVariables = Exact<{ [key: string]: never }>
 
-export type GetGlobalListQuery = {
+export type GetConfigListQuery = {
   __typename?: 'Query'
-  getGlobalList: {
-    __typename?: 'GlobalConnection'
+  getConfigList: {
+    __typename?: 'ConfigConnection'
     totalCount: number
     edges?: Array<{
-      __typename?: 'GlobalConnectionEdges'
+      __typename?: 'ConfigConnectionEdges'
       node?: {
-        __typename?: 'GlobalDocument'
+        __typename?: 'ConfigDocument'
         id: string
         sys: {
           __typename?: 'SystemInfo'
@@ -701,7 +717,7 @@ export type GetGlobalListQuery = {
           relativePath: string
           extension: string
         }
-        data: { __typename?: 'Global'; color?: string | null }
+        data: { __typename?: 'Config'; darkMode?: boolean | null }
       } | null
     } | null> | null
   }
@@ -793,6 +809,7 @@ export type GetAuthorDocumentQuery = {
     data: {
       __typename?: 'Author'
       name?: string | null
+      title?: string | null
       avatar?: string | null
     }
   }
@@ -822,6 +839,7 @@ export type GetAuthorListQuery = {
         data: {
           __typename?: 'Author'
           name?: string | null
+          title?: string | null
           avatar?: string | null
         }
       } | null
@@ -849,6 +867,7 @@ export type GetPageDocumentQuery = {
     }
     data: {
       __typename?: 'Page'
+      title?: string | null
       sections?: Array<{
         __typename: 'PageSectionsContent'
         body?: any | null
@@ -880,6 +899,7 @@ export type GetPageListQuery = {
         }
         data: {
           __typename?: 'Page'
+          title?: string | null
           sections?: Array<{
             __typename: 'PageSectionsContent'
             body?: any | null
@@ -890,21 +910,21 @@ export type GetPageListQuery = {
   }
 }
 
-export const GlobalPartsFragmentDoc = gql`
-  fragment GlobalParts on Global {
-    color
+export const ConfigPartsFragmentDoc = gql`
+  fragment ConfigParts on Config {
+    darkMode
   }
 `
-export const GlobalQueryFragmentFragmentDoc = gql`
-  fragment GlobalQueryFragment on Query {
-    getGlobalDocument(relativePath: "index.json") {
+export const ConfigQueryFragmentFragmentDoc = gql`
+  fragment ConfigQueryFragment on Query {
+    getConfigDocument(relativePath: "index.json") {
       id
       data {
-        ...GlobalParts
+        ...ConfigParts
       }
     }
   }
-  ${GlobalPartsFragmentDoc}
+  ${ConfigPartsFragmentDoc}
 `
 export const PostPartsFragmentDoc = gql`
   fragment PostParts on Post {
@@ -923,6 +943,7 @@ export const PostPartsFragmentDoc = gql`
 export const AuthorPartsFragmentDoc = gql`
   fragment AuthorParts on Author {
     name
+    title
     avatar
   }
 `
@@ -946,6 +967,7 @@ export const PostDocumentQueryFragmentFragmentDoc = gql`
 `
 export const PagePartsFragmentDoc = gql`
   fragment PageParts on Page {
+    title
     sections {
       __typename
       ... on PageSectionsContent {
@@ -988,7 +1010,7 @@ export const GetCollectionsDocument = gql`
         edges {
           node {
             __typename
-            ... on GlobalDocument {
+            ... on ConfigDocument {
               id
               sys {
                 filename
@@ -1040,37 +1062,37 @@ export const GetCollectionsDocument = gql`
 `
 export const GetPostDocument = gql`
   query getPost($relativePath: String!) {
-    ...GlobalQueryFragment
+    ...ConfigQueryFragment
     getPostDocument(relativePath: $relativePath) {
       ...PostDocumentQueryFragment
     }
   }
-  ${GlobalQueryFragmentFragmentDoc}
+  ${ConfigQueryFragmentFragmentDoc}
   ${PostDocumentQueryFragmentFragmentDoc}
 `
 export const GetPageDocument = gql`
   query getPage($relativePath: String!) {
-    ...GlobalQueryFragment
+    ...ConfigQueryFragment
     getPageDocument(relativePath: $relativePath) {
       ...PageDocumentQueryFragment
     }
   }
-  ${GlobalQueryFragmentFragmentDoc}
+  ${ConfigQueryFragmentFragmentDoc}
   ${PageDocumentQueryFragmentFragmentDoc}
 `
 export const GetAuthorDocument = gql`
   query getAuthor($relativePath: String!) {
-    ...GlobalQueryFragment
+    ...ConfigQueryFragment
     getAuthorDocument(relativePath: $relativePath) {
       ...AuthorDocumentQueryFragment
     }
   }
-  ${GlobalQueryFragmentFragmentDoc}
+  ${ConfigQueryFragmentFragmentDoc}
   ${AuthorDocumentQueryFragmentFragmentDoc}
 `
-export const GetGlobalDocumentDocument = gql`
-  query getGlobalDocument($relativePath: String!) {
-    getGlobalDocument(relativePath: $relativePath) {
+export const GetConfigDocumentDocument = gql`
+  query getConfigDocument($relativePath: String!) {
+    getConfigDocument(relativePath: $relativePath) {
       sys {
         filename
         basename
@@ -1081,15 +1103,15 @@ export const GetGlobalDocumentDocument = gql`
       }
       id
       data {
-        ...GlobalParts
+        ...ConfigParts
       }
     }
   }
-  ${GlobalPartsFragmentDoc}
+  ${ConfigPartsFragmentDoc}
 `
-export const GetGlobalListDocument = gql`
-  query getGlobalList {
-    getGlobalList {
+export const GetConfigListDocument = gql`
+  query getConfigList {
+    getConfigList {
       totalCount
       edges {
         node {
@@ -1103,13 +1125,13 @@ export const GetGlobalListDocument = gql`
             extension
           }
           data {
-            ...GlobalParts
+            ...ConfigParts
           }
         }
       }
     }
   }
-  ${GlobalPartsFragmentDoc}
+  ${ConfigPartsFragmentDoc}
 `
 export const GetPostDocumentDocument = gql`
   query getPostDocument($relativePath: String!) {
@@ -1307,39 +1329,39 @@ export function getSdk<C>(requester: Requester<C>) {
         GetAuthorQueryVariables
       >(GetAuthorDocument, variables, options)
     },
-    getGlobalDocument(
-      variables: GetGlobalDocumentQueryVariables,
+    getConfigDocument(
+      variables: GetConfigDocumentQueryVariables,
       options?: C
     ): Promise<{
-      data: GetGlobalDocumentQuery
-      variables: GetGlobalDocumentQueryVariables
+      data: GetConfigDocumentQuery
+      variables: GetConfigDocumentQueryVariables
       query: string
     }> {
       return requester<
         {
-          data: GetGlobalDocumentQuery
-          variables: GetGlobalDocumentQueryVariables
+          data: GetConfigDocumentQuery
+          variables: GetConfigDocumentQueryVariables
           query: string
         },
-        GetGlobalDocumentQueryVariables
-      >(GetGlobalDocumentDocument, variables, options)
+        GetConfigDocumentQueryVariables
+      >(GetConfigDocumentDocument, variables, options)
     },
-    getGlobalList(
-      variables?: GetGlobalListQueryVariables,
+    getConfigList(
+      variables?: GetConfigListQueryVariables,
       options?: C
     ): Promise<{
-      data: GetGlobalListQuery
-      variables: GetGlobalListQueryVariables
+      data: GetConfigListQuery
+      variables: GetConfigListQueryVariables
       query: string
     }> {
       return requester<
         {
-          data: GetGlobalListQuery
-          variables: GetGlobalListQueryVariables
+          data: GetConfigListQuery
+          variables: GetConfigListQueryVariables
           query: string
         },
-        GetGlobalListQueryVariables
-      >(GetGlobalListDocument, variables, options)
+        GetConfigListQueryVariables
+      >(GetConfigListDocument, variables, options)
     },
     getPostDocument(
       variables: GetPostDocumentQueryVariables,

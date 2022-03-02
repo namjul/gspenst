@@ -17,7 +17,7 @@ const Provider = ({ children }: React.PropsWithChildren<{}>) => (
       return cms
     }}
     formifyCallback={({ formConfig, createForm, createGlobalForm }) => {
-      if (formConfig.id === 'getGlobalDocument') {
+      if (formConfig.id === 'getConfigDocument') {
         return createGlobalForm(formConfig)
       }
 

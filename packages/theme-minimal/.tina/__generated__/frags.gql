@@ -1,5 +1,5 @@
-fragment GlobalParts on Global {
-  color
+fragment ConfigParts on Config {
+  darkMode
 }
 
 fragment PostParts on Post {
@@ -17,10 +17,12 @@ fragment PostParts on Post {
 
 fragment AuthorParts on Author {
   name
+  title
   avatar
 }
 
 fragment PageParts on Page {
+  title
   sections {
     __typename
     ... on PageSectionsContent {

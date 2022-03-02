@@ -1,8 +1,8 @@
-fragment GlobalQueryFragment on Query {
-  getGlobalDocument(relativePath: "index.json") {
+fragment ConfigQueryFragment on Query {
+  getConfigDocument(relativePath: "index.json") {
     id
     data {
-      ...GlobalParts
+      ...ConfigParts
     }
   }
 }

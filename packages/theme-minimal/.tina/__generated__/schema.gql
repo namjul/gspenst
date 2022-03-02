@@ -48,8 +48,8 @@ type Query {
   getDocument(collection: String, relativePath: String): DocumentNode!
   getDocumentList(before: String, after: String, first: Float, last: Float): DocumentConnection!
   getDocumentFields: JSON!
-  getGlobalDocument(relativePath: String): GlobalDocument!
-  getGlobalList(before: String, after: String, first: Float, last: Float): GlobalConnection!
+  getConfigDocument(relativePath: String): ConfigDocument!
+  getConfigList(before: String, after: String, first: Float, last: Float): ConfigConnection!
   getPostDocument(relativePath: String): PostDocument!
   getPostList(before: String, after: String, first: Float, last: Float): PostConnection!
   getAuthorDocument(relativePath: String): AuthorDocument!
@@ -81,30 +81,30 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float): DocumentConnection!
 }
 
-union DocumentNode = GlobalDocument | PostDocument | AuthorDocument | PageDocument
+union DocumentNode = ConfigDocument | PostDocument | AuthorDocument | PageDocument
 
-type Global {
-  color: String
+type Config {
+  darkMode: Boolean
 }
 
-type GlobalDocument implements Node & Document {
+type ConfigDocument implements Node & Document {
   id: ID!
   sys: SystemInfo!
-  data: Global!
+  data: Config!
   form: JSON!
   values: JSON!
   dataJSON: JSON!
 }
 
-type GlobalConnectionEdges {
+type ConfigConnectionEdges {
   cursor: String
-  node: GlobalDocument
+  node: ConfigDocument
 }
 
-type GlobalConnection implements Connection {
+type ConfigConnection implements Connection {
   pageInfo: PageInfo
   totalCount: Float!
-  edges: [GlobalConnectionEdges]
+  edges: [ConfigConnectionEdges]
 }
 
 union PostAuthorDocument = AuthorDocument
@@ -140,6 +140,7 @@ type PostConnection implements Connection {
 
 type Author {
   name: String
+  title: String
   avatar: String
 }
 
@@ -170,6 +171,7 @@ type PageSectionsContent {
 union PageSections = PageSectionsContent
 
 type Page {
+  title: String
   sections: [PageSections]
 }
 
@@ -197,8 +199,8 @@ type Mutation {
   addPendingDocument(collection: String!, relativePath: String!, template: String): DocumentNode!
   updateDocument(collection: String, relativePath: String!, params: DocumentMutation!): DocumentNode!
   createDocument(collection: String, relativePath: String!, params: DocumentMutation!): DocumentNode!
-  updateGlobalDocument(relativePath: String!, params: GlobalMutation!): GlobalDocument!
-  createGlobalDocument(relativePath: String!, params: GlobalMutation!): GlobalDocument!
+  updateConfigDocument(relativePath: String!, params: ConfigMutation!): ConfigDocument!
+  createConfigDocument(relativePath: String!, params: ConfigMutation!): ConfigDocument!
   updatePostDocument(relativePath: String!, params: PostMutation!): PostDocument!
   createPostDocument(relativePath: String!, params: PostMutation!): PostDocument!
   updateAuthorDocument(relativePath: String!, params: AuthorMutation!): AuthorDocument!
@@ -208,14 +210,14 @@ type Mutation {
 }
 
 input DocumentMutation {
-  global: GlobalMutation
+  config: ConfigMutation
   post: PostMutation
   author: AuthorMutation
   page: PageMutation
 }
 
-input GlobalMutation {
-  color: String
+input ConfigMutation {
+  darkMode: Boolean
 }
 
 input PostMutation {
@@ -229,6 +231,7 @@ input PostMutation {
 
 input AuthorMutation {
   name: String
+  title: String
   avatar: String
 }
 
@@ -241,6 +244,7 @@ input PageSectionsMutation {
 }
 
 input PageMutation {
+  title: String
   sections: [PageSectionsMutation]
 }
 

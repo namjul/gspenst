@@ -1,8 +1,8 @@
 import slugify from 'slugify'
 import type { GetCollectionsQuery } from '../../.tina/__generated__/types'
-import type { ThemeOptions } from '../types'
+import type { ThemeConfig } from '../types'
 
-const themeOptions: ThemeOptions = {
+const themeOptions: ThemeConfig = {
   sitePaths: {
     author: 'authors',
     post: 'posts',
@@ -12,7 +12,7 @@ const themeOptions: ThemeOptions = {
 
 export function resolveStaticPaths(collectionQuery: GetCollectionsQuery) {
   const paths = collectionQuery.getCollections
-    .filter(({ name }) => name !== 'global')
+    .filter(({ name }) => name !== 'config')
     .flatMap(({ documents, name }) => {
       const collectionSlug = themeOptions.sitePaths?.[name] ?? name
 

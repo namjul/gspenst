@@ -1,5 +1,5 @@
-query getGlobalDocument($relativePath: String!) {
-  getGlobalDocument(relativePath: $relativePath) {
+query getConfigDocument($relativePath: String!) {
+  getConfigDocument(relativePath: $relativePath) {
     sys {
       filename
       basename
@@ -10,13 +10,13 @@ query getGlobalDocument($relativePath: String!) {
     }
     id
     data {
-      ...GlobalParts
+      ...ConfigParts
     }
   }
 }
 
-query getGlobalList {
-  getGlobalList {
+query getConfigList {
+  getConfigList {
     totalCount
     edges {
       node {
@@ -30,7 +30,7 @@ query getGlobalList {
           extension
         }
         data {
-          ...GlobalParts
+          ...ConfigParts
         }
       }
     }

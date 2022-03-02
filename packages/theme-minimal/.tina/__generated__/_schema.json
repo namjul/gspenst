@@ -8,29 +8,19 @@
   "meta": {},
   "collections": [
     {
-      "label": "Global",
-      "name": "global",
-      "path": "content/global",
+      "label": "Config",
+      "name": "config",
+      "path": "content/config",
       "format": "json",
       "fields": [
         {
-          "type": "string",
-          "label": "Color",
-          "name": "color",
-          "options": [
-            {
-              "label": "Default",
-              "value": "default"
-            },
-            {
-              "label": "Primary",
-              "value": "primary"
-            }
-          ],
-          "namespace": ["global", "color"]
+          "type": "boolean",
+          "label": "Dark Mode",
+          "name": "darkMode",
+          "namespace": ["config", "darkMode"]
         }
       ],
-      "namespace": ["global"]
+      "namespace": ["config"]
     },
     {
       "label": "Blog Posts",
@@ -97,6 +87,12 @@
         },
         {
           "type": "string",
+          "label": "Title",
+          "name": "title",
+          "namespace": ["author", "title"]
+        },
+        {
+          "type": "string",
           "label": "Avatar",
           "name": "avatar",
           "namespace": ["author", "avatar"]
@@ -109,6 +105,12 @@
       "name": "page",
       "path": "content/pages",
       "fields": [
+        {
+          "type": "string",
+          "label": "Title",
+          "name": "title",
+          "namespace": ["page", "title"]
+        },
         {
           "type": "object",
           "list": true,
