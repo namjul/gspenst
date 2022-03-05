@@ -41,7 +41,7 @@ type ThemeProviderProps = {
   children?: ReactNode
 }
 
-export const ThemeProvider = ({
+const ThemeProvider = ({
   light,
   dark,
   choice,
@@ -69,3 +69,5 @@ export const ThemeProvider = ({
     />
   )
 }
+
+export default ThemeProvider

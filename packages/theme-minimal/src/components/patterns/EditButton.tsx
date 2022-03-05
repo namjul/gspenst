@@ -1,7 +1,7 @@
 import { useEditState } from 'tinacms/dist/edit-state'
 import { View } from '@gspenst/components'
 
-export const EditButton = (props: React.PropsWithChildren<{}>) => {
+const EditButton = (props: React.PropsWithChildren<{}>) => {
   const { edit, setEdit } = useEditState() // eslint-disable-line @typescript-eslint/no-unsafe-assignment
 
   return (
@@ -18,3 +18,5 @@ export const EditButton = (props: React.PropsWithChildren<{}>) => {
     </View>
   )
 }
+
+export default EditButton

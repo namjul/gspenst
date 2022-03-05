@@ -1,6 +1,6 @@
 import { View } from '@gspenst/components'
-import { ThemeSwitch } from '../patterns/ThemeSwitch'
-import { EditButton } from '../patterns/EditButton'
+import ThemeSwitch from '../patterns/ThemeSwitch'
+import EditButton from '../patterns/EditButton'
 import { useConfig } from '../../config'
 
 export type LayoutProps = React.PropsWithChildren<{}>

@@ -5,7 +5,7 @@ import { useTheme } from './ThemeProvider'
 
 type ThemeSwitchProps = ViewProps & {}
 
-export const ThemeSwitch = forwardRef<HTMLButtonElement, ThemeSwitchProps>(
+const ThemeSwitch = forwardRef<HTMLButtonElement, ThemeSwitchProps>(
   (props, ref) => {
     const [choice, toggle] = useTheme()
 
@@ -28,3 +28,5 @@ export const ThemeSwitch = forwardRef<HTMLButtonElement, ThemeSwitchProps>(
     )
   }
 )
+
+export default ThemeSwitch

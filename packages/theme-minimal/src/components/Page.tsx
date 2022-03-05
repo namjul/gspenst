@@ -5,7 +5,7 @@ import { transformData } from '../utils/dataTransformer'
 import type { StaticProps } from '../utils/staticPropsResolver'
 import defaultConfig from '../default.config'
 import { ThemeConfigContext } from '../config'
-import { ThemeProvider } from './patterns/ThemeProvider'
+import ThemeProvider from './patterns/ThemeProvider'
 import getComponent from './registry'
 import Head from './patterns/Head'
 
