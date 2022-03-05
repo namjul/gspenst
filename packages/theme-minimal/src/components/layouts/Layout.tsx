@@ -10,7 +10,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <View as="main" css={{ color: '$gray11', backgroundColor: '$gray2' }}>
-      {config.data.darkMode && <ThemeSwitch />}
+      {config.darkMode && <ThemeSwitch />}
       <EditButton />
       {children}
     </View>

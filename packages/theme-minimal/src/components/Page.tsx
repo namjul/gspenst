@@ -47,7 +47,7 @@ const Page: NextPage<StaticProps> = (props) => {
     throw new Error(`no page layout matching the layout: ${page.layout}`)
   }
 
-  const extendedConfig = { ...defaultConfig, ...config }
+  const extendedConfig = { ...defaultConfig, ...config.data }
 
   return (
     <ThemeConfigContext.Provider value={extendedConfig}>
