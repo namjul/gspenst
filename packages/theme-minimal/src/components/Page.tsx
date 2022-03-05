@@ -9,7 +9,7 @@ import Head from './patterns/Head'
 
 const Page: NextPage<StaticProps> = (props) => {
   if (typeof props.data === 'undefined') {
-    throw new Error('TODO')
+    throw new Error('No data was provided from getStaticProps')
   }
 
   const { data } = useTina({
@@ -21,7 +21,7 @@ const Page: NextPage<StaticProps> = (props) => {
   const { page, config } = transformData(data)
 
   if (!page) {
-    throw new Error('TODO')
+    throw new Error(`No page found for ${page}`)
   }
 
   const { layout } = page
