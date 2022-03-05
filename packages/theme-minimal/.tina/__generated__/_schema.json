@@ -17,10 +17,15 @@
           "type": "boolean",
           "label": "Dark Mode",
           "name": "darkMode",
-          "namespace": ["config", "darkMode"]
+          "namespace": [
+            "config",
+            "darkMode"
+          ]
         }
       ],
-      "namespace": ["config"]
+      "namespace": [
+        "config"
+      ]
     },
     {
       "label": "Blog Posts",
@@ -32,26 +37,40 @@
           "type": "string",
           "label": "Title",
           "name": "title",
-          "namespace": ["post", "title"]
+          "namespace": [
+            "post",
+            "title"
+          ]
         },
         {
           "type": "image",
           "name": "heroImg",
           "label": "Hero Image",
-          "namespace": ["post", "heroImg"]
+          "namespace": [
+            "post",
+            "heroImg"
+          ]
         },
         {
           "type": "rich-text",
           "label": "Excerpt",
           "name": "excerpt",
-          "namespace": ["post", "excerpt"]
+          "namespace": [
+            "post",
+            "excerpt"
+          ]
         },
         {
           "type": "reference",
           "label": "Author",
           "name": "author",
-          "collections": ["author"],
-          "namespace": ["post", "author"]
+          "collections": [
+            "author"
+          ],
+          "namespace": [
+            "post",
+            "author"
+          ]
         },
         {
           "type": "datetime",
@@ -61,7 +80,10 @@
             "dateFormat": "MMMM DD YYYY",
             "timeFormat": "hh:mm A"
           },
-          "namespace": ["post", "date"]
+          "namespace": [
+            "post",
+            "date"
+          ]
         },
         {
           "type": "rich-text",
@@ -69,10 +91,15 @@
           "name": "_body",
           "templates": [],
           "isBody": true,
-          "namespace": ["post", "_body"]
+          "namespace": [
+            "post",
+            "_body"
+          ]
         }
       ],
-      "namespace": ["post"]
+      "namespace": [
+        "post"
+      ]
     },
     {
       "label": "Authors",
@@ -83,22 +110,33 @@
           "type": "string",
           "label": "Name",
           "name": "name",
-          "namespace": ["author", "name"]
+          "namespace": [
+            "author",
+            "name"
+          ]
         },
         {
           "type": "string",
           "label": "Title",
           "name": "title",
-          "namespace": ["author", "title"]
+          "namespace": [
+            "author",
+            "title"
+          ]
         },
         {
           "type": "string",
           "label": "Avatar",
           "name": "avatar",
-          "namespace": ["author", "avatar"]
+          "namespace": [
+            "author",
+            "avatar"
+          ]
         }
       ],
-      "namespace": ["author"]
+      "namespace": [
+        "author"
+      ]
     },
     {
       "label": "Pages",
@@ -109,7 +147,10 @@
           "type": "string",
           "label": "Title",
           "name": "title",
-          "namespace": ["page", "title"]
+          "namespace": [
+            "page",
+            "title"
+          ]
         },
         {
           "type": "object",
@@ -125,16 +166,30 @@
                   "type": "rich-text",
                   "label": "Body",
                   "name": "body",
-                  "namespace": ["page", "sections", "content", "body"]
+                  "namespace": [
+                    "page",
+                    "sections",
+                    "content",
+                    "body"
+                  ]
                 }
               ],
-              "namespace": ["page", "sections", "content"]
+              "namespace": [
+                "page",
+                "sections",
+                "content"
+              ]
             }
           ],
-          "namespace": ["page", "sections"]
+          "namespace": [
+            "page",
+            "sections"
+          ]
         }
       ],
-      "namespace": ["page"]
+      "namespace": [
+        "page"
+      ]
     }
   ]
 }
