@@ -7,19 +7,19 @@ export async function resolveStaticProps({
   name,
   relativePath,
 }: {
-  name: string
-  relativePath: string
+  name?: string
+  relativePath?: string
 }) {
   const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
 
   const data = (() => {
     switch (name) {
       case 'post':
-        return client.getPost({ relativePath })
+        return relativePath && client.getPost({ relativePath })
       case 'page':
-        return client.getPage({ relativePath })
+        return relativePath && client.getPage({ relativePath })
       case 'author':
-        return client.getAuthor({ relativePath })
+        return relativePath && client.getAuthor({ relativePath })
       default:
         return undefined
     }

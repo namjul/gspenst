@@ -32,12 +32,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { name, relativePath } =
     cacheData[toArray(params?.slug).join('/')] ?? {}
 
-  if (!name || !relativePath) {
-    throw new Error(
-      'Something went wrong with accessing cached slug data. `name` or `relativePath` is nulish.'
-    )
-  }
-
   const props = await resolveStaticProps({ name, relativePath })
 
   if (!props) {

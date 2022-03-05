@@ -10,6 +10,7 @@ import type { LiteralUnion } from '@gspenst/utils'
 export const components = {
   PageLayout: dynamic(() => import('./layouts/PageLayout')),
   PostLayout: dynamic(() => import('./layouts/PostLayout')),
+  Admin: dynamic(() => import('./patterns/Admin')),
 }
 
 export default function getComponent<
