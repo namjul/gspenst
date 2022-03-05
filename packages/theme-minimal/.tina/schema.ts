@@ -1,5 +1,5 @@
-import { defineSchema } from '@tinacms/cli'
-import type { TinaTemplate } from '@tinacms/cli'
+import { defineSchema } from 'tinacms'
+import type { TinaTemplate } from 'tinacms'
 
 const contentSectionSchema: TinaTemplate = {
   name: 'content',

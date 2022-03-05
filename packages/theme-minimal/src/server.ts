@@ -13,8 +13,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   const paths = resolveStaticPaths(data)
 
-  console.log('PATHS: ', JSON.stringify(paths, null, 2))
-
   await cache.setData(
     paths.reduce((acc, { params: { slug, name, relativePath } }) => {
       return { ...acc, [slug.join('/')]: { name, relativePath } }
