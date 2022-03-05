@@ -115,7 +115,7 @@ type Post {
   excerpt: JSON
   author: PostAuthorDocument
   date: String
-  _body: JSON
+  body: JSON
 }
 
 type PostDocument implements Node & Document {
@@ -164,15 +164,9 @@ type AuthorConnection implements Connection {
   edges: [AuthorConnectionEdges]
 }
 
-type PageSectionsContent {
-  body: JSON
-}
-
-union PageSections = PageSectionsContent
-
 type Page {
   title: String
-  sections: [PageSections]
+  body: JSON
 }
 
 type PageDocument implements Node & Document {
@@ -226,7 +220,7 @@ input PostMutation {
   excerpt: JSON
   author: String
   date: String
-  _body: JSON
+  body: JSON
 }
 
 input AuthorMutation {
@@ -235,17 +229,9 @@ input AuthorMutation {
   avatar: String
 }
 
-input PageSectionsContentMutation {
-  body: JSON
-}
-
-input PageSectionsMutation {
-  content: PageSectionsContentMutation
-}
-
 input PageMutation {
   title: String
-  sections: [PageSectionsMutation]
+  body: JSON
 }
 
 schema {

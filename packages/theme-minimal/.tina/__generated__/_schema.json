@@ -88,12 +88,71 @@
         {
           "type": "rich-text",
           "label": "Body",
-          "name": "_body",
-          "templates": [],
+          "name": "body",
+          "templates": [
+            {
+              "name": "BlockQuote",
+              "label": "Block Quote",
+              "fields": [
+                {
+                  "name": "children",
+                  "label": "Quote",
+                  "type": "string",
+                  "ui": {
+                    "component": "textarea"
+                  },
+                  "namespace": [
+                    "post",
+                    "body",
+                    "BlockQuote",
+                    "children"
+                  ]
+                },
+                {
+                  "name": "authorName",
+                  "label": "Author",
+                  "type": "string",
+                  "namespace": [
+                    "post",
+                    "body",
+                    "BlockQuote",
+                    "authorName"
+                  ]
+                }
+              ],
+              "namespace": [
+                "post",
+                "body",
+                "BlockQuote"
+              ]
+            },
+            {
+              "name": "Cta",
+              "label": "Call to Action",
+              "fields": [
+                {
+                  "type": "string",
+                  "name": "heading",
+                  "label": "Heading",
+                  "namespace": [
+                    "post",
+                    "body",
+                    "Cta",
+                    "heading"
+                  ]
+                }
+              ],
+              "namespace": [
+                "post",
+                "body",
+                "Cta"
+              ]
+            }
+          ],
           "isBody": true,
           "namespace": [
             "post",
-            "_body"
+            "body"
           ]
         }
       ],
@@ -153,37 +212,73 @@
           ]
         },
         {
-          "type": "object",
-          "list": true,
-          "name": "sections",
-          "label": "Sections",
+          "type": "rich-text",
+          "label": "Body",
+          "name": "body",
           "templates": [
             {
-              "name": "content",
-              "label": "Content",
+              "name": "BlockQuote",
+              "label": "Block Quote",
               "fields": [
                 {
-                  "type": "rich-text",
-                  "label": "Body",
-                  "name": "body",
+                  "name": "children",
+                  "label": "Quote",
+                  "type": "string",
+                  "ui": {
+                    "component": "textarea"
+                  },
                   "namespace": [
                     "page",
-                    "sections",
-                    "content",
-                    "body"
+                    "body",
+                    "BlockQuote",
+                    "children"
+                  ]
+                },
+                {
+                  "name": "authorName",
+                  "label": "Author",
+                  "type": "string",
+                  "namespace": [
+                    "page",
+                    "body",
+                    "BlockQuote",
+                    "authorName"
                   ]
                 }
               ],
               "namespace": [
                 "page",
-                "sections",
-                "content"
+                "body",
+                "BlockQuote"
+              ]
+            },
+            {
+              "name": "Cta",
+              "label": "Call to Action",
+              "fields": [
+                {
+                  "type": "string",
+                  "name": "heading",
+                  "label": "Heading",
+                  "namespace": [
+                    "page",
+                    "body",
+                    "Cta",
+                    "heading"
+                  ]
+                }
+              ],
+              "namespace": [
+                "page",
+                "body",
+                "Cta"
               ]
             }
           ],
+          "isBody": true,
           "namespace": [
             "page",
-            "sections"
+            "body"
           ]
         }
       ],

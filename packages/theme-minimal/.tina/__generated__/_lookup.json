@@ -19,17 +19,17 @@
     "createDocument": "create",
     "updateDocument": "update"
   },
-  "GlobalDocument": {
-    "type": "GlobalDocument",
+  "ConfigDocument": {
+    "type": "ConfigDocument",
     "resolveType": "collectionDocument",
-    "collection": "global",
-    "createGlobalDocument": "create",
-    "updateGlobalDocument": "update"
+    "collection": "config",
+    "createConfigDocument": "create",
+    "updateConfigDocument": "update"
   },
-  "GlobalConnection": {
-    "type": "GlobalConnection",
+  "ConfigConnection": {
+    "type": "ConfigConnection",
     "resolveType": "collectionDocumentList",
-    "collection": "global"
+    "collection": "config"
   },
   "PostAuthorDocument": {
     "type": "PostAuthorDocument",
@@ -61,13 +61,6 @@
     "resolveType": "collectionDocumentList",
     "collection": "author"
   },
-  "PageSections": {
-    "type": "PageSections",
-    "resolveType": "unionData",
-    "typeMap": {
-      "content": "PageSectionsContent"
-    }
-  },
   "PageDocument": {
     "type": "PageDocument",
     "resolveType": "collectionDocument",
@@ -79,17 +72,5 @@
     "type": "PageConnection",
     "resolveType": "collectionDocumentList",
     "collection": "page"
-  },
-  "ConfigDocument": {
-    "type": "ConfigDocument",
-    "resolveType": "collectionDocument",
-    "collection": "config",
-    "createConfigDocument": "create",
-    "updateConfigDocument": "update"
-  },
-  "ConfigConnection": {
-    "type": "ConfigConnection",
-    "resolveType": "collectionDocumentList",
-    "collection": "config"
   }
 }

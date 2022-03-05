@@ -1,14 +1,34 @@
 import { defineSchema, defineConfig } from 'tinacms'
 import type { TinaTemplate } from 'tinacms'
 
-const contentSectionSchema: TinaTemplate = {
-  name: 'content',
-  label: 'Content',
+const testimonialBlockSchema: TinaTemplate = {
+  name: 'BlockQuote',
+  label: 'Block Quote',
   fields: [
     {
-      type: 'rich-text',
-      label: 'Body',
-      name: 'body',
+      name: 'children',
+      label: 'Quote',
+      type: 'string',
+      ui: {
+        component: 'textarea',
+      },
+    },
+    {
+      name: 'authorName',
+      label: 'Author',
+      type: 'string',
+    },
+  ],
+}
+
+const ctaBlockSchema: TinaTemplate = {
+  name: 'Cta',
+  label: 'Call to Action',
+  fields: [
+    {
+      type: 'string',
+      name: 'heading',
+      label: 'Heading',
     },
   ],
 }
@@ -67,8 +87,8 @@ export default defineSchema({
         {
           type: 'rich-text',
           label: 'Body',
-          name: '_body',
-          templates: [],
+          name: 'body',
+          templates: [testimonialBlockSchema, ctaBlockSchema],
           isBody: true,
         },
       ],
@@ -106,11 +126,11 @@ export default defineSchema({
           name: 'title',
         },
         {
-          type: 'object',
-          list: true,
-          name: 'sections',
-          label: 'Sections',
-          templates: [contentSectionSchema],
+          type: 'rich-text',
+          label: 'Body',
+          name: 'body',
+          templates: [testimonialBlockSchema, ctaBlockSchema],
+          isBody: true,
         },
       ],
     },

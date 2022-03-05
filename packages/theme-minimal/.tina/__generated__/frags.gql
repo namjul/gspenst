@@ -12,7 +12,7 @@ fragment PostParts on Post {
     }
   }
   date
-  _body
+  body
 }
 
 fragment AuthorParts on Author {
@@ -23,10 +23,5 @@ fragment AuthorParts on Author {
 
 fragment PageParts on Page {
   title
-  sections {
-    __typename
-    ... on PageSectionsContent {
-      body
-    }
-  }
+  body
 }

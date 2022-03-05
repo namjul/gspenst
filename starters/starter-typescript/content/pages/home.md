@@ -1,14 +1,18 @@
----
-sections:
-  - body: |
-      sfsdf
-    _template: content
-  - body: ''
-    _template: content
-  - body: |
-      dfg
-    _template: content
-  - body: |
-      sdfsdfsdfsdf
-    _template: content
----
+# sdfsdfsdf
+
+<BlockQuote
+  children="sdf"
+  authorName="sdf"
+/>
+
+sdfsdf
+
+sdfsdf
+
+## sdfsdf
+
+sdf
+
+<Cta heading="sdf"/>
+
+sdf
