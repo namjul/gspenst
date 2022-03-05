@@ -1,4 +1,4 @@
-import { defineSchema } from 'tinacms'
+import { defineSchema, defineConfig } from 'tinacms'
 import type { TinaTemplate } from 'tinacms'
 
 const contentSectionSchema: TinaTemplate = {
@@ -115,4 +115,24 @@ export default defineSchema({
       ],
     },
   ],
+})
+
+const branch = 'main'
+const apiURL =
+  process.env.NODE_ENV == 'development'
+    ? 'http://localhost:4001/graphql'
+    : `https://content.tinajs.io/content/${process.env.NEXT_PUBLIC_TINA_CLIENT_ID}/github/${branch}`
+export const tinaConfig = defineConfig({
+  apiURL,
+  cmsCallback: (cms) => {
+    cms.flags.set('tina-admin', true)
+    return cms
+  },
+  formifyCallback: ({ formConfig, createForm, createGlobalForm }) => {
+    if (formConfig.id === 'getConfigDocument') {
+      return createGlobalForm(formConfig)
+    }
+
+    return createForm(formConfig)
+  },
 })
