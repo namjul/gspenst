@@ -19,6 +19,7 @@ const stitches = createStitches({
   },
   media,
   utils,
+  prefix: 'gspenst',
 })
 
 export const {

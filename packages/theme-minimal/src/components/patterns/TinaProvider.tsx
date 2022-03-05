@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic'
-import { tinaConfig } from '../../.tina/schema'
+import { tinaConfig } from '../../../.tina/schema'
 
 const TinaCMS = dynamic(() => import('tinacms'), { ssr: false })
 
