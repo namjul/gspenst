@@ -23,7 +23,7 @@ import Head from './patterns/Head'
 // }
 
 const Page: NextPage<StaticProps> = (props) => {
-  if (typeof props === 'undefined') {
+  if (typeof props.data === 'undefined') {
     throw new Error('TODO')
   }
 

@@ -15,11 +15,20 @@ export async function resolveStaticProps({
   const data = (() => {
     switch (name) {
       case 'post':
-        return relativePath && client.getPost({ relativePath })
+        if (relativePath) {
+          return client.getPost({ relativePath })
+        }
+        return undefined
       case 'page':
-        return relativePath && client.getPage({ relativePath })
+        if (relativePath) {
+          return client.getPage({ relativePath })
+        }
+        return undefined
       case 'author':
-        return relativePath && client.getAuthor({ relativePath })
+        if (relativePath) {
+          return client.getAuthor({ relativePath })
+        }
+        return undefined
       default:
         return undefined
     }
