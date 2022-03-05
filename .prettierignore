@@ -1,2 +1,2 @@
-# Ignore artifacts
-.tina/__generated__
+# Ignore Tinacms artifacts
+__generated__/

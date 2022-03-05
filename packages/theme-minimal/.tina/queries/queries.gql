@@ -61,7 +61,6 @@ query getCollections {
   }
 }
 
-
 query getPost($relativePath: String!) {
   ...ConfigQueryFragment
   getPostDocument(relativePath: $relativePath) {
