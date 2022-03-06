@@ -10,7 +10,7 @@ const Head = ({ page }: HeadProps) => {
   // const config = useConfig()
 
   const meta = {
-    title: page.data.title ?? 'Untitled', // TODO add titleText (extracted from body, first H1)
+    title: page.pageTitle || 'Untitled', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
     // description: 'description',
     // path: 'Path',
     // type: 'Type',
