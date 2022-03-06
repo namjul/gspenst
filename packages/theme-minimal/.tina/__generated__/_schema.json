@@ -89,66 +89,7 @@
           "type": "rich-text",
           "label": "Body",
           "name": "body",
-          "templates": [
-            {
-              "name": "BlockQuote",
-              "label": "Block Quote",
-              "fields": [
-                {
-                  "name": "children",
-                  "label": "Quote",
-                  "type": "string",
-                  "ui": {
-                    "component": "textarea"
-                  },
-                  "namespace": [
-                    "post",
-                    "body",
-                    "BlockQuote",
-                    "children"
-                  ]
-                },
-                {
-                  "name": "authorName",
-                  "label": "Author",
-                  "type": "string",
-                  "namespace": [
-                    "post",
-                    "body",
-                    "BlockQuote",
-                    "authorName"
-                  ]
-                }
-              ],
-              "namespace": [
-                "post",
-                "body",
-                "BlockQuote"
-              ]
-            },
-            {
-              "name": "Cta",
-              "label": "Call to Action",
-              "fields": [
-                {
-                  "type": "string",
-                  "name": "heading",
-                  "label": "Heading",
-                  "namespace": [
-                    "post",
-                    "body",
-                    "Cta",
-                    "heading"
-                  ]
-                }
-              ],
-              "namespace": [
-                "post",
-                "body",
-                "Cta"
-              ]
-            }
-          ],
+          "templates": [],
           "isBody": true,
           "namespace": [
             "post",
@@ -201,6 +142,7 @@
       "label": "Pages",
       "name": "page",
       "path": "content/pages",
+      "format": "mdx",
       "fields": [
         {
           "type": "string",
@@ -215,66 +157,7 @@
           "type": "rich-text",
           "label": "Body",
           "name": "body",
-          "templates": [
-            {
-              "name": "BlockQuote",
-              "label": "Block Quote",
-              "fields": [
-                {
-                  "name": "children",
-                  "label": "Quote",
-                  "type": "string",
-                  "ui": {
-                    "component": "textarea"
-                  },
-                  "namespace": [
-                    "page",
-                    "body",
-                    "BlockQuote",
-                    "children"
-                  ]
-                },
-                {
-                  "name": "authorName",
-                  "label": "Author",
-                  "type": "string",
-                  "namespace": [
-                    "page",
-                    "body",
-                    "BlockQuote",
-                    "authorName"
-                  ]
-                }
-              ],
-              "namespace": [
-                "page",
-                "body",
-                "BlockQuote"
-              ]
-            },
-            {
-              "name": "Cta",
-              "label": "Call to Action",
-              "fields": [
-                {
-                  "type": "string",
-                  "name": "heading",
-                  "label": "Heading",
-                  "namespace": [
-                    "page",
-                    "body",
-                    "Cta",
-                    "heading"
-                  ]
-                }
-              ],
-              "namespace": [
-                "page",
-                "body",
-                "Cta"
-              ]
-            }
-          ],
+          "templates": [],
           "isBody": true,
           "namespace": [
             "page",

@@ -1,37 +1,37 @@
 import { defineSchema, defineConfig } from 'tinacms'
-import type { TinaTemplate } from 'tinacms'
+// import type { TinaTemplate } from 'tinacms'
 
-const testimonialBlockSchema: TinaTemplate = {
-  name: 'BlockQuote',
-  label: 'Block Quote',
-  fields: [
-    {
-      name: 'children',
-      label: 'Quote',
-      type: 'string',
-      ui: {
-        component: 'textarea',
-      },
-    },
-    {
-      name: 'authorName',
-      label: 'Author',
-      type: 'string',
-    },
-  ],
-}
-
-const ctaBlockSchema: TinaTemplate = {
-  name: 'Cta',
-  label: 'Call to Action',
-  fields: [
-    {
-      type: 'string',
-      name: 'heading',
-      label: 'Heading',
-    },
-  ],
-}
+// const testimonialBlockSchema: TinaTemplate = {
+//   name: 'BlockQuote',
+//   label: 'Block Quote',
+//   fields: [
+//     {
+//       name: 'children',
+//       label: 'Quote',
+//       type: 'string',
+//       ui: {
+//         component: 'textarea',
+//       },
+//     },
+//     {
+//       name: 'authorName',
+//       label: 'Author',
+//       type: 'string',
+//     },
+//   ],
+// }
+//
+// const ctaBlockSchema: TinaTemplate = {
+//   name: 'Cta',
+//   label: 'Call to Action',
+//   fields: [
+//     {
+//       type: 'string',
+//       name: 'heading',
+//       label: 'Heading',
+//     },
+//   ],
+// }
 
 export default defineSchema({
   collections: [
@@ -88,7 +88,7 @@ export default defineSchema({
           type: 'rich-text',
           label: 'Body',
           name: 'body',
-          templates: [testimonialBlockSchema, ctaBlockSchema],
+          templates: [],
           isBody: true,
         },
       ],
@@ -119,6 +119,7 @@ export default defineSchema({
       label: 'Pages',
       name: 'page',
       path: 'content/pages',
+      format: 'mdx',
       fields: [
         {
           type: 'string',
@@ -129,7 +130,7 @@ export default defineSchema({
           type: 'rich-text',
           label: 'Body',
           name: 'body',
-          templates: [testimonialBlockSchema, ctaBlockSchema],
+          templates: [],
           isBody: true,
         },
       ],
