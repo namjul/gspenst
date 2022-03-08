@@ -2,7 +2,7 @@ import findCacheDir from 'find-cache-dir'
 import fse from 'fs-extra'
 
 const FILE_CACHE_PATH = findCacheDir({
-  name: '@gspenst/theme-minimal',
+  name: '@gspenst/theme',
   thunk: true,
 })?.('slug-collection-cache.json')
 

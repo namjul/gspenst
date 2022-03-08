@@ -8,6 +8,7 @@ import type { Theme } from '@gspenst/components'
 type ThemeChoice = 'light' | 'dark'
 
 export const useTheme = (): [ThemeChoice, () => void] => {
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- until https://github.com/pacocoursey/next-themes/issues/94 is solved  */
   const { theme: choice, setTheme } = useNextTheme()
 
   const toggleThemeChoice = () => {
@@ -17,6 +18,7 @@ export const useTheme = (): [ThemeChoice, () => void] => {
       setTheme('light')
     }
   }
+  /* eslint-enable */
 
   return [choice as ThemeChoice, toggleThemeChoice]
 }

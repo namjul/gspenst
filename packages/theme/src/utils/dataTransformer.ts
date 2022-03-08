@@ -1,7 +1,6 @@
 import { get } from '@gspenst/utils'
-import type { Data } from '../types'
+import type { Root, Data } from '../types'
 import headings from './getHeaders'
-import type { Root } from './getHeaders'
 
 export type TransformedDataType = ReturnType<typeof transformData>
 

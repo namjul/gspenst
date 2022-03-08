@@ -1,0 +1,4 @@
+{
+  "main": "dist/gspenst-theme-server.cjs.js",
+  "module": "dist/gspenst-theme-server.esm.js"
+}
