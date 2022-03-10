@@ -43,16 +43,17 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   console.log(resourcePath, filename, param, routing)
 
   const imports = `
-import getStaticFunctions from '@gspenst/next/server'
+import * as server from '@gspenst/next/server'
 // import TemplateEntryPage from '@gspenst/theme'
 
 export { default } from '@gspenst/next/client'
 `
 
   const staticFunctions = `
-export const { getStaticPaths, getStaticProps } = getStaticFunctions(${JSON.stringify(
+export const getStaticPaths = server.getStaticPaths(${JSON.stringify(
     routing
   )}, '${param}')
+export const getStaticProps = server.getStaticProps
 `
 
   source = `${imports}\n${staticFunctions}`

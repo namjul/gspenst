@@ -6,7 +6,20 @@
 //   options: Dict
 // }
 
-export type Routing = {}
+export type Routing = {
+  routes: {
+    [path: string]: string
+  }
+  collections: {
+    [path: string]: {
+      permalink: string
+    }
+  }
+  taxonomies: {
+    tag: string
+    author: string
+  }
+}
 
 export type Options = {
   theme: string

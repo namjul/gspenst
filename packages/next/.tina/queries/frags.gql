@@ -1,0 +1,39 @@
+fragment ConfigQueryFragment on Query {
+  getConfigDocument(relativePath: "index.json") {
+    id
+    data {
+      ...ConfigParts
+    }
+  }
+}
+
+fragment PostDocumentQueryFragment on PostDocument {
+  __typename
+  id
+  data {
+    ...PostParts
+    author {
+      ... on AuthorDocument {
+        data {
+          ...AuthorParts
+        }
+      }
+    }
+  }
+}
+
+fragment PageDocumentQueryFragment on PageDocument {
+  __typename
+  id
+  data {
+    ...PageParts
+  }
+}
+
+fragment AuthorDocumentQueryFragment on AuthorDocument {
+  __typename
+  id
+  data {
+    ...AuthorParts
+  }
+}

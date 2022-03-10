@@ -1,0 +1,27 @@
+fragment ConfigParts on Config {
+  darkMode
+}
+
+fragment PostParts on Post {
+  title
+  heroImg
+  excerpt
+  author {
+    ... on Document {
+      id
+    }
+  }
+  date
+  body
+}
+
+fragment AuthorParts on Author {
+  name
+  title
+  avatar
+}
+
+fragment PageParts on Page {
+  title
+  body
+}

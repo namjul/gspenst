@@ -1,1 +1,10 @@
-foo: bar
+routes:
+
+collections:
+  /:
+    permalink: /{slug}/
+    data: page.home
+
+taxonomies:
+  tag: /tag/{slug}/
+  author: /author/{slug}/
