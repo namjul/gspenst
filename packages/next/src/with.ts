@@ -3,19 +3,17 @@ import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
 import type { Options } from './types'
 import { startTinaServer } from './server'
-// import remarkGfm from 'remark-gfm'
 
-// const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
-// const markdownExtensions = ['md', 'mdx']
-// const markdownExtensionTest = /\.mdx?$/
+const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
+const yamlExtensions = ['yml', 'yaml']
+const yamlExtensionTest = /\.(yml|yaml)$/
 
 export default (...args: [string | Options]) =>
   (nextConfig: NextConfig = {}): NextConfig => {
     const options = typeof args[0] === 'string' ? { theme: args[0] } : args[0]
-    // const pageExtensions = nextConfig.pageExtensions ?? [
-    //   ...defaultExtensions,
-    //   ...markdownExtensions,
-    // ]
+
+    const pageExtensions = nextConfig.pageExtensions ?? [...defaultExtensions]
+    pageExtensions.push(...yamlExtensions)
 
     // // Since Next.js doesn't provide some kind of real "plugin system" we're (ab)using the `redirects` option here
     // // in order to hook into and block the `next build` and initial `next dev` run.
@@ -48,7 +46,7 @@ export default (...args: [string | Options]) =>
     return withPreconstruct({
       // eslint-disable-line @typescript-eslint/no-unsafe-call
       ...nextConfig,
-      // pageExtensions,
+      pageExtensions,
       redirects: async () => {
         await startTinaServer(options)
         return nextConfig.redirects?.() ?? []
@@ -71,6 +69,16 @@ export default (...args: [string | Options]) =>
             ? ['module', 'main']
             : ['browser', 'module', 'main'],
         }
+
+        config.module?.rules?.push({
+          test: yamlExtensionTest,
+          use: [
+            context.defaultLoaders.babel,
+            {
+              loader: '@gspenst/next/loader',
+            },
+          ],
+        })
 
         if (typeof nextConfig.webpack === 'function') {
           return nextConfig.webpack(config, context)

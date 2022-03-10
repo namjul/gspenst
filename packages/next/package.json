@@ -18,12 +18,14 @@
     "find-cache-dir": "^3.3.2",
     "fs-extra": "^10.0.0",
     "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
     "remark-gfm": "^1.0.0"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",
     "@types/find-cache-dir": "^3.2.1",
     "@types/fs-extra": "^9.0.13",
+    "@types/js-yaml": "^4.0.5",
     "@types/mock-fs": "^4.13.1",
     "@types/webpack": "^5.0.0",
     "mock-fs": "^5.1.1"
@@ -32,5 +34,11 @@
     "next": "^12.0.10",
     "react": "^17.0.2",
     "webpack": "^5.0.0"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts",
+      "loader.ts"
+    ]
   }
 }
