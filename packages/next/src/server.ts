@@ -1,51 +1,40 @@
-import path from 'path'
-import { once } from 'events'
-import fse from 'fs-extra'
-import spawn from 'cross-spawn'
-import debug from 'debug'
-import type { Options } from './types'
+import type { GetStaticProps, GetStaticPaths } from 'next'
+import type { Routing } from './types'
 
-const log = debug('@gspenst/next:tinacms')
+function getStaticFunctions(routing: Routing, param: string) {
+  const getStaticPaths: GetStaticPaths = async () => {
+    console.log('Page [...slug].js getStaticPaths, routing', routing)
 
-export async function startTinaServer(options?: Options) {
-  if (!options?.theme) {
-    throw new Error('You missed to provide a theme package')
+    const paths = [
+      {
+        params: {
+          [param]: ['home'],
+        },
+      },
+    ]
+
+    return { paths, fallback: false }
   }
 
-  const packagePath = path.dirname(
-    require.resolve(`${options.theme}/package.json`)
-  )
-  if (
-    !(await fse.pathExists(path.resolve(packagePath, '.tina', 'schema.ts')))
-  ) {
-    throw new Error('Theme is missing schema definition')
-  }
-  const dest = path.resolve(packagePath, 'content')
-  const src = path.resolve(process.cwd(), 'content')
+  const getStaticProps: GetStaticProps = async ({ params }) => {
+    console.log(
+      'Page [...slug].js getStaticProps, params: ',
+      JSON.stringify(params, null, 2)
+    )
 
-  await fse.ensureSymlink(src, dest)
-
-  const ps = spawn('tinacms', ['server:start', '--noWatch'], {
-    cwd: packagePath,
-  })
-
-  process.on('exit', () => {
-    // cleanup
-    fse.removeSync(dest)
-    ps.kill()
-  })
-
-  if (ps.stdout) {
-    let flag = true
-    while (flag) {
-      const [data] = (await once(ps.stdout, 'data')) as Buffer[] // eslint-disable-line no-await-in-loop
-      const msg = data?.toString().trim()
-      if (msg) {
-        log(msg)
-        if (msg.includes('4001')) {
-          flag = false
-        }
-      }
+    const props = {
+      routing,
+      params,
+      param,
     }
+
+    return { props }
+  }
+
+  return {
+    getStaticPaths,
+    getStaticProps,
   }
 }
+
+export default getStaticFunctions

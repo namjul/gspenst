@@ -2,7 +2,7 @@ import withPreconstruct from '@preconstruct/next'
 import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
 import type { Options } from './types'
-import { startTinaServer } from './server'
+import { startTinaServer } from './tinaServer'
 
 const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 const yamlExtensions = ['yml', 'yaml']

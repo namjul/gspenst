@@ -39,7 +39,8 @@
     "entrypoints": [
       "index.ts",
       "loader.ts",
-      "client.ts"
+      "client.ts",
+      "server.ts"
     ]
   }
 }

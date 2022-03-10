@@ -6,6 +6,8 @@
 //   options: Dict
 // }
 
+export type Routing = {}
+
 export type Options = {
   theme: string
   // themeConfig?: string
