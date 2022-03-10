@@ -6,8 +6,8 @@
 //   options: Dict
 // }
 
-export type LoaderOptions = {
-  // theme: string
+export type Options = {
+  theme: string
   // themeConfig?: string
   // mdxOptions?: MDXOptions
   // sources?: Source[]

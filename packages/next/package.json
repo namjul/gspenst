@@ -38,7 +38,8 @@
   "preconstruct": {
     "entrypoints": [
       "index.ts",
-      "loader.ts"
+      "loader.ts",
+      "client.ts"
     ]
   }
 }

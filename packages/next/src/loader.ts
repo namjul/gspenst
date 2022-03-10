@@ -1,7 +1,9 @@
 // import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
-import type { LoaderOptions } from './types'
+import type { Options } from './types'
+
+type LoaderOptions = Options
 
 /* eslint-disable @typescript-eslint/no-invalid-this */
 
@@ -40,16 +42,22 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
 
   console.log(resourcePath, filename, param, routing)
 
+  const imports = `
+import EntryPage from '@gspenst/next/client'
+// import getStaticFunctions from '@gspenst/next/server'
+// import TemplateEntryPage from '@gspenst/theme'
+`
+
   const page = `
 export default function TemplatePage (props) {
-  return <div>
+  return <EntryPage>
     {JSON.stringify(props, null, 2)}
     {JSON.stringify(${JSON.stringify(routing)}, null, 2)}
-  </div>
+  </EntryPage>
 }
 `
 
-  source = `${page}`
+  source = `${imports}\n${page}`
 
   callback(null, source)
 

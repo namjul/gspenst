@@ -76,6 +76,7 @@ export default (...args: [string | Options]) =>
             context.defaultLoaders.babel,
             {
               loader: '@gspenst/next/loader',
+              options: { ...options },
             },
           ],
         })
