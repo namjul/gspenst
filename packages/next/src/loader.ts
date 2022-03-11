@@ -49,14 +49,16 @@ import * as server from '@gspenst/next/server'
 export { default } from '@gspenst/next/client'
 `
 
-  const staticFunctions = `
+  const dataFetchingFunctions = `
 export const getStaticPaths = server.getStaticPaths(${JSON.stringify(
     routing
   )}, '${param}')
-export const getStaticProps = server.getStaticProps
+export const getStaticProps = server.getStaticProps(${JSON.stringify(
+    routing
+  )}, '${param}')
 `
 
-  source = `${imports}\n${staticFunctions}`
+  source = `${imports}\n${dataFetchingFunctions}`
 
   callback(null, source)
 

@@ -1,3 +1,7 @@
+import type { GetCollectionsQuery } from '../.tina/__generated__/types'
+
+export type Collection = GetCollectionsQuery['getCollections'][0]
+
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
 // import { Dict /*, Unpacked */ } from '@gspenst/utils'
 
