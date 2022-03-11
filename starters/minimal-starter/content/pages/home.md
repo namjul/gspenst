@@ -30,10 +30,8 @@ Paragraph
 
 **Bold**
 
-```
-jhkjjhkjhsdddfsdfsdsfsdfsdfljalsdfadsfaksjdlfkajdsf adsölfkjadsfölkj asdfasdf
-
-sdfsdfsdfsdfd
+```js
+console.log('Hello World')
 ```
 
 _Italic_

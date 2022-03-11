@@ -1,7 +1,7 @@
-// import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
+import { createRoutingMap } from './utils/routing'
 
 type LoaderOptions = Options
 
@@ -34,33 +34,35 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
 
   const { resourcePath } = this
   const filename = resourcePath.slice(resourcePath.lastIndexOf('/') + 1)
-  const param = (
+  const routingParameter = (
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
   const routing = yaml.load(source) as {}
 
-  console.log(resourcePath, filename, param, routing)
+  console.log(resourcePath, filename, routingParameter, routing)
 
-  const imports = `
+  void createRoutingMap(routing).then((routingMap) => {
+    const imports = `
 import * as server from '@gspenst/next/server'
 // import TemplateEntryPage from '@gspenst/theme'
 
 export { default } from '@gspenst/next/client'
 `
 
-  const dataFetchingFunctions = `
+    const dataFetchingFunctions = `
 export const getStaticPaths = server.getStaticPaths(${JSON.stringify(
-    routing
-  )}, '${param}')
+      routingMap
+    )}, '${routingParameter}')
 export const getStaticProps = server.getStaticProps(${JSON.stringify(
-    routing
-  )}, '${param}')
+      routing
+    )}, '${routingParameter}')
 `
 
-  source = `${imports}\n${dataFetchingFunctions}`
+    source = `${imports}\n${dataFetchingFunctions}`
 
-  callback(null, source)
+    callback(null, source)
+  })
 
   return undefined
 }

@@ -1,17 +1,13 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
-import { ExperimentalGetTinaClient } from '../.tina/__generated__/types'
-import type { Routing } from './types'
+import type { RoutingMap } from './utils/routing'
 import { resolveStaticPaths } from './utils/staticPathResolver'
 
 export const getStaticPaths =
-  (routing: Routing, parameter: string): GetStaticPaths =>
+  (routingMap: RoutingMap, parameter: string): GetStaticPaths =>
   async () => {
-    console.log('Page [...slug].js getStaticPaths, routing', routing)
+    console.log('Page [...slug].js getStaticPaths, routing', routingMap)
 
-    const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
-    const { data } = await client.getCollections()
-
-    const paths = resolveStaticPaths(data, routing, parameter)
+    const paths = resolveStaticPaths(routingMap, parameter)
 
     console.log('paths: ', JSON.stringify(paths, null, 2))
 
@@ -19,7 +15,7 @@ export const getStaticPaths =
   }
 
 export const getStaticProps =
-  (routing: Routing, parameter: string): GetStaticProps =>
+  (routing: RoutingMap, parameter: string): GetStaticProps =>
   async ({ params }) => {
     console.log(
       'Page [...slug].js getStaticProps, params: ',

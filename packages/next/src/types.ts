@@ -11,15 +11,15 @@ export type Collection = GetCollectionsQuery['getCollections'][0]
 // }
 
 export type Routing = {
-  routes: {
+  routes?: {
     [path: string]: string
   }
-  collections: {
+  collections?: {
     [path: string]: {
       permalink: string
     }
   }
-  taxonomies: {
+  taxonomies?: {
     tag: string
     author: string
   }
