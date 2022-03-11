@@ -38,11 +38,11 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const routing = yaml.load(source) as {}
+  const routingConfig = yaml.load(source) as {}
 
-  console.log(resourcePath, filename, routingParameter, routing)
+  console.log(resourcePath, filename, routingParameter, routingConfig)
 
-  void createRoutingMap(routing).then((routingMap) => {
+  void createRoutingMap(routingConfig).then((routingMap) => {
     const imports = `
 import * as server from '@gspenst/next/server'
 // import TemplateEntryPage from '@gspenst/theme'
@@ -55,7 +55,7 @@ export const getStaticPaths = server.getStaticPaths(${JSON.stringify(
       routingMap
     )}, '${routingParameter}')
 export const getStaticProps = server.getStaticProps(${JSON.stringify(
-      routing
+      routingConfig
     )}, '${routingParameter}')
 `
 

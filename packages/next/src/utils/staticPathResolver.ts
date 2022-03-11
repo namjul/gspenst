@@ -4,7 +4,7 @@ export function resolveStaticPaths(routingMap: RoutingMap, parameter: string) {
   return Object.entries(routingMap).map(([_, properties]) => {
     return {
       params: {
-        [parameter]: properties.slug.split('/'),
+        [parameter]: properties.slug.split('/').filter(Boolean),
       },
     }
   })

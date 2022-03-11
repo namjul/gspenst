@@ -1,20 +1,56 @@
 import slugify from 'slugify'
+import type { Split, LiteralUnion } from '@gspenst/utils'
 import { ExperimentalGetTinaClient } from '../../.tina/__generated__/types'
-// import type { Routing } from '../types'
+import type { Routing, RoutingData } from '../types'
 
 export type RoutingMap = {
   [slug: string]: {
     slug: string
-    type: string
-    path: string
+    path?: string
     template?: string
-    data?: string
+    data?: RoutingData
   }
 }
 
-export async function createRoutingMap(/* routing?: Routing */) {
+export async function createRoutingMap(routing?: Routing) {
   const result: RoutingMap = {}
   const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
+
+  const used: {
+    [type in Split<LiteralUnion<RoutingData, string>, '.'>[0]]: {
+      [slug: string]: boolean
+    }
+  } = {
+    post: {},
+    page: {},
+    author: {},
+    tag: {},
+  }
+
+  Object.entries(routing?.routes ?? {}).reduce((acc, [path, properties]) => {
+    // @ts-expect-error -- does not exactly match with map type
+    const slug = path.split('/').map(slugify).filter(Boolean).join('/')
+    const { template, data = undefined } =
+      typeof properties === 'string' ? { template: properties } : properties
+    const [dataType, dataSlug] = (data ?? '').split('.') as Split<
+      LiteralUnion<RoutingData | '', string>,
+      '.'
+    >
+
+    if (!!dataType && !!dataSlug) {
+      used[dataType] = {
+        ...used[dataType],
+        [dataSlug]: true,
+      }
+    }
+
+    acc[slug] = {
+      slug,
+      template,
+      data,
+    }
+    return acc
+  }, result)
 
   const {
     data: { getPageList: pageList },
@@ -26,10 +62,13 @@ export async function createRoutingMap(/* routing?: Routing */) {
     if (current) {
       const { sys } = current
       const slug = slugify(sys.filename)
-      acc[slug] = {
-        slug,
-        type: 'page',
-        path: sys.path,
+
+      // prevent duplicate page
+      if (!used.page[slug]) {
+        acc[slug] = {
+          slug,
+          path: sys.path,
+        }
       }
     }
     return acc
@@ -47,7 +86,6 @@ export async function createRoutingMap(/* routing?: Routing */) {
       const slug = slugify(sys.filename)
       acc[slug] = {
         slug,
-        type: 'post',
         path: sys.path,
       }
     }
@@ -66,7 +104,6 @@ export async function createRoutingMap(/* routing?: Routing */) {
       const slug = ['author', slugify(sys.filename)].join('/')
       acc[slug] = {
         slug,
-        type: 'author',
         path: sys.path,
       }
     }

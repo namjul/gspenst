@@ -10,9 +10,20 @@ export type Collection = GetCollectionsQuery['getCollections'][0]
 //   options: Dict
 // }
 
+export type RoutingData =
+  | `page.${string}`
+  | `post.${string}`
+  | `author.${string}`
+  | `tag.${string}`
+
 export type Routing = {
   routes?: {
-    [path: string]: string
+    [path: string]:
+      | string
+      | {
+          template: string
+          data?: RoutingData
+        }
   }
   collections?: {
     [path: string]: {
