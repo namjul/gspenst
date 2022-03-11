@@ -1,3 +1,4 @@
+import type { LiteralUnion } from '@gspenst/utils'
 import type { GetCollectionsQuery } from '../.tina/__generated__/types'
 
 export type Collection = GetCollectionsQuery['getCollections'][0]
@@ -10,25 +11,23 @@ export type Collection = GetCollectionsQuery['getCollections'][0]
 //   options: Dict
 // }
 
-export type RoutingData =
-  | `page.${string}`
-  | `post.${string}`
-  | `author.${string}`
-  | `tag.${string}`
+export type RoutingData = LiteralUnion<
+  `page.${string}` | `post.${string}` | `author.${string}` | `tag.${string}`,
+  string
+>
+
+export type RoutingIndexProperties = {
+  permalink?: string
+  template?: string
+  data?: RoutingData
+}
 
 export type Routing = {
   routes?: {
-    [path: string]:
-      | string
-      | {
-          template: string
-          data?: RoutingData
-        }
+    [path: string]: string | RoutingIndexProperties
   }
   collections?: {
-    [path: string]: {
-      permalink: string
-    }
+    [path: string]: RoutingIndexProperties
   }
   taxonomies?: {
     tag: string

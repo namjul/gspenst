@@ -1,10 +1,11 @@
 import slugify from 'slugify'
-import type { Split, LiteralUnion } from '@gspenst/utils'
+import type { Split } from '@gspenst/utils'
 import { ExperimentalGetTinaClient } from '../../.tina/__generated__/types'
 import type { Routing, RoutingData } from '../types'
 
 export type RoutingMap = {
   [slug: string]: {
+    type: 'index' | 'post' | 'page' | 'author' | 'tag' | null
     slug: string
     path?: string
     template?: string
@@ -12,12 +13,17 @@ export type RoutingMap = {
   }
 }
 
+const createSlugFromPath = (path: string) => {
+  // @ts-expect-error -- does not exactly match with map type
+  return path.split('/').map(slugify).filter(Boolean).join('/')
+}
+
 export async function createRoutingMap(routing?: Routing) {
   const result: RoutingMap = {}
   const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
 
   const used: {
-    [type in Split<LiteralUnion<RoutingData, string>, '.'>[0]]: {
+    [type in Split<RoutingData, '.'>[0]]: {
       [slug: string]: boolean
     }
   } = {
@@ -28,12 +34,11 @@ export async function createRoutingMap(routing?: Routing) {
   }
 
   Object.entries(routing?.routes ?? {}).reduce((acc, [path, properties]) => {
-    // @ts-expect-error -- does not exactly match with map type
-    const slug = path.split('/').map(slugify).filter(Boolean).join('/')
+    const slug = createSlugFromPath(path)
     const { template, data = undefined } =
       typeof properties === 'string' ? { template: properties } : properties
     const [dataType, dataSlug] = (data ?? '').split('.') as Split<
-      LiteralUnion<RoutingData | '', string>,
+      RoutingData | '',
       '.'
     >
 
@@ -45,9 +50,10 @@ export async function createRoutingMap(routing?: Routing) {
     }
 
     acc[slug] = {
+      type: null,
       slug,
-      template,
       data,
+      template,
     }
     return acc
   }, result)
@@ -66,6 +72,7 @@ export async function createRoutingMap(routing?: Routing) {
       // prevent duplicate page
       if (!used.page[slug]) {
         acc[slug] = {
+          type: 'page',
           slug,
           path: sys.path,
         }
@@ -80,11 +87,28 @@ export async function createRoutingMap(routing?: Routing) {
 
   const postDocuments = (postList.edges ?? []).map((post) => post?.node)
 
+  Object.entries(routing?.collections ?? {}).reduce(
+    (acc, [path, properties]) => {
+      const { template, data = undefined } =
+        typeof properties === 'string' ? { template: properties } : properties
+      const slug = createSlugFromPath(path)
+      acc[slug] = {
+        type: 'index',
+        slug,
+        data,
+        template,
+      }
+      return acc
+    },
+    result
+  )
+
   postDocuments.reduce((acc, current) => {
     if (current) {
       const { sys } = current
       const slug = slugify(sys.filename)
       acc[slug] = {
+        type: 'post',
         slug,
         path: sys.path,
       }
@@ -103,6 +127,7 @@ export async function createRoutingMap(routing?: Routing) {
       const { sys } = current
       const slug = ['author', slugify(sys.filename)].join('/')
       acc[slug] = {
+        type: 'author',
         slug,
         path: sys.path,
       }
