@@ -19,7 +19,6 @@ describe('routing mapping', () => {
   test('routing config with routes', async () => {
     const routingConfig: Routing = {
       routes: {
-        '/': 'Home',
         '/features/': 'Features',
         '/about/team/': {
           template: 'Page',
@@ -29,11 +28,6 @@ describe('routing mapping', () => {
     }
     const routingMap = await createRoutingMap(routingConfig)
 
-    expect(routingMap).toHaveProperty('', {
-      type: null,
-      slug: '',
-      template: 'Home',
-    })
     expect(routingMap).toHaveProperty('features', {
       type: null,
       slug: 'features',
@@ -53,12 +47,6 @@ describe('routing mapping', () => {
         '/blog/': {
           permalink: '/blog/{slug}',
           template: 'BlogLayout',
-          // filter: 'primary_tag:blog',
-        },
-        '/podcast/': {
-          permalink: '/podcast/{slug}',
-          template: 'PodcastLayout',
-          // filter: 'primary_tag:podcast',
         },
       },
     }
@@ -70,8 +58,10 @@ describe('routing mapping', () => {
       template: 'BlogLayout',
       type: 'index',
     })
-    // expect(routingMap).toHaveProperty('blog/first-post', {
-    //   slug: 'first-post',
-    // })
+    expect(routingMap).toHaveProperty('blog/first-post', {
+      slug: 'blog/first-post',
+      path: 'content/posts/first-post.mdx',
+      type: 'post',
+    })
   })
 })

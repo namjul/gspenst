@@ -13,12 +13,28 @@ export type RoutingMap = {
   }
 }
 
+const defaultRoutes = {
+  routes: {},
+  collections: {
+    '/': {
+      permalink: '/{slug}/',
+      template: 'index',
+    },
+  },
+  taxonomies: {
+    tag: '/tag/{slug}',
+    author: '/author/{slug}',
+  },
+}
+
 const createSlugFromPath = (path: string) => {
   // @ts-expect-error -- does not exactly match with map type
   return path.split('/').map(slugify).filter(Boolean).join('/')
 }
 
 export async function createRoutingMap(routing?: Routing) {
+  routing = { ...defaultRoutes, ...routing }
+
   const result: RoutingMap = {}
   const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
 
@@ -33,7 +49,7 @@ export async function createRoutingMap(routing?: Routing) {
     tag: {},
   }
 
-  Object.entries(routing?.routes ?? {}).reduce((acc, [path, properties]) => {
+  Object.entries(routing.routes ?? {}).reduce((acc, [path, properties]) => {
     const slug = createSlugFromPath(path)
     const { template, data = undefined } =
       typeof properties === 'string' ? { template: properties } : properties
@@ -87,11 +103,32 @@ export async function createRoutingMap(routing?: Routing) {
 
   const postDocuments = (postList.edges ?? []).map((post) => post?.node)
 
-  Object.entries(routing?.collections ?? {}).reduce(
+  Object.entries(routing.collections ?? {}).reduce(
     (acc, [path, properties]) => {
-      const { template, data = undefined } =
-        typeof properties === 'string' ? { template: properties } : properties
+      const {
+        template,
+        data = undefined,
+        permalink = undefined,
+      } = typeof properties === 'string' ? { template: properties } : properties
       const slug = createSlugFromPath(path)
+
+      if (permalink) {
+        postDocuments.reduce((innerAcc, current) => {
+          if (current) {
+            const { sys } = current
+            const postSlug = createSlugFromPath(
+              permalink.replace(/{\w*}/, slugify(sys.filename))
+            )
+            innerAcc[postSlug] = {
+              type: 'post',
+              slug: postSlug,
+              path: sys.path,
+            }
+          }
+          return innerAcc
+        }, result)
+      }
+
       acc[slug] = {
         type: 'index',
         slug,
@@ -102,19 +139,6 @@ export async function createRoutingMap(routing?: Routing) {
     },
     result
   )
-
-  postDocuments.reduce((acc, current) => {
-    if (current) {
-      const { sys } = current
-      const slug = slugify(sys.filename)
-      acc[slug] = {
-        type: 'post',
-        slug,
-        path: sys.path,
-      }
-    }
-    return acc
-  }, result)
 
   const {
     data: { getAuthorList: authorList },
