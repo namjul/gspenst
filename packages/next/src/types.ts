@@ -11,23 +11,37 @@ export type Collection = GetCollectionsQuery['getCollections'][0]
 //   options: Dict
 // }
 
-export type RoutingData = LiteralUnion<
+export type DataString = LiteralUnion<
   `page.${string}` | `post.${string}` | `author.${string}` | `tag.${string}`,
   string
 >
 
-export type RoutingIndexProperties = {
-  permalink?: string
+type DataShortForm = DataString | { [name: string]: string }
+// type DataLongForm = {
+//   [name: string]: {}
+// }
+
+export type DataForm = DataShortForm // | DataLongForm
+
+export type CollectionProperty = {
+  permalink: string
   template?: string
-  data?: RoutingData
+  data?: DataForm
 }
+
+export type RouteProperty =
+  | string
+  | {
+      template: string
+      data?: DataForm
+    }
 
 export type Routing = {
   routes?: {
-    [path: string]: string | RoutingIndexProperties
+    [path: string]: RouteProperty
   }
   collections?: {
-    [path: string]: RoutingIndexProperties
+    [path: string]: CollectionProperty
   }
   taxonomies?: {
     tag: string
