@@ -1,17 +1,12 @@
 import { object, string, mixed } from 'yup'
 import type { LiteralUnion } from '@gspenst/utils'
 import type { RoutingConfig, DataForm, Resource } from '../types'
+import { splitDataString } from './data'
 
 const dataStringSchema = string().matches(
-  /.*\..*/,
+  /(page|post|tag|author)\..*/,
   'Incorrect Format. Please use e.g. tag.recipes'
 )
-
-const dataSchema = mixed().when({
-  is: (value: any) => typeof value === 'string',
-  then: () => dataStringSchema,
-  otherwise: () => object(),
-})
 
 const routesObjectSchema = object({
   template: string(),
@@ -27,7 +22,7 @@ const routesSchema = mixed().when({
 const collectionsSchema = object({
   permalink: string().required(),
   template: string().optional(),
-  data: dataSchema,
+  data: dataStringSchema,
 }).noUnknown()
 
 const taxonomiesSchema = object({
@@ -44,7 +39,7 @@ const routingSchema = object({
 }).noUnknown()
 
 type DataQuery = {
-  resource: LiteralUnion<Resource, string>
+  resource: Resource
   type: 'read' | 'browse'
   options: {
     slug: string
@@ -61,7 +56,7 @@ type DataRouter = {
 
 type DataReturnType = {
   query: {
-    [name: string]: DataQuery
+    [key in LiteralUnion<Resource, string>]?: DataQuery
   }
   router: {
     [key in Resource]?: DataRouter[]
@@ -136,10 +131,7 @@ function transformData(data?: DataForm) {
   const query: DataReturnType['query'] = {}
 
   Object.entries(dataEntries).forEach(([key, value]) => {
-    const [resource, slug] = value.split('.')
-    if (!resource || !slug) {
-      throw new Error('Data field is incomplete')
-    }
+    const { resource, slug } = splitDataString(value)
     query[key] = {
       resource,
       type: slug ? 'read' : 'browse',

@@ -1,4 +1,3 @@
-import type { LiteralUnion } from '@gspenst/utils'
 import type { GetCollectionsQuery } from '../.tina/__generated__/types'
 
 export type Collection = GetCollectionsQuery['getCollections'][0]
@@ -13,10 +12,7 @@ export type Collection = GetCollectionsQuery['getCollections'][0]
 
 export type Resource = 'post' | 'page' | 'author' | 'tag'
 
-export type DataForm = LiteralUnion<
-  `page.${string}` | `post.${string}` | `author.${string}` | `tag.${string}`,
-  string
->
+export type DataForm = `${Resource}.${string}`
 
 export type CollectionProperty = {
   permalink: string

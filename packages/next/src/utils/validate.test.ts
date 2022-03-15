@@ -135,13 +135,23 @@ describe('routing object validation', () => {
           },
         })
       }).toThrow('Incorrect Format. Please use e.g. tag.recipes')
+      expect(() => {
+        validate({
+          routes: {
+            '/food/': {
+              data: 'something.test',
+            },
+          },
+        })
+      }).toThrow('Incorrect Format. Please use e.g. tag.recipes')
     })
 
     test('shorform', () => {
       const object = validate({
         routes: {
           '/food/': {
-            data: 'tag.food',
+            data: 'page.food',
+            template: 'Page',
           },
           '/music/': {
             data: 'tag.music',
@@ -156,15 +166,11 @@ describe('routing object validation', () => {
         collections: {
           '/more/': {
             permalink: '/{slug}/',
-            data: {
-              home: 'page.home',
-            },
+            data: 'page.home',
           },
           '/podcast/': {
             permalink: '/podcast/{slug}/',
-            data: {
-              something: 'tag.something',
-            },
+            data: 'tag.something',
           },
           '/': {
             permalink: '/{slug}/',
@@ -178,8 +184,8 @@ describe('routing object validation', () => {
           '/food/': {
             data: {
               query: {
-                tag: {
-                  resource: 'tag',
+                page: {
+                  resource: 'page',
                   type: 'read',
                   options: {
                     slug: 'food',
@@ -187,9 +193,10 @@ describe('routing object validation', () => {
                 },
               },
               router: {
-                tag: [{ redirect: true, slug: 'food' }],
+                page: [{ redirect: true, slug: 'food' }],
               },
             },
+            template: 'Page',
           },
           '/music/': {
             data: {
@@ -245,7 +252,7 @@ describe('routing object validation', () => {
             permalink: '/{slug}/',
             data: {
               query: {
-                home: {
+                page: {
                   resource: 'page',
                   type: 'read',
                   options: {
@@ -262,7 +269,7 @@ describe('routing object validation', () => {
             permalink: '/podcast/{slug}/',
             data: {
               query: {
-                something: {
+                tag: {
                   resource: 'tag',
                   type: 'read',
                   options: {
