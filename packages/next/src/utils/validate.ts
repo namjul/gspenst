@@ -1,6 +1,6 @@
 import { object, string, mixed } from 'yup'
 import type { LiteralUnion } from '@gspenst/utils'
-import type { Routing, DataForm } from '../types'
+import type { RoutingConfig, DataForm, Resource } from '../types'
 
 const dataStringSchema = string().matches(
   /.*\..*/,
@@ -15,7 +15,7 @@ const dataSchema = mixed().when({
 
 const routesObjectSchema = object({
   template: string(),
-  data: dataSchema,
+  data: dataStringSchema,
 }).noUnknown()
 
 const routesSchema = mixed().when({
@@ -33,16 +33,18 @@ const collectionsSchema = object({
 const taxonomiesSchema = object({
   tag: string().optional(),
   author: string().optional(),
-}).noUnknown()
+})
+  .nullable()
+  .noUnknown()
 
 const routingSchema = object({
-  routes: object(),
-  collections: object(),
-  taxonomies: object(),
+  routes: object().nullable(),
+  collections: object().nullable(),
+  taxonomies: object().nullable(),
 }).noUnknown()
 
 type DataQuery = {
-  resource: LiteralUnion<'page' | 'post' | 'author' | 'tag', string>
+  resource: LiteralUnion<Resource, string>
   type: 'read' | 'browse'
   options: {
     slug: string
@@ -62,54 +64,54 @@ type DataReturnType = {
     [name: string]: DataQuery
   }
   router: {
-    [name: string]: DataRouter[]
+    [key in Resource]?: DataRouter[]
   }
 }
 
-export type ReturnType = {
-  routes: {
+export type RoutingConfigResolved = {
+  routes?: {
     [path: string]: {
       template: string
       data?: DataReturnType
     }
   }
-  collections: {
+  collections?: {
     [path: string]: {
       permalink: string
       template?: string
       data?: DataReturnType
     }
   }
-  taxonomies: {
-    tag?: 'string'
-    author?: 'string'
+  taxonomies?: {
+    tag?: string
+    author?: string
   }
 }
 
-function validateRouting(routing: any): asserts routing is Routing {
+function validateRouting(routing: any): asserts routing is RoutingConfig {
   routingSchema.validateSync(routing, { strict: true })
   return routing
 }
 
-type Route = Exclude<Routing['routes'], undefined>['']
+type RouteConfig = Exclude<RoutingConfig['routes'], undefined>['']
 
-function validateRoutes(route: any): asserts route is Route {
+function validateRoutes(route: any): asserts route is RouteConfig {
   routesSchema.validateSync(route, { strict: true })
   return route
 }
 
-type Collection = Exclude<Routing['collections'], undefined>['']
+type CollectionConfig = Exclude<RoutingConfig['collections'], undefined>['']
 
 function validateCollections(
   collection: any
-): asserts collection is Collection {
+): asserts collection is CollectionConfig {
   collectionsSchema.validateSync(collection, { strict: true })
   return collection
 }
 
 function validateTaxonomies(
   taxonomies: any
-): asserts taxonomies is Routing['taxonomies'] {
+): asserts taxonomies is RoutingConfig['taxonomies'] {
   taxonomiesSchema.validateSync(taxonomies, { strict: true })
   return taxonomies
 }
@@ -119,7 +121,7 @@ function transformData(data?: DataForm) {
     return undefined
   }
 
-  let dataEntries: Exclude<DataForm, string> = {}
+  let dataEntries: { [name: string]: DataForm } = {}
 
   if (typeof data === 'string') {
     const [resource] = data.split('.')
@@ -158,7 +160,7 @@ function transformData(data?: DataForm) {
   }
 }
 
-function transformRoute(route: Route) {
+function transformRoute(route: RouteConfig) {
   const { template, data } =
     typeof route === 'string' ? { template: route, data: undefined } : route
 
@@ -168,18 +170,17 @@ function transformRoute(route: Route) {
   }
 }
 
-export function validate(routingConfig: any = {}): ReturnType {
+export function validate(routingConfig: any = {}): RoutingConfigResolved {
   validateRouting(routingConfig)
 
-  const result: ReturnType = {
-    routes: {},
-    collections: {},
-    taxonomies: {},
-  }
+  const result: RoutingConfigResolved = {}
 
   Object.entries(routingConfig.routes ?? {}).forEach(([path, properties]) => {
     validateRoutes(properties)
     const route = transformRoute(properties)
+    if (!result.routes) {
+      result.routes = {}
+    }
     result.routes[path] = route
   })
 
@@ -187,6 +188,9 @@ export function validate(routingConfig: any = {}): ReturnType {
     ([path, properties]) => {
       validateCollections(properties)
       const { permalink, template, data } = properties
+      if (!result.collections) {
+        result.collections = {}
+      }
       result.collections[path] = {
         template,
         permalink,

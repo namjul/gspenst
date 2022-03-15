@@ -2,12 +2,14 @@ import { validate } from './validate'
 
 describe('routing object validation', () => {
   test('works with no parameter', () => {
-    const object = validate()
-    expect(object).toEqual({
-      routes: {},
-      collections: {},
-      taxonomies: {},
+    const object1 = validate()
+    expect(object1).toEqual({})
+    const object2 = validate({
+      routes: null,
+      collections: null,
+      taxonomies: null,
     })
+    expect(object2).toEqual({})
   })
   test('throws error when using wrong fields', () => {
     expect(() => {
@@ -118,7 +120,6 @@ describe('routing object validation', () => {
             template: 'test',
           },
         },
-        taxonomies: {},
       })
     })
   })
@@ -150,12 +151,6 @@ describe('routing object validation', () => {
           },
           '/lala/': {
             data: 'author.carsten',
-          },
-          '/sleep/': {
-            data: {
-              bed: 'tag.bed',
-              dream: 'tag.dream',
-            },
           },
         },
         collections: {
@@ -244,32 +239,6 @@ describe('routing object validation', () => {
               },
             },
           },
-          '/sleep/': {
-            data: {
-              query: {
-                bed: {
-                  resource: 'tag',
-                  type: 'read',
-                  options: {
-                    slug: 'bed',
-                  },
-                },
-                dream: {
-                  resource: 'tag',
-                  type: 'read',
-                  options: {
-                    slug: 'dream',
-                  },
-                },
-              },
-              router: {
-                tag: [
-                  { redirect: true, slug: 'bed' },
-                  { redirect: true, slug: 'dream' },
-                ],
-              },
-            },
-          },
         },
         collections: {
           '/more/': {
@@ -324,7 +293,6 @@ describe('routing object validation', () => {
             },
           },
         },
-        taxonomies: {},
       })
     })
   })
