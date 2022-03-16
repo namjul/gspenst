@@ -51,7 +51,7 @@ type DataQuery = {
 
 type DataRouter = {
   redirect: boolean
-  slug?: string
+  slug: string
 }
 
 type DataReturnType = {

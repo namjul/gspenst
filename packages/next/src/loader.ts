@@ -2,6 +2,7 @@ import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
 import { createRoutingMap } from './utils/routing'
+import { validate } from './utils/validate';
 
 type LoaderOptions = Options
 
@@ -38,7 +39,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const routingConfig = yaml.load(source) as {}
+  const routingConfig = validate(yaml.load(source))
 
   console.log(resourcePath, filename, routingParameter, routingConfig)
 
