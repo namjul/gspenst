@@ -3,44 +3,66 @@ import { validate } from './validate'
 describe('routing object validation', () => {
   test('works with no parameter', () => {
     const object1 = validate()
-    expect(object1).toEqual({})
-    const object2 = validate({
-      routes: null,
-      collections: null,
-      taxonomies: null,
+    expect(object1).toEqual({
+      routes: {},
+      collections: {
+        '/': {
+          permalink: '/:slug/',
+          template: 'index',
+        },
+      },
+      taxonomies: {
+        tag: '/tag/:slug',
+        author: '/author/:slug',
+      },
     })
-    expect(object2).toEqual({})
   })
   test('throws error when using wrong fields', () => {
     expect(() => {
       validate({
         routess: {},
       })
-    }).toThrow('this field has unspecified keys: routess')
+    }).toThrow()
+    expect(() => {
+      validate({
+        collection: {},
+      })
+    }).toThrow()
+    expect(() => {
+      validate({
+        taxonomy: {},
+      })
+    }).toThrow()
   })
 
-  test('throws with wrong field types', () => {
+  test('throws error when using :w+ notiation in taxonomies', () => {
     expect(() => {
       validate({
-        routes: 123,
+        taxonomies: {
+          tag: '/categories/:slug/',
+        },
       })
-    }).toThrow(
-      'routes must be a `object` type, but the final value was: `123`.'
-    )
+    }).toThrow()
+  })
+
+  test('throws error when permalink is missing (collection)', () => {
     expect(() => {
       validate({
-        collections: 123,
+        collections: {
+          permalink: '/{slug}/',
+        },
       })
-    }).toThrow(
-      'collections must be a `object` type, but the final value was: `123`.'
-    )
+    }).toThrow()
+  })
+
+  it('throws error when using an undefined taxonomy', () => {
     expect(() => {
       validate({
-        taxonomies: 123,
+        taxonomies: {
+          sweet_baked_good: '/patisserie/{slug}',
+        },
       })
-    }).toThrow(
-      'taxonomies must be a `object` type, but the final value was: `123`.'
-    )
+    }).toThrow()
   })
 
   test('throws error when using wrong field properties', () => {
@@ -81,9 +103,6 @@ describe('routing object validation', () => {
   test('no validation error for routes', () => {
     validate({
       routes: {
-        // '/': {
-        //   template: 'hier',
-        // },
         '/home/': 'bar',
       },
     })
@@ -116,9 +135,13 @@ describe('routing object validation', () => {
         },
         collections: {
           '/': {
-            permalink: '/{slug}/',
+            permalink: '/:slug/',
             template: 'test',
           },
+        },
+        taxonomies: {
+          tag: '/tag/:slug',
+          author: '/author/:slug',
         },
       })
     })
@@ -249,7 +272,7 @@ describe('routing object validation', () => {
         },
         collections: {
           '/more/': {
-            permalink: '/{slug}/',
+            permalink: '/:slug/',
             data: {
               query: {
                 page: {
@@ -266,7 +289,7 @@ describe('routing object validation', () => {
             },
           },
           '/podcast/': {
-            permalink: '/podcast/{slug}/',
+            permalink: '/podcast/:slug/',
             data: {
               query: {
                 tag: {
@@ -283,7 +306,7 @@ describe('routing object validation', () => {
             },
           },
           '/': {
-            permalink: '/{slug}/',
+            permalink: '/:slug/',
             data: {
               query: {
                 tag: {
@@ -299,6 +322,11 @@ describe('routing object validation', () => {
               },
             },
           },
+        },
+
+        taxonomies: {
+          tag: '/tag/:slug',
+          author: '/author/:slug',
         },
       })
     })

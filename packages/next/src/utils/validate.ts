@@ -1,7 +1,30 @@
 import { object, string, mixed } from 'yup'
-import type { LiteralUnion } from '@gspenst/utils'
+// import type { InferType, ObjectSchema } from 'yup';
+import type { LiteralUnion, Split } from '@gspenst/utils'
 import type { RoutingConfig, DataForm, Resource } from '../types'
-import { splitDataString } from './data'
+
+function splitDataString(data: DataForm) {
+  const [resource, slug] = data.split('.') as Split<DataForm, '.'>
+
+  return {
+    resource,
+    slug,
+  }
+}
+
+const defaultRoutes = {
+  routes: {},
+  collections: {
+    '/': {
+      permalink: '/{slug}/',
+      template: 'index',
+    },
+  },
+  taxonomies: {
+    tag: '/tag/{slug}',
+    author: '/author/{slug}',
+  },
+}
 
 const dataStringSchema = string().matches(
   /(page|post|tag|author)\..*/,
@@ -19,23 +42,36 @@ const routesSchema = mixed().when({
   otherwise: () => routesObjectSchema,
 })
 
+const permalinkSchema = string()
+  .transform((_permalink: string, permalink: string) => {
+    if (permalink.match(/{.*}/)) {
+      return permalink.replace(/{(\w+)}/g, ':$1')
+    }
+    return permalink
+  })
+  .test(
+    'is-permalink',
+    'Please use the following notation e.g. /{slug}/.',
+    (value) => (typeof value === 'string' ? !/\/:\w+/.test(value) : true)
+  )
+
 const collectionsSchema = object({
-  permalink: string().required(),
+  permalink: permalinkSchema,
   template: string().optional(),
   data: dataStringSchema,
 }).noUnknown()
 
 const taxonomiesSchema = object({
-  tag: string().optional(),
-  author: string().optional(),
+  tag: permalinkSchema,
+  author: permalinkSchema,
 })
-  .nullable()
+  .default(defaultRoutes.taxonomies)
   .noUnknown()
 
 const routingSchema = object({
-  routes: object().nullable(),
-  collections: object().nullable(),
-  taxonomies: object().nullable(),
+  routes: object().default(defaultRoutes.routes),
+  collections: object().default(defaultRoutes.collections),
+  taxonomies: taxonomiesSchema,
 }).noUnknown()
 
 type DataQuery = {
@@ -54,7 +90,7 @@ type DataRouter = {
   slug: string
 }
 
-type DataReturnType = {
+export type DataReturnType = {
   query: {
     [key in LiteralUnion<Resource, string>]?: DataQuery
   }
@@ -64,51 +100,44 @@ type DataReturnType = {
 }
 
 export type RoutingConfigResolved = {
-  routes?: {
+  routes: {
     [path: string]: {
       template: string
       data?: DataReturnType
     }
   }
-  collections?: {
+  collections: {
     [path: string]: {
       permalink: string
       template?: string
       data?: DataReturnType
     }
   }
-  taxonomies?: {
+  taxonomies: {
     tag?: string
     author?: string
   }
 }
 
-function validateRouting(routing: any): asserts routing is RoutingConfig {
+function validateRouting(routing: any) {
   routingSchema.validateSync(routing, { strict: true })
-  return routing
+  return routingSchema.cast(routing) as RoutingConfigResolved
 }
 
 type RouteConfig = Exclude<RoutingConfig['routes'], undefined>['']
 
-function validateRoutes(route: any): asserts route is RouteConfig {
+function validateRoutes(route: any) {
   routesSchema.validateSync(route, { strict: true })
-  return route
+  return routesSchema.cast(route) as RouteConfig
 }
 
 type CollectionConfig = Exclude<RoutingConfig['collections'], undefined>['']
 
-function validateCollections(
-  collection: any
-): asserts collection is CollectionConfig {
-  collectionsSchema.validateSync(collection, { strict: true })
-  return collection
-}
-
-function validateTaxonomies(
-  taxonomies: any
-): asserts taxonomies is RoutingConfig['taxonomies'] {
-  taxonomiesSchema.validateSync(taxonomies, { strict: true })
-  return taxonomies
+function validateCollections(collection: any) {
+  collectionsSchema.validateSync(collection, {
+    strict: true,
+  })
+  return collectionsSchema.cast(collection) as CollectionConfig
 }
 
 function transformData(data?: DataForm) {
@@ -162,36 +191,36 @@ function transformRoute(route: RouteConfig) {
   }
 }
 
-export function validate(routingConfig: any = {}): RoutingConfigResolved {
-  validateRouting(routingConfig)
+export function validate(_routingConfig: any = {}): RoutingConfigResolved {
+  let { routes, collections, taxonomies } = validateRouting(_routingConfig) // eslint-disable-line prefer-const
 
-  const result: RoutingConfigResolved = {}
-
-  Object.entries(routingConfig.routes ?? {}).forEach(([path, properties]) => {
-    validateRoutes(properties)
-    const route = transformRoute(properties)
-    if (!result.routes) {
-      result.routes = {}
-    }
-    result.routes[path] = route
-  })
-
-  Object.entries(routingConfig.collections ?? {}).forEach(
-    ([path, properties]) => {
-      validateCollections(properties)
-      const { permalink, template, data } = properties
-      if (!result.collections) {
-        result.collections = {}
+  routes = Object.entries(routes).reduce<RoutingConfigResolved['routes']>(
+    (acc, [path, properties]) => {
+      return {
+        ...acc,
+        [path]: transformRoute(validateRoutes(properties)),
       }
-      result.collections[path] = {
+    },
+    {}
+  )
+
+  collections = Object.entries(collections).reduce<
+    RoutingConfigResolved['collections']
+  >((acc, [path, properties]) => {
+    const { permalink, template, data } = validateCollections(properties)
+    return {
+      ...acc,
+      [path]: {
         template,
         permalink,
         data: transformData(data),
-      }
+      },
     }
-  )
+  }, {})
 
-  validateTaxonomies(routingConfig.taxonomies)
-
-  return result
+  return {
+    routes,
+    collections,
+    taxonomies,
+  }
 }
