@@ -42,6 +42,7 @@ export type RoutingConfig = {
 
 export type Options = {
   theme: string
+  projectPath: string
   // themeConfig?: string
   // mdxOptions?: MDXOptions
   // sources?: Source[]

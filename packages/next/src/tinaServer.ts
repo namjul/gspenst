@@ -3,27 +3,20 @@ import { once } from 'events'
 import fse from 'fs-extra'
 import spawn from 'cross-spawn'
 import debug from 'debug'
-import type { Options } from './types'
 
-const log = debug('@gspenst/next:tinacms')
+const log = debug('@gspenst/next:tinaServer')
 
-export async function startTinaServer(options?: Options) {
-  if (!options?.theme) {
-    throw new Error('You missed to provide a theme package')
-  }
+export async function startTinaServer(
+  packagePath: string,
+  callback: () => void
+) {
+  log('Starting tina server', packagePath)
 
-  const packagePath = path.dirname(
-    require.resolve(`${options.theme}/package.json`)
-  )
   if (
     !(await fse.pathExists(path.resolve(packagePath, '.tina', 'schema.ts')))
   ) {
     throw new Error('Theme is missing schema definition')
   }
-  const dest = path.resolve(packagePath, 'content')
-  const src = path.resolve(process.cwd(), 'content')
-
-  await fse.ensureSymlink(src, dest)
 
   const ps = spawn('tinacms', ['server:start', '--noWatch'], {
     cwd: packagePath,
@@ -31,7 +24,7 @@ export async function startTinaServer(options?: Options) {
 
   process.on('exit', () => {
     // cleanup
-    fse.removeSync(dest)
+    callback()
     ps.kill()
   })
 

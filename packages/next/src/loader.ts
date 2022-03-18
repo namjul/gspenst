@@ -1,8 +1,11 @@
+import debug from 'debug'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
 import { createRoutingMap } from './utils/routing'
-import { validate } from './utils/validate';
+import { validate } from './utils/validate'
+
+const log = debug('@gspenst/next:loader')
 
 type LoaderOptions = Options
 
@@ -10,28 +13,24 @@ type LoaderOptions = Options
 
 // lookup: https://webpack.js.org/api/loaders/
 
-// const dynamicPage = /\[.*\]/
 const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
+const isProductionBuild = process.env.NODE_ENV === 'production'
 
 const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   // Tells the loader-runner that the loader intends to call back asynchronously. Returns this.callback.
   const callback = this.async()
 
   // make this loader non cacheable
-  this.cacheable(false)
+  this.cacheable(true)
 
   // get options passed to loader
-  // const options = this.getOptions()
+  const { projectPath } = this.getOptions()
 
-  // let { theme, themeConfig } = options
-  //
-  // // Relative path instead of a package name
-  // if (theme.startsWith('.') || theme.startsWith('/')) {
-  //   theme = path.resolve(theme)
-  // }
-  // if (themeConfig) {
-  //   themeConfig = path.resolve(themeConfig)
-  // }
+  if (!isProductionBuild) {
+    // Add the entire directory `pages` as the dependency
+    // so we when manually editing the files pages are rebuild
+    this.addContextDependency(projectPath)
+  }
 
   const { resourcePath } = this
   const filename = resourcePath.slice(resourcePath.lastIndexOf('/') + 1)
@@ -41,7 +40,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
 
   const routingConfig = validate(yaml.load(source))
 
-  console.log(resourcePath, filename, routingParameter, routingConfig)
+  log(resourcePath, filename, routingParameter, routingConfig)
 
   void createRoutingMap(routingConfig).then((routingMap) => {
     const imports = `
