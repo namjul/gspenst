@@ -19,10 +19,6 @@ export default (...args: [string | Options]) =>
 
     log('Initializing next config')
 
-    if (!options.theme) {
-      throw new Error('You missed to provide a theme package')
-    }
-
     const packagePath = path.dirname(
       require.resolve(`@gspenst/next/package.json`)
     )

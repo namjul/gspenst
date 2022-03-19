@@ -17,14 +17,16 @@ const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
 const isProductionBuild = process.env.NODE_ENV === 'production'
 
 const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
-  // Tells the loader-runner that the loader intends to call back asynchronously. Returns this.callback.
   const callback = this.async()
 
-  // make this loader non cacheable
   this.cacheable(true)
 
-  // get options passed to loader
-  const { projectPath } = this.getOptions()
+  const options = this.getOptions()
+  const { theme, projectPath } = options
+
+  if (!theme) {
+    throw new Error('No Gspenst Theme found.')
+  }
 
   if (!isProductionBuild) {
     // Add the entire directory `pages` as the dependency
