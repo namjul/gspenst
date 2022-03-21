@@ -1,16 +1,36 @@
 // import type { RoutingConfigResolved } from './validate'
-import { createRoutingMap } from './routing'
+import { RouterManager } from './routing'
+import { validate } from './validate'
 
 jest.mock('../../.tina/__generated__/types')
+jest.mock('../plugin')
 
 describe('routing mapping', () => {
   test('empty config', async () => {
-    const routingMap = await createRoutingMap()
-    expect(routingMap.paths).toEqual({})
-    expect(routingMap.redirects).toEqual([])
+    const router = new RouterManager({})
+    expect(await router.resolvePaths()).toEqual([
+      '/about',
+      '/home',
+      '/portfolio',
+    ])
+    expect(await router.resolveProps()).toEqual(null)
+  })
+  test('default routing config', async () => {
+    const router = new RouterManager(validate())
+    expect(await router.resolvePaths()).toEqual([
+      '/',
+      '/first-post/',
+      '/second-post/',
+      '/about',
+      '/home',
+      '/portfolio',
+      '/author/napolean',
+      '/author/pedro',
+    ])
+    expect(await router.resolveProps()).toEqual({ props: {} })
   })
   test('routes', async () => {
-    const routingMap = await createRoutingMap({
+    const router = new RouterManager({
       routes: {
         '/features/': {
           template: 'Features',
@@ -31,11 +51,34 @@ describe('routing mapping', () => {
         },
       },
     })
-
-    expect(routingMap).toEqual({
-      paths: { features: { template: 'Features' } },
-      redirects: [],
+    expect(await router.resolvePaths()).toContain('/features/')
+  })
+  test('collections', async () => {
+    const router = new RouterManager({
+      collections: {
+        '/posts/': {
+          permalink: '/posts/:slug/',
+          template: 'index',
+        },
+      },
     })
+    const paths = await router.resolvePaths()
+    expect(paths).toContain('/posts/')
+    expect(paths).toContain('/posts/first-post/')
+    expect(paths).toContain('/posts/second-post/')
+    const props = await router.resolveProps('posts')
+    expect(props).toEqual({ props: {} })
+  })
+  test('taxonomies', async () => {
+    const router = new RouterManager({
+      taxonomies: {
+        tag: '/category-1/:slug',
+        author: '/category-2/:slug',
+      },
+    })
+    const paths = await router.resolvePaths()
+    expect(paths).toContain('/category-2/napolean')
+    expect(paths).toContain('/category-2/pedro')
   })
   // test('routing config with routes', async () => {
   //   const routingConfig: RoutingConfigResolved = {

@@ -1,35 +1,45 @@
 import debug from 'debug'
 import type { GetStaticProps, GetStaticPaths } from 'next'
-import type { RoutingMap } from './utils/routing'
-import { resolveStaticPaths } from './utils/staticPathResolver'
+import { RouterManager, PageProps } from './utils/routing'
+import type { RoutingConfigResolved } from './utils/validate'
 
 const log = debug('@gspenst/next:server')
 
 export const getStaticPaths =
-  (routingMap: RoutingMap, parameter: string): GetStaticPaths =>
+  (routingConfig: RoutingConfigResolved): GetStaticPaths =>
   async () => {
-    log('Page [...slug].js getStaticPaths, routing', routingMap)
+    log('Page [...slug].js getStaticPaths')
 
-    const paths = resolveStaticPaths(routingMap, parameter)
+    const router = new RouterManager(routingConfig)
 
-    // log('paths: ', JSON.stringify(paths, null, 2))
-
-    return { paths, fallback: false }
+    const paths = await router.resolvePaths()
+    return {
+      paths,
+      fallback: false,
+    }
   }
 
 export const getStaticProps =
-  (routing: RoutingMap, parameter: string): GetStaticProps =>
-  async ({ params }) => {
-    log(
-      'Page [...slug].js getStaticProps, params: ',
-      JSON.stringify(params, null, 2)
-    )
+  (
+    routingConfig: RoutingConfigResolved,
+    routingParameter: string
+  ): GetStaticProps<PageProps> =>
+  async (context) => {
+    const { params } = context
 
-    const props = {
-      params,
-      routing,
-      parameter,
+    log('Page [...slug].js getStaticProps')
+
+    const router = new RouterManager(routingConfig)
+
+    const result = params
+      ? await router.resolveProps(params[routingParameter])
+      : null
+
+    if (!result) {
+      return {
+        notFound: true,
+      }
     }
 
-    return { props }
+    return result
   }

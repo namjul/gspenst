@@ -1,277 +1,245 @@
-import slugify from 'slugify'
-import deepmerge from 'deepmerge'
-// import { ExperimentalGetTinaClient } from '../../.tina/__generated__/types'
+import debug from 'debug'
+// import deepmerge from 'deepmerge'
+import { compile, pathToRegexp } from 'path-to-regexp'
+import { toArray } from '@gspenst/utils'
+import { resourceMapCache } from '../plugin'
 // import type { Document } from '../../.tina/__generated__/types'
 // import type { Resource } from '../types';
-import type { RoutingConfigResolved } from './validate'
+import type {
+  RoutingConfigResolved,
+  RouteConfig,
+  CollectionConfig,
+} from './validate'
+import type { ResourceItem } from './data'
+
+const log = debug('@gspenst/next:routing')
 
 // https://github.com/sindresorhus/map-obj
 
-export type RoutingMap = {
-  paths: {
-    [path: string]: {
-      [key: string]: any
-      // resource: Resource
-      // document: Partial<Document>
-      // type: 'index' | 'post' | 'page' | 'author' | 'tag' | null
-      // slug: string
-      // path?: string
-      // template?: string
-      // data?: RoutingData
+// const items: ResourceMapItem[] = []
+// const fileMap: FileMap = {}
+//
+// type PathOptions = {
+//   [key: string]: any
+//   // resource: string
+//   // document: Partial<Document>
+//   // type: 'index' | 'post' | 'page' | 'author' | 'tag' | null
+//   // controller: 'collection' | 'entry' | 'static' | 'channel'
+//   // slug: string
+//   // path?: string
+//   // template?: string
+//   // data?: RoutingData
+// }
+//
+// type Paths = {
+//   [path: string]: Paths | PathOptions
+// }
+//
+// export type RoutingMap = {
+//   paths: Paths
+//   redirects?: {
+//     source: string
+//     destination: string
+//     permanent?: boolean
+//   }[]
+// }
+
+export type PageProps = {}
+export type Redirect =
+  | {
+      statusCode: 301 | 302 | 303 | 307 | 308
+      destination: string
+      basePath?: false
     }
-  }
-  redirects?: {
-    source: string
-    destination: string
-    permanent?: boolean
-  }[]
-}
-
-const defaultRoutes: RoutingConfigResolved = {
-  routes: {},
-  collections: {
-    '/': {
-      permalink: '/{slug}/',
-      template: 'index',
-    },
-  },
-  taxonomies: {
-    tag: '/tag/{slug}',
-    author: '/author/{slug}',
-  },
-}
-
-const slugifyPath = (path: string) => {
-  // @ts-expect-error -- does not exactly match with map type
-  return path.split('/').map(slugify).filter(Boolean).join('/')
-}
-
-async function createStaticRouteRouting(
-  mainRoute: string,
-  props: Exclude<RoutingConfigResolved['routes'], undefined>['']
-): Promise<RoutingMap> {
-  const { template } = props
-
-  const paths = {
-    [slugifyPath(mainRoute)]: {
-      template,
-    },
-  }
-
-  const result: RoutingMap = { paths }
-
-  // if (data?.router) {
-  //   Object.entries(data.router).forEach(([resource, routeData]) =>
-  //     routeData
-  //       .filter((route) => route.redirect)
-  //       .forEach((route) => {
-  //         // TODO if `resource` is `tag` or `author` use `taxonomies.tag` providing `rewrite.slug`
-  //         // skip/filter is `resource` is `post` ?
-  //         result.redirects.push({
-  //           source: `/${resource}/${route.slug}`,
-  //           destination: mainRoute,
-  //         })
-  //       })
-  //   )
-  // }
-
-  return result
-}
-
-// async function createCollectionRouting() {
-//
-// }
-//
-// async function createStaticPagesRouting() {
-//
-// }
-//
-// async function createTaxonomyRouting(
-//   key: 'tag' | ' author' | string,
-//   permalink: string,
-//   routes: DataReturnType['router'][]
-// ) {
-//
-//   const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
-//
-//   // TODO creat taxonomies graphql query
-//   const {
-//     data: { getAuthorList: authorList },
-//   } = await client.getAuthorList()
-//
-//   return {
-//     paths
-//   }
-// }
-
-export async function createRoutingMap(routingConfig?: RoutingConfigResolved) {
-  routingConfig = { ...defaultRoutes, ...routingConfig }
-
-  // collect rewrites from routingConfig
-  // const existingRoutes = Object.values({
-  //   ...routingConfig.routes,
-  //   ...routingConfig.collections,
-  // })
-  //   .filter(({ data }) => data)
-  //   .map(({ data }) => {
-  //     return data!.router // eslint-disable-line @typescript-eslint/no-non-null-assertion
-  //   })
-
-  const routings = await Promise.all([
-    // 1. Static Routes: Very strong, because you can override any urls and redirect to a static route.
-    ...Object.entries(routingConfig.routes ?? {}).map(([path, props]) =>
-      createStaticRouteRouting(path, props)
-    ),
-    // 2. Taxonomies: Stronger than collections, because it's an inbuilt feature.
-    // ...Object.entries(routingConfig.taxonomies ?? {}).map(([path, props]) =>
-    //   createTaxonomyRouting(path, props, existingRoutes)
-    // ),
-  ])
-
-  const routingMap = routings.reduce<RoutingMap>(
-    (acc, routing) => deepmerge<RoutingMap>(acc, routing),
-    {
-      paths: {},
-      redirects: [],
+  | {
+      permanent: boolean
+      destination: string
+      basePath?: false
     }
-  )
+export type HandleResponse = { props: PageProps } | { redirect: Redirect }
 
-  // const used: {
-  //   [type in Split<RoutingData, '.'>[0]]: {
-  //     [slug: string]: boolean
-  //   }
-  // } = {
-  //   post: {},
-  //   page: {},
-  //   author: {},
-  //   tag: {},
-  // }
+class Router {
+  name: string
+  nextRouter?: Router
 
-  // Object.entries(routingConfig.routes ?? {}).reduce(
-  //   (acc, [path, { template, data }]) => {
-  //     path = slugifyPath(path)
-  //     // const [dataType, dataSlug] = (data ?? '').split('.') as Split<
-  //     //   RoutingData | '',
-  //     //   '.'
-  //     // >
-  //     //
-  //     // if (!!dataType && !!dataSlug) {
-  //     //   used[dataType] = {
-  //     //     ...used[dataType],
-  //     //     [dataSlug]: true,
-  //     //   }
-  //     // }
-  //
-  //     acc.paths[path] = {
-  //       template,
-  //       data,
-  //     }
-  //
-  //     if (data?.router) {
-  //       acc.rewrites.push(
-  //         ...Object.entries(data.router).flatMap(([resource, rewrites]) =>
-  //           rewrites
-  //             .filter((rewrite) => rewrite.redirect)
-  //             .map((rewrite) => {
-  //               // TODO if `resource` is `tag` or `author` use `taxonomies.tag` providing `rewrite.slug`
-  //               // skip/filter is `resource` is `post` ?
-  //               return {
-  //                 source: `/${resource}/${rewrite.slug}`,
-  //                 destination: path,
-  //               }
-  //             })
-  //         )
-  //       )
-  //     }
-  //     return acc
-  //   },
-  //   result
-  // )
+  constructor(name: string) {
+    this.name = name
+  }
 
-  // const {
-  //   data: { getPageList: pageList },
-  // } = await client.getPageList()
+  mount(router: Router) {
+    this.nextRouter = router
+    return router
+  }
 
-  // const pageDocuments = (pageList.edges ?? []).map((page) => page?.node)
+  async handle(
+    request: string,
+    routers: Router[]
+  ): Promise<HandleResponse | null> {
+    if (this.nextRouter) {
+      return this.nextRouter.handle(request, routers)
+    }
 
-  // pageDocuments.reduce((acc, current) => {
-  //   if (current) {
-  //     const { sys } = current
-  //     const slug = slugify(sys.filename)
-  //
-  //     // prevent duplicate page
-  //     // if (!used.page[slug]) {
-  //     acc[slug] = {
-  //       type: 'page',
-  //       slug,
-  //       path: sys.path,
-  //     }
-  //     // }
-  //   }
-  //   return acc
-  // }, result)
+    return null
+  }
 
-  // const {
-  //   data: { getPostList: postList },
-  // } = await client.getPostList()
+  getPaths(_resources: ResourceItem[]): string[] {
+    return []
+  }
+}
 
-  // const postDocuments = (postList.edges ?? []).map((post) => post?.node)
+class StaticRoutesRouter extends Router {
+  mainRoute: string
+  regexp: RegExp
+  config: RouteConfig
+  constructor(mainRoute: string, config: RouteConfig) {
+    super('StaticRoutesRouter')
+    this.mainRoute = mainRoute
+    this.config = config
+    this.regexp = pathToRegexp(this.mainRoute)
+    // this.data = config.data
+    // this.template = config.template
+  }
+  async handle(request: string, routers: Router[]) {
+    const result = this.regexp.exec(request)
 
-  // Object.entries(routingConfig.collections).reduce(
-  //   (acc, [path, properties]) => {
-  //     const {
-  //       template,
-  //       // data = undefined,
-  //       permalink = undefined,
-  //     } = typeof properties === 'string' ? { template: properties } : properties
-  //     const slug = slugifyPath(path)
-  //
-  //     if (permalink) {
-  //       postDocuments.reduce((innerAcc, current) => {
-  //         if (current) {
-  //           const { sys } = current
-  //           const postSlug = slugifyPath(
-  //             permalink.replace(/{\w*}/, slugify(sys.filename))
-  //           )
-  //           innerAcc[postSlug] = {
-  //             type: 'post',
-  //             slug: postSlug,
-  //             path: sys.path,
-  //           }
-  //         }
-  //         return innerAcc
-  //       }, result)
-  //     }
-  //
-  //     acc[slug] = {
-  //       type: 'index',
-  //       slug,
-  //       // data,
-  //       template,
-  //     }
-  //     return acc
-  //   },
-  //   result
-  // )
+    if (result) {
+      return { props: {} }
+    }
+    return super.handle(request, routers)
+  }
+  getPaths(): string[] {
+    return [this.mainRoute]
+  }
+}
 
-  // const {
-  //   data: { getAuthorList: authorList },
-  // } = await client.getAuthorList()
+class TaxonomyRouter extends Router {
+  taxonomyKey: string
+  permalink: string
+  regexp: RegExp
+  constructor(key: string, permalink: string) {
+    super('TaxonomyRouter')
+    this.taxonomyKey = key
+    this.permalink = permalink
+    this.regexp = pathToRegexp(this.permalink)
+  }
+  async handle(request: string, routers: Router[]) {
+    const result = this.regexp.exec(request)
 
-  // const authorDocuments = (authorList.edges ?? []).map((author) => author?.node)
+    if (result) {
+      return { props: {} }
+    }
+    return super.handle(request, routers)
+  }
+  getPaths(resources: ResourceItem[]): string[] {
+    const paths = resources
+      .filter((resourceItem) => resourceItem.resource === this.taxonomyKey)
+      .reduce<string[]>((acc, resourceItem) => {
+        const path = compile(this.permalink)(resourceItem)
 
-  // authorDocuments.reduce((acc, current) => {
-  //   if (current) {
-  //     const { sys } = current
-  //     const slug = ['author', slugify(sys.filename)].join('/')
-  //     acc[slug] = {
-  //       type: 'author',
-  //       slug,
-  //       path: sys.path,
-  //     }
-  //   }
-  //   return acc
-  // }, result)
+        if (path) {
+          acc.push(path)
+        }
+        return acc
+      }, [])
+    return paths
+  }
+}
 
-  return routingMap
+class CollectionRouter extends Router {
+  mainRoute: string
+  permalink: string
+  regexp: RegExp
+  constructor(mainRoute: string, config: CollectionConfig) {
+    super('CollectionRouter')
+    this.mainRoute = mainRoute
+    this.permalink = config.permalink
+    this.regexp = pathToRegexp(this.mainRoute)
+  }
+  async handle(request: string, routers: Router[]) {
+    const result = this.regexp.exec(request)
+
+    if (result) {
+      return { props: {} }
+    }
+    return super.handle(request, routers)
+  }
+  getPaths(resources: ResourceItem[]): string[] {
+    const paths = resources
+      .filter((resourceItem) => resourceItem.resource === 'post')
+      .reduce<string[]>((acc, resourceItem) => {
+        const path = compile(this.permalink)(resourceItem)
+
+        if (path) {
+          acc.push(path)
+        }
+        return acc
+      }, [])
+    return [this.mainRoute].concat(paths)
+  }
+}
+
+class StaticPagesRouter extends Router {
+  constructor() {
+    super('StaticPagesRouter')
+  }
+  getPaths(resources: ResourceItem[]): string[] {
+    const paths = resources
+      .filter((resourceItem) => resourceItem.resource === 'page')
+      .reduce<string[]>((acc, resourceItem) => {
+        acc.push(`/${resourceItem.slug}`)
+        return acc
+      }, [])
+    return paths
+  }
+}
+
+export class RouterManager {
+  config: RoutingConfigResolved
+  router: Router
+  routers: Router[] = []
+  constructor(routingConfig: RoutingConfigResolved) {
+    this.config = routingConfig
+    this.router = new Router('SiteRouter')
+
+    Object.entries(this.config.routes ?? {}).forEach(([key, value]) => {
+      const staticRoutesRouter = new StaticRoutesRouter(key, value)
+      this.routers.push(staticRoutesRouter)
+    })
+
+    Object.entries(this.config.collections ?? {}).forEach(([key, value]) => {
+      const collectionRouter = new CollectionRouter(key, value)
+      this.routers.push(collectionRouter)
+    })
+
+    const staticPagesRouter = new StaticPagesRouter()
+    this.routers.push(staticPagesRouter)
+
+    Object.entries(this.config.taxonomies ?? {}).forEach(([key, permalink]) => {
+      const taxonomyRouter = new TaxonomyRouter(key, permalink)
+      this.routers.push(taxonomyRouter)
+    })
+
+    // mount routers into a chain of responsibilities
+    this.routers.reduce((acc, router) => acc.mount(router), this.router)
+
+    log('Routers instantiated')
+  }
+
+  async resolvePaths(): Promise<string[]> {
+    const resources = await resourceMapCache.get()
+    const paths = this.routers.flatMap((router) => router.getPaths(resources))
+    log('Router paths: ', paths)
+    return paths
+  }
+
+  async resolveProps(
+    params: string[] | string = []
+  ): Promise<HandleResponse | null> {
+    if (params) {
+      const request = `/${toArray(params).join('/')}/`
+      const result = this.router.handle(request, this.routers)
+      return result
+    }
+    return null
+  }
 }

@@ -1,5 +1,6 @@
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
-// import { Dict /*, Unpacked */ } from '@gspenst/utils'
+import { LiteralUnion } from '@gspenst/utils'
+import type { ResourceMapCache } from './plugin'
 
 // type Source = {
 //   resolve: string
@@ -10,9 +11,40 @@ export type Resource = 'post' | 'page' | 'author' | 'tag'
 
 export type DataForm = `${Resource}.${string}`
 
+export type DataQuery = {
+  resource: Resource
+  type: 'read' | 'browse'
+  options: {
+    slug: string
+    filter?: string
+    limit?: number | 'all'
+    order?: string // '{property} ASC|DSC'
+  }
+}
+
+export type DataRouter = {
+  redirect: boolean
+  slug: string
+}
+
+export type Data = {
+  query: {
+    [key in LiteralUnion<Resource, string>]?: DataQuery
+  }
+  router: {
+    [key in Resource]?: DataRouter[]
+  }
+}
+
+export type ResourceMapItem = {}
+export type FileMap = {
+  [filePath: string]: ResourceMapItem
+}
+
 export type Options = {
   theme: string
   projectPath: string
+  resourceMapCache: ResourceMapCache
   // themeConfig?: string
   // mdxOptions?: MDXOptions
   // sources?: Source[]

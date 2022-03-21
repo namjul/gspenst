@@ -2,7 +2,6 @@ import debug from 'debug'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
-import { createRoutingMap } from './utils/routing'
 import { validate } from './utils/validate'
 
 const log = debug('@gspenst/next:loader')
@@ -24,14 +23,22 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   const options = this.getOptions()
   const { theme, projectPath } = options
 
+  log('Run loader')
+
   if (!theme) {
     throw new Error('No Gspenst Theme found.')
   }
 
+  // lets nextjs know if any data changes to trigger `serverOnlyChanges` event
+  // See: https://github.com/vercel/next.js/blob/2ecfa6aec3b2e4b8ebb4b4c8f55df7357b9d3000/packages/next/server/dev/hot-reloader.ts#L732
+  // TODO check if files actually changed using hashing
+  let effectHotReload = -1
+
   if (!isProductionBuild) {
-    // Add the entire directory `pages` as the dependency
+    // Add the entire directory `content` as the dependency
     // so we when manually editing the files pages are rebuild
     this.addContextDependency(projectPath)
+    effectHotReload = Math.random()
   }
 
   const { resourcePath } = this
@@ -42,29 +49,37 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
 
   const routingConfig = validate(yaml.load(source))
 
-  log(resourcePath, filename, routingParameter, routingConfig)
-
-  void createRoutingMap(routingConfig).then((routingMap) => {
-    const imports = `
+  const imports = `
+import debug from 'debug'
 import * as server from '@gspenst/next/server'
+import ClientPage from '@gspenst/next/client'
 // import TemplateEntryPage from '@gspenst/theme'
 
-export { default } from '@gspenst/next/client'
+const log = debug('@gspenst/next:loader')
+
+export default function Page(props) {
+  return <ClientPage {...props} />
+}
 `
 
-    const dataFetchingFunctions = `
-export const getStaticPaths = server.getStaticPaths(${JSON.stringify(
-      routingMap
-    )}, '${routingParameter}')
-export const getStaticProps = server.getStaticProps(${JSON.stringify(
-      routingConfig
-    )}, '${routingParameter}')
+  const dataFetchingFunctions = `
+
+const effectHotReload = ${effectHotReload}
+
+export const getStaticPaths = async () => {
+  return server.getStaticPaths(${JSON.stringify(routingConfig)})()
+}
+
+export const getStaticProps = async (context) => {
+  return server.getStaticProps(${JSON.stringify(
+    routingConfig
+  )},'${routingParameter}')(context)
+}
 `
 
-    source = `${imports}\n${dataFetchingFunctions}`
+  source = `${imports}\n${dataFetchingFunctions}`
 
-    callback(null, source)
-  })
+  callback(null, source)
 
   return undefined
 }

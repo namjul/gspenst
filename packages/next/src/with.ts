@@ -1,15 +1,14 @@
-import path from 'path'
-import fse from 'fs-extra'
 import debug from 'debug'
 import withPreconstruct from '@preconstruct/next'
 import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
 import type { Options } from './types'
-import { startTinaServer } from './tinaServer'
+import { GspenstPlugin, resourceMapCache } from './plugin'
 
 const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 const yamlExtensions = ['yml', 'yaml']
-const yamlExtensionTest = /\.(yml|yaml)$/
+// const yamlExtensionTest = /\.(yml|yaml)$/
+const yamlExtensionTest = /\[\[\.\.\.\w+\]\]\.(yml|yaml)$/
 
 const log = debug('@gspenst/next:with')
 
@@ -19,13 +18,6 @@ export default (...args: [string | Options]) =>
 
     log('Initializing next config')
 
-    const packagePath = path.dirname(
-      require.resolve(`@gspenst/next/package.json`)
-    )
-
-    const dest = path.resolve(packagePath, 'content')
-    const src = path.resolve(process.cwd(), 'content')
-
     const pageExtensions = nextConfig.pageExtensions ?? [...defaultExtensions]
     pageExtensions.push(...yamlExtensions)
 
@@ -34,14 +26,21 @@ export default (...args: [string | Options]) =>
       // eslint-disable-line @typescript-eslint/no-unsafe-call
       ...nextConfig,
       pageExtensions,
-      redirects: async () => {
-        await fse.ensureSymlink(src, dest)
-        await startTinaServer(packagePath, () => {
-          fse.removeSync(dest)
-        })
-        return nextConfig.redirects?.() ?? []
-      },
+      // redirects: async () => {
+      //   await fse.ensureSymlink(src, dest)
+      //   await startTinaServer(packagePath, () => {
+      //     fse.removeSync(dest)
+      //   })
+      //   return nextConfig.redirects?.() ?? []
+      // },
       webpack(config: Configuration, context) {
+        const gspenst = new GspenstPlugin(context.isServer)
+        if (config.plugins) {
+          config.plugins.push(gspenst)
+        } else {
+          config.plugins = [gspenst]
+        }
+
         // [Prefer `module` over `main`](https://github.com/vercel/next.js/issues/9323#issuecomment-550560435)
         // This solves the Warning: Did not expect server HTML to contain a ...
         // Note: main/cjs entry has `require()` and module/esm `import()`
@@ -58,7 +57,12 @@ export default (...args: [string | Options]) =>
             context.defaultLoaders.babel,
             {
               loader: '@gspenst/next/loader',
-              options: { ...options, projectPath: dest },
+              options: {
+                ...options,
+                projectPath: gspenst.destination,
+                resourceMapCache,
+                isServer: context.isServer,
+              },
             },
           ],
         })

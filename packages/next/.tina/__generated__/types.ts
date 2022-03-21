@@ -434,10 +434,10 @@ export type PageDocumentQueryFragmentFragment = { __typename: 'PageDocument', id
 
 export type AuthorDocumentQueryFragmentFragment = { __typename: 'AuthorDocument', id: string, data: { __typename?: 'Author', name?: string | null, title?: string | null, avatar?: string | null } };
 
-export type GetCollectionsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetResourcesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCollectionsQuery = { __typename: 'Query', getCollections: Array<{ __typename: 'Collection', name: string, slug: string, path: string, matches?: string | null, documents: { __typename?: 'DocumentConnection', totalCount: number, edges?: Array<{ __typename?: 'DocumentConnectionEdges', node?: { __typename: 'ConfigDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PostDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'AuthorDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PageDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } }>, getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
+export type GetResourcesQuery = { __typename: 'Query', getCollections: Array<{ __typename: 'Collection', name: string, slug: string, path: string, matches?: string | null, documents: { __typename?: 'DocumentConnection', totalCount: number, edges?: Array<{ __typename?: 'DocumentConnectionEdges', node?: { __typename: 'ConfigDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PostDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'AuthorDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PageDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } }>, getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
 
 export type GetPostQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -593,8 +593,8 @@ export const AuthorDocumentQueryFragmentFragmentDoc = gql`
   }
 }
     ${AuthorPartsFragmentDoc}`;
-export const GetCollectionsDocument = gql`
-    query getCollections {
+export const GetResourcesDocument = gql`
+    query getResources {
   ...ConfigQueryFragment
   __typename
   getCollections {
@@ -852,8 +852,8 @@ export const GetPageListDocument = gql`
 export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R>
   export function getSdk<C>(requester: Requester<C>) {
     return {
-      getCollections(variables?: GetCollectionsQueryVariables, options?: C): Promise<{data: GetCollectionsQuery, variables: GetCollectionsQueryVariables, query: string}> {
-        return requester<{data: GetCollectionsQuery, variables: GetCollectionsQueryVariables, query: string}, GetCollectionsQueryVariables>(GetCollectionsDocument, variables, options);
+      getResources(variables?: GetResourcesQueryVariables, options?: C): Promise<{data: GetResourcesQuery, variables: GetResourcesQueryVariables, query: string}> {
+        return requester<{data: GetResourcesQuery, variables: GetResourcesQueryVariables, query: string}, GetResourcesQueryVariables>(GetResourcesDocument, variables, options);
       },
     getPost(variables: GetPostQueryVariables, options?: C): Promise<{data: GetPostQuery, variables: GetPostQueryVariables, query: string}> {
         return requester<{data: GetPostQuery, variables: GetPostQueryVariables, query: string}, GetPostQueryVariables>(GetPostDocument, variables, options);

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "debug": "NODE_OPTIONS='--inspect' next dev",
     "dev": "next dev",
     "export": "npm run build && next export",
     "start": "next start",

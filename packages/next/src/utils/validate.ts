@@ -1,53 +1,34 @@
 import { object, string, mixed } from 'yup'
-import type { LiteralUnion, Split } from '@gspenst/utils'
-import type { DataForm, Resource } from '../types'
+import type { Split } from '@gspenst/utils'
+import type { DataForm, Data } from '../types'
 
-type DataQuery = {
-  resource: Resource
-  type: 'read' | 'browse'
-  options: {
-    slug: string
-    filter?: string
-    limit?: number | 'all'
-    order?: string // '{property} ASC|DSC'
-  }
+export type Permalink = string
+
+export type RouteConfig = {
+  template: string
+  data?: Data
 }
 
-type DataRouter = {
-  redirect: boolean
-  slug: string
-}
-
-export type Data = {
-  query: {
-    [key in LiteralUnion<Resource, string>]?: DataQuery
-  }
-  router: {
-    [key in Resource]?: DataRouter[]
-  }
+export type CollectionConfig = {
+  permalink: Permalink
+  template?: string
+  data?: Data
 }
 
 export type RoutingConfigResolved = {
-  routes: {
-    [path: string]: {
-      template: string
-      data?: Data
-    }
+  routes?: {
+    [path: string]: RouteConfig
   }
-  collections: {
-    [path: string]: {
-      permalink: string
-      template?: string
-      data?: Data
-    }
+  collections?: {
+    [path: string]: CollectionConfig
   }
-  taxonomies: {
-    tag?: string
-    author?: string
+  taxonomies?: {
+    tag?: Permalink
+    author?: Permalink
   }
 }
 
-const defaultRoutingConfig = {
+export const defaultRoutingConfig = {
   routes: {},
   collections: {
     '/': {
@@ -80,13 +61,13 @@ const permalinkSchema = string().test(
 const routeSchema = mixed().when({
   is: (value: any) => typeof value === 'string',
   then: () => string().required(),
-  otherwise: () => routesObjectSchema,
+  otherwise: () => routesObjectSchema.required(),
 })
 
 const collectionSchema = object({
   permalink: permalinkSchema.required(),
   template: string().optional(),
-  data: dataStringSchema,
+  data: dataStringSchema.optional(),
 }).noUnknown()
 
 const taxonomiesSchema = object({
@@ -95,51 +76,41 @@ const taxonomiesSchema = object({
 }).noUnknown()
 
 const routingSchema = object({
-  routes: object(),
-  collections: object(),
+  routes: object().nullable(),
+  collections: object().nullable(),
   taxonomies: taxonomiesSchema,
 }).noUnknown()
 
-type RoutingConfig = {
-  routes: {
-    [path: string]: string | { template: string; data: string }
-  }
-  collections: {
-    [path: string]: {
-      permalink: string
-      template?: string
-      data?: string
-    }
-  }
-  taxonomies: {
-    tag: string
-    author: string
-  }
-}
-
 function validateRouting(
   routing: any
-): asserts routing is { routes?: {}; collections?: {}; taxonomies?: {} } {
+): asserts routing is {
+  routes?: {} | null
+  collections?: {} | null
+  taxonomies?: {} | null
+} {
   routingSchema.validateSync(routing, { strict: true })
 }
 
 function validateRoute(
   route: any
-): asserts route is RoutingConfig['routes'][''] {
+): asserts route is string | { template: string; data: string } {
   routeSchema.validateSync(route, { strict: true })
 }
 
-function validateCollection(
-  collection: any
-): asserts collection is RoutingConfig['collections'][''] {
+function validateCollection(collection: any): asserts collection is {
+  permalink: string
+  template?: string
+  data?: string
+} {
   collectionSchema.validateSync(collection, {
     strict: true,
   })
 }
 
-function validateTaxonomies(
-  taxonomies: any
-): asserts taxonomies is RoutingConfig['taxonomies'] {
+function validateTaxonomies(taxonomies: any): asserts taxonomies is {
+  tag: string
+  author: string
+} {
   taxonomiesSchema.validateSync(taxonomies, {
     strict: true,
   })
@@ -193,7 +164,7 @@ function transformData(data?: string) {
   }
 }
 
-function transformRoute(route: RoutingConfig['routes']['']) {
+function transformRoute(route: string | { template: string; data: string }) {
   return typeof route === 'string'
     ? { template: route }
     : {
@@ -210,7 +181,7 @@ export function validate(_routingConfig: any = {}) {
     ..._routingConfig,
   }
 
-  const routes = Object.entries(routingConfig.routes).reduce<
+  const routes = Object.entries(routingConfig.routes ?? {}).reduce<
     RoutingConfigResolved['routes']
   >((acc, [path, properties]) => {
     validateRoute(properties)
@@ -220,7 +191,7 @@ export function validate(_routingConfig: any = {}) {
     }
   }, {})
 
-  const collections = Object.entries(routingConfig.collections).reduce<
+  const collections = Object.entries(routingConfig.collections ?? {}).reduce<
     RoutingConfigResolved['collections']
   >((acc, [path, properties]) => {
     validateCollection(properties)

@@ -19,6 +19,7 @@ describe('routing object validation', () => {
   })
   test('overwrite parameters', () => {
     const object = validate({
+      routes: null,
       taxonomies: {},
     })
     expect(object).toEqual({

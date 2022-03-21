@@ -3,28 +3,26 @@ import { once } from 'events'
 import fse from 'fs-extra'
 import spawn from 'cross-spawn'
 import debug from 'debug'
+import type { GspenstPlugin } from './plugin'
 
 const log = debug('@gspenst/next:tinaServer')
 
-export async function startTinaServer(
-  packagePath: string,
-  callback: () => void
-) {
-  log('Starting tina server', packagePath)
+export async function startTinaServer(this: GspenstPlugin) {
+  log('Starting tina server', this.packagePath)
 
   if (
-    !(await fse.pathExists(path.resolve(packagePath, '.tina', 'schema.ts')))
+    !(await fse.pathExists(
+      path.resolve(this.packagePath, '.tina', 'schema.ts')
+    ))
   ) {
     throw new Error('Theme is missing schema definition')
   }
 
   const ps = spawn('tinacms', ['server:start', '--noWatch'], {
-    cwd: packagePath,
+    cwd: this.packagePath,
   })
 
-  process.on('exit', () => {
-    // cleanup
-    callback()
+  this.on('cleanup', () => {
     ps.kill()
   })
 
