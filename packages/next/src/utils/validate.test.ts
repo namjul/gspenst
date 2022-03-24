@@ -2,8 +2,8 @@ import { validate } from './validate'
 
 describe('routing object validation', () => {
   test('works with no parameter', () => {
-    const object1 = validate()
-    expect(object1).toEqual({
+    const object = validate()
+    expect(object).toEqual({
       routes: {},
       collections: {
         '/': {
@@ -15,6 +15,21 @@ describe('routing object validation', () => {
         tag: '/tag/:slug',
         author: '/author/:slug',
       },
+    })
+  })
+  test('overwrite parameters', () => {
+    const object = validate({
+      taxonomies: {},
+    })
+    expect(object).toEqual({
+      routes: {},
+      collections: {
+        '/': {
+          permalink: '/:slug/',
+          template: 'index',
+        },
+      },
+      taxonomies: {},
     })
   })
   test('throws error when using wrong fields', () => {

@@ -90,8 +90,8 @@ const collectionSchema = object({
 }).noUnknown()
 
 const taxonomiesSchema = object({
-  tag: permalinkSchema.required(),
-  author: permalinkSchema.required(),
+  tag: permalinkSchema,
+  author: permalinkSchema,
 }).noUnknown()
 
 const routingSchema = object({
