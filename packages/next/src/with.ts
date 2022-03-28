@@ -59,7 +59,6 @@ export default (...args: [string | Options]) =>
               loader: '@gspenst/next/loader',
               options: {
                 ...options,
-                projectPath: gspenst.destination,
                 resourceMapCache,
                 isServer: context.isServer,
               },

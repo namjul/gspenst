@@ -43,7 +43,6 @@ export type FileMap = {
 
 export type Options = {
   theme: string
-  projectPath: string
   resourceMapCache: ResourceMapCache
   // themeConfig?: string
   // mdxOptions?: MDXOptions

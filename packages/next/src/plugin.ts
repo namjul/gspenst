@@ -77,12 +77,10 @@ let instance: GspenstPlugin | null = null
 export class GspenstPlugin extends EventEmitter {
   isServer: boolean
   compiler?: Compiler
-  destination: string
-  source: string
   packagePath: string = path.dirname(
     require.resolve(`@gspenst/next/package.json`)
   )
-
+  projectPath: string = process.cwd()
   state: { starting?: Promise<void> }
 
   constructor(isServer: boolean) {
@@ -90,15 +88,11 @@ export class GspenstPlugin extends EventEmitter {
 
     this.isServer = isServer
 
-    this.destination = path.resolve(this.packagePath, 'content')
-    this.source = path.resolve(process.cwd(), 'content')
-
     instance = this
     this.state = {}
 
     process.on('exit', () => {
       this.emit('cleanup')
-      this.cleanup()
     })
   }
 
@@ -126,8 +120,6 @@ export class GspenstPlugin extends EventEmitter {
 
   async start() {
     if (!this.state.starting) {
-      await fse.ensureSymlink(this.source, this.destination)
-
       // ensure we're only trying to start the server once
       this.state.starting = startTinaServer.bind(this)()
       // this.state.starting.then(() => newline());
@@ -141,9 +133,5 @@ export class GspenstPlugin extends EventEmitter {
     log('Collect Resources')
     const resources = await getResources()
     await resourceMapCache.set(resources)
-  }
-
-  cleanup() {
-    fse.removeSync(this.destination)
   }
 }

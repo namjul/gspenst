@@ -1,10 +1,14 @@
+import path from 'path'
 import debug from 'debug'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
 import { validate } from './utils/validate'
+import { findContentDir } from './utils/data'
 
 const log = debug('@gspenst/next:loader')
+
+const contentDir = path.resolve(findContentDir())
 
 type LoaderOptions = Options
 
@@ -21,7 +25,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   this.cacheable(true)
 
   const options = this.getOptions()
-  const { theme, projectPath } = options
+  const { theme } = options
 
   log('Run loader')
 
@@ -37,7 +41,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   if (!isProductionBuild) {
     // Add the entire directory `content` as the dependency
     // so we when manually editing the files pages are rebuild
-    this.addContextDependency(projectPath)
+    this.addContextDependency(contentDir)
     effectHotReload = Math.random()
   }
 

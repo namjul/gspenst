@@ -8,18 +8,18 @@ import type { GspenstPlugin } from './plugin'
 const log = debug('@gspenst/next:tinaServer')
 
 export async function startTinaServer(this: GspenstPlugin) {
-  log('Starting tina server', this.packagePath)
-
   if (
     !(await fse.pathExists(
-      path.resolve(this.packagePath, '.tina', 'schema.ts')
+      path.resolve(this.projectPath, '.tina', 'schema.ts')
     ))
   ) {
     throw new Error('Theme is missing schema definition')
   }
 
+  log('Starting tina server', this.projectPath)
+
   const ps = spawn('tinacms', ['server:start', '--noWatch'], {
-    cwd: this.packagePath,
+    cwd: this.projectPath,
   })
 
   this.on('cleanup', () => {

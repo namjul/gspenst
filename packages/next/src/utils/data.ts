@@ -1,3 +1,5 @@
+import path from 'path'
+import fs from 'fs'
 import slugify from 'slugify'
 import type { Resource } from '../types'
 import { ExperimentalGetTinaClient } from '../../.tina/__generated__/types'
@@ -34,12 +36,12 @@ export async function getResources() {
         if (connectionEdge?.node) {
           const {
             id,
-            sys: { filename, path },
+            sys: { filename, path: filepath },
           } = connectionEdge.node
           acc.push({
             id,
             filename,
-            path,
+            path: filepath,
             slug: slugify(filename),
             resource: current.name as Resource,
           })
@@ -53,4 +55,21 @@ export async function getResources() {
   }, [])
 
   return result
+}
+
+export const existsSync = (f: string): boolean => {
+  try {
+    fs.accessSync(f, fs.constants.F_OK)
+    return true
+  } catch (e: unknown) {
+    return false
+  }
+}
+
+export function findContentDir(dir: string = process.cwd()): string {
+  if (existsSync(path.join(dir, 'content'))) return 'content'
+
+  throw new Error(
+    "> Couldn't find a `content` directory. Please create one under the project root"
+  )
 }
