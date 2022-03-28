@@ -1,7 +1,7 @@
 import debug from 'debug'
 import type { GetStaticProps, GetStaticPaths } from 'next'
-import { RouterManager, PageProps } from './utils/routing'
-import type { RoutingConfigResolved } from './utils/validate'
+import { RouterManager, PageProps } from './routing'
+import type { RoutingConfigResolved } from './validate'
 
 const log = debug('@gspenst/next:server')
 

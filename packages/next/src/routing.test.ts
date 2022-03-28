@@ -2,8 +2,8 @@
 import { RouterManager } from './routing'
 import { validate } from './validate'
 
-jest.mock('../../.tina/__generated__/types')
-jest.mock('../plugin')
+jest.mock('../.tina/__generated__/types')
+jest.mock('./plugin')
 
 describe('routing mapping', () => {
   test('empty config', async () => {

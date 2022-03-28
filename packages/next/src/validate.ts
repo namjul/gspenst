@@ -1,6 +1,5 @@
 import { object, string, mixed } from 'yup'
-import type { Split } from '@gspenst/utils'
-import type { DataForm, Data } from '../types'
+import type { DataForm, Data, Split } from './types'
 
 export type Permalink = string
 
@@ -81,9 +80,7 @@ const routingSchema = object({
   taxonomies: taxonomiesSchema,
 }).noUnknown()
 
-function validateRouting(
-  routing: any
-): asserts routing is {
+function validateRouting(routing: any): asserts routing is {
   routes?: {} | null
   collections?: {} | null
   taxonomies?: {} | null

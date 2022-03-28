@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { ComponentType } from 'react'
-import type { LiteralUnion } from '@gspenst/utils'
+import type { LiteralUnion } from 'type-fest'
 
 // Inspiration:
 // https://docs.stackbit.com/conceptual-guides/components/registering/

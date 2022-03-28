@@ -3,8 +3,8 @@ import debug from 'debug'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
-import { validate } from './utils/validate'
-import { findContentDir } from './utils/data'
+import { validate } from './validate'
+import { findContentDir } from './utils'
 
 const log = debug('@gspenst/next:loader')
 

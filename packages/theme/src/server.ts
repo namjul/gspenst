@@ -1,9 +1,26 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
-import { toArray } from '@gspenst/utils'
 import { ExperimentalGetTinaClient } from '../.tina/__generated__/types'
 import * as cache from './utils/cache'
 import { resolveStaticPaths } from './utils/staticPathResolver'
 import { resolveStaticProps } from './utils/staticPropsResolver'
+
+type ToArray<T> = T extends any[] ? T : T[]
+
+/**
+ * Transforms `arg` into an array if it's not already.
+ *
+ * @example
+ * import { toArray } from "reakit-utils";
+ *
+ * toArray("a"); // ["a"]
+ * toArray(["a"]); // ["a"]
+ */
+export function toArray<T>(arg: T) {
+  if (Array.isArray(arg)) {
+    return arg as ToArray<T>
+  }
+  return (typeof arg === 'undefined' ? [] : [arg]) as ToArray<T>
+}
 
 export const getStaticPaths: GetStaticPaths = async () => {
   console.log('Page [...slug].js getStaticPaths')

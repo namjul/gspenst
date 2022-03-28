@@ -1,5 +1,5 @@
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
-import { LiteralUnion } from '@gspenst/utils'
+import { LiteralUnion, AsyncReturnType, Split } from 'type-fest'
 import type { ResourceMapCache } from './plugin'
 
 // type Source = {
@@ -98,3 +98,11 @@ export type Setting = Entry<{
   description: string
   // navigation: []
 }>
+
+/* --- Utils --- */
+
+export type Dict<T = any> = Record<string, T>
+
+export type Unpacked<T> = T extends Array<infer U> ? U : T
+
+export type { LiteralUnion, AsyncReturnType, Split }

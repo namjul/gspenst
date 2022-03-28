@@ -1,16 +1,16 @@
 import debug from 'debug'
 // import deepmerge from 'deepmerge'
 import { compile, pathToRegexp } from 'path-to-regexp'
-import { toArray } from '@gspenst/utils'
-import { resourceMapCache } from '../plugin'
-// import type { Document } from '../../.tina/__generated__/types'
-// import type { Resource } from '../types';
+import { toArray } from './utils'
+import { resourceMapCache } from './plugin'
+// import type { Document } from '../.tina/__generated__/types'
+// import type { Resource } from './types';
 import type {
   RoutingConfigResolved,
   RouteConfig,
   CollectionConfig,
 } from './validate'
-import type { ResourceItem } from './data'
+import type { ResourceItem } from './data-utils'
 
 const log = debug('@gspenst/next:routing')
 

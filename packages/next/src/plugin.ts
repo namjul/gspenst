@@ -5,7 +5,7 @@ import findCacheDir from 'find-cache-dir'
 import fse from 'fs-extra'
 import { Compiler } from 'webpack'
 import pkg from '../package.json'
-import { getResources, ResourceItem } from './utils/data'
+import { getResources, ResourceItem } from './data-utils'
 import { startTinaServer } from './tinaServer'
 
 const FILE_CACHE_PATH = findCacheDir({
