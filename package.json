@@ -8,7 +8,7 @@
     "build": "preconstruct build",
     "clean": "rimraf packages/*/dist",
     "lint": "eslint_d . --ext .ts,.tsx",
-    "prepare": "husky install",
+    "prepare": "husky install && preconstruct dev",
     "test": "jest",
     "typecheck": "npm run typecheck --workspaces",
     "watch": "preconstruct watch"
