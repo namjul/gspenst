@@ -1,6 +1,3 @@
-const withGspenst = require('@gspenst/next')('@gspenst/theme')
+const { default: withGspenst } = require('@gspenst/next')
 
-/**
- * @type {import('@gspenst/next')}
- */
-module.exports = withGspenst({})
+module.exports = withGspenst('@gspenst/theme')({})

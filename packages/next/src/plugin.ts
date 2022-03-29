@@ -8,19 +8,22 @@ import pkg from '../package.json'
 import { getResources, ResourceItem } from './data-utils'
 import { startTinaServer } from './tinaServer'
 
-const FILE_CACHE_PATH = findCacheDir({
-  name: pkg.name,
-  thunk: true,
-})?.('slug-collection-cache.json')
+export class ResourceMapCache<T> {
+  fileCachePath?: string
 
-export class ResourceMapCache {
-  async set(data: ResourceItem[]) {
-    if (FILE_CACHE_PATH) {
-      await fse.ensureFile(FILE_CACHE_PATH)
-      await fse.writeJson(FILE_CACHE_PATH, data)
+  constructor(name: string) {
+    this.fileCachePath = findCacheDir({
+      name: pkg.name,
+      thunk: true,
+    })?.(`${name}.json`)
+  }
+  async set(data?: T) {
+    if (this.fileCachePath) {
+      await fse.ensureFile(this.fileCachePath)
+      await fse.writeJson(this.fileCachePath, data)
     }
   }
-  async get(): Promise<ResourceItem[]> {
+  async get(): Promise<T> {
     // from https://github.com/stackbit/sourcebit-target-next/blob/master/lib/data-client.js
 
     // Every time getStaticPaths is called, the page re-imports all required
@@ -39,19 +42,19 @@ export class ResourceMapCache {
       const maxNumOfRetries = 10
       let numOfRetries = 0
       const checkPathExists = async () => {
-        const pathExists = await fse.pathExists(FILE_CACHE_PATH ?? '')
+        const pathExists = await fse.pathExists(this.fileCachePath ?? '')
         if (!pathExists && numOfRetries < maxNumOfRetries) {
           numOfRetries += 1
           console.log(
-            `error in server.getData(), cache file '${FILE_CACHE_PATH}' was not found, waiting ${retryDelay}ms and retry #${numOfRetries}`
+            `error in server.getData(), cache file '${this.fileCachePath}' was not found, waiting ${retryDelay}ms and retry #${numOfRetries}`
           )
           setTimeout(checkPathExists, retryDelay)
         } else if (pathExists) {
-          resolve(FILE_CACHE_PATH as string)
+          resolve(this.fileCachePath as string)
         } else {
           reject(
             new Error(
-              `sourcebitDataClient of the sourcebit-target-next plugin did not find '${FILE_CACHE_PATH}' file. Please check that other Sourcebit plugins are executed successfully.`
+              `sourcebitDataClient of the sourcebit-target-next plugin did not find '${this.fileCachePath}' file. Please check that other Sourcebit plugins are executed successfully.`
             )
           )
         }
@@ -64,11 +67,13 @@ export class ResourceMapCache {
     return fse.readJson(fileCachePath)
   }
   async clear() {
-    void this.set([])
+    void this.set()
   }
 }
 
-export const resourceMapCache = new ResourceMapCache()
+export const resourceMapCache = new ResourceMapCache<ResourceItem[]>(
+  'resources'
+)
 
 const key = `${pkg.name}:plugin`
 const log = debug(key)
