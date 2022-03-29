@@ -1,2 +1,4 @@
-# Ignore Tinacms artifacts
-__generated__/
+.next
+node_modules
+*-lock.json # package-lock.json
+__generated__/ # Ignore Tinacms artifacts
