@@ -1,4 +1,5 @@
 import debug from 'debug'
+import { resourceMapCache } from './plugin'
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import { RouterManager, PageProps } from './routing'
 import type { RoutingConfigResolved } from './validate'
@@ -10,7 +11,8 @@ export const getStaticPaths =
   async () => {
     log('Page [...slug].js getStaticPaths')
 
-    const router = new RouterManager(routingConfig)
+    const resources = await resourceMapCache.get()
+    const router = new RouterManager(routingConfig, resources)
 
     const paths = await router.resolvePaths()
     return {
@@ -29,7 +31,8 @@ export const getStaticProps =
 
     log('Page [...slug].js getStaticProps')
 
-    const router = new RouterManager(routingConfig)
+    const resources = await resourceMapCache.get()
+    const router = new RouterManager(routingConfig, resources)
 
     const result = params
       ? await router.resolveProps(params[routingParameter])

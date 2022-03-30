@@ -21,8 +21,36 @@ export type ResourceItem = {
   resource: Resource
 }
 
+// const items: ResourceMapItem[] = []
+// const fileMap: FileMap = {}
+//
+// type PathOptions = {
+//   [key: string]: any
+//   // resource: string
+//   // document: Partial<Document>
+//   // type: 'index' | 'post' | 'page' | 'author' | 'tag' | null
+//   // controller: 'collection' | 'entry' | 'static' | 'channel'
+//   // slug: string
+//   // path?: string
+//   // template?: string
+//   // data?: RoutingData
+// }
+//
+// type Paths = {
+//   [path: string]: Paths | PathOptions
+// }
+//
+// export type RoutingMap = {
+//   paths: Paths
+//   redirects?: {
+//     source: string
+//     destination: string
+//     permanent?: boolean
+//   }[]
+// }
+
 export async function getResources() {
-  const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
+  const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
 
   const {
     data: { getCollections: resources },

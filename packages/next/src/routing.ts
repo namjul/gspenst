@@ -2,7 +2,6 @@ import debug from 'debug'
 // import deepmerge from 'deepmerge'
 import { compile, pathToRegexp } from 'path-to-regexp'
 import { toArray } from './utils'
-import { resourceMapCache } from './plugin'
 // import type { Document } from '../.tina/__generated__/types'
 // import type { Resource } from './types';
 import type {
@@ -15,34 +14,6 @@ import type { ResourceItem } from './data-utils'
 const log = debug('@gspenst/next:routing')
 
 // https://github.com/sindresorhus/map-obj
-
-// const items: ResourceMapItem[] = []
-// const fileMap: FileMap = {}
-//
-// type PathOptions = {
-//   [key: string]: any
-//   // resource: string
-//   // document: Partial<Document>
-//   // type: 'index' | 'post' | 'page' | 'author' | 'tag' | null
-//   // controller: 'collection' | 'entry' | 'static' | 'channel'
-//   // slug: string
-//   // path?: string
-//   // template?: string
-//   // data?: RoutingData
-// }
-//
-// type Paths = {
-//   [path: string]: Paths | PathOptions
-// }
-//
-// export type RoutingMap = {
-//   paths: Paths
-//   redirects?: {
-//     source: string
-//     destination: string
-//     permanent?: boolean
-//   }[]
-// }
 
 export type PageProps = {}
 export type Redirect =
@@ -197,7 +168,9 @@ export class RouterManager {
   config: RoutingConfigResolved
   router: Router
   routers: Router[] = []
-  constructor(routingConfig: RoutingConfigResolved) {
+  resources: ResourceItem[]
+  constructor(routingConfig: RoutingConfigResolved, resources: ResourceItem[]) {
+    this.resources = resources
     this.config = routingConfig
     this.router = new Router('SiteRouter')
 
@@ -226,8 +199,9 @@ export class RouterManager {
   }
 
   async resolvePaths(): Promise<string[]> {
-    const resources = await resourceMapCache.get()
-    const paths = this.routers.flatMap((router) => router.getPaths(resources))
+    const paths = this.routers.flatMap((router) =>
+      router.getPaths(this.resources)
+    )
     log('Router paths: ', paths)
     return paths
   }
