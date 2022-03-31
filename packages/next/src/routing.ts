@@ -9,7 +9,7 @@ import type {
   RouteConfig,
   CollectionConfig,
 } from './validate'
-import type { ResourceItem } from './data-utils'
+import type { ResourceItem } from './repository'
 
 const log = debug('@gspenst/next:routing')
 

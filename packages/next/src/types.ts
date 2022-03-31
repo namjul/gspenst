@@ -1,40 +1,24 @@
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
 import { LiteralUnion, AsyncReturnType, Split } from 'type-fest'
-import type { ResourceMapCache } from './plugin'
+import { resourceMapCache } from './plugin'
 
-// type Source = {
-//   resolve: string
-//   options: Dict
-// }
-
-export type Resource = 'post' | 'page' | 'author' | 'tag'
-
-export type DataForm = `${Resource}.${string}`
-
-export type DataQuery = {
-  resource: Resource
-  type: 'read' | 'browse'
-  options: {
-    slug: string
-    filter?: string
-    limit?: number | 'all'
-    order?: string // '{property} ASC|DSC'
-  }
+export type PageProps = {
+  tinaQueries: Array<{}>
 }
 
-export type DataRouter = {
-  redirect: boolean
+export type ResourceItem = {
+  id: ID
+  filename: string
+  path: string
   slug: string
+  resource: ResourceType
+  relativePath: string
+  data?: any
 }
 
-export type Data = {
-  query: {
-    [key in LiteralUnion<Resource, string>]?: DataQuery
-  }
-  router: {
-    [key in Resource]?: DataRouter[]
-  }
-}
+export type ResourceType = 'post' | 'page' | 'author' | 'tag'
+
+export type DataForm = `${ResourceType}.${string}`
 
 export type ResourceMapItem = {}
 export type FileMap = {
@@ -43,7 +27,7 @@ export type FileMap = {
 
 export type Options = {
   theme: string
-  resourceMapCache: ResourceMapCache
+  resourceMapCache: typeof resourceMapCache
   // themeConfig?: string
   // mdxOptions?: MDXOptions
   // sources?: Source[]

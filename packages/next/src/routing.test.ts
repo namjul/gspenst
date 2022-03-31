@@ -1,12 +1,13 @@
 import { RouterManager } from './routing'
 import { validate } from './validate'
-import type { ResourceItem } from './data-utils'
+import type { ResourceItem } from './repository'
 
 jest.mock('../.tina/__generated__/types')
 
 const resources: ResourceItem[] = [
   {
     id: 'content/pages/about.md',
+    relativePath: 'pages/about.md',
     filename: 'about',
     path: 'content/pages/about.md',
     slug: 'about',
@@ -14,6 +15,7 @@ const resources: ResourceItem[] = [
   },
   {
     id: 'content/pages/home.md',
+    relativePath: 'pages/home.md',
     filename: 'home',
     path: 'content/pages/home.md',
     slug: 'home',
@@ -21,6 +23,7 @@ const resources: ResourceItem[] = [
   },
   {
     id: 'content/pages/portfolio.md',
+    relativePath: 'pages/portfolio.md',
     filename: 'portfolio',
     path: 'content/pages/portfolio.md',
     slug: 'portfolio',
@@ -28,6 +31,7 @@ const resources: ResourceItem[] = [
   },
   {
     id: 'content/posts/first-post.mdx',
+    relativePath: 'posts/first-post.mdx',
     filename: 'first-post',
     path: 'content/posts/first-post.mdx',
     slug: 'first-post',
@@ -35,6 +39,7 @@ const resources: ResourceItem[] = [
   },
   {
     id: 'content/posts/second-post.mdx',
+    relativePath: 'posts/second-post.mdx',
     filename: 'second-post',
     path: 'content/posts/second-post.mdx',
     slug: 'second-post',
@@ -42,6 +47,7 @@ const resources: ResourceItem[] = [
   },
   {
     id: 'content/authors/napolean.md',
+    relativePath: 'authors/napolean.md',
     filename: 'napolean',
     path: 'content/authors/napolean.md',
     slug: 'napolean',
@@ -49,6 +55,7 @@ const resources: ResourceItem[] = [
   },
   {
     id: 'content/authors/pedro.md',
+    relativePath: 'authors/pedro.md',
     filename: 'pedro',
     path: 'content/authors/pedro.md',
     slug: 'pedro',

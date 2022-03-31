@@ -1,7 +1,32 @@
 import { object, string, mixed } from 'yup'
-import type { DataForm, Data, Split } from './types'
+import type { DataForm, LiteralUnion, Split, Resource } from './types'
 
 export type Permalink = string
+
+export type DataQuery = {
+  resource: Resource
+  type: 'read' | 'browse'
+  options: {
+    slug: string
+    filter?: string
+    limit?: number | 'all'
+    order?: string // '{property} ASC|DSC'
+  }
+}
+
+export type DataRouter = {
+  redirect: boolean
+  slug: string
+}
+
+export type Data = {
+  query: {
+    [key in LiteralUnion<Resource, string>]?: DataQuery
+  }
+  router: {
+    [key in Resource]?: DataRouter[]
+  }
+}
 
 export type RouteConfig = {
   template: string
