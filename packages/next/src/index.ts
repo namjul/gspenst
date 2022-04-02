@@ -1,3 +1,3 @@
 export { default } from './with'
-export type { Entry, Options, Config, Post, Setting } from './types'
+export type { Options, Config } from './types'
 export { default as schema } from '../.tina/schema'

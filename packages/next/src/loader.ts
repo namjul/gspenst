@@ -19,6 +19,8 @@ type LoaderOptions = Options
 const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
 const isProductionBuild = process.env.NODE_ENV === 'production'
 
+// https://github.com/sindresorhus/map-obj
+
 const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   const callback = this.async()
 

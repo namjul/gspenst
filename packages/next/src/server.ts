@@ -3,7 +3,7 @@ import type { GetStaticProps, GetStaticPaths } from 'next'
 import { resourceMapCache } from './plugin'
 import { RouterManager } from './routing'
 import type { RoutingConfigResolved } from './validate'
-import { resolveStaticProps } from './staticPropsResolver'
+import { controller } from './controller'
 
 const log = debug('@gspenst/next:server')
 
@@ -26,7 +26,7 @@ export const getStaticProps =
   (
     routingConfig: RoutingConfigResolved,
     routingParameter: string
-  ): GetStaticProps<{}> =>
+  ): GetStaticProps =>
   async (context) => {
     const { params } = context
 
@@ -39,12 +39,17 @@ export const getStaticProps =
       ? await router.handle(params[routingParameter])
       : null
 
-    if (!routingProperties) {
+    const result = await controller(routingProperties)
+
+    if (!result) {
       return {
         notFound: true,
       }
     }
 
-    const props = await resolveStaticProps(routingProperties)
-    return { props }
+    if ('redirect' in result) {
+      return { redirect: result.redirect }
+    }
+
+    return { props: result.props }
   }

@@ -3,7 +3,7 @@ import fse from 'fs-extra'
 import pkg from '../package.json'
 
 export class Cache<T> {
-  fileCachePath?: string
+  fileCachePath: string | undefined
 
   constructor(name: string) {
     this.fileCachePath = findCacheDir({

@@ -20,6 +20,7 @@
     // Typechecking Options
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
     // "strictFunctionTypes": true,
     // "strictPropertyInitialization": true,
     // "noFallthroughCasesInSwitch": true,

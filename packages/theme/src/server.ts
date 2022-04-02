@@ -25,7 +25,7 @@ export function toArray<T>(arg: T) {
 export const getStaticPaths: GetStaticPaths = async () => {
   console.log('Page [...slug].js getStaticPaths')
 
-  const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
+  const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
   const { data } = await client.getCollections()
 
   const paths = resolveStaticPaths(data)

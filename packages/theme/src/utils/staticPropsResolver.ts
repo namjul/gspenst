@@ -7,10 +7,10 @@ export async function resolveStaticProps({
   name,
   relativePath,
 }: {
-  name?: string
-  relativePath?: string
+  name: string | undefined
+  relativePath: string | undefined
 }) {
-  const client = ExperimentalGetTinaClient() // eslint-disable-line @babel/new-cap
+  const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
 
   const data = (() => {
     switch (name) {

@@ -1,15 +1,13 @@
 import EventEmitter from 'events'
 import path from 'path'
-import slugify from 'slugify'
 import debug from 'debug'
 import { Compiler } from 'webpack'
 import pkg from '../package.json'
-import { ExperimentalGetTinaClient } from '../.tina/__generated__/types'
 import { startTinaServer } from './tinaServer'
 import { Cache } from './cache'
-import type { ResourceItem, ResourceType } from './types'
+import type { ResourceItem } from './types'
+import { getResources } from './dataUtils';
 
-const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
 
 export const resourceMapCache = new Cache<{ [id: ID]: ResourceItem }>(
   'resources'
@@ -76,33 +74,7 @@ export class GspenstPlugin extends EventEmitter {
 
   async collect() {
     log('Collect Resources')
-    const {
-      data: { getCollections: resources },
-    } = await client.getResources()
-
-    const result = resources.reduce<{ [id: ID]: ResourceItem }>(
-      (acc, current) => {
-        ;(current.documents.edges ?? []).forEach((connectionEdge) => {
-          if (connectionEdge?.node) {
-            const {
-              id,
-              sys: { filename, path: filepath, relativePath },
-            } = connectionEdge.node
-            acc[id] = {
-              id,
-              filename,
-              path: filepath,
-              slug: slugify(filename),
-              resource: current.name as ResourceType,
-              relativePath,
-            }
-          }
-        }, {})
-
-        return acc
-      },
-      {}
-    )
-    await resourceMapCache.set(result)
+    const resources = await getResources()
+    await resourceMapCache.set(resources)
   }
 }

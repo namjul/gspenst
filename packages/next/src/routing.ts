@@ -1,21 +1,19 @@
 import debug from 'debug'
-// import deepmerge from 'deepmerge'
 import { compile, pathToRegexp } from 'path-to-regexp'
+import type { Key } from 'path-to-regexp'
 import { toArray } from './utils'
-// import type { Document } from '../.tina/__generated__/types'
-// import type { Resource } from './types';
+import type { ResourceItem, Entries, Taxonomies } from './types'
+
 import type {
   RoutingConfigResolved,
   RouteConfig,
   CollectionConfig,
+  DataQuery,
 } from './validate'
-import type { ResourceItem } from './repository'
+import { find } from './dataUtils'
 
 const log = debug('@gspenst/next:routing')
 
-// https://github.com/sindresorhus/map-obj
-
-export type PageProps = {}
 export type Redirect =
   | {
       statusCode: 301 | 302 | 303 | 307 | 308
@@ -27,7 +25,57 @@ export type Redirect =
       destination: string
       basePath?: false
     }
-export type HandleResponse = { props: PageProps } | { redirect: Redirect }
+
+type RouterOptions = {
+  filter?: string
+  order?: string
+  limit?: string
+}
+export type RoutingProperties =
+  | {
+      type: 'collection'
+      name: string
+      options?: RouterOptions
+      data?: DataQuery[]
+      templates?: string[]
+      request: {
+        path: string
+        slug?: string | undefined
+        page?: number
+      }
+    }
+  | {
+      type: 'channel'
+      name: string
+      options?: RouterOptions
+      data?: DataQuery[]
+      templates?: string[]
+      request: {
+        path: string
+        slug?: string | undefined
+        page?: number
+      }
+    }
+  | {
+      type: 'entry'
+      resourceItem: ResourceItem
+      data?: DataQuery[]
+      templates?: string[]
+      request: {
+        path: string
+        slug: string
+      }
+    }
+  | {
+      type: 'custom'
+      data?: DataQuery[]
+      templates?: string[]
+      request: {
+        path: string
+      }
+    }
+  | ({ type: 'redirect' } & Redirect)
+  | null
 
 class Router {
   name: string
@@ -44,64 +92,83 @@ class Router {
 
   async handle(
     request: string,
+    resources: ResourceItem[],
     routers: Router[]
-  ): Promise<HandleResponse | null> {
+  ): Promise<RoutingProperties> {
     if (this.nextRouter) {
-      return this.nextRouter.handle(request, routers)
+      return this.nextRouter.handle(request, resources, routers)
     }
 
     return null
   }
 
-  getPaths(_resources: ResourceItem[]): string[] {
+  resolvePaths(_resources: ResourceItem[]): string[] {
     return []
   }
 }
 
 class StaticRoutesRouter extends Router {
   mainRoute: string
-  regexp: RegExp
+  routeRegExp: RegExp
   config: RouteConfig
   constructor(mainRoute: string, config: RouteConfig) {
     super('StaticRoutesRouter')
     this.mainRoute = mainRoute
     this.config = config
-    this.regexp = pathToRegexp(this.mainRoute)
+    this.routeRegExp = pathToRegexp(this.mainRoute)
     // this.data = config.data
     // this.template = config.template
   }
-  async handle(request: string, routers: Router[]) {
-    const result = this.regexp.exec(request)
+  async handle(request: string, resources: ResourceItem[], routers: Router[]) {
+    const [match] = this.routeRegExp.exec(request) ?? []
 
-    if (result) {
-      return { props: {} }
+    if (match) {
+      return {
+        type: 'custom' as const,
+        templates: [],
+        request: { path: match },
+      }
     }
-    return super.handle(request, routers)
+    return super.handle(request, resources, routers)
   }
-  getPaths(): string[] {
+  resolvePaths(): string[] {
     return [this.mainRoute]
   }
 }
 
 class TaxonomyRouter extends Router {
-  taxonomyKey: string
+  taxonomyKey: Taxonomies
   permalink: string
-  regexp: RegExp
-  constructor(key: string, permalink: string) {
+  routeRegExp: RegExp
+  constructor(key: Taxonomies, permalink: string) {
     super('TaxonomyRouter')
     this.taxonomyKey = key
     this.permalink = permalink
-    this.regexp = pathToRegexp(this.permalink)
+    this.routeRegExp = pathToRegexp(this.permalink)
   }
-  async handle(request: string, routers: Router[]) {
-    const result = this.regexp.exec(request)
+  async handle(request: string, resources: ResourceItem[], routers: Router[]) {
+    const [match, slug] = this.routeRegExp.exec(request) ?? []
 
-    if (result) {
-      return { props: {} }
+    if (match && slug) {
+      const resourceItem = find(resources, { slug })
+      if (resourceItem) {
+        const r = {
+          type: 'channel' as const,
+          name: this.taxonomyKey,
+          templates: [],
+          request: {
+            path: 'sdf',
+          },
+        }
+
+        const rr: RoutingProperties = r
+
+        return rr
+      }
     }
-    return super.handle(request, routers)
+    return super.handle(request, resources, routers)
   }
-  getPaths(resources: ResourceItem[]): string[] {
+  resolvePaths(resources: ResourceItem[]): string[] {
     const paths = resources
       .filter((resourceItem) => resourceItem.resource === this.taxonomyKey)
       .reduce<string[]>((acc, resourceItem) => {
@@ -118,23 +185,48 @@ class TaxonomyRouter extends Router {
 
 class CollectionRouter extends Router {
   mainRoute: string
+  routerName: string
   permalink: string
-  regexp: RegExp
+  routeRegExp: RegExp
+  permalinkRegExp: RegExp
   constructor(mainRoute: string, config: CollectionConfig) {
     super('CollectionRouter')
     this.mainRoute = mainRoute
+    this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
+    this.routeRegExp = pathToRegexp(this.mainRoute)
     this.permalink = config.permalink
-    this.regexp = pathToRegexp(this.mainRoute)
+    this.permalinkRegExp = pathToRegexp(this.permalink)
   }
-  async handle(request: string, routers: Router[]) {
-    const result = this.regexp.exec(request)
+  async handle(request: string, resources: ResourceItem[], routers: Router[]) {
+    const [routeMatch] = this.routeRegExp.exec(request) ?? []
 
-    if (result) {
-      return { props: {} }
+    if (routeMatch) {
+      return {
+        type: 'collection' as const,
+        name: this.routerName,
+        options: {},
+        request: { path: routeMatch },
+        templates: [],
+      }
     }
-    return super.handle(request, routers)
+
+    const [permalinkMatch, slug] = this.permalinkRegExp.exec(request) ?? []
+
+    if (permalinkMatch && slug) {
+      const resourceItem = find(resources, { slug })
+      if (resourceItem) {
+        return {
+          type: 'entry' as const,
+          resourceItem,
+          request: { path: permalinkMatch, slug },
+          templates: [],
+        }
+      }
+    }
+
+    return super.handle(request, resources, routers)
   }
-  getPaths(resources: ResourceItem[]): string[] {
+  resolvePaths(resources: ResourceItem[]): string[] {
     const paths = resources
       .filter((resourceItem) => resourceItem.resource === 'post')
       .reduce<string[]>((acc, resourceItem) => {
@@ -150,10 +242,39 @@ class CollectionRouter extends Router {
 }
 
 class StaticPagesRouter extends Router {
-  constructor() {
+  resources: ResourceItem[]
+  routeRegExp: RegExp
+  keys: Key[] = []
+  constructor(resources: ResourceItem[]) {
     super('StaticPagesRouter')
+    this.resources = resources.filter(
+      (resource) => resource.resource === 'page'
+    )
+    this.routeRegExp = pathToRegexp(
+      `/(${this.resources.map(({ slug }) => slug).join('|')})/`,
+      this.keys
+    )
   }
-  getPaths(resources: ResourceItem[]): string[] {
+  async handle(request: string, resources: ResourceItem[], routers: Router[]) {
+    const [match, slug] = this.routeRegExp.exec(request) ?? []
+
+    if (match && slug) {
+      const resourceItem = find(this.resources, { slug })
+      if (resourceItem) {
+        return {
+          type: 'entry' as const,
+          resourceItem,
+          request: {
+            path: match,
+            slug,
+          },
+          templates: [],
+        }
+      }
+    }
+    return super.handle(request, resources, routers)
+  }
+  resolvePaths(resources: ResourceItem[]): string[] {
     const paths = resources
       .filter((resourceItem) => resourceItem.resource === 'page')
       .reduce<string[]>((acc, resourceItem) => {
@@ -173,45 +294,53 @@ export class RouterManager {
     this.resources = resources
     this.config = routingConfig
     this.router = new Router('SiteRouter')
+    this.routers.push(this.router)
 
-    Object.entries(this.config.routes ?? {}).forEach(([key, value]) => {
-      const staticRoutesRouter = new StaticRoutesRouter(key, value)
+    const routes = Object.entries(this.config.routes ?? {}) as Entries<
+      typeof this.config.routes
+    >
+    routes.forEach(([key, value]) => {
+      const staticRoutesRouter = new StaticRoutesRouter(key as string, value)
       this.routers.push(staticRoutesRouter)
     })
 
-    Object.entries(this.config.collections ?? {}).forEach(([key, value]) => {
-      const collectionRouter = new CollectionRouter(key, value)
+    const collections = Object.entries(
+      this.config.collections ?? {}
+    ) as Entries<typeof this.config.collections>
+    collections.forEach(([key, value]) => {
+      const collectionRouter = new CollectionRouter(key as string, value)
       this.routers.push(collectionRouter)
     })
 
-    const staticPagesRouter = new StaticPagesRouter()
+    const staticPagesRouter = new StaticPagesRouter(this.resources)
     this.routers.push(staticPagesRouter)
 
-    Object.entries(this.config.taxonomies ?? {}).forEach(([key, permalink]) => {
-      const taxonomyRouter = new TaxonomyRouter(key, permalink)
+    const taxonomies = Object.entries(this.config.taxonomies ?? {}) as Entries<
+      typeof this.config.taxonomies
+    >
+    taxonomies.forEach(([key, permalink]) => {
+      const taxonomyRouter = new TaxonomyRouter(key, permalink as string)
       this.routers.push(taxonomyRouter)
     })
 
     // mount routers into a chain of responsibilities
-    this.routers.reduce((acc, router) => acc.mount(router), this.router)
+    this.routers.reduce((acc, router) => acc.mount(router))
 
     log('Routers instantiated')
   }
 
   async resolvePaths(): Promise<string[]> {
     const paths = this.routers.flatMap((router) =>
-      router.getPaths(this.resources)
+      router.resolvePaths(this.resources)
     )
     log('Router paths: ', paths)
     return paths
   }
 
-  async resolveProps(
-    params: string[] | string = []
-  ): Promise<HandleResponse | null> {
+  async handle(params: string[] | string = []): Promise<RoutingProperties> {
     if (params) {
       const request = `/${toArray(params).join('/')}/`
-      const result = this.router.handle(request, this.routers)
+      const result = this.router.handle(request, this.resources, this.routers)
       return result
     }
     return null

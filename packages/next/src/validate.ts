@@ -1,10 +1,16 @@
 import { object, string, mixed } from 'yup'
-import type { DataForm, LiteralUnion, Split, Resource } from './types'
+import type {
+  Taxonomies,
+  DataForm,
+  LiteralUnion,
+  Split,
+  ResourceType,
+} from './types'
 
 export type Permalink = string
 
 export type DataQuery = {
-  resource: Resource
+  resource: ResourceType
   type: 'read' | 'browse'
   options: {
     slug: string
@@ -21,35 +27,40 @@ export type DataRouter = {
 
 export type Data = {
   query: {
-    [key in LiteralUnion<Resource, string>]?: DataQuery
+    [key in LiteralUnion<ResourceType, string>]?: DataQuery
   }
   router: {
-    [key in Resource]?: DataRouter[]
+    [key in ResourceType]?: DataRouter[]
   }
 }
 
 export type RouteConfig = {
-  template: string
-  data?: Data
+  template?: string | undefined
+  data?: Data | undefined
 }
 
 export type CollectionConfig = {
   permalink: Permalink
-  template?: string
-  data?: Data
+  template?: string | undefined
+  data?: Data | undefined
 }
 
 export type RoutingConfigResolved = {
-  routes?: {
-    [path: string]: RouteConfig
-  }
-  collections?: {
-    [path: string]: CollectionConfig
-  }
-  taxonomies?: {
-    tag?: Permalink
-    author?: Permalink
-  }
+  routes?:
+    | {
+        [path: string]: RouteConfig
+      }
+    | undefined
+  collections?:
+    | {
+        [path: string]: CollectionConfig
+      }
+    | undefined
+  taxonomies?:
+    | {
+        [key in Taxonomies]?: Permalink
+      }
+    | undefined
 }
 
 export const defaultRoutingConfig = {
