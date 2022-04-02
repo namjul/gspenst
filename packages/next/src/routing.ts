@@ -2,7 +2,12 @@ import debug from 'debug'
 import { compile, pathToRegexp } from 'path-to-regexp'
 import type { Key } from 'path-to-regexp'
 import { toArray } from './utils'
-import type { ResourceItem, Entries, Taxonomies } from './types'
+import type {
+  ResourceItemMap,
+  ResourceItem,
+  Entries,
+  Taxonomies,
+} from './types'
 
 import type {
   RoutingConfigResolved,
@@ -47,7 +52,6 @@ export type RoutingProperties =
   | {
       type: 'channel'
       name: string
-      options?: RouterOptions
       data?: DataQuery[]
       templates?: string[]
       request: {
@@ -102,7 +106,7 @@ class Router {
     return null
   }
 
-  resolvePaths(_resources: ResourceItem[]): string[] {
+  resolvePaths(_resources: ResourceItemMap): string[] {
     return []
   }
 }
@@ -152,7 +156,7 @@ class TaxonomyRouter extends Router {
     if (match && slug) {
       const resourceItem = find(resources, { slug })
       if (resourceItem) {
-        const r = {
+        return {
           type: 'channel' as const,
           name: this.taxonomyKey,
           templates: [],
@@ -160,16 +164,12 @@ class TaxonomyRouter extends Router {
             path: 'sdf',
           },
         }
-
-        const rr: RoutingProperties = r
-
-        return rr
       }
     }
     return super.handle(request, resources, routers)
   }
-  resolvePaths(resources: ResourceItem[]): string[] {
-    const paths = resources
+  resolvePaths(resources: ResourceItemMap): string[] {
+    const paths = Object.values(resources)
       .filter((resourceItem) => resourceItem.resource === this.taxonomyKey)
       .reduce<string[]>((acc, resourceItem) => {
         const path = compile(this.permalink)(resourceItem)
@@ -189,13 +189,15 @@ class CollectionRouter extends Router {
   permalink: string
   routeRegExp: RegExp
   permalinkRegExp: RegExp
-  constructor(mainRoute: string, config: CollectionConfig) {
+  postStack: ID[]
+  constructor(mainRoute: string, config: CollectionConfig, postStack: ID[]) {
     super('CollectionRouter')
     this.mainRoute = mainRoute
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
     this.routeRegExp = pathToRegexp(this.mainRoute)
     this.permalink = config.permalink
     this.permalinkRegExp = pathToRegexp(this.permalink)
+    this.postStack = postStack
   }
   async handle(request: string, resources: ResourceItem[], routers: Router[]) {
     const [routeMatch] = this.routeRegExp.exec(request) ?? []
@@ -226,17 +228,24 @@ class CollectionRouter extends Router {
 
     return super.handle(request, resources, routers)
   }
-  resolvePaths(resources: ResourceItem[]): string[] {
-    const paths = resources
-      .filter((resourceItem) => resourceItem.resource === 'post')
-      .reduce<string[]>((acc, resourceItem) => {
-        const path = compile(this.permalink)(resourceItem)
+  resolvePaths(resources: ResourceItemMap): string[] {
+    const paths: string[] = []
+    for (let len = this.postStack.length - 1; len >= 0; len -= 1) {
+      const resourceItemID = this.postStack[len]
+      const resourceItem = resourceItemID && resources[resourceItemID]
+      if (resourceItem) {
+        const isOwned = true // TODO filter using filter option `const isOwned = this.nql.queryJSON(resource)`
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (isOwned) {
+          const path = compile(this.permalink)(resourceItem)
+          paths.push(path)
 
-        if (path) {
-          acc.push(path)
+          // Remove owned resourceItem
+          this.postStack.splice(len, 1)
         }
-        return acc
-      }, [])
+      }
+    }
+
     return [this.mainRoute].concat(paths)
   }
 }
@@ -245,9 +254,9 @@ class StaticPagesRouter extends Router {
   resources: ResourceItem[]
   routeRegExp: RegExp
   keys: Key[] = []
-  constructor(resources: ResourceItem[]) {
+  constructor(resources: ResourceItemMap) {
     super('StaticPagesRouter')
-    this.resources = resources.filter(
+    this.resources = Object.values(resources).filter(
       (resource) => resource.resource === 'page'
     )
     this.routeRegExp = pathToRegexp(
@@ -274,8 +283,8 @@ class StaticPagesRouter extends Router {
     }
     return super.handle(request, resources, routers)
   }
-  resolvePaths(resources: ResourceItem[]): string[] {
-    const paths = resources
+  resolvePaths(resources: ResourceItemMap): string[] {
+    const paths = Object.values(resources)
       .filter((resourceItem) => resourceItem.resource === 'page')
       .reduce<string[]>((acc, resourceItem) => {
         acc.push(`/${resourceItem.slug}`)
@@ -289,9 +298,16 @@ export class RouterManager {
   config: RoutingConfigResolved
   router: Router
   routers: Router[] = []
-  resources: ResourceItem[]
-  constructor(routingConfig: RoutingConfigResolved, resources: ResourceItem[]) {
+  resources: ResourceItemMap
+  postStack: ID[]
+  constructor(
+    routingConfig: RoutingConfigResolved,
+    resources: ResourceItemMap
+  ) {
     this.resources = resources
+    this.postStack = Object.values(this.resources)
+      .filter(({ resource }) => resource === 'post')
+      .map(({ id }) => id)
     this.config = routingConfig
     this.router = new Router('SiteRouter')
     this.routers.push(this.router)
@@ -308,7 +324,11 @@ export class RouterManager {
       this.config.collections ?? {}
     ) as Entries<typeof this.config.collections>
     collections.forEach(([key, value]) => {
-      const collectionRouter = new CollectionRouter(key as string, value)
+      const collectionRouter = new CollectionRouter(
+        key as string,
+        value,
+        this.postStack
+      )
       this.routers.push(collectionRouter)
     })
 
@@ -340,7 +360,11 @@ export class RouterManager {
   async handle(params: string[] | string = []): Promise<RoutingProperties> {
     if (params) {
       const request = `/${toArray(params).join('/')}/`
-      const result = this.router.handle(request, this.resources, this.routers)
+      const result = this.router.handle(
+        request,
+        Object.values(this.resources),
+        this.routers
+      )
       return result
     }
     return null

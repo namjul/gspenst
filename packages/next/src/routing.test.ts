@@ -7,7 +7,7 @@ jest.mock('../.tina/__generated__/types')
 describe('routing mapping', () => {
   describe('resolving paths', () => {
     test('empty config', async () => {
-      const resources = Object.values(await getResources())
+      const resources = await getResources()
       const router = new RouterManager({}, resources)
       expect(await router.resolvePaths()).toEqual([
         '/about',
@@ -16,13 +16,13 @@ describe('routing mapping', () => {
       ])
     })
     test('default routing config', async () => {
-      const resources = Object.values(await getResources())
+      const resources = await getResources()
       const routingConfig = validate()
       const router = new RouterManager(routingConfig, resources)
       expect(await router.resolvePaths()).toEqual([
         '/',
-        '/first-post/',
         '/second-post/',
+        '/first-post/',
         '/about',
         '/home',
         '/portfolio',
@@ -31,7 +31,7 @@ describe('routing mapping', () => {
       ])
     })
     test('routes', async () => {
-      const resources = Object.values(await getResources())
+      const resources = await getResources()
       const router = new RouterManager(
         {
           routes: {
@@ -59,10 +59,14 @@ describe('routing mapping', () => {
       expect(await router.resolvePaths()).toContain('/features/')
     })
     test('collections', async () => {
-      const resources = Object.values(await getResources())
+      const resources = await getResources()
       const router = new RouterManager(
         {
           collections: {
+            '/': {
+              permalink: '/:slug/',
+              template: 'index',
+            },
             '/posts/': {
               permalink: '/posts/:slug/',
               template: 'index',
@@ -72,12 +76,18 @@ describe('routing mapping', () => {
         resources
       )
       const paths = await router.resolvePaths()
-      expect(paths).toContain('/posts/')
-      expect(paths).toContain('/posts/first-post/')
-      expect(paths).toContain('/posts/second-post/')
+      expect(paths).toEqual([
+        '/',
+        '/second-post/',
+        '/first-post/',
+        '/posts/',
+        '/about',
+        '/home',
+        '/portfolio',
+      ])
     })
     test('taxonomies', async () => {
-      const resources = Object.values(await getResources())
+      const resources = await getResources()
       const router = new RouterManager(
         {
           taxonomies: {

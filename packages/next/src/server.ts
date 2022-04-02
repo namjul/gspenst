@@ -12,7 +12,7 @@ export const getStaticPaths =
   async () => {
     log('Page [...slug].js getStaticPaths')
 
-    const resources = Object.values(await resourceMapCache.get())
+    const resources = await resourceMapCache.get()
     const router = new RouterManager(routingConfig, resources)
 
     const paths = await router.resolvePaths()
@@ -32,7 +32,7 @@ export const getStaticProps =
 
     log('Page [...slug].js getStaticProps')
 
-    const resources = Object.values(await resourceMapCache.get())
+    const resources = await resourceMapCache.get()
     const router = new RouterManager(routingConfig, resources)
 
     const routingProperties = params

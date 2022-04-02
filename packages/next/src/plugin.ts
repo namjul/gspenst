@@ -5,13 +5,10 @@ import { Compiler } from 'webpack'
 import pkg from '../package.json'
 import { startTinaServer } from './tinaServer'
 import { Cache } from './cache'
-import type { ResourceItem } from './types'
-import { getResources } from './dataUtils';
+import type { ResourceItemMap } from './types'
+import { getResources } from './dataUtils'
 
-
-export const resourceMapCache = new Cache<{ [id: ID]: ResourceItem }>(
-  'resources'
-)
+export const resourceMapCache = new Cache<ResourceItemMap>('resources')
 
 const key = `${pkg.name}:plugin`
 const log = debug(key)

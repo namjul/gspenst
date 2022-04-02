@@ -14,6 +14,8 @@ export type ResourceItem = {
   relativePath: string
 }
 
+export type ResourceItemMap = { [id: ID]: ResourceItem }
+
 export type Taxonomies = 'tag' | 'author'
 
 export type ResourceType = 'post' | 'page' | Taxonomies
