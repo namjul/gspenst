@@ -2,8 +2,8 @@ import type { Redirect } from 'next'
 import { ExperimentalGetTinaClient } from '../.tina/__generated__/types'
 import type { RoutingProperties } from './routing'
 // import { resourceCacheMap } from './plugin'
-import { assertUnreachable } from './helpers';
-import { getTemplateHierarchy } from './dataUtils';
+import { assertUnreachable } from './helpers'
+import { getTemplateHierarchy } from './dataUtils'
 
 const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
 
@@ -23,8 +23,8 @@ export type PageProps =
       templates: string[]
       pagination: {
         page: number // the current page number
-        prev: number // the previous page number
-        next: number // the next page number
+        prev: number | null // the previous page number
+        next: number | null // the next page number
         pages: number // the number of pages available
         total: number // the number of posts available
         limit: number // the number of posts per page
@@ -57,13 +57,35 @@ async function entryController(
   return {
     context,
     data: {
-      [resource]: data
+      [resource]: data,
     },
-    templates: getTemplateHierarchy(routingProperties)
+    templates: getTemplateHierarchy(routingProperties),
   }
 }
 
-export async function controller(routingProperties: RoutingProperties): Promise<{ props: PageProps } | { redirect: Redirect } | null> {
+async function collectionController(
+  routingProperties: Extract<RoutingProperties, { type: 'collection' }>
+): Promise<PageProps> {
+  return {
+    context: 'index',
+    templates: getTemplateHierarchy(routingProperties),
+    data: {
+      posts: {},
+    },
+    pagination: {
+      page: 1,
+      prev: null,
+      next: null,
+      pages: 1,
+      total: 10,
+      limit: 10,
+    },
+  }
+}
+
+export async function controller(
+  routingProperties: RoutingProperties
+): Promise<{ props: PageProps } | { redirect: Redirect } | null> {
   if (!routingProperties) {
     return null
   }
@@ -71,7 +93,9 @@ export async function controller(routingProperties: RoutingProperties): Promise<
   const { type } = routingProperties
   switch (type) {
     case 'collection':
-      return null
+      return {
+        props: await collectionController(routingProperties),
+      }
     case 'channel':
       return null
     case 'entry':

@@ -4,8 +4,8 @@ import { controller } from './controller'
 jest.mock('../.tina/__generated__/types')
 
 describe('controller', () => {
-  const type = 'entry'
-  describe(`${type}`, () => {
+  describe('entry', () => {
+    const type = 'entry'
     test('page', async () => {
       const resources = await getResources()
       const resourceItem = resources['content/pages/about.md']!
@@ -37,22 +37,37 @@ describe('controller', () => {
           slug: 'first-post',
         },
       })
-      expect(result).toMatchObject(
-        {
-          props: {
-            context: 'post',
-            data: {
-              post: {},
-            },
+      expect(result).toMatchObject({
+        props: {
+          context: 'post',
+          data: {
+            post: {},
           },
-        }
-      )
+        },
+      })
     })
     test.todo('tag')
     test.todo('author')
   })
   describe('collection', () => {
-    test.todo('simple')
+    const type = 'collection'
+    test('simple', async () => {
+      const result = await controller({
+        type,
+        name: 'index',
+        request: {
+          path: '/',
+        },
+      })
+      expect(result).toMatchObject({
+        props: {
+          context: 'index',
+          data: {
+            posts: {},
+          },
+        },
+      })
+    })
     test.todo('filter')
     test.todo('a post is only in a single collection')
     test.todo('with data')
