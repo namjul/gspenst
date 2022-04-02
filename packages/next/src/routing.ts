@@ -1,3 +1,4 @@
+import path from 'path'
 import debug from 'debug'
 import { compile, pathToRegexp } from 'path-to-regexp'
 import type { Key } from 'path-to-regexp'
@@ -18,6 +19,8 @@ import type {
 import { find } from './dataUtils'
 
 const log = debug('@gspenst/next:routing')
+
+const POST_PER_PAGE = 5
 
 export type Redirect =
   | {
@@ -46,7 +49,7 @@ export type RoutingProperties =
       request: {
         path: string
         slug?: string | undefined
-        page?: number
+        page?: number | undefined
       }
     }
   | {
@@ -57,7 +60,7 @@ export type RoutingProperties =
       request: {
         path: string
         slug?: string | undefined
-        page?: number
+        page?: number | undefined
       }
     }
   | {
@@ -172,11 +175,7 @@ class TaxonomyRouter extends Router {
     const paths = Object.values(resources)
       .filter((resourceItem) => resourceItem.resource === this.taxonomyKey)
       .reduce<string[]>((acc, resourceItem) => {
-        const path = compile(this.permalink)(resourceItem)
-
-        if (path) {
-          acc.push(path)
-        }
+        acc.push(compile(this.permalink)(resourceItem))
         return acc
       }, [])
     return paths
@@ -189,6 +188,7 @@ class CollectionRouter extends Router {
   permalink: string
   routeRegExp: RegExp
   permalinkRegExp: RegExp
+  pagesRegExp: RegExp
   postStack: ID[]
   constructor(mainRoute: string, config: CollectionConfig, postStack: ID[]) {
     super('CollectionRouter')
@@ -197,6 +197,9 @@ class CollectionRouter extends Router {
     this.routeRegExp = pathToRegexp(this.mainRoute)
     this.permalink = config.permalink
     this.permalinkRegExp = pathToRegexp(this.permalink)
+    this.pagesRegExp = pathToRegexp(
+      path.join(`${this.mainRoute}, 'page', ':page(\\d+)'`)
+    )
     this.postStack = postStack
   }
   async handle(request: string, resources: ResourceItem[], routers: Router[]) {
@@ -208,6 +211,18 @@ class CollectionRouter extends Router {
         name: this.routerName,
         options: {},
         request: { path: routeMatch },
+        templates: [],
+      }
+    }
+
+    const [pageMatch, page] = this.pagesRegExp.exec(request) ?? []
+
+    if (pageMatch && page) {
+      return {
+        type: 'collection' as const,
+        name: this.routerName,
+        options: {},
+        request: { path: pageMatch, page: Number(page) },
         templates: [],
       }
     }
@@ -230,15 +245,16 @@ class CollectionRouter extends Router {
   }
   resolvePaths(resources: ResourceItemMap): string[] {
     const paths: string[] = []
+    const collectionPosts: ResourceItem[] = []
     for (let len = this.postStack.length - 1; len >= 0; len -= 1) {
       const resourceItemID = this.postStack[len]
       const resourceItem = resourceItemID && resources[resourceItemID]
       if (resourceItem) {
+        collectionPosts.push(resourceItem)
         const isOwned = true // TODO filter using filter option `const isOwned = this.nql.queryJSON(resource)`
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (isOwned) {
-          const path = compile(this.permalink)(resourceItem)
-          paths.push(path)
+          paths.push(compile(this.permalink)(resourceItem))
 
           // Remove owned resourceItem
           this.postStack.splice(len, 1)
@@ -246,7 +262,12 @@ class CollectionRouter extends Router {
       }
     }
 
-    return [this.mainRoute].concat(paths)
+    const paginationPath = Array.from(
+      { length: collectionPosts.length / POST_PER_PAGE },
+      (_, i) => path.join(this.mainRoute, 'page', String(i + 1))
+    )
+
+    return [this.mainRoute].concat(paths).concat(paginationPath)
   }
 }
 

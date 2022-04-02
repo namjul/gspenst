@@ -26,9 +26,9 @@ export function find(
 export async function getResources() {
   const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
 
-  const {
-    data: { getCollections: resources },
-  } = await client.getResources()
+  const { data } = await client.getResources()
+
+  const { getCollections: resources } = data
 
   const result = resources.reduce<{ [id: ID]: ResourceItem }>(
     (acc, current) => {

@@ -28,7 +28,8 @@ describe('controller', () => {
     })
     test('post', async () => {
       const resources = await getResources()
-      const resourceItem = resources['content/posts/first-post.mdx']!
+      const resourceItem = resources['content/posts/1th-post.mdx']!
+      expect(resourceItem).toBeDefined()
       const result = await controller({
         type,
         resourceItem,
