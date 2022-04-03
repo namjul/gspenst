@@ -75,7 +75,7 @@ const repository = {
       const resourceItem = JSON.parse(current) as ResourceItem
 
       if (!resourceItem.data) {
-        const data = (async () => {
+        const { data } = await (async () => {
           const { resourceType, relativePath } = resourceItem
           switch (resourceType) {
             case 'page':
@@ -91,7 +91,7 @@ const repository = {
               return assertUnreachable(resourceType)
           }
         })() // Immediately invoke the function
-        resourceItem.data = await data
+        resourceItem.data = data
       }
 
       acc[resourceItem.id] = resourceItem

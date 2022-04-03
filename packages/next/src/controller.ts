@@ -50,11 +50,14 @@ async function entryController(
 async function collectionController(
   routingProperties: Extract<RoutingProperties, { type: 'collection' }>
 ): Promise<PageProps> {
+  const posts = Object.values(await repository.getAll()).filter(
+    (resource) => resource.resourceType === 'post'
+  )
   return {
     context: 'index',
     templates: getTemplateHierarchy(routingProperties),
     data: {
-      posts: {},
+      posts,
     },
     pagination: {
       page: 1,
