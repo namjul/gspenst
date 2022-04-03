@@ -7,14 +7,14 @@ import { ensure } from './utils'
 
 export type PageProps =
   | {
-      context: 'post' | 'page' | 'tag' | 'author'
+      context: 'post' | 'page' | 'tag' | 'author' | null
       data: {
         [name: string]: unknown
       }
       templates: string[]
     }
   | {
-      context: 'index'
+      context: 'index' | 'home' | 'paged'
       data: {
         [name: string]: unknown
       }
@@ -70,6 +70,16 @@ async function collectionController(
   }
 }
 
+async function customController(
+  routingProperties: Extract<RoutingProperties, { type: 'custom' }>
+): Promise<PageProps> {
+  return {
+    context: null,
+    templates: getTemplateHierarchy(routingProperties),
+    data: {},
+  }
+}
+
 export async function controller(
   routingProperties: RoutingProperties
 ): Promise<{ props: PageProps } | { redirect: Redirect } | null> {
@@ -90,7 +100,9 @@ export async function controller(
         props: await entryController(routingProperties),
       }
     case 'custom':
-      return null
+      return {
+        props: await customController(routingProperties),
+      }
     case 'redirect':
       return {
         redirect: routingProperties,
