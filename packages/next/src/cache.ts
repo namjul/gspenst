@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument  */
+
 import findCacheDir from 'find-cache-dir'
 import fse from 'fs-extra'
 import pkg from '../package.json'
 
-export class Cache<T> {
+export default class Cache {
   fileCachePath: string | undefined
 
   constructor(name: string) {
@@ -10,14 +12,18 @@ export class Cache<T> {
       name: pkg.name,
       thunk: true,
     })?.(`${name}.json`)
+    if (!this.fileCachePath) {
+      throw new Error('Could not create cache file.')
+    }
+    fse.ensureFileSync(this.fileCachePath)
+    fse.writeJsonSync(this.fileCachePath, {})
   }
-  async set(data?: T) {
+  async set(data: object) {
     if (this.fileCachePath) {
-      await fse.ensureFile(this.fileCachePath)
       await fse.writeJson(this.fileCachePath, data)
     }
   }
-  async get(): Promise<T> {
+  async get(): Promise<any> {
     // from https://github.com/stackbit/sourcebit-target-next/blob/master/lib/data-client.js
 
     // Every time getStaticPaths is called, the page re-imports all required
@@ -46,11 +52,7 @@ export class Cache<T> {
         } else if (pathExists) {
           resolve(this.fileCachePath as string)
         } else {
-          reject(
-            new Error(
-              `sourcebitDataClient of the sourcebit-target-next plugin did not find '${this.fileCachePath}' file. Please check that other Sourcebit plugins are executed successfully.`
-            )
-          )
+          reject(new Error(`Cache did not find '${this.fileCachePath}' file.`))
         }
       }
       void checkPathExists()
@@ -60,7 +62,30 @@ export class Cache<T> {
 
     return fse.readJson(fileCachePath)
   }
-  async clear() {
-    void this.set()
+
+  async flushall() {
+    void (await this.set({}))
+  }
+
+  async hset(key: string, field: string, value: any) {
+    const cache = await this.get()
+    if (!cache[key]) {
+      cache[key] = {}
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    cache[key]![field] = value
+    await this.set(cache)
+  }
+  async hmget(key: string, ...fields: string[]) {
+    const cache = await this.get()
+    return Object.keys(cache[key] ?? {})
+      .filter((field) => fields.includes(field))
+      .map((field) => {
+        return cache[key]?.[field]
+      })
+  }
+  async hkeys(key: string) {
+    const cache = await this.get()
+    return Object.keys(cache[key] ?? {})
   }
 }

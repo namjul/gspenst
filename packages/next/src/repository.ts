@@ -13,10 +13,10 @@ type Resources = {
 }
 
 const repository = {
-  redis,
+  store: redis,
   client: ExperimentalGetTinaClient(), // eslint-disable-line new-cap
   async init() {
-    await this.redis.flushall()
+    await this.store.flushall()
     const { data } = await this.client.getResources()
 
     const { getCollections: resources } = data
@@ -53,7 +53,7 @@ const repository = {
     void (await this.getAll())
   },
   async set(resourceItem: ResourceItem) {
-    await this.redis.hset(
+    await this.store.hset(
       'resources',
       resourceItem.id,
       JSON.stringify(resourceItem)
@@ -65,7 +65,7 @@ const repository = {
     if (ids.length === 0) {
       return {}
     }
-    return (await this.redis.hmget('resources', ...ids)).reduce<
+    return (await this.store.hmget('resources', ...ids)).reduce<
       Promise<Resources>
     >(async (promise, current) => {
       const acc = await promise
@@ -99,7 +99,7 @@ const repository = {
     }, Promise.resolve({}))
   },
   async getAll() {
-    const ids = await this.redis.hkeys('resources')
+    const ids = await this.store.hkeys('resources')
     return this.get(ids)
   },
   async find(
