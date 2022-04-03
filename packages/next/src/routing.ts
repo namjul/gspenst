@@ -34,16 +34,15 @@ export type Redirect =
       basePath?: false
     }
 
-type RouterOptions = {
-  filter?: string
-  order?: string
-  limit?: string
-}
 export type RoutingProperties =
   | {
       type: 'collection'
       name: string
-      options?: RouterOptions
+      options?: {
+        filter?: string
+        order?: string
+        limit?: string
+      }
       data?: DataQuery[]
       templates?: string[]
       request: {
@@ -65,7 +64,7 @@ export type RoutingProperties =
     }
   | {
       type: 'entry'
-      resourceItem: ResourceItem
+      id: ID
       data?: DataQuery[]
       templates?: string[]
       request: {
@@ -109,7 +108,7 @@ class Router {
     return null
   }
 
-  resolvePaths(_resources: ResourceItemMap): string[] {
+  resolvePaths(_resources: ResourceItemMap, _resourceIDs: ID[]): string[] {
     return []
   }
 }
@@ -189,8 +188,7 @@ class CollectionRouter extends Router {
   routeRegExp: RegExp
   permalinkRegExp: RegExp
   pagesRegExp: RegExp
-  postStack: ID[]
-  constructor(mainRoute: string, config: CollectionConfig, postStack: ID[]) {
+  constructor(mainRoute: string, config: CollectionConfig) {
     super('CollectionRouter')
     this.mainRoute = mainRoute
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
@@ -200,7 +198,6 @@ class CollectionRouter extends Router {
     this.pagesRegExp = pathToRegexp(
       path.join(`${this.mainRoute}, 'page', ':page(\\d+)'`)
     )
-    this.postStack = postStack
   }
   async handle(request: string, resources: ResourceItem[], routers: Router[]) {
     const [routeMatch] = this.routeRegExp.exec(request) ?? []
@@ -234,7 +231,7 @@ class CollectionRouter extends Router {
       if (resourceItem) {
         return {
           type: 'entry' as const,
-          resourceItem,
+          id: resourceItem.id,
           request: { path: permalinkMatch, slug },
           templates: [],
         }
@@ -243,11 +240,11 @@ class CollectionRouter extends Router {
 
     return super.handle(request, resources, routers)
   }
-  resolvePaths(resources: ResourceItemMap): string[] {
+  resolvePaths(resources: ResourceItemMap, postStack: ID[]): string[] {
     const paths: string[] = []
     const collectionPosts: ResourceItem[] = []
-    for (let len = this.postStack.length - 1; len >= 0; len -= 1) {
-      const resourceItemID = this.postStack[len]
+    for (let len = postStack.length - 1; len >= 0; len -= 1) {
+      const resourceItemID = postStack[len]
       const resourceItem = resourceItemID && resources[resourceItemID]
       if (resourceItem) {
         collectionPosts.push(resourceItem)
@@ -257,7 +254,7 @@ class CollectionRouter extends Router {
           paths.push(compile(this.permalink)(resourceItem))
 
           // Remove owned resourceItem
-          this.postStack.splice(len, 1)
+          postStack.splice(len, 1)
         }
       }
     }
@@ -293,7 +290,7 @@ class StaticPagesRouter extends Router {
       if (resourceItem) {
         return {
           type: 'entry' as const,
-          resourceItem,
+          id: resourceItem.id,
           request: {
             path: match,
             slug,
@@ -320,15 +317,11 @@ export class RouterManager {
   router: Router
   routers: Router[] = []
   resources: ResourceItemMap
-  postStack: ID[]
   constructor(
     routingConfig: RoutingConfigResolved,
     resources: ResourceItemMap
   ) {
     this.resources = resources
-    this.postStack = Object.values(this.resources)
-      .filter(({ resource }) => resource === 'post')
-      .map(({ id }) => id)
     this.config = routingConfig
     this.router = new Router('SiteRouter')
     this.routers.push(this.router)
@@ -345,11 +338,7 @@ export class RouterManager {
       this.config.collections ?? {}
     ) as Entries<typeof this.config.collections>
     collections.forEach(([key, value]) => {
-      const collectionRouter = new CollectionRouter(
-        key as string,
-        value,
-        this.postStack
-      )
+      const collectionRouter = new CollectionRouter(key as string, value)
       this.routers.push(collectionRouter)
     })
 
@@ -371,8 +360,11 @@ export class RouterManager {
   }
 
   async resolvePaths(): Promise<string[]> {
+    const postStack = Object.values(this.resources)
+      .filter(({ resource }) => resource === 'post')
+      .map(({ id }) => id)
     const paths = this.routers.flatMap((router) =>
-      router.resolvePaths(this.resources)
+      router.resolvePaths(this.resources, postStack)
     )
     log('Router paths: ', paths)
     return paths

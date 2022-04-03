@@ -190,18 +190,11 @@ describe('routing mapping', () => {
 
   describe('handling path', () => {
     test('empty config', async () => {
-      const resources = Object.values(await getResources())
+      const resources = await getResources()
       const router = new RouterManager({}, resources)
       expect(await router.handle('about')).toEqual({
         type: 'entry',
-        resourceItem: {
-          id: 'content/pages/about.md',
-          relativePath: 'about.md',
-          filename: 'about',
-          path: 'content/pages/about.md',
-          slug: 'about',
-          resource: 'page',
-        },
+        id: 'content/pages/about.md',
         request: {
           path: '/about/',
           slug: 'about',
