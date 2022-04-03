@@ -19,6 +19,7 @@
     "find-cache-dir": "^3.3.2",
     "fs-extra": "^10.0.0",
     "gray-matter": "^4.0.3",
+    "ioredis": "^5.0.3",
     "js-yaml": "^4.1.0",
     "path-to-regexp": "^6.2.0",
     "remark-gfm": "^1.0.0",

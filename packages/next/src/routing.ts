@@ -64,7 +64,7 @@ export type RoutingProperties =
     }
   | {
       type: 'entry'
-      id: ID
+      resourceItem: Pick<ResourceItem, 'id' | 'resource'>
       data?: DataQuery[]
       templates?: string[]
       request: {
@@ -231,7 +231,10 @@ class CollectionRouter extends Router {
       if (resourceItem) {
         return {
           type: 'entry' as const,
-          id: resourceItem.id,
+          resourceItem: {
+            id: resourceItem.id,
+            resource: resourceItem.resource,
+          },
           request: { path: permalinkMatch, slug },
           templates: [],
         }
@@ -290,7 +293,10 @@ class StaticPagesRouter extends Router {
       if (resourceItem) {
         return {
           type: 'entry' as const,
-          id: resourceItem.id,
+          resourceItem: {
+            id: resourceItem.id,
+            resource: resourceItem.resource,
+          },
           request: {
             path: match,
             slug,

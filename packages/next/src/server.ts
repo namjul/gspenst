@@ -1,9 +1,9 @@
 import debug from 'debug'
 import type { GetStaticProps, GetStaticPaths } from 'next'
-import { resourceMapCache } from './plugin'
 import { RouterManager } from './routing'
 import type { RoutingConfigResolved } from './validate'
 import { controller } from './controller'
+import repository from './repository'
 
 const log = debug('@gspenst/next:server')
 
@@ -12,7 +12,7 @@ export const getStaticPaths =
   async () => {
     log('Page [...slug].js getStaticPaths')
 
-    const resources = await resourceMapCache.get()
+    const resources = await repository.getAll()
     const router = new RouterManager(routingConfig, resources)
 
     const paths = await router.resolvePaths()
@@ -32,7 +32,7 @@ export const getStaticProps =
 
     log('Page [...slug].js getStaticProps')
 
-    const resources = await resourceMapCache.get()
+    const resources = await repository.getAll()
     const router = new RouterManager(routingConfig, resources)
 
     const routingProperties = params

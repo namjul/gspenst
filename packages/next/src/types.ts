@@ -1,7 +1,6 @@
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
 import { LiteralUnion, AsyncReturnType, Split, Entries } from 'type-fest'
 import type {} from /* Page, Post, Author, Tag */ '../.tina/__generated__/types'
-import { resourceMapCache } from './plugin'
 
 // validate shapes: https://fettblog.eu/typescript-match-the-exact-object-shape/
 
@@ -12,6 +11,7 @@ export type ResourceItem = {
   slug: string
   resource: ResourceType
   relativePath: string
+  data: unknown | undefined
 }
 
 export type ResourceItemMap = { [id: ID]: ResourceItem }
@@ -29,7 +29,6 @@ export type FileMap = {
 
 export type Options = {
   theme: string
-  resourceMapCache: typeof resourceMapCache
   // themeConfig?: string
   // mdxOptions?: MDXOptions
   // sources?: Source[]

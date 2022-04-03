@@ -1,17 +1,25 @@
-import { getResources } from './dataUtils'
 import { controller } from './controller'
+import { resources } from './__fixtures__/resources'
+import repository from './repository'
 
 jest.mock('../.tina/__generated__/types')
+jest.mock('./redis')
+
+beforeAll(async () => {
+  void (await repository.init())
+})
 
 describe('controller', () => {
   describe('entry', () => {
     const type = 'entry'
     test('page', async () => {
-      const resources = await getResources()
       const resourceItem = resources['content/pages/about.md']!
       const result = await controller({
         type,
-        resourceItem,
+        resourceItem: {
+          id: resourceItem.id,
+          resource: resourceItem.resource,
+        },
         request: {
           path: '/about',
           slug: 'about',
@@ -27,7 +35,6 @@ describe('controller', () => {
       })
     })
     test('post', async () => {
-      const resources = await getResources()
       const resourceItem = resources['content/posts/1th-post.mdx']!
       expect(resourceItem).toBeDefined()
       const result = await controller({

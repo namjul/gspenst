@@ -60,11 +60,7 @@ describe('computing template hierarchy', () => {
         type: 'entry',
         resourceItem: {
           id: 'content/posts/first-post.md',
-          filename: 'first-post',
-          path: 'content/posts/first-post.md',
-          slug: 'first-post',
           resource: 'post',
-          relativePath: 'first-post.md',
         },
         request: {
           path: '/first-post/',
@@ -77,11 +73,7 @@ describe('computing template hierarchy', () => {
         type: 'entry',
         resourceItem: {
           id: 'content/pages/portfolio.md',
-          filename: 'portfolio',
-          path: 'content/pages/portfolio.md',
-          slug: 'first-post',
           resource: 'page',
-          relativePath: 'portfolio.md',
         },
         request: {
           path: '/portfolio/',

@@ -4,11 +4,7 @@ import debug from 'debug'
 import { Compiler } from 'webpack'
 import pkg from '../package.json'
 import { startTinaServer } from './tinaServer'
-import { Cache } from './cache'
-import type { ResourceItemMap } from './types'
-import { getResources } from './dataUtils'
-
-export const resourceMapCache = new Cache<ResourceItemMap>('resources')
+import repository from './repository'
 
 const key = `${pkg.name}:plugin`
 const log = debug(key)
@@ -71,7 +67,6 @@ export class GspenstPlugin extends EventEmitter {
 
   async collect() {
     log('Collect Resources')
-    const resources = await getResources()
-    await resourceMapCache.set(resources)
+    void (await repository.init())
   }
 }

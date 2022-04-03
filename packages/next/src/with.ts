@@ -3,7 +3,7 @@ import withPreconstruct from '@preconstruct/next'
 import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
 import type { Options } from './types'
-import { GspenstPlugin, resourceMapCache } from './plugin'
+import { GspenstPlugin } from './plugin'
 
 const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 const yamlExtensions = ['yml', 'yaml']
@@ -26,13 +26,6 @@ export default (...args: [string | Options]) =>
       // eslint-disable-line @typescript-eslint/no-unsafe-call
       ...nextConfig,
       pageExtensions,
-      // redirects: async () => {
-      //   await fse.ensureSymlink(src, dest)
-      //   await startTinaServer(packagePath, () => {
-      //     fse.removeSync(dest)
-      //   })
-      //   return nextConfig.redirects?.() ?? []
-      // },
       webpack(config: Configuration, context) {
         const gspenst = new GspenstPlugin(context.isServer)
         if (config.plugins) {
@@ -59,7 +52,6 @@ export default (...args: [string | Options]) =>
               loader: '@gspenst/next/loader',
               options: {
                 ...options,
-                resourceMapCache,
                 isServer: context.isServer,
               },
             },

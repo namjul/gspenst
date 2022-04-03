@@ -1,22 +1,18 @@
 import { RouterManager } from './routing'
 import { validate } from './validate'
-import { getResources } from './dataUtils'
-
-jest.mock('../.tina/__generated__/types')
+import { resources } from './__fixtures__/resources'
 
 describe('routing mapping', () => {
   describe('resolving paths', () => {
     test('empty config', async () => {
-      const resources = await getResources()
       const router = new RouterManager({}, resources)
       expect(await router.resolvePaths()).toEqual([
-        '/about',
         '/home',
+        '/about',
         '/portfolio',
       ])
     })
     test('default routing config', async () => {
-      const resources = await getResources()
       const routingConfig = validate()
       const router = new RouterManager(routingConfig, resources)
       expect(await router.resolvePaths()).toEqual([
@@ -33,15 +29,14 @@ describe('routing mapping', () => {
         '/0th-post/',
         '/page/1',
         '/page/2',
-        '/about',
         '/home',
+        '/about',
         '/portfolio',
         '/author/napolean',
         '/author/pedro',
       ])
     })
     test('routes', async () => {
-      const resources = await getResources()
       const router = new RouterManager(
         {
           routes: {
@@ -69,7 +64,6 @@ describe('routing mapping', () => {
       expect(await router.resolvePaths()).toContain('/features/')
     })
     test('collections', async () => {
-      const resources = await getResources()
       const router = new RouterManager(
         {
           collections: {
@@ -101,13 +95,12 @@ describe('routing mapping', () => {
         '/page/1',
         '/page/2',
         '/posts/',
-        '/about',
         '/home',
+        '/about',
         '/portfolio',
       ])
     })
     test('taxonomies', async () => {
-      const resources = await getResources()
       const router = new RouterManager(
         {
           taxonomies: {
@@ -190,11 +183,13 @@ describe('routing mapping', () => {
 
   describe('handling path', () => {
     test('empty config', async () => {
-      const resources = await getResources()
       const router = new RouterManager({}, resources)
       expect(await router.handle('about')).toEqual({
         type: 'entry',
-        id: 'content/pages/about.md',
+        resourceItem: {
+          id: 'content/pages/about.md',
+          resource: 'page',
+        },
         request: {
           path: '/about/',
           slug: 'about',
