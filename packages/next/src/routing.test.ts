@@ -188,7 +188,7 @@ describe('routing mapping', () => {
         type: 'entry',
         resourceItem: {
           id: 'content/pages/about.md',
-          resource: 'page',
+          resourceType: 'page',
         },
         request: {
           path: '/about/',

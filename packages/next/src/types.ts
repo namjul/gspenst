@@ -9,7 +9,7 @@ export type ResourceItem = {
   filename: string
   path: string
   slug: string
-  resource: ResourceType
+  resourceType: ResourceType
   relativePath: string
   data: unknown | undefined
 }

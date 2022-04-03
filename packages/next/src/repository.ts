@@ -40,7 +40,7 @@ const repository = {
                   filename,
                   path: filepath,
                   slug: slugify(filename),
-                  resource: resource.name as ResourceType,
+                  resourceType: resource.name as ResourceType,
                   relativePath,
                   data: undefined,
                 })
@@ -76,7 +76,7 @@ const repository = {
 
       if (!resourceItem.data) {
         const data = (async () => {
-          const { resource: resourceType, relativePath } = resourceItem
+          const { resourceType, relativePath } = resourceItem
           switch (resourceType) {
             case 'page':
               return this.client.getPage({ relativePath })

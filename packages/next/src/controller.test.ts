@@ -18,7 +18,7 @@ describe('controller', () => {
         type,
         resourceItem: {
           id: resourceItem.id,
-          resource: resourceItem.resource,
+          resourceType: resourceItem.resourceType,
         },
         request: {
           path: '/about',

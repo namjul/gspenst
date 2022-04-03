@@ -60,7 +60,7 @@ describe('computing template hierarchy', () => {
         type: 'entry',
         resourceItem: {
           id: 'content/posts/first-post.md',
-          resource: 'post',
+          resourceType: 'post',
         },
         request: {
           path: '/first-post/',
@@ -73,7 +73,7 @@ describe('computing template hierarchy', () => {
         type: 'entry',
         resourceItem: {
           id: 'content/pages/portfolio.md',
-          resource: 'page',
+          resourceType: 'page',
         },
         request: {
           path: '/portfolio/',

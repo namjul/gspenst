@@ -36,12 +36,12 @@ async function entryController(
   const resources = await repository.get(resourceID)
   const resourceItem = resources[resourceID]
   ensure(resourceItem)
-  const { resource } = resourceItem
+  const { resourceType } = resourceItem
 
   return {
-    context: resource,
+    context: resourceType,
     data: {
-      [resource]: resourceItem.data,
+      [resourceType]: resourceItem.data,
     },
     templates: getTemplateHierarchy(routingProperties),
   }

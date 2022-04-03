@@ -64,7 +64,7 @@ export type RoutingProperties =
     }
   | {
       type: 'entry'
-      resourceItem: Pick<ResourceItem, 'id' | 'resource'>
+      resourceItem: Pick<ResourceItem, 'id' | 'resourceType'>
       data?: DataQuery[]
       templates?: string[]
       request: {
@@ -172,7 +172,7 @@ class TaxonomyRouter extends Router {
   }
   resolvePaths(resources: ResourceItemMap): string[] {
     const paths = Object.values(resources)
-      .filter((resourceItem) => resourceItem.resource === this.taxonomyKey)
+      .filter((resourceItem) => resourceItem.resourceType === this.taxonomyKey)
       .reduce<string[]>((acc, resourceItem) => {
         acc.push(compile(this.permalink)(resourceItem))
         return acc
@@ -233,7 +233,7 @@ class CollectionRouter extends Router {
           type: 'entry' as const,
           resourceItem: {
             id: resourceItem.id,
-            resource: resourceItem.resource,
+            resourceType: resourceItem.resourceType,
           },
           request: { path: permalinkMatch, slug },
           templates: [],
@@ -278,7 +278,7 @@ class StaticPagesRouter extends Router {
   constructor(resources: ResourceItemMap) {
     super('StaticPagesRouter')
     this.resources = Object.values(resources).filter(
-      (resource) => resource.resource === 'page'
+      (resource) => resource.resourceType === 'page'
     )
     this.routeRegExp = pathToRegexp(
       `/(${this.resources.map(({ slug }) => slug).join('|')})/`,
@@ -295,7 +295,7 @@ class StaticPagesRouter extends Router {
           type: 'entry' as const,
           resourceItem: {
             id: resourceItem.id,
-            resource: resourceItem.resource,
+            resourceType: resourceItem.resourceType,
           },
           request: {
             path: match,
@@ -309,7 +309,7 @@ class StaticPagesRouter extends Router {
   }
   resolvePaths(resources: ResourceItemMap): string[] {
     const paths = Object.values(resources)
-      .filter((resourceItem) => resourceItem.resource === 'page')
+      .filter((resourceItem) => resourceItem.resourceType === 'page')
       .reduce<string[]>((acc, resourceItem) => {
         acc.push(`/${resourceItem.slug}`)
         return acc
@@ -367,7 +367,7 @@ export class RouterManager {
 
   async resolvePaths(): Promise<string[]> {
     const postStack = Object.values(this.resources)
-      .filter(({ resource }) => resource === 'post')
+      .filter(({ resourceType }) => resourceType === 'post')
       .map(({ id }) => id)
     const paths = this.routers.flatMap((router) =>
       router.resolvePaths(this.resources, postStack)

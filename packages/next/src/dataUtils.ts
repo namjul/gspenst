@@ -8,8 +8,8 @@ export function find(
 ): ResourceItem | undefined {
   return Object.values(resources).find(
     (resourceItem) =>
-      (partialResourceItem.resource
-        ? partialResourceItem.resource === resourceItem.resource
+      (partialResourceItem.resourceType
+        ? partialResourceItem.resourceType === resourceItem.resourceType
         : true) &&
       Object.entries(partialResourceItem)
 
@@ -57,13 +57,15 @@ export function getTemplateHierarchy(routingProperties: RoutingProperties) {
     case 'entry':
       templateList.push('post')
 
-      if (routingProperties.resourceItem.resource === 'page') {
+      if (routingProperties.resourceItem.resourceType === 'page') {
         templateList.unshift('page')
       }
 
       templateList.unshift(
         `${
-          routingProperties.resourceItem.resource === 'page' ? 'page' : 'post'
+          routingProperties.resourceItem.resourceType === 'page'
+            ? 'page'
+            : 'post'
         }-${routingProperties.request.slug}`
       ) // slugTemplate
 
