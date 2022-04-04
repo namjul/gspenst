@@ -27,7 +27,7 @@ const POST_PER_PAGE = 5
 export type Redirect =
   | {
       destination: string
-      statusCode?: 301 | 302 | 303 | 307 | 308
+      statusCode: 301 | 302 | 303 | 307 | 308
       basePath?: false
     }
   | {
@@ -223,6 +223,7 @@ class TaxonomyRouter extends ParentRouter {
         return {
           type: 'redirect' as const,
           destination: router.getRoute(),
+          statusCode: 301 as const,
         }
       }
 
@@ -308,6 +309,7 @@ class CollectionRouter extends ParentRouter {
         return {
           type: 'redirect' as const,
           destination: router.getRoute(),
+          statusCode: 301 as const,
         }
       }
 
@@ -384,6 +386,7 @@ class StaticPagesRouter extends ParentRouter {
         return {
           type: 'redirect' as const,
           destination: router.getRoute(),
+          statusCode: 301 as const,
         }
       }
 

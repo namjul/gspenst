@@ -241,18 +241,22 @@ describe('routing mapping', () => {
       expect(await router.handle(['about'])).toEqual({
         type: 'redirect',
         destination: '/about/team',
+        statusCode: 301,
       })
       expect(await router.handle(['4th-post'])).toEqual({
         type: 'redirect',
         destination: '/about/team',
+        statusCode: 301,
       })
       expect(await router.handle(['home'])).toEqual({
         type: 'redirect',
         destination: '/',
+        statusCode: 301,
       })
       expect(await router.handle(['author', 'pedro'])).toEqual({
         type: 'redirect',
         destination: '/about/team',
+        statusCode: 301,
       })
       expect(await router.handle(['5th-post'])).toEqual({
         request: {
