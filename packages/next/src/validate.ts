@@ -180,7 +180,7 @@ const routingSchema = object({
 function validateDataObject(data: any): asserts data is DataLongForm[''] {
   dataObjectSchema.validateSync(data, { strict: true })
 }
-length
+
 function validateRouting(routing: any): asserts routing is {
   routes?: { [s: string]: unknown } | null
   collections?: { [s: string]: unknown } | null

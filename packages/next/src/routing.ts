@@ -6,6 +6,7 @@ import { toArray } from './utils'
 import type {
   ResourceItemMap,
   ResourceItem,
+  ResourceType,
   Entries,
   Taxonomies,
 } from './types'
@@ -14,6 +15,7 @@ import type {
   RoutingConfigResolved,
   RouteConfig,
   CollectionConfig,
+  Data,
   DataQuery,
 } from './validate'
 import { find } from './dataUtils'
@@ -24,13 +26,13 @@ const POST_PER_PAGE = 5
 
 export type Redirect =
   | {
-      statusCode: 301 | 302 | 303 | 307 | 308
       destination: string
+      statusCode?: 301 | 302 | 303 | 307 | 308
       basePath?: false
     }
   | {
-      permanent: boolean
       destination: string
+      permanent: boolean
       basePath?: false
     }
 
@@ -43,7 +45,9 @@ export type RoutingProperties =
         order?: string
         limit?: string
       }
-      data?: DataQuery[]
+      data?: {
+        [key: string]: DataQuery
+      }
       templates?: string[]
       request: {
         path: string
@@ -54,7 +58,9 @@ export type RoutingProperties =
   | {
       type: 'channel'
       name: string
-      data?: DataQuery[]
+      data?: {
+        [key: string]: DataQuery
+      }
       templates?: string[]
       request: {
         path: string
@@ -65,7 +71,6 @@ export type RoutingProperties =
   | {
       type: 'entry'
       resourceItem: Pick<ResourceItem, 'id' | 'resourceType'>
-      data?: DataQuery[]
       templates?: string[]
       request: {
         path: string
@@ -74,7 +79,9 @@ export type RoutingProperties =
     }
   | {
       type: 'custom'
-      data?: DataQuery[]
+      data?: {
+        [key: string]: DataQuery
+      }
       templates?: string[]
       request: {
         path: string
@@ -83,15 +90,17 @@ export type RoutingProperties =
   | ({ type: 'redirect' } & Redirect)
   | null
 
-class Router {
+class ParentRouter {
   name: string
-  nextRouter?: Router
-
-  constructor(name: string) {
+  nextRouter?: ParentRouter
+  route?: string
+  data?: Data | undefined
+  constructor(name: string, data?: Data) {
     this.name = name
+    this.data = data
   }
 
-  mount(router: Router) {
+  mount(router: ParentRouter) {
     this.nextRouter = router
     return router
   }
@@ -99,7 +108,7 @@ class Router {
   async handle(
     request: string,
     resources: ResourceItem[],
-    routers: Router[]
+    routers: ParentRouter[]
   ): Promise<RoutingProperties> {
     if (this.nextRouter) {
       return this.nextRouter.handle(request, resources, routers)
@@ -111,38 +120,69 @@ class Router {
   resolvePaths(_resources: ResourceItemMap, _resourceIDs: ID[]): string[] {
     return []
   }
+
+  respectDominantRouter(
+    routers: ParentRouter[],
+    resourceType: ResourceType,
+    slug: string
+  ): ParentRouter | undefined {
+    return routers.find((router) =>
+      router.isRedirectEnabled(resourceType, slug)
+    )
+  }
+
+  isRedirectEnabled(resourceType: ResourceType, slug: string): boolean {
+    if (!this.data || Object.keys(this.data.router).length === 0) {
+      return false
+    }
+
+    return Object.entries(this.data.router).some(([type, entries]) => {
+      if (resourceType === type) {
+        return entries.find((entry) => {
+          return entry.redirect && entry.slug === slug
+        })
+      }
+      return false
+    })
+  }
+
+  getRoute() {
+    // return urlUtils.createUrl(this.route)
+    return this.route ?? '/'
+  }
 }
 
-class StaticRoutesRouter extends Router {
-  mainRoute: string
+class StaticRoutesRouter extends ParentRouter {
   routeRegExp: RegExp
   config: RouteConfig
   constructor(mainRoute: string, config: RouteConfig) {
-    super('StaticRoutesRouter')
-    this.mainRoute = mainRoute
+    super('StaticRoutesRouter', config.data)
+    this.route = mainRoute
     this.config = config
-    this.routeRegExp = pathToRegexp(this.mainRoute)
-    // this.data = config.data
-    // this.template = config.template
+    this.routeRegExp = pathToRegexp(this.route)
   }
-  async handle(request: string, resources: ResourceItem[], routers: Router[]) {
+  async handle(
+    request: string,
+    resources: ResourceItem[],
+    routers: ParentRouter[]
+  ) {
     const [match] = this.routeRegExp.exec(request) ?? []
 
     if (match) {
       return {
         type: 'custom' as const,
-        templates: [],
+        templates: [...toArray(this.config.template ?? [])],
         request: { path: match },
       }
     }
     return super.handle(request, resources, routers)
   }
   resolvePaths(): string[] {
-    return [this.mainRoute]
+    return [this.getRoute()]
   }
 }
 
-class TaxonomyRouter extends Router {
+class TaxonomyRouter extends ParentRouter {
   taxonomyKey: Taxonomies
   permalink: string
   routeRegExp: RegExp
@@ -152,10 +192,24 @@ class TaxonomyRouter extends Router {
     this.permalink = permalink
     this.routeRegExp = pathToRegexp(this.permalink)
   }
-  async handle(request: string, resources: ResourceItem[], routers: Router[]) {
+  async handle(
+    request: string,
+    resources: ResourceItem[],
+    routers: ParentRouter[]
+  ) {
     const [match, slug] = this.routeRegExp.exec(request) ?? []
 
     if (match && slug) {
+      // CASE check if its redirected
+      const router = this.respectDominantRouter(routers, this.taxonomyKey, slug)
+
+      if (router) {
+        return {
+          type: 'redirect' as const,
+          destination: router.getRoute(),
+        }
+      }
+
       const resourceItem = find(resources, { slug })
       if (resourceItem) {
         return {
@@ -181,7 +235,7 @@ class TaxonomyRouter extends Router {
   }
 }
 
-class CollectionRouter extends Router {
+class CollectionRouter extends ParentRouter {
   mainRoute: string
   routerName: string
   permalink: string
@@ -189,7 +243,7 @@ class CollectionRouter extends Router {
   permalinkRegExp: RegExp
   pagesRegExp: RegExp
   constructor(mainRoute: string, config: CollectionConfig) {
-    super('CollectionRouter')
+    super('CollectionRouter', config.data)
     this.mainRoute = mainRoute
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
     this.routeRegExp = pathToRegexp(this.mainRoute)
@@ -199,7 +253,11 @@ class CollectionRouter extends Router {
       path.join(`${this.mainRoute}, 'page', ':page(\\d+)'`)
     )
   }
-  async handle(request: string, resources: ResourceItem[], routers: Router[]) {
+  async handle(
+    request: string,
+    resources: ResourceItem[],
+    routers: ParentRouter[]
+  ) {
     const [routeMatch] = this.routeRegExp.exec(request) ?? []
 
     if (routeMatch) {
@@ -227,7 +285,17 @@ class CollectionRouter extends Router {
     const [permalinkMatch, slug] = this.permalinkRegExp.exec(request) ?? []
 
     if (permalinkMatch && slug) {
-      const resourceItem = find(resources, { slug })
+      // CASE check if its redirected
+      const router = this.respectDominantRouter(routers, 'post', slug)
+
+      if (router) {
+        return {
+          type: 'redirect' as const,
+          destination: router.getRoute(),
+        }
+      }
+
+      const resourceItem = find(resources, { slug, resourceType: 'post' })
       if (resourceItem) {
         return {
           type: 'entry' as const,
@@ -271,7 +339,7 @@ class CollectionRouter extends Router {
   }
 }
 
-class StaticPagesRouter extends Router {
+class StaticPagesRouter extends ParentRouter {
   resources: ResourceItem[]
   routeRegExp: RegExp
   keys: Key[] = []
@@ -285,11 +353,25 @@ class StaticPagesRouter extends Router {
       this.keys
     )
   }
-  async handle(request: string, resources: ResourceItem[], routers: Router[]) {
+  async handle(
+    request: string,
+    resources: ResourceItem[],
+    routers: ParentRouter[]
+  ) {
     const [match, slug] = this.routeRegExp.exec(request) ?? []
 
     if (match && slug) {
-      const resourceItem = find(this.resources, { slug })
+      // CASE check if its redirected
+      const router = this.respectDominantRouter(routers, 'page', slug)
+
+      if (router) {
+        return {
+          type: 'redirect' as const,
+          destination: router.getRoute(),
+        }
+      }
+
+      const resourceItem = find(this.resources, { slug, resourceType: 'page' })
       if (resourceItem) {
         return {
           type: 'entry' as const,
@@ -320,8 +402,8 @@ class StaticPagesRouter extends Router {
 
 export class RouterManager {
   config: RoutingConfigResolved
-  router: Router
-  routers: Router[] = []
+  router: ParentRouter
+  routers: ParentRouter[] = []
   resources: ResourceItemMap
   constructor(
     routingConfig: RoutingConfigResolved,
@@ -329,7 +411,7 @@ export class RouterManager {
   ) {
     this.resources = resources
     this.config = routingConfig
-    this.router = new Router('SiteRouter')
+    this.router = new ParentRouter('SiteRouter')
     this.routers.push(this.router)
 
     const routes = Object.entries(this.config.routes ?? {}) as Entries<

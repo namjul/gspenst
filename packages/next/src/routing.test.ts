@@ -185,5 +185,95 @@ describe('routing mapping', () => {
         templates: [],
       })
     })
+    test('redirect route', async () => {
+      const router = new RouterManager(
+        {
+          routes: {
+            '/about/team': {
+              template: 'team',
+              data: {
+                query: {},
+                router: {
+                  page: [
+                    {
+                      redirect: true,
+                      slug: 'about',
+                    },
+                  ],
+                  post: [
+                    {
+                      redirect: true,
+                      slug: '4th-post',
+                    },
+                    {
+                      redirect: false,
+                      slug: '5th-post',
+                    },
+                  ],
+                  author: [
+                    {
+                      redirect: true,
+                      slug: 'pedro',
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          collections: {
+            '/': {
+              permalink: '/:slug',
+              template: 'index',
+              data: {
+                query: {},
+                router: {
+                  page: [{ redirect: true, slug: 'home' }],
+                },
+              },
+            },
+          },
+          taxonomies: {
+            tag: '/tag/:slug',
+            author: '/author/:slug',
+          },
+        },
+        resources
+      )
+      expect(await router.handle(['about', 'team'])).toEqual({
+        type: 'custom',
+        request: {
+          path: '/about/team/',
+        },
+        templates: ['team'],
+      })
+      expect(await router.handle(['about'])).toEqual({
+        type: 'redirect',
+        destination: '/about/team',
+      })
+      expect(await router.handle(['4th-post'])).toEqual({
+        type: 'redirect',
+        destination: '/about/team',
+      })
+      expect(await router.handle(['home'])).toEqual({
+        type: 'redirect',
+        destination: '/',
+      })
+      expect(await router.handle(['author', 'pedro'])).toEqual({
+        type: 'redirect',
+        destination: '/about/team',
+      })
+      expect(await router.handle(['5th-post'])).toEqual({
+        request: {
+          path: '/5th-post/',
+          slug: '5th-post',
+        },
+        resourceItem: {
+          id: 'content/posts/5th-post.mdx',
+          resourceType: 'post',
+        },
+        templates: [],
+        type: 'entry',
+      })
+    })
   })
 })

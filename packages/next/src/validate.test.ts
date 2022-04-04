@@ -400,7 +400,7 @@ describe('routing object validation', () => {
                 resourceType: 'author',
                 type: 'read',
                 slug: 'gutelaune',
-                redirect: true,
+                redirect: false,
               },
             },
             template: 'Page',
@@ -424,7 +424,7 @@ describe('routing object validation', () => {
             router: {
               author: [
                 {
-                  redirect: true,
+                  redirect: false,
                   slug: 'gutelaune',
                 },
               ],
