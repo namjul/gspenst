@@ -183,9 +183,75 @@ describe('routing object validation', () => {
           },
         })
       }).toThrow('Incorrect Format. Please use e.g. tag.recipes')
+      expect(() => {
+        validate({
+          routes: {
+            '/food/': {
+              data: 234,
+            },
+          },
+        })
+      }).toThrow(
+        'data must be a `object` type or `string`, but the final value was: `234`.'
+      )
+      expect(() => {
+        validate({
+          routes: {
+            '/food/': {
+              data: {
+                something: {
+                  resource: 'post',
+                },
+              },
+            },
+          },
+        })
+      }).toThrow('this field has unspecified keys: resource')
+      expect(() => {
+        validate({
+          routes: {
+            '/food/': {
+              data: {
+                something: {
+                  resourceType: 'post',
+                },
+              },
+            },
+          },
+        })
+      }).toThrow('type is a required field')
+      expect(() => {
+        validate({
+          routes: {
+            '/food/': {
+              data: {
+                something: {
+                  resourceType: 'posts',
+                },
+              },
+            },
+          },
+        })
+      }).toThrow(
+        '`resource` has incorrect Format. Use post, page, author or tag'
+      )
+      expect(() => {
+        validate({
+          routes: {
+            '/food/': {
+              data: {
+                something: {
+                  resourceType: 'post',
+                  type: 'reads',
+                },
+              },
+            },
+          },
+        })
+      }).toThrow('`type ` has incorrect Format. Use read of brwose')
     })
 
-    test('shorform', () => {
+    test('shortform', () => {
       const object = validate({
         routes: {
           '/food/': {
@@ -199,7 +265,9 @@ describe('routing object validation', () => {
             data: 'author.ghost',
           },
           '/lala/': {
-            data: 'author.carsten',
+            data: {
+              carsten: 'author.carsten',
+            },
           },
         },
         collections: {
@@ -224,7 +292,7 @@ describe('routing object validation', () => {
             data: {
               query: {
                 page: {
-                  resource: 'page',
+                  resourceType: 'page',
                   type: 'read',
                   options: {
                     slug: 'food',
@@ -241,7 +309,7 @@ describe('routing object validation', () => {
             data: {
               query: {
                 tag: {
-                  resource: 'tag',
+                  resourceType: 'tag',
                   type: 'read',
                   options: {
                     slug: 'music',
@@ -257,7 +325,7 @@ describe('routing object validation', () => {
             data: {
               query: {
                 author: {
-                  resource: 'author',
+                  resourceType: 'author',
                   type: 'read',
                   options: {
                     slug: 'ghost',
@@ -272,8 +340,8 @@ describe('routing object validation', () => {
           '/lala/': {
             data: {
               query: {
-                author: {
-                  resource: 'author',
+                carsten: {
+                  resourceType: 'author',
                   type: 'read',
                   options: {
                     slug: 'carsten',
@@ -292,7 +360,7 @@ describe('routing object validation', () => {
             data: {
               query: {
                 page: {
-                  resource: 'page',
+                  resourceType: 'page',
                   type: 'read',
                   options: {
                     slug: 'home',
@@ -309,7 +377,7 @@ describe('routing object validation', () => {
             data: {
               query: {
                 tag: {
-                  resource: 'tag',
+                  resourceType: 'tag',
                   type: 'read',
                   options: {
                     slug: 'something',
@@ -326,7 +394,7 @@ describe('routing object validation', () => {
             data: {
               query: {
                 tag: {
-                  resource: 'tag',
+                  resourceType: 'tag',
                   type: 'read',
                   options: {
                     slug: 'sport',
@@ -343,6 +411,49 @@ describe('routing object validation', () => {
         taxonomies: {
           tag: '/tag/:slug',
           author: '/author/:slug',
+        },
+      })
+    })
+
+    test('longform', () => {
+      const object = validate({
+        routes: {
+          '/food/': {
+            data: {
+              people: {
+                resourceType: 'author',
+                type: 'read',
+                slug: 'gutelaune',
+                redirect: true,
+              },
+            },
+            template: 'Page',
+          },
+        },
+      })
+
+      expect(object.routes).toEqual({
+        '/food/': {
+          template: 'Page',
+          data: {
+            query: {
+              people: {
+                options: {
+                  slug: 'gutelaune',
+                },
+                resourceType: 'author',
+                type: 'read',
+              },
+            },
+            router: {
+              author: [
+                {
+                  redirect: true,
+                  slug: 'gutelaune',
+                },
+              ],
+            },
+          },
         },
       })
     })

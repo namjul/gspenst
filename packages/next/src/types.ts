@@ -18,6 +18,19 @@ export type ResourceItemMap = { [id: ID]: ResourceItem }
 
 export type Taxonomies = 'tag' | 'author'
 
+export type QueryType = 'read' | 'browse'
+
+export type QueryOptions = {
+  slug: string
+  filter?: string
+  limit?: number | 'all'
+  order?: string // '{property} ASC|DSC'
+  // include: string
+  // visibility: string
+  // status: string
+  // page: string
+}
+
 export type ResourceType = 'post' | 'page' | Taxonomies
 
 export type DataForm = `${ResourceType}.${string}`

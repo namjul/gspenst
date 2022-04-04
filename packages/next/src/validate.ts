@@ -1,23 +1,20 @@
-import { object, string, mixed } from 'yup'
+import { object, string, boolean, mixed } from 'yup'
+import { isObject, removeNullish } from './utils'
 import type {
+  QueryType,
   Taxonomies,
   DataForm,
-  LiteralUnion,
   Split,
   ResourceType,
+  QueryOptions,
 } from './types'
 
 export type Permalink = string
 
 export type DataQuery = {
-  resource: ResourceType
-  type: 'read' | 'browse'
-  options: {
-    slug: string
-    filter?: string
-    limit?: number | 'all'
-    order?: string // '{property} ASC|DSC'
-  }
+  resourceType: ResourceType
+  type: QueryType
+  options: QueryOptions
 }
 
 export type DataRouter = {
@@ -27,7 +24,7 @@ export type DataRouter = {
 
 export type Data = {
   query: {
-    [key in LiteralUnion<ResourceType, string>]?: DataQuery
+    [key: string]: DataQuery
   }
   router: {
     [key in ResourceType]?: DataRouter[]
@@ -63,6 +60,36 @@ export type RoutingConfigResolved = {
     | undefined
 }
 
+type DataShortForm = string | { [name: string]: string }
+type DataLongForm = {
+  [name: string]: Omit<DataQuery, 'options'> & QueryOptions & DataRouter
+}
+
+export type RoutingConfigUnresolved = {
+  routes?: {
+    [path: string]:
+      | {
+          template?: string
+          data?: DataShortForm | DataLongForm
+        }
+      | undefined
+  }
+  collections?:
+    | {
+        [path: string]: {
+          permalink: Permalink
+          template?: string | undefined
+          data?: DataShortForm | DataLongForm
+        }
+      }
+    | undefined
+  taxonomies?:
+    | {
+        [key in Taxonomies]?: Permalink
+      }
+    | undefined
+}
+
 export const defaultRoutingConfig = {
   routes: {},
   collections: {
@@ -82,9 +109,43 @@ const dataStringSchema = string().matches(
   'Incorrect Format. Please use e.g. tag.recipes'
 )
 
+const dataObjectSchema = object({
+  type: string()
+    .matches(
+      /^(read|browse)$/,
+      '`type ` has incorrect Format. Use read of brwose'
+    )
+    .required(),
+  resourceType: string()
+    .matches(
+      /^(page|post|tag|author)$/,
+      '`resource` has incorrect Format. Use post, page, author or tag'
+    )
+    .required(),
+  slug: string(),
+  filter: string().optional(),
+  limit: string().optional(),
+  order: string().optional(),
+  redirect: boolean().optional(),
+}).noUnknown()
+
+const dataSchema = mixed().when({
+  is: (value: any) => typeof value === 'string',
+  then: () => dataStringSchema,
+  otherwise: (schema) =>
+    schema.test(
+      'is-object',
+      ({ value }) =>
+        `data must be a \`object\` type or \`string\`, but the final value was: \`${value}\`.`,
+      (value) => {
+        return value ? isObject(value) : true
+      }
+    ),
+})
+
 const routesObjectSchema = object({
   template: string(),
-  data: dataStringSchema,
+  data: dataSchema.optional(),
 }).noUnknown()
 
 const permalinkSchema = string().test(
@@ -102,7 +163,7 @@ const routeSchema = mixed().when({
 const collectionSchema = object({
   permalink: permalinkSchema.required(),
   template: string().optional(),
-  data: dataStringSchema.optional(),
+  data: dataSchema.optional(),
 }).noUnknown()
 
 const taxonomiesSchema = object({
@@ -115,6 +176,10 @@ const routingSchema = object({
   collections: object().nullable(),
   taxonomies: taxonomiesSchema,
 }).noUnknown()
+
+function validateDataObject(data: any): asserts data is DataLongForm[''] {
+  dataObjectSchema.validateSync(data, { strict: true })
+}
 
 function validateRouting(routing: any): asserts routing is {
   routes?: {} | null
@@ -161,7 +226,7 @@ function transformData(data?: string) {
     return undefined
   }
 
-  let dataEntries: { [name: string]: string } = {}
+  let dataEntries: { [name: string]: string | object } = {}
 
   if (typeof data === 'string') {
     const [resource] = data.split('.')
@@ -176,19 +241,77 @@ function transformData(data?: string) {
   const query: Data['query'] = {}
 
   Object.entries(dataEntries).forEach(([key, value]) => {
-    const [resource, slug] = value.split('.') as Split<DataForm, '.'>
-    query[key] = {
-      resource,
-      type: slug ? 'read' : 'browse',
-      options: { slug },
-    }
-    if (!router[resource]) {
-      router[resource] = []
-    }
-    router[resource]?.push({
+    const defaultRouterOptions = {
       redirect: true,
-      slug,
-    })
+    }
+    const defaultQueryOptions = {
+      post: {
+        type: 'read',
+      },
+      page: {
+        type: 'read',
+      },
+      author: {
+        type: 'read',
+      },
+      tag: {
+        type: 'read',
+      },
+    } as const
+
+    let queryOptions: DataQuery, routerOptions: DataRouter
+
+    if (isObject(value)) {
+      // CASE long form
+      validateDataObject(value)
+
+      const { type, resourceType, slug, redirect } = value
+
+      queryOptions = {
+        ...defaultQueryOptions[resourceType],
+        ...removeNullish({
+          type,
+          resourceType,
+          options: {
+            slug,
+          },
+        }),
+      }
+
+      routerOptions = {
+        ...defaultRouterOptions,
+        ...removeNullish({
+          redirect,
+          slug,
+        }),
+      }
+    } else {
+      // CASE short form
+      const [resourceType, slug] = value.split('.') as Split<DataForm, '.'>
+
+      queryOptions = {
+        ...defaultQueryOptions[resourceType],
+        ...removeNullish({
+          resourceType,
+          options: {
+            slug,
+          },
+        }),
+      }
+
+      routerOptions = {
+        ...defaultRouterOptions,
+        ...removeNullish({
+          slug,
+        }),
+      }
+    }
+    query[key] = queryOptions
+    const { resourceType } = queryOptions
+    if (!router[resourceType]) {
+      router[resourceType] = []
+    }
+    router[resourceType]?.push(routerOptions)
   }, {})
 
   return {
