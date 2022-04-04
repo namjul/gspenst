@@ -186,20 +186,36 @@ class TaxonomyRouter extends ParentRouter {
   taxonomyKey: Taxonomies
   permalink: string
   routeRegExp: RegExp
+  pagesRegExp: RegExp
   constructor(key: Taxonomies, permalink: string) {
     super('TaxonomyRouter')
     this.taxonomyKey = key
     this.permalink = permalink
     this.routeRegExp = pathToRegexp(this.permalink)
+    this.pagesRegExp = pathToRegexp(
+      path.join(`/${this.taxonomyKey}`, 'page', ':page(\\d+)')
+    )
   }
   async handle(
     request: string,
     resources: ResourceItem[],
     routers: ParentRouter[]
   ) {
-    const [match, slug] = this.routeRegExp.exec(request) ?? []
+    const [pageMatch, page] = this.pagesRegExp.exec(request) ?? []
 
-    if (match && slug) {
+    if (pageMatch && page) {
+      return {
+        type: 'channel' as const,
+        name: this.taxonomyKey,
+        options: {},
+        request: { path: pageMatch, page: Number(page) },
+        templates: [],
+      }
+    }
+
+    const [routeMatch, slug] = this.routeRegExp.exec(request) ?? []
+
+    if (routeMatch && slug) {
       // CASE check if its redirected
       const router = this.respectDominantRouter(routers, this.taxonomyKey, slug)
 
@@ -217,7 +233,7 @@ class TaxonomyRouter extends ParentRouter {
           name: this.taxonomyKey,
           templates: [],
           request: {
-            path: 'sdf',
+            path: routeMatch,
           },
         }
       }
@@ -236,7 +252,6 @@ class TaxonomyRouter extends ParentRouter {
 }
 
 class CollectionRouter extends ParentRouter {
-  mainRoute: string
   routerName: string
   permalink: string
   routeRegExp: RegExp
@@ -244,13 +259,13 @@ class CollectionRouter extends ParentRouter {
   pagesRegExp: RegExp
   constructor(mainRoute: string, config: CollectionConfig) {
     super('CollectionRouter', config.data)
-    this.mainRoute = mainRoute
+    this.route = mainRoute
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
-    this.routeRegExp = pathToRegexp(this.mainRoute)
+    this.routeRegExp = pathToRegexp(this.route)
     this.permalink = config.permalink
     this.permalinkRegExp = pathToRegexp(this.permalink)
     this.pagesRegExp = pathToRegexp(
-      path.join(`${this.mainRoute}, 'page', ':page(\\d+)'`)
+      path.join(this.route, 'page', ':page(\\d+)')
     )
   }
   async handle(
@@ -332,10 +347,10 @@ class CollectionRouter extends ParentRouter {
 
     const paginationPath = Array.from(
       { length: collectionPosts.length / POST_PER_PAGE },
-      (_, i) => path.join(this.mainRoute, 'page', String(i + 1))
+      (_, i) => path.join(this.getRoute(), 'page', String(i + 1))
     )
 
-    return [this.mainRoute].concat(paths).concat(paginationPath)
+    return [this.getRoute()].concat(paths).concat(paginationPath)
   }
 }
 

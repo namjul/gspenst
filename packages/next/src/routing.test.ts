@@ -102,71 +102,6 @@ describe('routing mapping', () => {
       expect(paths).toContain('/category-2/napolean')
       expect(paths).toContain('/category-2/pedro')
     })
-
-    // test('routing config with routes', async () => {
-    //   const routingConfig: RoutingConfigResolved = {
-    //     routes: {
-    //       '/features/': {
-    //         template: 'Features',
-    //       },
-    //       '/about/team/': {
-    //         template: 'Page',
-    //         data: {
-    //           query: {
-    //             page: {
-    //               resource: 'page',
-    //               type: 'read',
-    //               options: {
-    //                 slug: 'about',
-    //               },
-    //             },
-    //           },
-    //           router: {
-    //             page: [{ redirect: true, slug: 'about' }],
-    //           },
-    //         },
-    //       },
-    //     },
-    //   }
-    //   const routingMap = await createRoutingMap(routingConfig)
-    //
-    //   expect(routingMap).toEqual({
-    //     features: {
-    //       type: null,
-    //       slug: 'features',
-    //       template: 'Features',
-    //     },
-    //     'about/team': {
-    //       type: null,
-    //       slug: 'about/team',
-    //       template: 'Page',
-    //       data: 'page.about',
-    //     },
-    //   })
-    // })
-    // test('routing config with collections', async () => {
-    //   const routingConfig: Routing = {
-    //     collections: {
-    //       '/blog/': {
-    //         permalink: '/blog/{slug}',
-    //         template: 'BlogLayout',
-    //       },
-    //     },
-    //   }
-    //
-    //   const routingMap = await createRoutingMap(routingConfig)
-    //
-    //   expect(routingMap).toHaveProperty('blog', {
-    //     slug: 'blog',
-    //     template: 'BlogLayout',
-    //     type: 'index',
-    //   })
-    //   expect(routingMap).toHaveProperty('blog/first-post', {
-    //     slug: 'blog/first-post',
-    //     path: 'content/posts/first-post.mdx',
-    //     type: 'post',
-    //   })
-    // })
   })
 
   describe('handling path', () => {
@@ -183,6 +118,43 @@ describe('routing mapping', () => {
           slug: 'about',
         },
         templates: [],
+      })
+    })
+
+    test('paging', async () => {
+      const router = new RouterManager(
+        {
+          collections: {
+            '/': {
+              permalink: '/:slug',
+            },
+          },
+          taxonomies: {
+            tag: '/tag/{slug}',
+            author: '/author/{slug}',
+          },
+        },
+        resources
+      )
+      expect(await router.handle(['page', '1'])).toEqual({
+        type: 'collection',
+        name: 'index',
+        options: {},
+        templates: [],
+        request: {
+          path: '/page/1/',
+          page: 1,
+        },
+      })
+      expect(await router.handle(['author', 'page', '1'])).toEqual({
+        type: 'channel',
+        name: 'author',
+        options: {},
+        templates: [],
+        request: {
+          path: '/author/page/1/',
+          page: 1,
+        },
       })
     })
     test('redirect route', async () => {
