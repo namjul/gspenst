@@ -16,24 +16,9 @@ describe('routing mapping', () => {
       const routingConfig = validate()
       const router = new RouterManager(routingConfig, resources)
       expect(await router.resolvePaths()).toEqual([
-        '/',
-        '/9th-post/',
-        '/8th-post/',
-        '/7th-post/',
-        '/6th-post/',
-        '/5th-post/',
-        '/4th-post/',
-        '/3th-post/',
-        '/2th-post/',
-        '/1th-post/',
-        '/0th-post/',
-        '/page/1',
-        '/page/2',
         '/home',
         '/about',
         '/portfolio',
-        '/author/napolean',
-        '/author/pedro',
       ])
     })
     test('routes', async () => {
@@ -46,7 +31,7 @@ describe('routing mapping', () => {
                 query: {
                   page: {
                     type: 'read',
-                    resource: 'page',
+                    resourceType: 'page',
                     options: {
                       slug: 'home',
                     },

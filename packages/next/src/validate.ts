@@ -90,20 +90,6 @@ export type RoutingConfigUnresolved = {
     | undefined
 }
 
-export const defaultRoutingConfig = {
-  routes: {},
-  collections: {
-    '/': {
-      permalink: '/{slug}/',
-      template: 'index',
-    },
-  },
-  taxonomies: {
-    tag: '/tag/{slug}',
-    author: '/author/{slug}',
-  },
-}
-
 const dataStringSchema = string().matches(
   /(page|post|tag|author)\..*/,
   'Incorrect Format. Please use e.g. tag.recipes'
@@ -145,7 +131,7 @@ const dataSchema = mixed().when({
 
 const routesObjectSchema = object({
   template: string(),
-  data: dataSchema.optional(),
+  data: dataSchema.optional(), // eslint-disable-line @typescript-eslint/no-unsafe-assignment
 }).noUnknown()
 
 const permalinkSchema = string().test(
@@ -163,13 +149,15 @@ const routeSchema = mixed().when({
 const collectionSchema = object({
   permalink: permalinkSchema.required(),
   template: string().optional(),
-  data: dataSchema.optional(),
+  data: dataSchema.optional(), // eslint-disable-line @typescript-eslint/no-unsafe-assignment
 }).noUnknown()
 
 const taxonomiesSchema = object({
   tag: permalinkSchema,
   author: permalinkSchema,
-}).noUnknown()
+})
+  .noUnknown()
+  .nullable()
 
 const routingSchema = object({
   routes: object().nullable(),
@@ -182,9 +170,9 @@ function validateDataObject(data: any): asserts data is DataLongForm[''] {
 }
 
 function validateRouting(routing: any): asserts routing is {
-  routes?: {} | null
-  collections?: {} | null
-  taxonomies?: {} | null
+  routes?: { [s: string]: unknown } | null
+  collections?: { [s: string]: unknown } | null
+  taxonomies?: { tag?: Permalink; author?: Permalink } | null
 } {
   routingSchema.validateSync(routing, { strict: true })
 }
@@ -206,9 +194,9 @@ function validateCollection(collection: any): asserts collection is {
 }
 
 function validateTaxonomies(taxonomies: any): asserts taxonomies is {
-  tag: string
-  author: string
-} {
+  tag?: string
+  author?: string
+} | null {
   taxonomiesSchema.validateSync(taxonomies, {
     strict: true,
   })
@@ -329,52 +317,54 @@ function transformRoute(route: string | { template: string; data: string }) {
       }
 }
 
-export function validate(_routingConfig: any = {}) {
-  validateRouting(_routingConfig)
+export function validate(routingConfig: any = {}) {
+  validateRouting(routingConfig)
 
-  const routingConfig = {
-    ...defaultRoutingConfig,
-    ..._routingConfig,
-  }
+  const routes =
+    routingConfig.routes &&
+    Object.entries(routingConfig.routes).reduce<
+      RoutingConfigResolved['routes']
+    >((acc, [path, properties]) => {
+      validateRoute(properties)
+      return {
+        ...acc,
+        [path]: transformRoute(properties),
+      }
+    }, {})
 
-  const routes = Object.entries(routingConfig.routes ?? {}).reduce<
-    RoutingConfigResolved['routes']
-  >((acc, [path, properties]) => {
-    validateRoute(properties)
-    return {
-      ...acc,
-      [path]: transformRoute(properties),
-    }
-  }, {})
-
-  const collections = Object.entries(routingConfig.collections ?? {}).reduce<
-    RoutingConfigResolved['collections']
-  >((acc, [path, properties]) => {
-    validateCollection(properties)
-    const { permalink, template, data } = properties
-    return {
-      ...acc,
-      [path]: {
-        template,
-        permalink: transformPermalink(permalink),
-        data: transformData(data),
-      },
-    }
-  }, {})
+  const collections =
+    routingConfig.collections &&
+    Object.entries(routingConfig.collections).reduce<
+      RoutingConfigResolved['collections']
+    >((acc, [path, properties]) => {
+      validateCollection(properties)
+      const { permalink, template, data } = properties
+      return {
+        ...acc,
+        [path]: {
+          template,
+          permalink: transformPermalink(permalink),
+          data: transformData(data),
+        },
+      }
+    }, {})
 
   validateTaxonomies(routingConfig.taxonomies)
-  const taxonomies = Object.entries(routingConfig.taxonomies).reduce<
-    RoutingConfigResolved['taxonomies']
-  >((acc, [path, permalink]) => {
-    return {
-      ...acc,
-      [path]: transformPermalink(permalink),
-    }
-  }, {})
+
+  const taxonomies =
+    routingConfig.taxonomies &&
+    Object.entries(routingConfig.taxonomies).reduce<
+      RoutingConfigResolved['taxonomies']
+    >((acc, [path, permalink]) => {
+      return {
+        ...acc,
+        [path]: transformPermalink(permalink),
+      }
+    }, {})
 
   return {
-    routes,
-    collections,
-    taxonomies,
+    ...(routes && { routes }),
+    ...(collections && { collections }),
+    ...(taxonomies && { taxonomies }),
   }
 }

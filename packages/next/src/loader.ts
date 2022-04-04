@@ -19,6 +19,20 @@ type LoaderOptions = Options
 const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
 const isProductionBuild = process.env.NODE_ENV === 'production'
 
+export const defaultRoutingConfig = {
+  routes: {},
+  collections: {
+    '/': {
+      permalink: '/{slug}/',
+      template: 'index',
+    },
+  },
+  taxonomies: {
+    tag: '/tag/{slug}',
+    author: '/author/{slug}',
+  },
+}
+
 const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   const callback = this.async()
 
@@ -51,7 +65,10 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const routingConfig = validate(yaml.load(source))
+  const routingConfig = validate({
+    ...defaultRoutingConfig,
+    ...(yaml.load(source) as any),
+  })
 
   const imports = `
 import debug from 'debug'

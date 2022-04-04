@@ -3,19 +3,7 @@ import { validate } from './validate'
 describe('routing object validation', () => {
   test('works with no parameter', () => {
     const object = validate()
-    expect(object).toEqual({
-      routes: {},
-      collections: {
-        '/': {
-          permalink: '/:slug/',
-          template: 'index',
-        },
-      },
-      taxonomies: {
-        tag: '/tag/:slug',
-        author: '/author/:slug',
-      },
-    })
+    expect(object).toEqual({})
   })
   test('overwrite parameters', () => {
     const object = validate({
@@ -23,13 +11,6 @@ describe('routing object validation', () => {
       taxonomies: {},
     })
     expect(object).toEqual({
-      routes: {},
-      collections: {
-        '/': {
-          permalink: '/:slug/',
-          template: 'index',
-        },
-      },
       taxonomies: {},
     })
   })
@@ -154,10 +135,6 @@ describe('routing object validation', () => {
             permalink: '/:slug/',
             template: 'test',
           },
-        },
-        taxonomies: {
-          tag: '/tag/:slug',
-          author: '/author/:slug',
         },
       })
     })
@@ -406,11 +383,6 @@ describe('routing object validation', () => {
               },
             },
           },
-        },
-
-        taxonomies: {
-          tag: '/tag/:slug',
-          author: '/author/:slug',
         },
       })
     })
