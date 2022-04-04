@@ -42,6 +42,7 @@ interface Connection {
 }
 
 type Query {
+  getOptimizedQuery(queryString: String!): String
   getCollection(collection: String): Collection!
   getCollections: [Collection!]!
   node(id: String): Node!
@@ -50,12 +51,14 @@ type Query {
   getDocumentFields: JSON!
   getConfigDocument(relativePath: String): ConfigDocument!
   getConfigList(before: String, after: String, first: Float, last: Float): ConfigConnection!
+  getPageDocument(relativePath: String): PageDocument!
+  getPageList(before: String, after: String, first: Float, last: Float): PageConnection!
   getPostDocument(relativePath: String): PostDocument!
   getPostList(before: String, after: String, first: Float, last: Float): PostConnection!
   getAuthorDocument(relativePath: String): AuthorDocument!
   getAuthorList(before: String, after: String, first: Float, last: Float): AuthorConnection!
-  getPageDocument(relativePath: String): PageDocument!
-  getPageList(before: String, after: String, first: Float, last: Float): PageConnection!
+  getTagDocument(relativePath: String): TagDocument!
+  getTagList(before: String, after: String, first: Float, last: Float): TagConnection!
 }
 
 type DocumentConnectionEdges {
@@ -81,7 +84,7 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float): DocumentConnection!
 }
 
-union DocumentNode = ConfigDocument | PostDocument | AuthorDocument | PageDocument
+union DocumentNode = ConfigDocument | PageDocument | PostDocument | AuthorDocument | TagDocument
 
 type Config {
   darkMode: Boolean
@@ -105,63 +108,6 @@ type ConfigConnection implements Connection {
   pageInfo: PageInfo
   totalCount: Float!
   edges: [ConfigConnectionEdges]
-}
-
-union PostAuthorDocument = AuthorDocument
-
-type Post {
-  title: String
-  heroImg: String
-  excerpt: JSON
-  author: PostAuthorDocument
-  date: String
-  body: JSON
-}
-
-type PostDocument implements Node & Document {
-  id: ID!
-  sys: SystemInfo!
-  data: Post!
-  form: JSON!
-  values: JSON!
-  dataJSON: JSON!
-}
-
-type PostConnectionEdges {
-  cursor: String
-  node: PostDocument
-}
-
-type PostConnection implements Connection {
-  pageInfo: PageInfo
-  totalCount: Float!
-  edges: [PostConnectionEdges]
-}
-
-type Author {
-  name: String
-  title: String
-  avatar: String
-}
-
-type AuthorDocument implements Node & Document {
-  id: ID!
-  sys: SystemInfo!
-  data: Author!
-  form: JSON!
-  values: JSON!
-  dataJSON: JSON!
-}
-
-type AuthorConnectionEdges {
-  cursor: String
-  node: AuthorDocument
-}
-
-type AuthorConnection implements Connection {
-  pageInfo: PageInfo
-  totalCount: Float!
-  edges: [AuthorConnectionEdges]
 }
 
 type Page {
@@ -189,49 +135,153 @@ type PageConnection implements Connection {
   edges: [PageConnectionEdges]
 }
 
+union PostAuthorsAuthorDocument = AuthorDocument
+
+type PostAuthors {
+  author: PostAuthorsAuthorDocument
+}
+
+union PostTagsTagDocument = TagDocument
+
+type PostTags {
+  tag: PostTagsTagDocument
+}
+
+type Post {
+  title: String
+  heroImg: String
+  excerpt: JSON
+  authors: [PostAuthors]
+  tags: [PostTags]
+  date: String
+  body: JSON
+}
+
+type PostDocument implements Node & Document {
+  id: ID!
+  sys: SystemInfo!
+  data: Post!
+  form: JSON!
+  values: JSON!
+  dataJSON: JSON!
+}
+
+type PostConnectionEdges {
+  cursor: String
+  node: PostDocument
+}
+
+type PostConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Float!
+  edges: [PostConnectionEdges]
+}
+
+type Author {
+  name: String
+}
+
+type AuthorDocument implements Node & Document {
+  id: ID!
+  sys: SystemInfo!
+  data: Author!
+  form: JSON!
+  values: JSON!
+  dataJSON: JSON!
+}
+
+type AuthorConnectionEdges {
+  cursor: String
+  node: AuthorDocument
+}
+
+type AuthorConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Float!
+  edges: [AuthorConnectionEdges]
+}
+
+type Tag {
+  name: String
+}
+
+type TagDocument implements Node & Document {
+  id: ID!
+  sys: SystemInfo!
+  data: Tag!
+  form: JSON!
+  values: JSON!
+  dataJSON: JSON!
+}
+
+type TagConnectionEdges {
+  cursor: String
+  node: TagDocument
+}
+
+type TagConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Float!
+  edges: [TagConnectionEdges]
+}
+
 type Mutation {
   addPendingDocument(collection: String!, relativePath: String!, template: String): DocumentNode!
   updateDocument(collection: String, relativePath: String!, params: DocumentMutation!): DocumentNode!
   createDocument(collection: String, relativePath: String!, params: DocumentMutation!): DocumentNode!
   updateConfigDocument(relativePath: String!, params: ConfigMutation!): ConfigDocument!
   createConfigDocument(relativePath: String!, params: ConfigMutation!): ConfigDocument!
+  updatePageDocument(relativePath: String!, params: PageMutation!): PageDocument!
+  createPageDocument(relativePath: String!, params: PageMutation!): PageDocument!
   updatePostDocument(relativePath: String!, params: PostMutation!): PostDocument!
   createPostDocument(relativePath: String!, params: PostMutation!): PostDocument!
   updateAuthorDocument(relativePath: String!, params: AuthorMutation!): AuthorDocument!
   createAuthorDocument(relativePath: String!, params: AuthorMutation!): AuthorDocument!
-  updatePageDocument(relativePath: String!, params: PageMutation!): PageDocument!
-  createPageDocument(relativePath: String!, params: PageMutation!): PageDocument!
+  updateTagDocument(relativePath: String!, params: TagMutation!): TagDocument!
+  createTagDocument(relativePath: String!, params: TagMutation!): TagDocument!
 }
 
 input DocumentMutation {
   config: ConfigMutation
+  page: PageMutation
   post: PostMutation
   author: AuthorMutation
-  page: PageMutation
+  tag: TagMutation
 }
 
 input ConfigMutation {
   darkMode: Boolean
 }
 
+input PageMutation {
+  title: String
+  body: JSON
+}
+
+input PostAuthorsMutation {
+  author: String
+}
+
+input PostTagsMutation {
+  tag: String
+}
+
 input PostMutation {
   title: String
   heroImg: String
   excerpt: JSON
-  author: String
+  authors: [PostAuthorsMutation]
+  tags: [PostTagsMutation]
   date: String
   body: JSON
 }
 
 input AuthorMutation {
   name: String
-  title: String
-  avatar: String
 }
 
-input PageMutation {
-  title: String
-  body: JSON
+input TagMutation {
+  name: String
 }
 
 schema {

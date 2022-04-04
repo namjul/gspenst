@@ -1,5 +1,5 @@
 import { defineSchema, defineConfig } from 'tinacms'
-import type { TinaTemplate, TinaCollection } from 'tinacms'
+import type { TinaCollection } from 'tinacms'
 
 // const testimonialBlockSchema: TinaTemplate = {
 //   name: 'BlockQuote',
@@ -90,10 +90,32 @@ const postCollection: TinaCollection = {
       name: 'excerpt',
     },
     {
-      type: 'reference',
-      label: 'Author',
-      name: 'author',
-      collections: ['author'],
+      label: 'Authors',
+      name: 'authors',
+      type: 'object',
+      list: true,
+      fields: [
+        {
+          label: 'Author',
+          name: 'author',
+          type: 'reference',
+          collections: ['author'],
+        },
+      ],
+    },
+    {
+      label: 'Tags',
+      name: 'tags',
+      type: 'object',
+      list: true,
+      fields: [
+        {
+          label: 'Tag',
+          name: 'tag',
+          type: 'reference',
+          collections: ['tag'],
+        },
+      ],
     },
     {
       type: 'datetime',
@@ -124,15 +146,18 @@ const authorCollection: TinaCollection = {
       label: 'Name',
       name: 'name',
     },
+  ],
+}
+
+const tagCollection: TinaCollection = {
+  label: 'Tags',
+  name: 'tag',
+  path: 'content/tags',
+  fields: [
     {
       type: 'string',
-      label: 'Title',
-      name: 'title',
-    },
-    {
-      type: 'string',
-      label: 'Avatar',
-      name: 'avatar',
+      label: 'Name',
+      name: 'name',
     },
   ],
 }
@@ -143,6 +168,7 @@ export default defineSchema({
     pageCollection,
     postCollection,
     authorCollection,
+    tagCollection,
   ],
 })
 

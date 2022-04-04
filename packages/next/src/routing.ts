@@ -240,6 +240,7 @@ class TaxonomyRouter extends ParentRouter {
     }
     return super.handle(request, resources, routers)
   }
+
   resolvePaths(resources: ResourceItemMap): string[] {
     const paths = Object.values(resources)
       .filter((resourceItem) => resourceItem.resourceType === this.taxonomyKey)

@@ -85,8 +85,7 @@ const repository = {
             case 'author':
               return this.client.getAuthor({ relativePath })
             case 'tag':
-              // TODO
-              throw new Error('needs to be implemented')
+              return this.client.getTag({ relativePath })
             default:
               return assertUnreachable(resourceType)
           }

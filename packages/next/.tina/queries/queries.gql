@@ -56,6 +56,17 @@ query getResources {
               extension
             }
           }
+          ... on TagDocument {
+            id
+            sys {
+              filename
+              basename
+              breadcrumbs
+              path
+              relativePath
+              extension
+            }
+          }
         }
       }
     }
@@ -80,5 +91,12 @@ query getAuthor($relativePath: String!) {
   ...ConfigQueryFragment
   getAuthorDocument(relativePath: $relativePath) {
     ...AuthorDocumentQueryFragment
+  }
+}
+
+query getTag($relativePath: String!) {
+  ...ConfigQueryFragment
+  getTagDocument(relativePath: $relativePath) {
+    ...TagDocumentQueryFragment
   }
 }

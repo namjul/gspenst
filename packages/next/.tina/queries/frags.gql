@@ -12,10 +12,21 @@ fragment PostDocumentQueryFragment on PostDocument {
   id
   data {
     ...PostParts
-    author {
-      ... on AuthorDocument {
-        data {
-          ...AuthorParts
+    tags {
+      tag {
+        ... on TagDocument {
+          data {
+            ...TagParts
+          }
+        }
+      }
+    }
+    authors {
+      author {
+        ... on AuthorDocument {
+          data {
+            ...AuthorParts
+          }
         }
       }
     }
@@ -35,5 +46,13 @@ fragment AuthorDocumentQueryFragment on AuthorDocument {
   id
   data {
     ...AuthorParts
+  }
+}
+
+fragment TagDocumentQueryFragment on TagDocument {
+  __typename
+  id
+  data {
+    ...TagParts
   }
 }

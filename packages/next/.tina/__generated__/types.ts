@@ -61,6 +61,7 @@ export type Connection = {
 
 export type Query = {
   __typename?: 'Query';
+  getOptimizedQuery?: Maybe<Scalars['String']>;
   getCollection: Collection;
   getCollections: Array<Collection>;
   node: Node;
@@ -69,12 +70,19 @@ export type Query = {
   getDocumentFields: Scalars['JSON'];
   getConfigDocument: ConfigDocument;
   getConfigList: ConfigConnection;
+  getPageDocument: PageDocument;
+  getPageList: PageConnection;
   getPostDocument: PostDocument;
   getPostList: PostConnection;
   getAuthorDocument: AuthorDocument;
   getAuthorList: AuthorConnection;
-  getPageDocument: PageDocument;
-  getPageList: PageConnection;
+  getTagDocument: TagDocument;
+  getTagList: TagConnection;
+};
+
+
+export type QueryGetOptimizedQueryArgs = {
+  queryString: Scalars['String'];
 };
 
 
@@ -115,6 +123,19 @@ export type QueryGetConfigListArgs = {
 };
 
 
+export type QueryGetPageDocumentArgs = {
+  relativePath?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetPageListArgs = {
+  before?: InputMaybe<Scalars['String']>;
+  after?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Float']>;
+  last?: InputMaybe<Scalars['Float']>;
+};
+
+
 export type QueryGetPostDocumentArgs = {
   relativePath?: InputMaybe<Scalars['String']>;
 };
@@ -141,12 +162,12 @@ export type QueryGetAuthorListArgs = {
 };
 
 
-export type QueryGetPageDocumentArgs = {
+export type QueryGetTagDocumentArgs = {
   relativePath?: InputMaybe<Scalars['String']>;
 };
 
 
-export type QueryGetPageListArgs = {
+export type QueryGetTagListArgs = {
   before?: InputMaybe<Scalars['String']>;
   after?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Float']>;
@@ -187,7 +208,7 @@ export type CollectionDocumentsArgs = {
   last?: InputMaybe<Scalars['Float']>;
 };
 
-export type DocumentNode = ConfigDocument | PostDocument | AuthorDocument | PageDocument;
+export type DocumentNode = ConfigDocument | PageDocument | PostDocument | AuthorDocument | TagDocument;
 
 export type Config = {
   __typename?: 'Config';
@@ -215,71 +236,6 @@ export type ConfigConnection = Connection & {
   pageInfo?: Maybe<PageInfo>;
   totalCount: Scalars['Float'];
   edges?: Maybe<Array<Maybe<ConfigConnectionEdges>>>;
-};
-
-export type PostAuthorDocument = AuthorDocument;
-
-export type Post = {
-  __typename?: 'Post';
-  title?: Maybe<Scalars['String']>;
-  heroImg?: Maybe<Scalars['String']>;
-  excerpt?: Maybe<Scalars['JSON']>;
-  author?: Maybe<PostAuthorDocument>;
-  date?: Maybe<Scalars['String']>;
-  body?: Maybe<Scalars['JSON']>;
-};
-
-export type PostDocument = Node & Document & {
-  __typename?: 'PostDocument';
-  id: Scalars['ID'];
-  sys: SystemInfo;
-  data: Post;
-  form: Scalars['JSON'];
-  values: Scalars['JSON'];
-  dataJSON: Scalars['JSON'];
-};
-
-export type PostConnectionEdges = {
-  __typename?: 'PostConnectionEdges';
-  cursor?: Maybe<Scalars['String']>;
-  node?: Maybe<PostDocument>;
-};
-
-export type PostConnection = Connection & {
-  __typename?: 'PostConnection';
-  pageInfo?: Maybe<PageInfo>;
-  totalCount: Scalars['Float'];
-  edges?: Maybe<Array<Maybe<PostConnectionEdges>>>;
-};
-
-export type Author = {
-  __typename?: 'Author';
-  name?: Maybe<Scalars['String']>;
-  title?: Maybe<Scalars['String']>;
-  avatar?: Maybe<Scalars['String']>;
-};
-
-export type AuthorDocument = Node & Document & {
-  __typename?: 'AuthorDocument';
-  id: Scalars['ID'];
-  sys: SystemInfo;
-  data: Author;
-  form: Scalars['JSON'];
-  values: Scalars['JSON'];
-  dataJSON: Scalars['JSON'];
-};
-
-export type AuthorConnectionEdges = {
-  __typename?: 'AuthorConnectionEdges';
-  cursor?: Maybe<Scalars['String']>;
-  node?: Maybe<AuthorDocument>;
-};
-
-export type AuthorConnection = Connection & {
-  __typename?: 'AuthorConnection';
-  pageInfo?: Maybe<PageInfo>;
-  totalCount: Scalars['Float'];
-  edges?: Maybe<Array<Maybe<AuthorConnectionEdges>>>;
 };
 
 export type Page = {
@@ -311,6 +267,110 @@ export type PageConnection = Connection & {
   edges?: Maybe<Array<Maybe<PageConnectionEdges>>>;
 };
 
+export type PostAuthorsAuthorDocument = AuthorDocument;
+
+export type PostAuthors = {
+  __typename?: 'PostAuthors';
+  author?: Maybe<PostAuthorsAuthorDocument>;
+};
+
+export type PostTagsTagDocument = TagDocument;
+
+export type PostTags = {
+  __typename?: 'PostTags';
+  tag?: Maybe<PostTagsTagDocument>;
+};
+
+export type Post = {
+  __typename?: 'Post';
+  title?: Maybe<Scalars['String']>;
+  heroImg?: Maybe<Scalars['String']>;
+  excerpt?: Maybe<Scalars['JSON']>;
+  authors?: Maybe<Array<Maybe<PostAuthors>>>;
+  tags?: Maybe<Array<Maybe<PostTags>>>;
+  date?: Maybe<Scalars['String']>;
+  body?: Maybe<Scalars['JSON']>;
+};
+
+export type PostDocument = Node & Document & {
+  __typename?: 'PostDocument';
+  id: Scalars['ID'];
+  sys: SystemInfo;
+  data: Post;
+  form: Scalars['JSON'];
+  values: Scalars['JSON'];
+  dataJSON: Scalars['JSON'];
+};
+
+export type PostConnectionEdges = {
+  __typename?: 'PostConnectionEdges';
+  cursor?: Maybe<Scalars['String']>;
+  node?: Maybe<PostDocument>;
+};
+
+export type PostConnection = Connection & {
+  __typename?: 'PostConnection';
+  pageInfo?: Maybe<PageInfo>;
+  totalCount: Scalars['Float'];
+  edges?: Maybe<Array<Maybe<PostConnectionEdges>>>;
+};
+
+export type Author = {
+  __typename?: 'Author';
+  name?: Maybe<Scalars['String']>;
+};
+
+export type AuthorDocument = Node & Document & {
+  __typename?: 'AuthorDocument';
+  id: Scalars['ID'];
+  sys: SystemInfo;
+  data: Author;
+  form: Scalars['JSON'];
+  values: Scalars['JSON'];
+  dataJSON: Scalars['JSON'];
+};
+
+export type AuthorConnectionEdges = {
+  __typename?: 'AuthorConnectionEdges';
+  cursor?: Maybe<Scalars['String']>;
+  node?: Maybe<AuthorDocument>;
+};
+
+export type AuthorConnection = Connection & {
+  __typename?: 'AuthorConnection';
+  pageInfo?: Maybe<PageInfo>;
+  totalCount: Scalars['Float'];
+  edges?: Maybe<Array<Maybe<AuthorConnectionEdges>>>;
+};
+
+export type Tag = {
+  __typename?: 'Tag';
+  name?: Maybe<Scalars['String']>;
+};
+
+export type TagDocument = Node & Document & {
+  __typename?: 'TagDocument';
+  id: Scalars['ID'];
+  sys: SystemInfo;
+  data: Tag;
+  form: Scalars['JSON'];
+  values: Scalars['JSON'];
+  dataJSON: Scalars['JSON'];
+};
+
+export type TagConnectionEdges = {
+  __typename?: 'TagConnectionEdges';
+  cursor?: Maybe<Scalars['String']>;
+  node?: Maybe<TagDocument>;
+};
+
+export type TagConnection = Connection & {
+  __typename?: 'TagConnection';
+  pageInfo?: Maybe<PageInfo>;
+  totalCount: Scalars['Float'];
+  edges?: Maybe<Array<Maybe<TagConnectionEdges>>>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addPendingDocument: DocumentNode;
@@ -318,12 +378,14 @@ export type Mutation = {
   createDocument: DocumentNode;
   updateConfigDocument: ConfigDocument;
   createConfigDocument: ConfigDocument;
+  updatePageDocument: PageDocument;
+  createPageDocument: PageDocument;
   updatePostDocument: PostDocument;
   createPostDocument: PostDocument;
   updateAuthorDocument: AuthorDocument;
   createAuthorDocument: AuthorDocument;
-  updatePageDocument: PageDocument;
-  createPageDocument: PageDocument;
+  updateTagDocument: TagDocument;
+  createTagDocument: TagDocument;
 };
 
 
@@ -360,6 +422,18 @@ export type MutationCreateConfigDocumentArgs = {
 };
 
 
+export type MutationUpdatePageDocumentArgs = {
+  relativePath: Scalars['String'];
+  params: PageMutation;
+};
+
+
+export type MutationCreatePageDocumentArgs = {
+  relativePath: Scalars['String'];
+  params: PageMutation;
+};
+
+
 export type MutationUpdatePostDocumentArgs = {
   relativePath: Scalars['String'];
   params: PostMutation;
@@ -384,41 +458,27 @@ export type MutationCreateAuthorDocumentArgs = {
 };
 
 
-export type MutationUpdatePageDocumentArgs = {
+export type MutationUpdateTagDocumentArgs = {
   relativePath: Scalars['String'];
-  params: PageMutation;
+  params: TagMutation;
 };
 
 
-export type MutationCreatePageDocumentArgs = {
+export type MutationCreateTagDocumentArgs = {
   relativePath: Scalars['String'];
-  params: PageMutation;
+  params: TagMutation;
 };
 
 export type DocumentMutation = {
   config?: InputMaybe<ConfigMutation>;
+  page?: InputMaybe<PageMutation>;
   post?: InputMaybe<PostMutation>;
   author?: InputMaybe<AuthorMutation>;
-  page?: InputMaybe<PageMutation>;
+  tag?: InputMaybe<TagMutation>;
 };
 
 export type ConfigMutation = {
   darkMode?: InputMaybe<Scalars['Boolean']>;
-};
-
-export type PostMutation = {
-  title?: InputMaybe<Scalars['String']>;
-  heroImg?: InputMaybe<Scalars['String']>;
-  excerpt?: InputMaybe<Scalars['JSON']>;
-  author?: InputMaybe<Scalars['String']>;
-  date?: InputMaybe<Scalars['String']>;
-  body?: InputMaybe<Scalars['JSON']>;
-};
-
-export type AuthorMutation = {
-  name?: InputMaybe<Scalars['String']>;
-  title?: InputMaybe<Scalars['String']>;
-  avatar?: InputMaybe<Scalars['String']>;
 };
 
 export type PageMutation = {
@@ -426,25 +486,53 @@ export type PageMutation = {
   body?: InputMaybe<Scalars['JSON']>;
 };
 
+export type PostAuthorsMutation = {
+  author?: InputMaybe<Scalars['String']>;
+};
+
+export type PostTagsMutation = {
+  tag?: InputMaybe<Scalars['String']>;
+};
+
+export type PostMutation = {
+  title?: InputMaybe<Scalars['String']>;
+  heroImg?: InputMaybe<Scalars['String']>;
+  excerpt?: InputMaybe<Scalars['JSON']>;
+  authors?: InputMaybe<Array<InputMaybe<PostAuthorsMutation>>>;
+  tags?: InputMaybe<Array<InputMaybe<PostTagsMutation>>>;
+  date?: InputMaybe<Scalars['String']>;
+  body?: InputMaybe<Scalars['JSON']>;
+};
+
+export type AuthorMutation = {
+  name?: InputMaybe<Scalars['String']>;
+};
+
+export type TagMutation = {
+  name?: InputMaybe<Scalars['String']>;
+};
+
 export type ConfigQueryFragmentFragment = { __typename?: 'Query', getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
 
-export type PostDocumentQueryFragmentFragment = { __typename: 'PostDocument', id: string, data: { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, author?: { __typename?: 'AuthorDocument', id: string, data: { __typename?: 'Author', name?: string | null, title?: string | null, avatar?: string | null } } | null } };
+export type PostDocumentQueryFragmentFragment = { __typename: 'PostDocument', id: string, data: { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'TagDocument', id: string, data: { __typename?: 'Tag', name?: string | null } } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'AuthorDocument', id: string, data: { __typename?: 'Author', name?: string | null } } | null } | null> | null } };
 
 export type PageDocumentQueryFragmentFragment = { __typename: 'PageDocument', id: string, data: { __typename?: 'Page', title?: string | null, body?: any | null } };
 
-export type AuthorDocumentQueryFragmentFragment = { __typename: 'AuthorDocument', id: string, data: { __typename?: 'Author', name?: string | null, title?: string | null, avatar?: string | null } };
+export type AuthorDocumentQueryFragmentFragment = { __typename: 'AuthorDocument', id: string, data: { __typename?: 'Author', name?: string | null } };
+
+export type TagDocumentQueryFragmentFragment = { __typename: 'TagDocument', id: string, data: { __typename?: 'Tag', name?: string | null } };
 
 export type GetResourcesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetResourcesQuery = { __typename: 'Query', getCollections: Array<{ __typename: 'Collection', name: string, slug: string, path: string, matches?: string | null, documents: { __typename?: 'DocumentConnection', totalCount: number, edges?: Array<{ __typename?: 'DocumentConnectionEdges', node?: { __typename: 'ConfigDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PostDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'AuthorDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PageDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } }>, getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
+export type GetResourcesQuery = { __typename: 'Query', getCollections: Array<{ __typename: 'Collection', name: string, slug: string, path: string, matches?: string | null, documents: { __typename?: 'DocumentConnection', totalCount: number, edges?: Array<{ __typename?: 'DocumentConnectionEdges', node?: { __typename: 'ConfigDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PageDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'PostDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'AuthorDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'TagDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } }>, getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
 
 export type GetPostQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
-export type GetPostQuery = { __typename?: 'Query', getPostDocument: { __typename: 'PostDocument', id: string, data: { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, author?: { __typename?: 'AuthorDocument', id: string, data: { __typename?: 'Author', name?: string | null, title?: string | null, avatar?: string | null } } | null } }, getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
+export type GetPostQuery = { __typename?: 'Query', getPostDocument: { __typename: 'PostDocument', id: string, data: { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'TagDocument', id: string, data: { __typename?: 'Tag', name?: string | null } } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'AuthorDocument', id: string, data: { __typename?: 'Author', name?: string | null } } | null } | null> | null } }, getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
 
 export type GetPageQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -458,15 +546,24 @@ export type GetAuthorQueryVariables = Exact<{
 }>;
 
 
-export type GetAuthorQuery = { __typename?: 'Query', getAuthorDocument: { __typename: 'AuthorDocument', id: string, data: { __typename?: 'Author', name?: string | null, title?: string | null, avatar?: string | null } }, getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
+export type GetAuthorQuery = { __typename?: 'Query', getAuthorDocument: { __typename: 'AuthorDocument', id: string, data: { __typename?: 'Author', name?: string | null } }, getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
+
+export type GetTagQueryVariables = Exact<{
+  relativePath: Scalars['String'];
+}>;
+
+
+export type GetTagQuery = { __typename?: 'Query', getTagDocument: { __typename: 'TagDocument', id: string, data: { __typename?: 'Tag', name?: string | null } }, getConfigDocument: { __typename?: 'ConfigDocument', id: string, data: { __typename?: 'Config', darkMode?: boolean | null } } };
 
 export type ConfigPartsFragment = { __typename?: 'Config', darkMode?: boolean | null };
 
-export type PostPartsFragment = { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, author?: { __typename?: 'AuthorDocument', id: string } | null };
-
-export type AuthorPartsFragment = { __typename?: 'Author', name?: string | null, title?: string | null, avatar?: string | null };
-
 export type PagePartsFragment = { __typename?: 'Page', title?: string | null, body?: any | null };
+
+export type PostPartsFragment = { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'AuthorDocument', id: string } | null } | null> | null, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'TagDocument', id: string } | null } | null> | null };
+
+export type AuthorPartsFragment = { __typename?: 'Author', name?: string | null };
+
+export type TagPartsFragment = { __typename?: 'Tag', name?: string | null };
 
 export type GetConfigDocumentQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -480,30 +577,6 @@ export type GetConfigListQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetConfigListQuery = { __typename?: 'Query', getConfigList: { __typename?: 'ConfigConnection', totalCount: number, edges?: Array<{ __typename?: 'ConfigConnectionEdges', node?: { __typename?: 'ConfigDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Config', darkMode?: boolean | null } } | null } | null> | null } };
 
-export type GetPostDocumentQueryVariables = Exact<{
-  relativePath: Scalars['String'];
-}>;
-
-
-export type GetPostDocumentQuery = { __typename?: 'Query', getPostDocument: { __typename?: 'PostDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, author?: { __typename?: 'AuthorDocument', id: string } | null } } };
-
-export type GetPostListQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetPostListQuery = { __typename?: 'Query', getPostList: { __typename?: 'PostConnection', totalCount: number, edges?: Array<{ __typename?: 'PostConnectionEdges', node?: { __typename?: 'PostDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, author?: { __typename?: 'AuthorDocument', id: string } | null } } | null } | null> | null } };
-
-export type GetAuthorDocumentQueryVariables = Exact<{
-  relativePath: Scalars['String'];
-}>;
-
-
-export type GetAuthorDocumentQuery = { __typename?: 'Query', getAuthorDocument: { __typename?: 'AuthorDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Author', name?: string | null, title?: string | null, avatar?: string | null } } };
-
-export type GetAuthorListQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetAuthorListQuery = { __typename?: 'Query', getAuthorList: { __typename?: 'AuthorConnection', totalCount: number, edges?: Array<{ __typename?: 'AuthorConnectionEdges', node?: { __typename?: 'AuthorDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Author', name?: string | null, title?: string | null, avatar?: string | null } } | null } | null> | null } };
-
 export type GetPageDocumentQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
@@ -515,6 +588,42 @@ export type GetPageListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetPageListQuery = { __typename?: 'Query', getPageList: { __typename?: 'PageConnection', totalCount: number, edges?: Array<{ __typename?: 'PageConnectionEdges', node?: { __typename?: 'PageDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Page', title?: string | null, body?: any | null } } | null } | null> | null } };
+
+export type GetPostDocumentQueryVariables = Exact<{
+  relativePath: Scalars['String'];
+}>;
+
+
+export type GetPostDocumentQuery = { __typename?: 'Query', getPostDocument: { __typename?: 'PostDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'AuthorDocument', id: string } | null } | null> | null, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'TagDocument', id: string } | null } | null> | null } } };
+
+export type GetPostListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPostListQuery = { __typename?: 'Query', getPostList: { __typename?: 'PostConnection', totalCount: number, edges?: Array<{ __typename?: 'PostConnectionEdges', node?: { __typename?: 'PostDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Post', title?: string | null, heroImg?: string | null, excerpt?: any | null, date?: string | null, body?: any | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'AuthorDocument', id: string } | null } | null> | null, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'TagDocument', id: string } | null } | null> | null } } | null } | null> | null } };
+
+export type GetAuthorDocumentQueryVariables = Exact<{
+  relativePath: Scalars['String'];
+}>;
+
+
+export type GetAuthorDocumentQuery = { __typename?: 'Query', getAuthorDocument: { __typename?: 'AuthorDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Author', name?: string | null } } };
+
+export type GetAuthorListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAuthorListQuery = { __typename?: 'Query', getAuthorList: { __typename?: 'AuthorConnection', totalCount: number, edges?: Array<{ __typename?: 'AuthorConnectionEdges', node?: { __typename?: 'AuthorDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Author', name?: string | null } } | null } | null> | null } };
+
+export type GetTagDocumentQueryVariables = Exact<{
+  relativePath: Scalars['String'];
+}>;
+
+
+export type GetTagDocumentQuery = { __typename?: 'Query', getTagDocument: { __typename?: 'TagDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Tag', name?: string | null } } };
+
+export type GetTagListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTagListQuery = { __typename?: 'Query', getTagList: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename?: 'TagDocument', id: string, sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, data: { __typename?: 'Tag', name?: string | null } } | null } | null> | null } };
 
 export const ConfigPartsFragmentDoc = gql`
     fragment ConfigParts on Config {
@@ -536,20 +645,34 @@ export const PostPartsFragmentDoc = gql`
   title
   heroImg
   excerpt
-  author {
-    ... on Document {
-      id
+  authors {
+    __typename
+    author {
+      ... on Document {
+        id
+      }
+    }
+  }
+  tags {
+    __typename
+    tag {
+      ... on Document {
+        id
+      }
     }
   }
   date
   body
 }
     `;
+export const TagPartsFragmentDoc = gql`
+    fragment TagParts on Tag {
+  name
+}
+    `;
 export const AuthorPartsFragmentDoc = gql`
     fragment AuthorParts on Author {
   name
-  title
-  avatar
 }
     `;
 export const PostDocumentQueryFragmentFragmentDoc = gql`
@@ -558,16 +681,28 @@ export const PostDocumentQueryFragmentFragmentDoc = gql`
   id
   data {
     ...PostParts
-    author {
-      ... on AuthorDocument {
-        data {
-          ...AuthorParts
+    tags {
+      tag {
+        ... on TagDocument {
+          data {
+            ...TagParts
+          }
+        }
+      }
+    }
+    authors {
+      author {
+        ... on AuthorDocument {
+          data {
+            ...AuthorParts
+          }
         }
       }
     }
   }
 }
     ${PostPartsFragmentDoc}
+${TagPartsFragmentDoc}
 ${AuthorPartsFragmentDoc}`;
 export const PagePartsFragmentDoc = gql`
     fragment PageParts on Page {
@@ -593,6 +728,15 @@ export const AuthorDocumentQueryFragmentFragmentDoc = gql`
   }
 }
     ${AuthorPartsFragmentDoc}`;
+export const TagDocumentQueryFragmentFragmentDoc = gql`
+    fragment TagDocumentQueryFragment on TagDocument {
+  __typename
+  id
+  data {
+    ...TagParts
+  }
+}
+    ${TagPartsFragmentDoc}`;
 export const GetResourcesDocument = gql`
     query getResources {
   ...ConfigQueryFragment
@@ -652,6 +796,17 @@ export const GetResourcesDocument = gql`
               extension
             }
           }
+          ... on TagDocument {
+            id
+            sys {
+              filename
+              basename
+              breadcrumbs
+              path
+              relativePath
+              extension
+            }
+          }
         }
       }
     }
@@ -685,6 +840,15 @@ export const GetAuthorDocument = gql`
 }
     ${ConfigQueryFragmentFragmentDoc}
 ${AuthorDocumentQueryFragmentFragmentDoc}`;
+export const GetTagDocument = gql`
+    query getTag($relativePath: String!) {
+  ...ConfigQueryFragment
+  getTagDocument(relativePath: $relativePath) {
+    ...TagDocumentQueryFragment
+  }
+}
+    ${ConfigQueryFragmentFragmentDoc}
+${TagDocumentQueryFragmentFragmentDoc}`;
 export const GetConfigDocumentDocument = gql`
     query getConfigDocument($relativePath: String!) {
   getConfigDocument(relativePath: $relativePath) {
@@ -726,6 +890,47 @@ export const GetConfigListDocument = gql`
   }
 }
     ${ConfigPartsFragmentDoc}`;
+export const GetPageDocumentDocument = gql`
+    query getPageDocument($relativePath: String!) {
+  getPageDocument(relativePath: $relativePath) {
+    sys {
+      filename
+      basename
+      breadcrumbs
+      path
+      relativePath
+      extension
+    }
+    id
+    data {
+      ...PageParts
+    }
+  }
+}
+    ${PagePartsFragmentDoc}`;
+export const GetPageListDocument = gql`
+    query getPageList {
+  getPageList {
+    totalCount
+    edges {
+      node {
+        id
+        sys {
+          filename
+          basename
+          breadcrumbs
+          path
+          relativePath
+          extension
+        }
+        data {
+          ...PageParts
+        }
+      }
+    }
+  }
+}
+    ${PagePartsFragmentDoc}`;
 export const GetPostDocumentDocument = gql`
     query getPostDocument($relativePath: String!) {
   getPostDocument(relativePath: $relativePath) {
@@ -808,9 +1013,9 @@ export const GetAuthorListDocument = gql`
   }
 }
     ${AuthorPartsFragmentDoc}`;
-export const GetPageDocumentDocument = gql`
-    query getPageDocument($relativePath: String!) {
-  getPageDocument(relativePath: $relativePath) {
+export const GetTagDocumentDocument = gql`
+    query getTagDocument($relativePath: String!) {
+  getTagDocument(relativePath: $relativePath) {
     sys {
       filename
       basename
@@ -821,14 +1026,14 @@ export const GetPageDocumentDocument = gql`
     }
     id
     data {
-      ...PageParts
+      ...TagParts
     }
   }
 }
-    ${PagePartsFragmentDoc}`;
-export const GetPageListDocument = gql`
-    query getPageList {
-  getPageList {
+    ${TagPartsFragmentDoc}`;
+export const GetTagListDocument = gql`
+    query getTagList {
+  getTagList {
     totalCount
     edges {
       node {
@@ -842,13 +1047,13 @@ export const GetPageListDocument = gql`
           extension
         }
         data {
-          ...PageParts
+          ...TagParts
         }
       }
     }
   }
 }
-    ${PagePartsFragmentDoc}`;
+    ${TagPartsFragmentDoc}`;
 export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R>
   export function getSdk<C>(requester: Requester<C>) {
     return {
@@ -864,11 +1069,20 @@ export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) 
     getAuthor(variables: GetAuthorQueryVariables, options?: C): Promise<{data: GetAuthorQuery, variables: GetAuthorQueryVariables, query: string}> {
         return requester<{data: GetAuthorQuery, variables: GetAuthorQueryVariables, query: string}, GetAuthorQueryVariables>(GetAuthorDocument, variables, options);
       },
+    getTag(variables: GetTagQueryVariables, options?: C): Promise<{data: GetTagQuery, variables: GetTagQueryVariables, query: string}> {
+        return requester<{data: GetTagQuery, variables: GetTagQueryVariables, query: string}, GetTagQueryVariables>(GetTagDocument, variables, options);
+      },
     getConfigDocument(variables: GetConfigDocumentQueryVariables, options?: C): Promise<{data: GetConfigDocumentQuery, variables: GetConfigDocumentQueryVariables, query: string}> {
         return requester<{data: GetConfigDocumentQuery, variables: GetConfigDocumentQueryVariables, query: string}, GetConfigDocumentQueryVariables>(GetConfigDocumentDocument, variables, options);
       },
     getConfigList(variables?: GetConfigListQueryVariables, options?: C): Promise<{data: GetConfigListQuery, variables: GetConfigListQueryVariables, query: string}> {
         return requester<{data: GetConfigListQuery, variables: GetConfigListQueryVariables, query: string}, GetConfigListQueryVariables>(GetConfigListDocument, variables, options);
+      },
+    getPageDocument(variables: GetPageDocumentQueryVariables, options?: C): Promise<{data: GetPageDocumentQuery, variables: GetPageDocumentQueryVariables, query: string}> {
+        return requester<{data: GetPageDocumentQuery, variables: GetPageDocumentQueryVariables, query: string}, GetPageDocumentQueryVariables>(GetPageDocumentDocument, variables, options);
+      },
+    getPageList(variables?: GetPageListQueryVariables, options?: C): Promise<{data: GetPageListQuery, variables: GetPageListQueryVariables, query: string}> {
+        return requester<{data: GetPageListQuery, variables: GetPageListQueryVariables, query: string}, GetPageListQueryVariables>(GetPageListDocument, variables, options);
       },
     getPostDocument(variables: GetPostDocumentQueryVariables, options?: C): Promise<{data: GetPostDocumentQuery, variables: GetPostDocumentQueryVariables, query: string}> {
         return requester<{data: GetPostDocumentQuery, variables: GetPostDocumentQueryVariables, query: string}, GetPostDocumentQueryVariables>(GetPostDocumentDocument, variables, options);
@@ -882,11 +1096,11 @@ export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) 
     getAuthorList(variables?: GetAuthorListQueryVariables, options?: C): Promise<{data: GetAuthorListQuery, variables: GetAuthorListQueryVariables, query: string}> {
         return requester<{data: GetAuthorListQuery, variables: GetAuthorListQueryVariables, query: string}, GetAuthorListQueryVariables>(GetAuthorListDocument, variables, options);
       },
-    getPageDocument(variables: GetPageDocumentQueryVariables, options?: C): Promise<{data: GetPageDocumentQuery, variables: GetPageDocumentQueryVariables, query: string}> {
-        return requester<{data: GetPageDocumentQuery, variables: GetPageDocumentQueryVariables, query: string}, GetPageDocumentQueryVariables>(GetPageDocumentDocument, variables, options);
+    getTagDocument(variables: GetTagDocumentQueryVariables, options?: C): Promise<{data: GetTagDocumentQuery, variables: GetTagDocumentQueryVariables, query: string}> {
+        return requester<{data: GetTagDocumentQuery, variables: GetTagDocumentQueryVariables, query: string}, GetTagDocumentQueryVariables>(GetTagDocumentDocument, variables, options);
       },
-    getPageList(variables?: GetPageListQueryVariables, options?: C): Promise<{data: GetPageListQuery, variables: GetPageListQueryVariables, query: string}> {
-        return requester<{data: GetPageListQuery, variables: GetPageListQueryVariables, query: string}, GetPageListQueryVariables>(GetPageListDocument, variables, options);
+    getTagList(variables?: GetTagListQueryVariables, options?: C): Promise<{data: GetTagListQuery, variables: GetTagListQueryVariables, query: string}> {
+        return requester<{data: GetTagListQuery, variables: GetTagListQueryVariables, query: string}, GetTagListQueryVariables>(GetTagListDocument, variables, options);
       }
     };
   }

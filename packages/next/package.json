@@ -4,8 +4,7 @@
   "main": "dist/gspenst-next.cjs.js",
   "module": "dist/gspenst-next.esm.js",
   "scripts": {
-    "gen": "tinacms schema:compile",
-    "postgen": "tinacms schema:types",
+    "gen": "tinacms schema:compile && tinacms schema:types",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
