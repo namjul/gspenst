@@ -121,6 +121,26 @@ describe('routing mapping', () => {
       })
     })
 
+    test('taxonomies', async () => {
+      const router = new RouterManager(
+        {
+          taxonomies: {
+            tag: '/category-1/:slug',
+            author: '/category-2/:slug',
+          },
+        },
+        resources
+      )
+      expect(await router.handle(['category-2', 'pedro'])).toEqual({
+        type: 'channel',
+        name: 'author',
+        templates: [],
+        request: {
+          path: '/category-2/pedro/',
+        },
+      })
+    })
+
     test('paging', async () => {
       const router = new RouterManager(
         {
