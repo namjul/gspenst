@@ -251,6 +251,8 @@ describe('routing object validation', () => {
           '/more/': {
             permalink: '/{slug}/',
             data: 'page.home',
+            filter: 'tags:[photo, video] + id:-5',
+            limit: 4,
           },
           '/podcast/': {
             permalink: '/podcast/{slug}/',
@@ -334,6 +336,8 @@ describe('routing object validation', () => {
         collections: {
           '/more/': {
             permalink: '/:slug/',
+            filter: 'tags:[photo, video] + id:-5',
+            limit: 4,
             data: {
               query: {
                 page: {

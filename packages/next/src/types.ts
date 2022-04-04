@@ -4,6 +4,9 @@ import type {} from /* Page, Post, Author, Tag */ '../.tina/__generated__/types'
 
 // validate shapes: https://fettblog.eu/typescript-match-the-exact-object-shape/
 
+export type Nullish = null | undefined
+export type Maybe<T> = T | null
+
 export type ResourceItem = {
   id: ID
   filename: string

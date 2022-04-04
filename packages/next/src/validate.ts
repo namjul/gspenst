@@ -1,4 +1,4 @@
-import { object, string, boolean, mixed } from 'yup'
+import { object, number, string, boolean, mixed } from 'yup'
 import { isObject, removeNullish } from './utils'
 import type {
   QueryType,
@@ -7,9 +7,12 @@ import type {
   Split,
   ResourceType,
   QueryOptions,
+  Nullish,
 } from './types'
 
 export type Permalink = string
+
+export type Template = string | undefined
 
 export type DataQuery = {
   resourceType: ResourceType
@@ -32,13 +35,13 @@ export type Data = {
 }
 
 export type RouteConfig = {
-  template?: string | undefined
+  template?: Template
   data?: Data | undefined
 }
 
 export type CollectionConfig = {
   permalink: Permalink
-  template?: string | undefined
+  template?: Template
   data?: Data | undefined
 }
 
@@ -68,8 +71,9 @@ type DataLongForm = {
 export type RoutingConfigUnresolved = {
   routes?: {
     [path: string]:
+      | Template
       | {
-          template?: string
+          template?: Template
           data?: DataShortForm | DataLongForm
         }
       | undefined
@@ -80,7 +84,7 @@ export type RoutingConfigUnresolved = {
           permalink: Permalink
           template?: string | undefined
           data?: DataShortForm | DataLongForm
-        }
+        } & QueryOptions
       }
     | undefined
   taxonomies?:
@@ -94,6 +98,12 @@ const dataStringSchema = string().matches(
   /(page|post|tag|author)\..*/,
   'Incorrect Format. Please use e.g. tag.recipes'
 )
+
+const queryOptionsSchema = object({
+  filter: string().optional(),
+  limit: number().optional(),
+  order: string().optional(),
+})
 
 const dataObjectSchema = object({
   type: string()
@@ -109,11 +119,10 @@ const dataObjectSchema = object({
     )
     .required(),
   slug: string(),
-  filter: string().optional(),
-  limit: string().optional(),
-  order: string().optional(),
   redirect: boolean().optional(),
-}).noUnknown()
+})
+  .concat(queryOptionsSchema)
+  .noUnknown()
 
 const dataSchema = mixed().when({
   is: (value: any) => typeof value === 'string',
@@ -150,7 +159,9 @@ const collectionSchema = object({
   permalink: permalinkSchema.required(),
   template: string().optional(),
   data: dataSchema.optional(), // eslint-disable-line @typescript-eslint/no-unsafe-assignment
-}).noUnknown()
+})
+  .concat(queryOptionsSchema)
+  .noUnknown()
 
 const taxonomiesSchema = object({
   tag: permalinkSchema,
@@ -168,7 +179,7 @@ const routingSchema = object({
 function validateDataObject(data: any): asserts data is DataLongForm[''] {
   dataObjectSchema.validateSync(data, { strict: true })
 }
-
+length
 function validateRouting(routing: any): asserts routing is {
   routes?: { [s: string]: unknown } | null
   collections?: { [s: string]: unknown } | null
@@ -179,24 +190,51 @@ function validateRouting(routing: any): asserts routing is {
 
 function validateRoute(
   route: any
-): asserts route is string | { template: string; data: string } {
+): asserts route is Exclude<RoutingConfigUnresolved['routes'], Nullish>[''] {
   routeSchema.validateSync(route, { strict: true })
 }
 
-function validateCollection(collection: any): asserts collection is {
-  permalink: string
-  template?: string
-  data?: string
-} {
+function transformRoute(
+  route: Exclude<RoutingConfigUnresolved['routes'], Nullish>['']
+) {
+  return removeNullish(
+    typeof route === 'string'
+      ? { template: route }
+      : {
+          template: route?.template,
+          ...(route?.data ? { data: transformData(route.data) } : {}),
+        }
+  )
+}
+
+function validateCollection(
+  collection: any
+): asserts collection is Exclude<
+  RoutingConfigUnresolved['collections'],
+  Nullish
+>[''] {
   collectionSchema.validateSync(collection, {
     strict: true,
   })
 }
 
-function validateTaxonomies(taxonomies: any): asserts taxonomies is {
-  tag?: string
-  author?: string
-} | null {
+function transformCollection(
+  collection: Exclude<RoutingConfigUnresolved['collections'], Nullish>['']
+) {
+  const { permalink, template, data, filter, order, limit } = collection
+  return removeNullish({
+    template,
+    permalink: transformPermalink(permalink),
+    filter,
+    order,
+    limit,
+    data: transformData(data),
+  })
+}
+
+function validateTaxonomies(
+  taxonomies: any
+): asserts taxonomies is RoutingConfigUnresolved['taxonomies'] {
   taxonomiesSchema.validateSync(taxonomies, {
     strict: true,
   })
@@ -209,7 +247,7 @@ function transformPermalink(permalink: string) {
   return permalink
 }
 
-function transformData(data?: string) {
+function transformData(data?: DataShortForm | DataLongForm) {
   if (!data) {
     return undefined
   }
@@ -308,15 +346,6 @@ function transformData(data?: string) {
   }
 }
 
-function transformRoute(route: string | { template: string; data: string }) {
-  return typeof route === 'string'
-    ? { template: route }
-    : {
-        template: route.template,
-        ...(route.data ? { data: transformData(route.data) } : {}),
-      }
-}
-
 export function validate(routingConfig: any = {}) {
   validateRouting(routingConfig)
 
@@ -338,14 +367,9 @@ export function validate(routingConfig: any = {}) {
       RoutingConfigResolved['collections']
     >((acc, [path, properties]) => {
       validateCollection(properties)
-      const { permalink, template, data } = properties
       return {
         ...acc,
-        [path]: {
-          template,
-          permalink: transformPermalink(permalink),
-          data: transformData(data),
-        },
+        [path]: transformCollection(properties),
       }
     }, {})
 
