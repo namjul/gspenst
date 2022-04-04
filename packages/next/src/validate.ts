@@ -1,5 +1,6 @@
 import { object, number, string, boolean, mixed } from 'yup'
 import { isObject, removeNullish } from './utils'
+import { queryTypes, resourceTypes } from './constants'
 import type {
   QueryType,
   Taxonomies,
@@ -95,7 +96,7 @@ export type RoutingConfigUnresolved = {
 }
 
 const dataStringSchema = string().matches(
-  /(page|post|tag|author)\..*/,
+  new RegExp(`(${resourceTypes.join('|')})\\..*`),
   'Incorrect Format. Please use e.g. tag.recipes'
 )
 
@@ -108,13 +109,13 @@ const queryOptionsSchema = object({
 const dataObjectSchema = object({
   type: string()
     .matches(
-      /^(read|browse)$/,
-      '`type ` has incorrect Format. Use read of brwose'
+      new RegExp(`^(${queryTypes.join('|')})$`),
+      '`type ` has incorrect Format. Use read of browse'
     )
     .required(),
   resourceType: string()
     .matches(
-      /^(page|post|tag|author)$/,
+      new RegExp(`^(${resourceTypes.join('|')})$`),
       '`resource` has incorrect Format. Use post, page, author or tag'
     )
     .required(),
@@ -272,16 +273,16 @@ function transformData(data?: DataShortForm | DataLongForm) {
     }
     const defaultQueryOptions = {
       post: {
-        type: 'read',
+        type: queryTypes[0],
       },
       page: {
-        type: 'read',
+        type: queryTypes[0],
       },
       author: {
-        type: 'read',
+        type: queryTypes[0],
       },
       tag: {
-        type: 'read',
+        type: queryTypes[0],
       },
     } as const
 
@@ -291,7 +292,7 @@ function transformData(data?: DataShortForm | DataLongForm) {
       // CASE long form
       validateDataObject(value)
 
-      const { type, resourceType, slug, redirect } = value
+      const { type, resourceType, slug, redirect, filter, limit, order } = value
 
       queryOptions = {
         ...defaultQueryOptions[resourceType],
@@ -300,6 +301,9 @@ function transformData(data?: DataShortForm | DataLongForm) {
           resourceType,
           options: {
             slug,
+            filter,
+            limit,
+            order,
           },
         }),
       }
@@ -321,6 +325,9 @@ function transformData(data?: DataShortForm | DataLongForm) {
           resourceType,
           options: {
             slug,
+            filter: undefined,
+            limit: undefined,
+            order: undefined,
           },
         }),
       }

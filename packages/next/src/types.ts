@@ -1,11 +1,35 @@
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
 import { LiteralUnion, AsyncReturnType, Split, Entries } from 'type-fest'
 import type {} from /* Page, Post, Author, Tag */ '../.tina/__generated__/types'
-
-// validate shapes: https://fettblog.eu/typescript-match-the-exact-object-shape/
+import {
+  queryTypes,
+  taxonomies,
+  resourceTypes,
+  queryOptions,
+  contextTypes,
+} from './constants'
 
 export type Nullish = null | undefined
 export type Maybe<T> = T | null
+
+// validate shapes: https://fettblog.eu/typescript-match-the-exact-object-shape/
+export type ValidateShape<T, Shape> = T extends Shape
+  ? Exclude<keyof T, keyof Shape> extends never
+    ? T
+    : never
+  : never
+
+export type ResourceItemMap = { [id: ID]: ResourceItem }
+export type Taxonomies = typeof taxonomies[number]
+export type QueryType = typeof queryTypes[number]
+export type ResourceType = typeof resourceTypes[number]
+export type ContextType = typeof contextTypes[number]
+export type QueryOptionsObject<T> = ValidateShape<
+  T,
+  {
+    [key in typeof queryOptions[number]]: any
+  }
+>
 
 export type ResourceItem = {
   id: ID
@@ -17,24 +41,16 @@ export type ResourceItem = {
   data: unknown | undefined
 }
 
-export type ResourceItemMap = { [id: ID]: ResourceItem }
-
-export type Taxonomies = 'tag' | 'author'
-
-export type QueryType = 'read' | 'browse'
-
-export type QueryOptions = {
+export type QueryOptions = QueryOptionsObject<{
   slug: string
-  filter?: string
-  limit?: number | 'all'
-  order?: string // '{property} ASC|DSC'
+  filter: string | Nullish
+  limit: number | 'all' | Nullish
+  order: string | Nullish // '{property} ASC|DSC'
   // include: string
   // visibility: string
   // status: string
   // page: string
-}
-
-export type ResourceType = 'post' | 'page' | Taxonomies
+}>
 
 export type DataForm = `${ResourceType}.${string}`
 

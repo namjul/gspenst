@@ -225,7 +225,7 @@ describe('routing object validation', () => {
             },
           },
         })
-      }).toThrow('`type ` has incorrect Format. Use read of brwose')
+      }).toThrow('`type ` has incorrect Format. Use read of browse')
     })
 
     test('shortform', () => {

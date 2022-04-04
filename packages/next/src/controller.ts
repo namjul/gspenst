@@ -4,17 +4,18 @@ import { assertUnreachable } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
 import { ensure } from './utils'
+import type { ContextType } from './types'
 
 export type PageProps =
   | {
-      context: 'post' | 'page' | 'tag' | 'author' | null
+      context: Extract<ContextType, 'post' | 'page' | 'tag' | 'author'> | null
       data: {
         [name: string]: unknown
       }
       templates: string[]
     }
   | {
-      context: 'index' | 'home' | 'paged'
+      context: Extract<ContextType, 'index' | 'home' | 'paged'>
       data: {
         [name: string]: unknown
       }
@@ -88,6 +89,7 @@ export async function controller(
   }
 
   const { type } = routingProperties
+
   switch (type) {
     case 'collection':
       return {

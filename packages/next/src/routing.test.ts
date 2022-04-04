@@ -34,6 +34,9 @@ describe('routing mapping', () => {
                     resourceType: 'page',
                     options: {
                       slug: 'home',
+                      filter: undefined,
+                      order: undefined,
+                      limit: undefined,
                     },
                   },
                 },
