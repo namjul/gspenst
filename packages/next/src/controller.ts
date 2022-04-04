@@ -2,9 +2,10 @@ import type { Redirect } from 'next'
 import type { RoutingProperties } from './routing'
 import { assertUnreachable } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
+import getHeaders from './getHeaders'
 import repository from './repository'
 import { ensure } from './utils'
-import type { ContextType } from './types'
+import type { ContextType, Root } from './types'
 
 export type PageProps =
   | {
@@ -37,12 +38,22 @@ async function entryController(
   const resources = await repository.get(resourceID)
   const resourceItem = resources[resourceID]
   ensure(resourceItem)
-  const { resourceType } = resourceItem
+  const { resourceType, data } = resourceItem
+
+  let headers = {}
+
+  if (data && 'getPostDocument' in data) {
+    headers = getHeaders(data.getPostDocument.data.body as Root)
+  }
+  if (data && 'getPageDocument' in data) {
+    headers = getHeaders(data.getPageDocument.data.body as Root)
+  }
 
   return {
     context: resourceType,
     data: {
-      [resourceType]: resourceItem.data,
+      [resourceType]: data,
+      headers,
     },
     templates: getTemplateHierarchy(routingProperties),
   }
