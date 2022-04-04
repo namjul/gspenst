@@ -74,12 +74,10 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
 import debug from 'debug'
 import * as server from '@gspenst/next/server'
 import ClientPage from '@gspenst/next/client'
-// import TemplateEntryPage from '@gspenst/theme'
-
-const log = debug('@gspenst/next:loader')
+import TemplateEntryPage from '${theme}'
 
 export default function Page(props) {
-  return <ClientPage pageProps={props} />
+  return <ClientPage pageProps={props} Component={TemplateEntryPage} />
 }
 `
 

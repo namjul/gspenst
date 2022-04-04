@@ -10,7 +10,6 @@ import type { LiteralUnion } from 'type-fest'
 export const components = {
   PageLayout: dynamic(() => import('./layouts/PageLayout')),
   PostLayout: dynamic(() => import('./layouts/PostLayout')),
-  Admin: dynamic(() => import('./patterns/Admin')),
 }
 
 export default function getComponent<

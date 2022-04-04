@@ -1,12 +1,16 @@
+import type * as React from 'react'
 import { useTina } from 'tinacms/dist/edit-state'
 import type { NextPage } from 'next'
 import DynamicTinaProvider from './TinaDynamicProvider'
 import type { PageProps } from './types'
 import { resourceTypes } from './constants'
 
-const Container: NextPage<{ pageProps: PageProps }> = ({
-  pageProps: props,
-}) => {
+type Props = {
+  pageProps: PageProps
+  Component: React.ComponentType<{ data: any }>
+}
+
+const Container: NextPage<Props> = ({ pageProps: props, Component }) => {
   const editableDataEntry = Object.entries(props.data).find(([type]) => {
     // @ts-expect-error -- fine
     return resourceTypes.includes(type)
@@ -26,13 +30,13 @@ const Container: NextPage<{ pageProps: PageProps }> = ({
     // @ts-expect-error -- TODO fine for now
     data: tinaData?.data,
   })
-  return <pre>{JSON.stringify(data, null, 2)}</pre>
+  return <Component data={data} />
 }
 
-const Page: NextPage<{ pageProps: PageProps }> = ({ pageProps }) => {
+const Page: NextPage<Props> = ({ pageProps, Component }) => {
   return (
     <DynamicTinaProvider>
-      <Container pageProps={pageProps} />
+      <Container pageProps={pageProps} Component={Component} />
     </DynamicTinaProvider>
   )
 }

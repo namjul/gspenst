@@ -1,46 +1,14 @@
-import type { NextPage } from 'next'
-import { useTina } from 'tinacms/dist/edit-state'
-import { transformData } from '../utils/dataTransformer'
-import type { StaticProps } from '../utils/staticPropsResolver'
+import type { PageProps } from '@gspenst/next'
 import defaultConfig from '../default.config'
 import { ThemeConfigContext } from '../config'
-import getComponent from './registry'
-import Head from './patterns/Head'
 
-const Page: NextPage<StaticProps> = (props) => {
-  if (typeof props.data === 'undefined') {
-    throw new Error('No data was provided from getStaticProps')
-  }
-
-  const { data } = useTina({
-    query: props.query,
-    variables: props.variables,
-    data: props.data,
-  })
-
-  const { page, config } = transformData(data)
-
-  if (!page) {
-    throw new Error(`No page found for ${page}`)
-  }
-
-  const { layout } = page
-
-  const PageLayout = getComponent(layout)
-
-  if (!PageLayout) {
-    throw new Error(`no page layout matching the layout: ${page.layout}`)
-  }
-
-  const extendedConfig = { ...defaultConfig, ...config.data }
+const Page = (props: PageProps) => {
+  const extendedConfig = { ...defaultConfig }
 
   return (
     <ThemeConfigContext.Provider value={extendedConfig}>
-      <Head page={page} />
-      <PageLayout
-        /* @ts-expect-error -- PageLayout is dynamically retrieved */
-        page={page}
-      />
+      From `@gspenst/next`
+      <pre>{JSON.stringify(props, null, 2)}</pre>
     </ThemeConfigContext.Provider>
   )
 }
