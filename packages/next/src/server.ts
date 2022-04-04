@@ -2,6 +2,7 @@ import debug from 'debug'
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import { RouterManager } from './routing'
 import type { RoutingConfigResolved } from './validate'
+import type { PageProps } from './types'
 import { controller } from './controller'
 import repository from './repository'
 
@@ -26,7 +27,7 @@ export const getStaticProps =
   (
     routingConfig: RoutingConfigResolved,
     routingParameter: string
-  ): GetStaticProps =>
+  ): GetStaticProps<PageProps> =>
   async (context) => {
     const { params } = context
 

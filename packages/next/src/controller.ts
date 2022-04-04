@@ -5,7 +5,7 @@ import { getTemplateHierarchy } from './dataUtils'
 import getHeaders from './getHeaders'
 import repository from './repository'
 import { ensure } from './utils'
-import type { ContextType, Root } from './types'
+import type { ContextType, Root, AsyncReturnType } from './types'
 
 export type PageProps =
   | {
@@ -42,11 +42,11 @@ async function entryController(
 
   let headers = {}
 
-  if (data && 'getPostDocument' in data) {
-    headers = getHeaders(data.getPostDocument.data.body as Root)
+  if (data && 'getPostDocument' in data.data) {
+    headers = getHeaders(data.data.getPostDocument.data.body as Root)
   }
-  if (data && 'getPageDocument' in data) {
-    headers = getHeaders(data.getPageDocument.data.body as Root)
+  if (data && 'getPageDocument' in data.data) {
+    headers = getHeaders(data.data.getPageDocument.data.body as Root)
   }
 
   return {
@@ -92,9 +92,18 @@ async function customController(
   }
 }
 
+export type ControllerReturnType = Exclude<
+  AsyncReturnType<typeof controller>,
+  null
+>
+
 export async function controller(
   routingProperties: RoutingProperties
-): Promise<{ props: PageProps } | { redirect: Redirect } | null> {
+): Promise<
+  | { type: 'props'; props: PageProps }
+  | { type: 'redirect'; redirect: Redirect }
+  | null
+> {
   if (!routingProperties) {
     return null
   }
@@ -104,20 +113,24 @@ export async function controller(
   switch (type) {
     case 'collection':
       return {
+        type: 'props',
         props: await collectionController(routingProperties),
       }
     case 'channel':
       return null
     case 'entry':
       return {
+        type: 'props',
         props: await entryController(routingProperties),
       }
     case 'custom':
       return {
+        type: 'props',
         props: await customController(routingProperties),
       }
     case 'redirect':
       return {
+        type: 'redirect',
         redirect: routingProperties,
       }
 

@@ -288,8 +288,8 @@ export const ExperimentalGetTinaClient = () => {
       }
     },
 
-    getPost: async () => ({}),
-    getPage: async () => ({}),
-    getAuthor: async () => ({}),
+    getPost: async () => undefined,
+    getPage: async () => undefined,
+    getAuthor: async () => undefined,
   }
 }

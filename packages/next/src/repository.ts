@@ -12,9 +12,13 @@ type Resources = {
   [id: ID]: ResourceItem
 }
 
+const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
+
+export type Client = typeof client
+
 const repository = {
   store: redis,
-  client: ExperimentalGetTinaClient(), // eslint-disable-line new-cap
+  client, // eslint-disable-line new-cap
   async init() {
     await this.store.flushall()
     const { data } = await this.client.getResources()
@@ -75,7 +79,7 @@ const repository = {
       const resourceItem = JSON.parse(current) as ResourceItem
 
       if (!resourceItem.data) {
-        const { data } = await (async () => {
+        const data = await (async () => {
           const { resourceType, relativePath } = resourceItem
           switch (resourceType) {
             case 'page':

@@ -1,11 +1,6 @@
 // import type { Options as MDXOptions } from '@mdx-js/mdx'
 import { LiteralUnion, AsyncReturnType, Split, Entries } from 'type-fest'
-import type {
-  GetPostQuery,
-  GetPageQuery,
-  GetTagQuery,
-  GetAuthorQuery,
-} from '../.tina/__generated__/types'
+import type { Client } from './repository'
 import {
   queryTypes,
   taxonomies,
@@ -13,6 +8,7 @@ import {
   queryOptions,
   contextTypes,
 } from './constants'
+import type { ControllerReturnType } from './controller'
 
 export type Nullish = null | undefined
 export type Maybe<T> = T | null
@@ -36,6 +32,11 @@ export type QueryOptionsObject<T> = ValidateShape<
   }
 >
 
+export type PageProps = Extract<
+  ControllerReturnType,
+  { type: 'props' }
+>['props']
+
 export type ResourceItem = {
   id: ID
   filename: string
@@ -43,7 +44,12 @@ export type ResourceItem = {
   slug: string
   resourceType: ResourceType
   relativePath: string
-  data: GetPostQuery | GetPageQuery | GetTagQuery | GetAuthorQuery | undefined
+  data:
+    | AsyncReturnType<Client['getPost']>
+    | AsyncReturnType<Client['getPage']>
+    | AsyncReturnType<Client['getTag']>
+    | AsyncReturnType<Client['getAuthor']>
+    | undefined
 }
 
 export type QueryOptions = QueryOptionsObject<{

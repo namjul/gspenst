@@ -79,7 +79,7 @@ import ClientPage from '@gspenst/next/client'
 const log = debug('@gspenst/next:loader')
 
 export default function Page(props) {
-  return <ClientPage {...props} />
+  return <ClientPage pageProps={props} />
 }
 `
 
