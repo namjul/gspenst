@@ -1,5 +1,5 @@
 export type ThemeConfig = {
-  darkMode: boolean
+  darkMode?: boolean
   sitePaths?: {
     [name: Scalars['String']]: Scalars['String']
   }

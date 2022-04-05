@@ -5,13 +5,16 @@ import DynamicTinaProvider from './TinaDynamicProvider'
 import type { PageProps } from './types'
 import { resourceTypes } from './constants'
 
-type Props = {
+export type Props = {
   pageProps: PageProps
-  Component: React.ComponentType<{ data: any }>
+  Component: React.ComponentType<Omit<PageProps, 'data'> & { data: unknown }>
 }
 
-const Container: NextPage<Props> = ({ pageProps: props, Component }) => {
-  const editableDataEntry = Object.entries(props.data).find(([type]) => {
+const Container: NextPage<Props> = ({
+  pageProps: { data, ...props },
+  Component,
+}) => {
+  const editableDataEntry = Object.entries(data).find(([type]) => {
     // @ts-expect-error -- fine
     return resourceTypes.includes(type)
   })
@@ -22,7 +25,7 @@ const Container: NextPage<Props> = ({ pageProps: props, Component }) => {
 
   const [, tinaData] = editableDataEntry
 
-  const { data } = useTina({
+  const { data: tinaDataResolved } = useTina({
     // @ts-expect-error -- TODO fine for now
     query: tinaData?.query,
     // @ts-expect-error -- TODO fine for now
@@ -30,7 +33,7 @@ const Container: NextPage<Props> = ({ pageProps: props, Component }) => {
     // @ts-expect-error -- TODO fine for now
     data: tinaData?.data,
   })
-  return <Component data={data} />
+  return <Component {...props} data={tinaDataResolved} />
 }
 
 const Page: NextPage<Props> = ({ pageProps, Component }) => {

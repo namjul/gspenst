@@ -1,4 +1,3 @@
-// import type { Options as MDXOptions } from '@mdx-js/mdx'
 import { LiteralUnion, AsyncReturnType, Split, Entries } from 'type-fest'
 import type { Client } from './repository'
 import {
@@ -37,6 +36,11 @@ export type PageProps = Extract<
   { type: 'props' }
 >['props']
 
+export type PostResult = AsyncReturnType<Client['getPost']>
+export type PageResult = AsyncReturnType<Client['getPage']>
+export type TagResult = AsyncReturnType<Client['getTag']>
+export type AuthorResult = AsyncReturnType<Client['getAuthor']>
+
 export type ResourceItem = {
   id: ID
   filename: string
@@ -44,13 +48,25 @@ export type ResourceItem = {
   slug: string
   resourceType: ResourceType
   relativePath: string
-  data:
-    | AsyncReturnType<Client['getPost']>
-    | AsyncReturnType<Client['getPage']>
-    | AsyncReturnType<Client['getTag']>
-    | AsyncReturnType<Client['getAuthor']>
-    | undefined
-}
+  data: PostResult | PageResult | TagResult | AuthorResult | undefined
+} & (
+  | {
+      resourceType: Extract<ResourceType, 'post'>
+      data?: PostResult
+    }
+  | {
+      resourceType: Extract<ResourceType, 'page'>
+      data?: PageResult
+    }
+  | {
+      resourceType: Extract<ResourceType, 'author'>
+      data?: AuthorResult
+    }
+  | {
+      resourceType: Extract<ResourceType, 'tag'>
+      data?: TagResult
+    }
+)
 
 export type QueryOptions = QueryOptionsObject<{
   slug: string

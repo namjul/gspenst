@@ -5,12 +5,24 @@ import { getTemplateHierarchy } from './dataUtils'
 import getHeaders from './getHeaders'
 import repository from './repository'
 import { ensure } from './utils'
-import type { ContextType, Root, AsyncReturnType } from './types'
+import type {
+  ContextType,
+  Root,
+  AsyncReturnType,
+  PostResult,
+  PageResult,
+  TagResult,
+  AuthorResult,
+} from './types'
 
 export type PageProps =
   | {
       context: Extract<ContextType, 'post' | 'page' | 'tag' | 'author'> | null
       data: {
+        post?: PostResult
+        page?: PageResult
+        tag?: TagResult
+        author?: AuthorResult
         [name: string]: unknown
       }
       templates: string[]
@@ -18,6 +30,8 @@ export type PageProps =
   | {
       context: Extract<ContextType, 'index' | 'home' | 'paged'>
       data: {
+        posts?: PostResult[]
+        pages?: PageResult[]
         [name: string]: unknown
       }
       templates: string[]
@@ -62,9 +76,14 @@ async function entryController(
 async function collectionController(
   routingProperties: Extract<RoutingProperties, { type: 'collection' }>
 ): Promise<PageProps> {
-  const posts = Object.values(await repository.getAll()).filter(
-    (resource) => resource.resourceType === 'post'
-  )
+  const posts = Object.values(await repository.getAll()).flatMap((resource) => {
+    return resource.resourceType === 'post'
+      ? resource.data
+        ? [resource.data]
+        : []
+      : []
+  })
+
   return {
     context: 'index',
     templates: getTemplateHierarchy(routingProperties),

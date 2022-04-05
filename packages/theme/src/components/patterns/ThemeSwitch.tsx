@@ -29,4 +29,6 @@ const ThemeSwitch = forwardRef<HTMLButtonElement, ThemeSwitchProps>(
   }
 )
 
+ThemeSwitch.displayName = 'ThemeSwitch'
+
 export default ThemeSwitch

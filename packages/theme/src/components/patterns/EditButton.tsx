@@ -1,4 +1,4 @@
-import { useEditState } from 'tinacms/dist/edit-state'
+import { useEditState } from '@gspenst/next'
 import { View } from '@gspenst/components'
 
 const EditButton = (props: React.PropsWithChildren<{}>) => {

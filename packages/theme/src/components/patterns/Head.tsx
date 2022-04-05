@@ -1,9 +1,8 @@
 import NextHead from 'next/head'
-import type { TransformedDataType } from '../../utils/dataTransformer'
 // import { useConfig } from '../../config'
 
 export type HeadProps = {
-  page: Exclude<TransformedDataType['page'], undefined>
+  page: any
 }
 
 const Head = ({ page }: HeadProps) => {
