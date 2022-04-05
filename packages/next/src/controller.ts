@@ -15,35 +15,64 @@ import type {
   AuthorResult,
 } from './types'
 
+type Pagination = {
+  page: number // the current page number
+  prev: number | null // the previous page number
+  next: number | null // the next page number
+  pages: number // the number of pages available
+  total: number // the number of posts available
+  limit: number // the number of posts per page
+}
+
+type BasePageProps = {
+  templates: string[]
+  data: {
+    [name: string]: unknown
+  }
+}
+
+type PostPageProps = BasePageProps & {
+  context: Extract<ContextType, 'post'>
+  data: {
+    post: PostResult
+  }
+}
+
+type PagePageProps = BasePageProps & {
+  context: Extract<ContextType, 'page'>
+  data: {
+    page: PageResult
+  }
+}
+
+type AuthorPageProps = BasePageProps & {
+  context: Extract<ContextType, 'author'>
+  data: {
+    author: AuthorResult
+  }
+}
+
+type TagPageProps = BasePageProps & {
+  context: Extract<ContextType, 'tag'>
+  data: {
+    tag: TagResult
+  }
+}
+
+type IndexPageProps = BasePageProps & {
+  context: Extract<ContextType, 'index' | 'home' | 'paged'>
+  data: {
+    posts: PostResult[]
+  }
+  pagination: Pagination
+}
+
 export type PageProps =
-  | {
-      context: Extract<ContextType, 'post' | 'page' | 'tag' | 'author'> | null
-      data: {
-        post?: PostResult
-        page?: PageResult
-        tag?: TagResult
-        author?: AuthorResult
-        [name: string]: unknown
-      }
-      templates: string[]
-    }
-  | {
-      context: Extract<ContextType, 'index' | 'home' | 'paged'>
-      data: {
-        posts?: PostResult[]
-        pages?: PageResult[]
-        [name: string]: unknown
-      }
-      templates: string[]
-      pagination: {
-        page: number // the current page number
-        prev: number | null // the previous page number
-        next: number | null // the next page number
-        pages: number // the number of pages available
-        total: number // the number of posts available
-        limit: number // the number of posts per page
-      }
-    }
+  | IndexPageProps
+  | TagPageProps
+  | AuthorPageProps
+  | PagePageProps
+  | PostPageProps
 
 async function entryController(
   routingProperties: Extract<RoutingProperties, { type: 'entry' }>
