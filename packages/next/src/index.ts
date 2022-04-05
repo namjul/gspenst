@@ -1,5 +1,3 @@
 export { default } from './with'
 export type { Options, Config, PageProps } from './types'
 export { default as schema } from '../.tina/schema'
-export { default as MDXTheme } from './MdxTheme'
-export { useEditState } from 'tinacms/dist/edit-state'
