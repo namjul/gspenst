@@ -26,32 +26,27 @@ const repository = {
     const { getCollections: resources } = data
 
     void (await Promise.all(
-      resources
-        .filter((resource) =>
-          ['page', 'post', 'author', 'tag'].includes(resource.name)
-        )
-        .map(async (resource) => {
-          void (await Promise.all(
-            (resource.documents.edges ?? []).map(async (connectionEdge) => {
-              if (connectionEdge?.node) {
-                const {
-                  id,
-                  sys: { filename, path: filepath, relativePath },
-                } = connectionEdge.node
+      resources.map(async (resource) => {
+        void (await Promise.all(
+          (resource.documents.edges ?? []).map(async (connectionEdge) => {
+            if (connectionEdge?.node) {
+              const {
+                id,
+                sys: { filename, path: filepath, relativePath },
+              } = connectionEdge.node
 
-                await this.set({
-                  id,
-                  filename,
-                  path: filepath,
-                  slug: slugify(filename),
-                  resourceType: resource.name as ResourceType,
-                  relativePath,
-                  data: undefined,
-                })
-              }
-            })
-          ))
-        })
+              await this.set({
+                id,
+                filename,
+                path: filepath,
+                slug: slugify(filename),
+                resourceType: resource.name as ResourceType,
+                relativePath,
+              })
+            }
+          })
+        ))
+      })
     ))
 
     void (await this.getAll())
@@ -90,6 +85,8 @@ const repository = {
               return this.client.getAuthor({ relativePath })
             case 'tag':
               return this.client.getTag({ relativePath })
+            case 'config':
+              return this.client.getConfigDocument({ relativePath })
             default:
               return assertUnreachable(resourceType)
           }

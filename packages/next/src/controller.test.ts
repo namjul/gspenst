@@ -29,7 +29,8 @@ describe('controller', () => {
         props: {
           context: 'page',
           data: {
-            page: {},
+            entry: undefined,
+            headers: undefined,
           },
         },
       })
@@ -49,7 +50,8 @@ describe('controller', () => {
         props: {
           context: 'post',
           data: {
-            post: {},
+            entry: undefined,
+            headers: undefined,
           },
         },
       })
@@ -71,7 +73,8 @@ describe('controller', () => {
         props: {
           context: 'index',
           data: {
-            posts: {},
+            entry: undefined,
+            posts: [],
           },
         },
       })

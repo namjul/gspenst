@@ -13,6 +13,7 @@ import type {
   PageResult,
   TagResult,
   AuthorResult,
+  ConfigResult,
 } from './types'
 
 type Pagination = {
@@ -24,55 +25,80 @@ type Pagination = {
   limit: number // the number of posts per page
 }
 
-type BasePageProps = {
+type PageProps = {
+  context: ContextType
   templates: string[]
   data: {
+    entry:
+      | PostResult
+      | PageResult
+      | AuthorResult
+      | TagResult
+      | ConfigResult
+      | undefined
+    headers?: ReturnType<typeof getHeaders> | undefined
     [name: string]: unknown
   }
+  pagination?: Pagination
 }
 
-type PostPageProps = BasePageProps & {
-  context: Extract<ContextType, 'post'>
-  data: {
-    post: PostResult
-  }
-}
-
-type PagePageProps = BasePageProps & {
-  context: Extract<ContextType, 'page'>
-  data: {
-    page: PageResult
-  }
-}
-
-type AuthorPageProps = BasePageProps & {
-  context: Extract<ContextType, 'author'>
-  data: {
-    author: AuthorResult
-  }
-}
-
-type TagPageProps = BasePageProps & {
-  context: Extract<ContextType, 'tag'>
-  data: {
-    tag: TagResult
-  }
-}
-
-type IndexPageProps = BasePageProps & {
-  context: Extract<ContextType, 'index' | 'home' | 'paged'>
-  data: {
-    posts: PostResult[]
-  }
-  pagination: Pagination
-}
-
-export type PageProps =
-  | IndexPageProps
-  | TagPageProps
-  | AuthorPageProps
-  | PagePageProps
-  | PostPageProps
+// type BasePageProps = {
+//   templates: string[]
+//   data: {
+//     headers?: ReturnType<typeof getHeaders> | undefined
+//     [name: string]: unknown
+//   }
+// }
+//
+// type PostPageProps = BasePageProps & {
+//   context: Extract<ContextType, 'post'>
+//   data: {
+//     entry: PostResult
+//   }
+// }
+//
+// type PagePageProps = BasePageProps & {
+//   context: Extract<ContextType, 'page'>
+//   data: {
+//     entry: PageResult
+//   }
+// }
+//
+// type AuthorPageProps = BasePageProps & {
+//   context: Extract<ContextType, 'author'>
+//   data: {
+//     entry: AuthorResult
+//   }
+// }
+//
+// type TagPageProps = BasePageProps & {
+//   context: Extract<ContextType, 'tag'>
+//   data: {
+//     entry: TagResult
+//   }
+// }
+//
+// type IndexPageProps = BasePageProps & {
+//   context: Extract<ContextType, 'index' | 'home' | 'paged'>
+//   data: {
+//     entry: ConfigResult
+//     posts: PostResult[]
+//   }
+//   pagination: Pagination
+// }
+//
+// type CustomPageProps = BasePageProps & {
+//   context: null
+// }
+//
+// export type PageProps =
+//   | IndexPageProps
+//   | TagPageProps
+//   | AuthorPageProps
+//   | PagePageProps
+//   | PostPageProps
+//   | CustomPageProps
+//   | null
 
 async function entryController(
   routingProperties: Extract<RoutingProperties, { type: 'entry' }>
@@ -83,19 +109,25 @@ async function entryController(
   ensure(resourceItem)
   const { resourceType, data } = resourceItem
 
-  let headers = {}
+  if (resourceType === 'config') {
+    throw new Error('Should not load config resource.')
+  }
 
-  if (data && 'getPostDocument' in data.data) {
-    headers = getHeaders(data.data.getPostDocument.data.body as Root)
-  }
-  if (data && 'getPageDocument' in data.data) {
-    headers = getHeaders(data.data.getPageDocument.data.body as Root)
-  }
+  const headers =
+    data &&
+    (() => {
+      if ('getPostDocument' in data.data) {
+        return getHeaders(data.data.getPostDocument.data.body as Root)
+      }
+      if ('getPageDocument' in data.data) {
+        return getHeaders(data.data.getPageDocument.data.body as Root)
+      }
+    })() // Immediately invoke the function
 
   return {
     context: resourceType,
     data: {
-      [resourceType]: data,
+      entry: data,
       headers,
     },
     templates: getTemplateHierarchy(routingProperties),
@@ -105,18 +137,21 @@ async function entryController(
 async function collectionController(
   routingProperties: Extract<RoutingProperties, { type: 'collection' }>
 ): Promise<PageProps> {
-  const posts = Object.values(await repository.getAll()).flatMap((resource) => {
+  const resources = await repository.getAll()
+  const posts = Object.values(resources).flatMap((resource) => {
     return resource.resourceType === 'post'
       ? resource.data
         ? [resource.data]
         : []
       : []
   })
+  const entry = resources['content/config/index.json']?.data
 
   return {
     context: 'index',
     templates: getTemplateHierarchy(routingProperties),
     data: {
+      entry,
       posts,
     },
     pagination: {
@@ -136,7 +171,9 @@ async function customController(
   return {
     context: null,
     templates: getTemplateHierarchy(routingProperties),
-    data: {},
+    data: {
+      entry: undefined,
+    },
   }
 }
 

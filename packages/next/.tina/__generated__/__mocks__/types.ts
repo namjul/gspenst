@@ -291,5 +291,6 @@ export const ExperimentalGetTinaClient = () => {
     getPost: async () => undefined,
     getPage: async () => undefined,
     getAuthor: async () => undefined,
+    getConfigDocument: async () => undefined,
   }
 }

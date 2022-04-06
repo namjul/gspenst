@@ -31,15 +31,15 @@ export type QueryOptionsObject<T> = ValidateShape<
   }
 >
 
-export type PageProps = Extract<
-  ControllerReturnType,
-  { type: 'props' }
->['props']
+export type PageProps = NonNullable<
+  Extract<ControllerReturnType, { type: 'props' }>['props']
+>
 
 export type PostResult = AsyncReturnType<Client['getPost']>
 export type PageResult = AsyncReturnType<Client['getPage']>
 export type TagResult = AsyncReturnType<Client['getTag']>
 export type AuthorResult = AsyncReturnType<Client['getAuthor']>
+export type ConfigResult = AsyncReturnType<Client['getConfigDocument']>
 
 export type ResourceItem = {
   id: ID
@@ -48,7 +48,7 @@ export type ResourceItem = {
   slug: string
   resourceType: ResourceType
   relativePath: string
-  data: PostResult | PageResult | TagResult | AuthorResult | undefined
+  // data?: PostResult | PageResult | TagResult | AuthorResult | undefined
 } & (
   | {
       resourceType: Extract<ResourceType, 'post'>
@@ -66,6 +66,10 @@ export type ResourceItem = {
       resourceType: Extract<ResourceType, 'tag'>
       data?: TagResult
     }
+  | {
+      resourceType: Extract<ResourceType, 'config'>
+      data?: ConfigResult
+    }
 )
 
 export type QueryOptions = QueryOptionsObject<{
@@ -79,7 +83,7 @@ export type QueryOptions = QueryOptionsObject<{
   // page: string
 }>
 
-export type DataForm = `${ResourceType}.${string}`
+export type DataForm = `${Exclude<ResourceType, 'config'>}.${string}`
 
 export type ResourceMapItem = {}
 export type FileMap = {

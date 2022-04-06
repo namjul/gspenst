@@ -8,7 +8,6 @@ export const resources = {
     slug: '0th-post',
     resourceType: 'post',
     relativePath: '0th-post.mdx',
-    data: {},
   },
   'content/posts/1th-post.mdx': {
     id: 'content/posts/1th-post.mdx',
@@ -17,7 +16,6 @@ export const resources = {
     slug: '1th-post',
     resourceType: 'post',
     relativePath: '1th-post.mdx',
-    data: {},
   },
   'content/posts/2th-post.mdx': {
     id: 'content/posts/2th-post.mdx',
@@ -26,7 +24,6 @@ export const resources = {
     slug: '2th-post',
     resourceType: 'post',
     relativePath: '2th-post.mdx',
-    data: {},
   },
   'content/posts/3th-post.mdx': {
     id: 'content/posts/3th-post.mdx',
@@ -35,7 +32,6 @@ export const resources = {
     slug: '3th-post',
     resourceType: 'post',
     relativePath: '3th-post.mdx',
-    data: {},
   },
   'content/posts/4th-post.mdx': {
     id: 'content/posts/4th-post.mdx',
@@ -44,7 +40,6 @@ export const resources = {
     slug: '4th-post',
     resourceType: 'post',
     relativePath: '4th-post.mdx',
-    data: {},
   },
   'content/posts/5th-post.mdx': {
     id: 'content/posts/5th-post.mdx',
@@ -53,7 +48,6 @@ export const resources = {
     slug: '5th-post',
     resourceType: 'post',
     relativePath: '5th-post.mdx',
-    data: {},
   },
   'content/posts/6th-post.mdx': {
     id: 'content/posts/6th-post.mdx',
@@ -62,7 +56,6 @@ export const resources = {
     slug: '6th-post',
     resourceType: 'post',
     relativePath: '6th-post.mdx',
-    data: {},
   },
   'content/posts/7th-post.mdx': {
     id: 'content/posts/7th-post.mdx',
@@ -71,7 +64,6 @@ export const resources = {
     slug: '7th-post',
     resourceType: 'post',
     relativePath: '7th-post.mdx',
-    data: {},
   },
   'content/posts/8th-post.mdx': {
     id: 'content/posts/8th-post.mdx',
@@ -80,7 +72,6 @@ export const resources = {
     slug: '8th-post',
     resourceType: 'post',
     relativePath: '8th-post.mdx',
-    data: {},
   },
   'content/posts/9th-post.mdx': {
     id: 'content/posts/9th-post.mdx',
@@ -89,7 +80,6 @@ export const resources = {
     slug: '9th-post',
     resourceType: 'post',
     relativePath: '9th-post.mdx',
-    data: {},
   },
   'content/pages/home.md': {
     id: 'content/pages/home.md',
@@ -98,7 +88,6 @@ export const resources = {
     slug: 'home',
     resourceType: 'page',
     relativePath: 'home.md',
-    data: {},
   },
   'content/pages/about.md': {
     id: 'content/pages/about.md',
@@ -107,7 +96,6 @@ export const resources = {
     slug: 'about',
     resourceType: 'page',
     relativePath: 'about.md',
-    data: {},
   },
   'content/pages/portfolio.md': {
     id: 'content/pages/portfolio.md',
@@ -116,7 +104,6 @@ export const resources = {
     slug: 'portfolio',
     resourceType: 'page',
     relativePath: 'portfolio.md',
-    data: {},
   },
   'content/authors/napolean.md': {
     id: 'content/authors/napolean.md',
@@ -125,7 +112,6 @@ export const resources = {
     slug: 'napolean',
     resourceType: 'author',
     relativePath: 'napolean.md',
-    data: {},
   },
   'content/authors/pedro.md': {
     id: 'content/authors/pedro.md',
@@ -134,6 +120,5 @@ export const resources = {
     slug: 'pedro',
     resourceType: 'author',
     relativePath: 'pedro.md',
-    data: {},
   },
 } as ResourceItemMap

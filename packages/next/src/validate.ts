@@ -16,7 +16,7 @@ export type Permalink = string
 export type Template = string | undefined
 
 export type DataQuery = {
-  resourceType: ResourceType
+  resourceType: Exclude<ResourceType, 'config'>
   type: QueryType
   options: QueryOptions
 }
@@ -31,7 +31,7 @@ export type Data = {
     [key: string]: DataQuery
   }
   router: {
-    [key in ResourceType]?: DataRouter[]
+    [key in Exclude<ResourceType, 'config'>]?: DataRouter[]
   }
 }
 
