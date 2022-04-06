@@ -17,10 +17,15 @@
           "type": "boolean",
           "label": "Dark Mode",
           "name": "darkMode",
-          "namespace": ["config", "darkMode"]
+          "namespace": [
+            "config",
+            "darkMode"
+          ]
         }
       ],
-      "namespace": ["config"]
+      "namespace": [
+        "config"
+      ]
     },
     {
       "label": "Pages",
@@ -32,7 +37,10 @@
           "type": "string",
           "label": "Title",
           "name": "title",
-          "namespace": ["page", "title"]
+          "namespace": [
+            "page",
+            "title"
+          ]
         },
         {
           "type": "rich-text",
@@ -50,16 +58,30 @@
                   "ui": {
                     "component": "textarea"
                   },
-                  "namespace": ["page", "body", "BlockQuote", "children"]
+                  "namespace": [
+                    "page",
+                    "body",
+                    "BlockQuote",
+                    "children"
+                  ]
                 },
                 {
                   "name": "authorName",
                   "label": "Author",
                   "type": "string",
-                  "namespace": ["page", "body", "BlockQuote", "authorName"]
+                  "namespace": [
+                    "page",
+                    "body",
+                    "BlockQuote",
+                    "authorName"
+                  ]
                 }
               ],
-              "namespace": ["page", "body", "BlockQuote"]
+              "namespace": [
+                "page",
+                "body",
+                "BlockQuote"
+              ]
             },
             {
               "name": "Cta",
@@ -69,17 +91,31 @@
                   "type": "string",
                   "name": "heading",
                   "label": "Heading",
-                  "namespace": ["page", "body", "Cta", "heading"]
+                  "namespace": [
+                    "page",
+                    "body",
+                    "Cta",
+                    "heading"
+                  ]
                 }
               ],
-              "namespace": ["page", "body", "Cta"]
+              "namespace": [
+                "page",
+                "body",
+                "Cta"
+              ]
             }
           ],
           "isBody": true,
-          "namespace": ["page", "body"]
+          "namespace": [
+            "page",
+            "body"
+          ]
         }
       ],
-      "namespace": ["page"]
+      "namespace": [
+        "page"
+      ]
     },
     {
       "label": "Blog Posts",
@@ -91,19 +127,28 @@
           "type": "string",
           "label": "Title",
           "name": "title",
-          "namespace": ["post", "title"]
+          "namespace": [
+            "post",
+            "title"
+          ]
         },
         {
           "type": "image",
           "name": "heroImg",
           "label": "Hero Image",
-          "namespace": ["post", "heroImg"]
+          "namespace": [
+            "post",
+            "heroImg"
+          ]
         },
         {
           "type": "rich-text",
           "label": "Excerpt",
           "name": "excerpt",
-          "namespace": ["post", "excerpt"]
+          "namespace": [
+            "post",
+            "excerpt"
+          ]
         },
         {
           "label": "Authors",
@@ -115,11 +160,20 @@
               "label": "Author",
               "name": "author",
               "type": "reference",
-              "collections": ["author"],
-              "namespace": ["post", "authors", "author"]
+              "collections": [
+                "author"
+              ],
+              "namespace": [
+                "post",
+                "authors",
+                "author"
+              ]
             }
           ],
-          "namespace": ["post", "authors"]
+          "namespace": [
+            "post",
+            "authors"
+          ]
         },
         {
           "label": "Tags",
@@ -131,11 +185,20 @@
               "label": "Tag",
               "name": "tag",
               "type": "reference",
-              "collections": ["tag"],
-              "namespace": ["post", "tags", "tag"]
+              "collections": [
+                "tag"
+              ],
+              "namespace": [
+                "post",
+                "tags",
+                "tag"
+              ]
             }
           ],
-          "namespace": ["post", "tags"]
+          "namespace": [
+            "post",
+            "tags"
+          ]
         },
         {
           "type": "datetime",
@@ -145,7 +208,10 @@
             "dateFormat": "MMMM DD YYYY",
             "timeFormat": "hh:mm A"
           },
-          "namespace": ["post", "date"]
+          "namespace": [
+            "post",
+            "date"
+          ]
         },
         {
           "type": "rich-text",
@@ -163,16 +229,30 @@
                   "ui": {
                     "component": "textarea"
                   },
-                  "namespace": ["post", "body", "BlockQuote", "children"]
+                  "namespace": [
+                    "post",
+                    "body",
+                    "BlockQuote",
+                    "children"
+                  ]
                 },
                 {
                   "name": "authorName",
                   "label": "Author",
                   "type": "string",
-                  "namespace": ["post", "body", "BlockQuote", "authorName"]
+                  "namespace": [
+                    "post",
+                    "body",
+                    "BlockQuote",
+                    "authorName"
+                  ]
                 }
               ],
-              "namespace": ["post", "body", "BlockQuote"]
+              "namespace": [
+                "post",
+                "body",
+                "BlockQuote"
+              ]
             },
             {
               "name": "Cta",
@@ -182,17 +262,31 @@
                   "type": "string",
                   "name": "heading",
                   "label": "Heading",
-                  "namespace": ["post", "body", "Cta", "heading"]
+                  "namespace": [
+                    "post",
+                    "body",
+                    "Cta",
+                    "heading"
+                  ]
                 }
               ],
-              "namespace": ["post", "body", "Cta"]
+              "namespace": [
+                "post",
+                "body",
+                "Cta"
+              ]
             }
           ],
           "isBody": true,
-          "namespace": ["post", "body"]
+          "namespace": [
+            "post",
+            "body"
+          ]
         }
       ],
-      "namespace": ["post"]
+      "namespace": [
+        "post"
+      ]
     },
     {
       "label": "Authors",
@@ -203,10 +297,15 @@
           "type": "string",
           "label": "Name",
           "name": "name",
-          "namespace": ["author", "name"]
+          "namespace": [
+            "author",
+            "name"
+          ]
         }
       ],
-      "namespace": ["author"]
+      "namespace": [
+        "author"
+      ]
     },
     {
       "label": "Tags",
@@ -217,10 +316,15 @@
           "type": "string",
           "label": "Name",
           "name": "name",
-          "namespace": ["tag", "name"]
+          "namespace": [
+            "tag",
+            "name"
+          ]
         }
       ],
-      "namespace": ["tag"]
+      "namespace": [
+        "tag"
+      ]
     }
   ]
 }
