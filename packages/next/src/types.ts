@@ -1,4 +1,5 @@
 import { LiteralUnion, AsyncReturnType, Split, Entries } from 'type-fest'
+import type { TinaTemplate } from 'tinacms'
 import type { Client } from './repository'
 import {
   queryTypes,
@@ -19,6 +20,7 @@ export type ValidateShape<T, Shape> = T extends Shape
     : never
   : never
 
+export type TinaTemplate = TinaTemplate
 export type ResourceItemMap = { [id: ID]: ResourceItem }
 export type Taxonomies = typeof taxonomies[number]
 export type QueryType = typeof queryTypes[number]

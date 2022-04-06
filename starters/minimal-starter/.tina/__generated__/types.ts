@@ -107,6 +107,7 @@ export type QueryGetDocumentListArgs = {
   after?: InputMaybe<Scalars['String']>
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
+  sort?: InputMaybe<Scalars['String']>
 }
 
 export type QueryGetConfigDocumentArgs = {
@@ -118,6 +119,7 @@ export type QueryGetConfigListArgs = {
   after?: InputMaybe<Scalars['String']>
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
+  sort?: InputMaybe<Scalars['String']>
 }
 
 export type QueryGetPageDocumentArgs = {
@@ -129,6 +131,7 @@ export type QueryGetPageListArgs = {
   after?: InputMaybe<Scalars['String']>
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
+  sort?: InputMaybe<Scalars['String']>
 }
 
 export type QueryGetPostDocumentArgs = {
@@ -140,6 +143,7 @@ export type QueryGetPostListArgs = {
   after?: InputMaybe<Scalars['String']>
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
+  sort?: InputMaybe<Scalars['String']>
 }
 
 export type QueryGetAuthorDocumentArgs = {
@@ -151,6 +155,7 @@ export type QueryGetAuthorListArgs = {
   after?: InputMaybe<Scalars['String']>
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
+  sort?: InputMaybe<Scalars['String']>
 }
 
 export type QueryGetTagDocumentArgs = {
@@ -162,6 +167,7 @@ export type QueryGetTagListArgs = {
   after?: InputMaybe<Scalars['String']>
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
+  sort?: InputMaybe<Scalars['String']>
 }
 
 export type DocumentConnectionEdges = {
@@ -195,6 +201,7 @@ export type CollectionDocumentsArgs = {
   after?: InputMaybe<Scalars['String']>
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
+  sort?: InputMaybe<Scalars['String']>
 }
 
 export type DocumentNode =
