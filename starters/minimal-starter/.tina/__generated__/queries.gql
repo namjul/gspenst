@@ -37,6 +37,45 @@ query getConfigList {
   }
 }
 
+query getPageDocument($relativePath: String!) {
+  getPageDocument(relativePath: $relativePath) {
+    sys {
+      filename
+      basename
+      breadcrumbs
+      path
+      relativePath
+      extension
+    }
+    id
+    data {
+      ...PageParts
+    }
+  }
+}
+
+query getPageList {
+  getPageList {
+    totalCount
+    edges {
+      node {
+        id
+        sys {
+          filename
+          basename
+          breadcrumbs
+          path
+          relativePath
+          extension
+        }
+        data {
+          ...PageParts
+        }
+      }
+    }
+  }
+}
+
 query getPostDocument($relativePath: String!) {
   getPostDocument(relativePath: $relativePath) {
     sys {
@@ -115,8 +154,8 @@ query getAuthorList {
   }
 }
 
-query getPageDocument($relativePath: String!) {
-  getPageDocument(relativePath: $relativePath) {
+query getTagDocument($relativePath: String!) {
+  getTagDocument(relativePath: $relativePath) {
     sys {
       filename
       basename
@@ -127,13 +166,13 @@ query getPageDocument($relativePath: String!) {
     }
     id
     data {
-      ...PageParts
+      ...TagParts
     }
   }
 }
 
-query getPageList {
-  getPageList {
+query getTagList {
+  getTagList {
     totalCount
     edges {
       node {
@@ -147,7 +186,7 @@ query getPageList {
           extension
         }
         data {
-          ...PageParts
+          ...TagParts
         }
       }
     }

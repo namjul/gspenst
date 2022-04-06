@@ -2,13 +2,29 @@ fragment ConfigParts on Config {
   darkMode
 }
 
+fragment PageParts on Page {
+  title
+  body
+}
+
 fragment PostParts on Post {
   title
   heroImg
   excerpt
-  author {
-    ... on Document {
-      id
+  authors {
+    __typename
+    author {
+      ... on Document {
+        id
+      }
+    }
+  }
+  tags {
+    __typename
+    tag {
+      ... on Document {
+        id
+      }
     }
   }
   date
@@ -17,11 +33,8 @@ fragment PostParts on Post {
 
 fragment AuthorParts on Author {
   name
-  title
-  avatar
 }
 
-fragment PageParts on Page {
-  title
-  body
+fragment TagParts on Tag {
+  name
 }

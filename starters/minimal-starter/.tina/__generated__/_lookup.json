@@ -2,12 +2,7 @@
   "DocumentConnection": {
     "type": "DocumentConnection",
     "resolveType": "multiCollectionDocumentList",
-    "collections": [
-      "config",
-      "post",
-      "author",
-      "page"
-    ]
+    "collections": ["config", "page", "post", "author", "tag"]
   },
   "Node": {
     "type": "Node",
@@ -31,8 +26,26 @@
     "resolveType": "collectionDocumentList",
     "collection": "config"
   },
-  "PostAuthorDocument": {
-    "type": "PostAuthorDocument",
+  "PageDocument": {
+    "type": "PageDocument",
+    "resolveType": "collectionDocument",
+    "collection": "page",
+    "createPageDocument": "create",
+    "updatePageDocument": "update"
+  },
+  "PageConnection": {
+    "type": "PageConnection",
+    "resolveType": "collectionDocumentList",
+    "collection": "page"
+  },
+  "PostAuthorsAuthorDocument": {
+    "type": "PostAuthorsAuthorDocument",
+    "resolveType": "multiCollectionDocument",
+    "createDocument": "create",
+    "updateDocument": "update"
+  },
+  "PostTagsTagDocument": {
+    "type": "PostTagsTagDocument",
     "resolveType": "multiCollectionDocument",
     "createDocument": "create",
     "updateDocument": "update"
@@ -61,16 +74,16 @@
     "resolveType": "collectionDocumentList",
     "collection": "author"
   },
-  "PageDocument": {
-    "type": "PageDocument",
+  "TagDocument": {
+    "type": "TagDocument",
     "resolveType": "collectionDocument",
-    "collection": "page",
-    "createPageDocument": "create",
-    "updatePageDocument": "update"
+    "collection": "tag",
+    "createTagDocument": "create",
+    "updateTagDocument": "update"
   },
-  "PageConnection": {
-    "type": "PageConnection",
+  "TagConnection": {
+    "type": "TagConnection",
     "resolveType": "collectionDocumentList",
-    "collection": "page"
+    "collection": "tag"
   }
 }
