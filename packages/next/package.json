@@ -21,6 +21,7 @@
     "ioredis": "^5.0.3",
     "js-yaml": "^4.1.0",
     "path-to-regexp": "^6.2.0",
+    "react-is": "^18.0.0",
     "remark-gfm": "^1.0.0",
     "slugify": "^1.6.5",
     "tinacms": "^0.66.7",
@@ -32,6 +33,7 @@
     "@types/fs-extra": "^9.0.13",
     "@types/js-yaml": "^4.0.5",
     "@types/mock-fs": "^4.13.1",
+    "@types/react-is": "^17.0.3",
     "@types/webpack": "^5.0.0",
     "mock-fs": "^5.1.1",
     "type-fest": "^2.8.0"

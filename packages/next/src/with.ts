@@ -12,9 +12,12 @@ const yamlExtensionTest = /\[\[\.\.\.\w+\]\]\.(yml|yaml)$/
 
 const log = debug('@gspenst/next:with')
 
-export default (...args: [string | Options]) =>
+export default (...args: [string | Options, string]) =>
   (nextConfig: NextConfig = {}): NextConfig => {
-    const options = typeof args[0] === 'string' ? { theme: args[0] } : args[0]
+    const options =
+      typeof args[0] === 'string'
+        ? { theme: args[0], themeConfig: args[1] }
+        : args[0]
 
     log('Initializing next config')
 

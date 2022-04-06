@@ -39,7 +39,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   this.cacheable(true)
 
   const options = this.getOptions()
-  const { theme } = options
+  const { theme, themeConfig } = options
 
   log('Run loader')
 
@@ -47,11 +47,16 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     throw new Error('No Gspenst Theme found.')
   }
 
-  let layout = theme
+  let themePath = theme
+  let themeConfigPath = themeConfig ?? null
 
   // Relative path instead of a package name
   if (theme.startsWith('.') || theme.startsWith('/')) {
-    layout = path.resolve(theme)
+    themePath = path.resolve(theme)
+  }
+
+  if (themeConfigPath) {
+    themeConfigPath = path.resolve(themeConfigPath) // TODO use https://github.com/sindresorhus/slash https://github.com/preconstruct/preconstruct/pull/435
   }
 
   // lets nextjs know if any data changes to trigger `serverOnlyChanges` event
@@ -78,15 +83,17 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   })
 
   const imports = `
-import debug from 'debug'
 import * as server from '@gspenst/next/server'
 import ClientPage from '@gspenst/next/client'
-import TemplateEntryPage from '${layout}'
-
-export default function Page(props) {
-  return <ClientPage pageProps={props} Component={TemplateEntryPage} />
-}
+import withLayout from '${themePath}'
+${themeConfigPath ? `import themeConfig from '${themeConfigPath}'` : ''}
 `
+
+  const component = `export default function GspenstPage (props) {
+  return <ClientPage pageProps={props} Component={withLayout(${
+    themeConfigPath ? 'themeConfig' : 'null'
+  })} />
+}`
 
   const dataFetchingFunctions = `
 
@@ -103,7 +110,7 @@ export const getStaticProps = async (context) => {
 }
 `
 
-  source = `${imports}\n${dataFetchingFunctions}`
+  source = [imports, component, dataFetchingFunctions].join('\n')
 
   callback(null, source)
 

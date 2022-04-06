@@ -13,4 +13,6 @@ const Page = (props: PageProps) => {
   )
 }
 
-export default Page
+export default () => {
+  return Page
+}
