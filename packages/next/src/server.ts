@@ -2,7 +2,7 @@ import debug from 'debug'
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import { RouterManager } from './routing'
 import type { RoutingConfigResolved } from './validate'
-import type { PageProps } from './types'
+import type { PageProps } from './controller'
 import { controller } from './controller'
 import repository from './repository'
 
