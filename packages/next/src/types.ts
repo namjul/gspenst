@@ -7,7 +7,7 @@ import {
   queryOptions,
   contextTypes,
 } from './constants'
-import type { ControllerReturnType } from './controller'
+import type { PageProps as InternalPageProps } from './controller'
 
 export type Nullish = null | undefined
 export type Maybe<T> = T | null
@@ -31,9 +31,7 @@ export type QueryOptionsObject<T> = ValidateShape<
   }
 >
 
-export type PageProps = NonNullable<
-  Extract<ControllerReturnType, { type: 'props' }>['props']
->
+export type PageProps = Exclude<InternalPageProps, { context: 'internal' }>
 
 export type PostResult = AsyncReturnType<Client['getPost']>
 export type PageResult = AsyncReturnType<Client['getPage']>

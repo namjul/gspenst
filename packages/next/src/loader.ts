@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-invalid-this */
+
 import path from 'path'
 import debug from 'debug'
 import yaml from 'js-yaml'
@@ -11,8 +13,6 @@ const log = debug('@gspenst/next:loader')
 const contentDir = path.resolve(findContentDir())
 
 type LoaderOptions = Options
-
-/* eslint-disable @typescript-eslint/no-invalid-this */
 
 // lookup: https://webpack.js.org/api/loaders/
 

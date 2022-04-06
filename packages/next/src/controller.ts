@@ -25,22 +25,24 @@ type Pagination = {
   limit: number // the number of posts per page
 }
 
-type PageProps = {
-  context: ContextType
-  templates: string[]
-  data: {
-    entry:
-      | PostResult
-      | PageResult
-      | AuthorResult
-      | TagResult
-      | ConfigResult
-      | undefined
-    headers?: ReturnType<typeof getHeaders> | undefined
-    [name: string]: unknown
-  }
-  pagination?: Pagination
-}
+export type PageProps =
+  | {
+      context: ContextType
+      templates: string[]
+      data: {
+        entry:
+          | PostResult
+          | PageResult
+          | AuthorResult
+          | TagResult
+          | ConfigResult
+          | undefined
+        headers?: ReturnType<typeof getHeaders> | undefined
+        [name: string]: unknown
+      }
+      pagination?: Pagination
+    }
+  | { context: 'internal' }
 
 // type BasePageProps = {
 //   templates: string[]
@@ -212,6 +214,13 @@ export async function controller(
       return {
         type: 'props',
         props: await customController(routingProperties),
+      }
+    case 'internal':
+      return {
+        type: 'props',
+        props: {
+          context: 'internal',
+        },
       }
     case 'redirect':
       return {

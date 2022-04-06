@@ -88,6 +88,7 @@ export type RoutingProperties =
       }
     }
   | ({ type: 'redirect' } & Redirect)
+  | { type: 'internal' }
   | null
 
 class ParentRouter {
@@ -149,6 +150,31 @@ class ParentRouter {
   getRoute() {
     // return urlUtils.createUrl(this.route)
     return this.route ?? '/'
+  }
+}
+
+class AdminRouter extends ParentRouter {
+  routeRegExp: RegExp
+  constructor() {
+    super('AdminRouter')
+    this.routeRegExp = pathToRegexp('/admin')
+  }
+  async handle(
+    request: string,
+    resources: ResourceItem[],
+    routers: ParentRouter[]
+  ) {
+    const [match] = this.routeRegExp.exec(request) ?? []
+
+    if (match) {
+      return {
+        type: 'internal' as const,
+      }
+    }
+    return super.handle(request, resources, routers)
+  }
+  resolvePaths(): string[] {
+    return ['/admin']
   }
 }
 
@@ -432,6 +458,9 @@ export class RouterManager {
     this.config = routingConfig
     this.router = new ParentRouter('SiteRouter')
     this.routers.push(this.router)
+
+    const adminRouter = new AdminRouter()
+    this.routers.push(adminRouter)
 
     const routes = Object.entries(this.config.routes ?? {}) as Entries<
       typeof this.config.routes

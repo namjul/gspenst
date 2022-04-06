@@ -7,6 +7,7 @@ describe('routing mapping', () => {
     test('empty config', async () => {
       const router = new RouterManager({}, resources)
       expect(await router.resolvePaths()).toEqual([
+        '/admin',
         '/home',
         '/about',
         '/portfolio',
@@ -16,6 +17,7 @@ describe('routing mapping', () => {
       const routingConfig = validate()
       const router = new RouterManager(routingConfig, resources)
       expect(await router.resolvePaths()).toEqual([
+        '/admin',
         '/home',
         '/about',
         '/portfolio',
@@ -69,6 +71,7 @@ describe('routing mapping', () => {
       )
       const paths = await router.resolvePaths()
       expect(paths).toEqual([
+        '/admin',
         '/',
         '/9th-post/',
         '/8th-post/',
