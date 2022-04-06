@@ -92,7 +92,7 @@ export type FileMap = {
 
 export type Options = {
   theme: string
-  // themeConfig?: string
+  themeConfig?: string
   // mdxOptions?: MDXOptions
   // sources?: Source[]
 }

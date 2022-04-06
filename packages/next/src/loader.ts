@@ -47,6 +47,13 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     throw new Error('No Gspenst Theme found.')
   }
 
+  let layout = theme
+
+  // Relative path instead of a package name
+  if (theme.startsWith('.') || theme.startsWith('/')) {
+    layout = path.resolve(theme)
+  }
+
   // lets nextjs know if any data changes to trigger `serverOnlyChanges` event
   // See: https://github.com/vercel/next.js/blob/2ecfa6aec3b2e4b8ebb4b4c8f55df7357b9d3000/packages/next/server/dev/hot-reloader.ts#L732
   // TODO check if files actually changed using hashing
@@ -74,7 +81,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
 import debug from 'debug'
 import * as server from '@gspenst/next/server'
 import ClientPage from '@gspenst/next/client'
-import TemplateEntryPage from '${theme}'
+import TemplateEntryPage from '${layout}'
 
 export default function Page(props) {
   return <ClientPage pageProps={props} Component={TemplateEntryPage} />
