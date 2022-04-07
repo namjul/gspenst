@@ -399,3 +399,6 @@ export function validate(routingConfig: any = {}) {
     ...(taxonomies && { taxonomies }),
   }
 }
+
+// TODO should I replace `yup` with `https://github.com/pelotom/runtypes` ?
+// pros:
