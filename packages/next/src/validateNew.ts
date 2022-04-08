@@ -1,4 +1,5 @@
 /* eslint-disable new-cap */
+import { err, combine } from 'neverthrow'
 import {
   Dictionary,
   Static,
@@ -54,7 +55,7 @@ const Routing = Record({
     }).Or(Null)
   ),
 })
-type Routing = Static<typeof Routing>
+export type Routing = Static<typeof Routing>
 
 // function transformData(value: any) {
 //   return value
@@ -64,21 +65,27 @@ type Routing = Static<typeof Routing>
 // }
 
 export function validate(routingConfig = {}) {
-  const routing = Routing.check(routingConfig)
+  const results = []
 
-  const unknownProperty = Object.keys(routing).find(
+  const unknownProperty = Object.keys(routingConfig).find(
     (key) => !['routes', 'collections', 'taxonomies'].includes(key)
   )
   if (unknownProperty) {
-    throw new Error(`${unknownProperty} is not part of routing config.`)
+    results.push(
+      err(new Error(`${unknownProperty} is not part of routing config.`))
+    )
   }
 
-  const unknownTaxonomiesProperty = Object.keys(routing.taxonomies ?? {}).find(
-    (key) => !['tag', 'author'].includes(key)
-  )
+  const unknownTaxonomiesProperty = Object.keys(
+    (routingConfig as { taxonomies?: {} }).taxonomies ?? {}
+  ).find((key) => !['tag', 'author'].includes(key))
   if (unknownTaxonomiesProperty) {
-    throw new Error(
-      `${unknownProperty} is not part of taxonomies routing config.`
+    results.push(
+      err(
+        new Error(
+          `${unknownProperty} is not part of taxonomies routing config.`
+        )
+      )
     )
   }
 
@@ -91,4 +98,6 @@ export function validate(routingConfig = {}) {
   //     }
   //   }, {} as { [path: string]: ReturnType<typeof transformRoute> })
   // }
+
+  return combine(results)
 }

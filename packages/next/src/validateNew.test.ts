@@ -1,73 +1,56 @@
 import { validate } from './validateNew'
 
 describe('routing object validation', () => {
-  test('throws not with empty config', () => {
-    expect(() => {
-      validate()
-    }).not.toThrow()
-    expect(() => {
-      validate({
-        routes: null,
-        collections: null,
-        taxonomies: null,
-      })
-    }).not.toThrow()
+  test('works with no parameter', () => {
+    const object = validate()
+    expect(object.isOk()).toBe(true)
   })
-  // test('overwrite parameters', () => {
-  //   const object = validate({
-  //     routes: null,
-  //     taxonomies: {},
-  //   })
-  //   expect(object).toEqual({
-  //     taxonomies: {},
-  //   })
-  // })
   test('throws error when using wrong fields', () => {
-    expect(() => {
+    expect(
       validate({
         routess: {},
-      })
-    }).toThrow()
-    expect(() => {
+      }).isErr()
+    ).toBe(true)
+    expect(
       validate({
         collection: {},
-      })
-    }).toThrow()
-    expect(() => {
+      }).isErr()
+    ).toBe(true)
+    expect(
       validate({
         taxonomy: {},
-      })
-    }).toThrow()
+      }).isErr()
+    ).toBe(true)
   })
 
-  test('throws error when using :w+ notiation in taxonomies', () => {
-    expect(() => {
-      validate({
-        taxonomies: {
-          tag: '/categories/:slug/',
-        },
-      })
-    }).toThrow()
-  })
+  // test('throws error when using :w+ notiation in taxonomies', () => {
+  //   expect(
+  //     validate({
+  //       taxonomies: {
+  //         tag: '/categories/:slug/',
+  //       },
+  //     }).isErr()
+  //   ).toBe(true)
+  // })
 
   // test('throws error when permalink is missing (collection)', () => {
-  //   expect(() => {
+  //   expect(
   //     validate({
   //       collections: {
   //         permalink: '/{slug}/',
   //       },
-  //     })
-  //   }).toThrow()
+  //     }).isErr()
+  //   ).toBe(true)
   // })
 
   it('throws error when using an undefined taxonomy', () => {
-    expect(() => {
+    expect(
       validate({
         taxonomies: {
           sweet_baked_good: '/patisserie/{slug}',
         },
-      })
-    }).toThrow()
+      }).isErr()
+    ).toBe(true)
   })
 
   test('throws error when using wrong field properties', () => {

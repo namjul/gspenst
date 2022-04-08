@@ -15,7 +15,10 @@ describe('routing mapping', () => {
     })
     test('default routing config', async () => {
       const routingConfig = validate()
-      const router = new RouterManager(routingConfig, resources)
+      const router = new RouterManager(
+        routingConfig._unsafeUnwrap()[0]!,
+        resources
+      )
       expect(await router.resolvePaths()).toEqual([
         '/admin',
         '/home',
