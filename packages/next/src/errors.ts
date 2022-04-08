@@ -35,11 +35,11 @@ export function formatError(error: GspenstError) {
   switch (type) {
     case 'Other':
       if (error.error) {
-        return new Error(`${error.type}: ${error.error.message}`, {
+        return new Error(`${error.type}: ${error.context}`, {
           cause: error.error,
         })
       }
-      return new Error(`${error.type}`)
+      return new Error(`${error.type}: ${error.context}`)
     case 'Validation':
       return new Error(
         `${error.type}: ${error.message}${error.help ? `\n${error.help}` : ''}`

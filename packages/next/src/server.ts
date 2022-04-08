@@ -6,6 +6,7 @@ import type { RoutingConfigResolved } from './validate'
 import type { PageProps } from './controller'
 import { controller } from './controller'
 import repository from './repository'
+import { formatError } from './errors'
 
 const log = debug('@gspenst/next:server')
 
@@ -77,9 +78,12 @@ export const getStaticProps =
 
       if (result.props.isErr()) {
         // TODO differ between notfound and 500 errors
-        return {
-          notFound: true,
+        if (result.props.error.type === 'NotFound') {
+          return {
+            notFound: true,
+          }
         }
+        throw formatError(result.props.error)
       }
 
       return { props: result.props.value }
