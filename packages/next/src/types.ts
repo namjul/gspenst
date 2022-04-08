@@ -1,3 +1,4 @@
+import { Ok, Err } from 'neverthrow'
 import { LiteralUnion, AsyncReturnType, Split, Entries } from 'type-fest'
 import type {
   PageResult,
@@ -14,6 +15,9 @@ import {
   contextTypes,
 } from './constants'
 import type { PageProps as InternalPageProps } from './controller'
+import type { GspenstError } from './errors'
+
+export type Result<T> = Ok<T, GspenstError> | Err<never, GspenstError>
 
 export type { TinaTemplate } from 'tinacms'
 

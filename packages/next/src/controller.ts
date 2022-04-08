@@ -1,4 +1,4 @@
-import { ok, err, Result } from 'neverthrow'
+import { ok, err } from 'neverthrow'
 import type { Redirect } from 'next'
 import type { RoutingProperties } from './routing'
 import { assertUnreachable } from './helpers'
@@ -6,8 +6,9 @@ import { getTemplateHierarchy } from './dataUtils'
 import getHeaders from './getHeaders'
 import repository from './repository'
 import { ensure } from './utils'
-import type { ContextType, Root, AsyncReturnType } from './types'
+import type { ContextType, Root, AsyncReturnType, Result } from './types'
 import type { GetPage, GetPost, GetTag, GetAuthor, GetConfig } from './api'
+import * as Errors from './errors'
 
 type Pagination = {
   page: number // the current page number
@@ -89,7 +90,7 @@ export type PageProps =
 //   | CustomPageProps
 //   | null
 
-type ControllerResult<T> = Result<T, Error>
+type ControllerResult<T> = Result<T>
 
 async function entryController(
   routingProperties: Extract<RoutingProperties, { type: 'entry' }>
@@ -101,15 +102,15 @@ async function entryController(
   const { resourceType, dataResult } = resourceItem
 
   if (resourceType === 'config') {
-    return err(new Error('Should not load config resource.'))
+    return err(Errors.other('Should not load config resource.'))
   }
 
   if (!dataResult) {
-    return err(new Error('Not Found'))
+    return err(Errors.other('Not Found'))
   }
 
   if (dataResult.isErr()) {
-    return err(dataResult.error)
+    return dataResult
   }
 
   const headers = (() => {
@@ -153,11 +154,11 @@ async function collectionController(
   const entry = resources['content/config/index.json']?.dataResult
 
   if (!entry) {
-    return err(new Error('Not Found'))
+    return err(Errors.notFound(routingProperties.request.path))
   }
 
   if (entry.isErr()) {
-    return err(entry.error)
+    return entry
   }
 
   return ok({
@@ -202,7 +203,7 @@ export async function controller(
   | { type: 'redirect'; redirect: Redirect }
 > {
   if (!routingProperties) {
-    return { type: 'props', props: err(new Error('Not Found')) }
+    return { type: 'props', props: err(Errors.notFound()) }
   }
 
   const { type } = routingProperties
@@ -214,7 +215,7 @@ export async function controller(
         props: await collectionController(routingProperties),
       }
     case 'channel':
-      return { type: 'props', props: err(new Error('Not Found')) } // TODO
+      return { type: 'props', props: err(Errors.notFound()) } // TODO
     case 'entry':
       return {
         type: 'props',

@@ -1,10 +1,11 @@
-import { ok, err, Result } from 'neverthrow'
+import { ok, err } from 'neverthrow'
 import { ExperimentalGetTinaClient } from '../.tina/__generated__/types'
-import type { AsyncReturnType } from './types'
+import * as Errors from './errors'
+import type { AsyncReturnType, Result } from './types'
 
 const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
 
-type ApiResult<T> = Result<T, Error>
+type ApiResult<T> = Result<T>
 
 export async function getResources() {
   try {
@@ -24,7 +25,7 @@ export async function getPage(variables: {
     const resources = await client.getPage(variables)
     return ok(resources)
   } catch (e: unknown) {
-    return err(new Error(String(e)))
+    return err(Errors.other('Api', e instanceof Error ? e : undefined))
   }
 }
 
@@ -37,7 +38,7 @@ export async function getPost(variables: {
     const resources = await client.getPost(variables)
     return ok(resources)
   } catch (e: unknown) {
-    return err(new Error(String(e)))
+    return err(Errors.other('Api', e instanceof Error ? e : undefined))
   }
 }
 
@@ -50,7 +51,7 @@ export async function getAuthor(variables: {
     const resources = await client.getAuthor(variables)
     return ok(resources)
   } catch (e: unknown) {
-    return err(new Error(String(e)))
+    return err(Errors.other('Api', e instanceof Error ? e : undefined))
   }
 }
 
@@ -63,7 +64,7 @@ export async function getTag(variables: {
     const resources = await client.getTag(variables)
     return ok(resources)
   } catch (e: unknown) {
-    return err(new Error(String(e)))
+    return err(Errors.other('Api', e instanceof Error ? e : undefined))
   }
 }
 
@@ -78,6 +79,6 @@ export async function getConfigDocument(variables: {
     const resources = await client.getConfigDocument(variables)
     return ok(resources)
   } catch (e: unknown) {
-    return err(new Error(String(e)))
+    return err(Errors.other('Api', e instanceof Error ? e : undefined))
   }
 }

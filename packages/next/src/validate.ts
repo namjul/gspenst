@@ -11,8 +11,11 @@ import type {
   QueryOptions,
   Nullish,
 } from './types'
+import * as Errors from './errors'
 
-type Result<T, E> = Ok<T, E> | Err<never, E>
+type ValidationError = Errors.GspenstError
+
+type Result<T, E = ValidationError> = Ok<T, E> | Err<never, E>
 
 export type Permalink = string
 
@@ -176,7 +179,7 @@ const taxonomiesSchema = object({
 
 function validateRoute(
   route: any
-): Result<Exclude<RoutingConfigUnresolved['routes'], Nullish>[''], Error> {
+): Result<Exclude<RoutingConfigUnresolved['routes'], Nullish>['']> {
   try {
     routeSchema.validateSync(route, { strict: true })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -190,33 +193,33 @@ function validateRoute(
     }
     return ok(route)
   } catch (e: unknown) {
-    return err(new Error(String(e)))
+    return err(Errors.other('Yup', e instanceof Error ? e : undefined))
   }
 }
 
 function validateCollection(
   collection: any
-): Result<Exclude<RoutingConfigUnresolved['collections'], Nullish>[''], Error> {
+): Result<Exclude<RoutingConfigUnresolved['collections'], Nullish>['']> {
   try {
     collectionSchema.validateSync(collection, {
       strict: true,
     })
     return ok(collection)
   } catch (e: unknown) {
-    return err(new Error(String(e)))
+    return err(Errors.other('Yup', e instanceof Error ? e : undefined))
   }
 }
 
 function validateTaxonomies(
   taxonomies: any
-): Result<RoutingConfigUnresolved['taxonomies'], Error> {
+): Result<RoutingConfigUnresolved['taxonomies']> {
   try {
     taxonomiesSchema.validateSync(taxonomies, {
       strict: true,
     })
     return ok(taxonomies)
   } catch (e: unknown) {
-    return err(new Error(String(e)))
+    return err(Errors.other('Yup', e instanceof Error ? e : undefined))
   }
 }
 function transformRoute(
@@ -364,20 +367,15 @@ function transformData(data?: DataShortForm | DataLongForm) {
   }
 }
 
-export type ValidationResult = Result<RoutingConfigResolved, Error>
-
 export function validate(routingConfig = {}) {
-  const results = []
-  const routesResult = []
-  const collectionsResult = []
-  const taxonomiesResult = []
+  const errors: Err<never, ValidationError>[] = []
 
   const unknownProperty = Object.keys(routingConfig).find(
     (key) => !['routes', 'collections', 'taxonomies'].includes(key)
   )
   if (unknownProperty) {
-    results.push(
-      err(new Error(`${unknownProperty} is not part of routing config.`))
+    errors.push(
+      err(Errors.other(`${unknownProperty} is not part of routing config.`))
     )
   }
 
@@ -385,9 +383,9 @@ export function validate(routingConfig = {}) {
     (routingConfig as { taxonomies?: {} }).taxonomies ?? {}
   ).find((key) => !['tag', 'author'].includes(key))
   if (unknownTaxonomiesProperty) {
-    results.push(
+    errors.push(
       err(
-        new Error(
+        Errors.other(
           `${unknownProperty} is not part of taxonomies routing config.`
         )
       )
@@ -400,7 +398,7 @@ export function validate(routingConfig = {}) {
   )) {
     const result = validateRoute(route)
     if (result.isErr()) {
-      routesResult.push(result)
+      errors.push(result)
     } else {
       routes[path] = transformRoute(result.value)
     }
@@ -414,7 +412,7 @@ export function validate(routingConfig = {}) {
   )) {
     const result = validateCollection(collection)
     if (result.isErr()) {
-      collectionsResult.push(result)
+      errors.push(result)
     } else {
       collections[path] = transformCollection(result.value)
     }
@@ -425,7 +423,7 @@ export function validate(routingConfig = {}) {
     (routingConfig as { taxonomies?: {} }).taxonomies ?? {}
   )
   if (result.isErr()) {
-    taxonomiesResult.push(result)
+    errors.push(result)
   } else {
     for (const [path, permalink] of Object.entries(result.value ?? {})) {
       taxonomies[path] = transformPermalink(permalink)
@@ -438,10 +436,7 @@ export function validate(routingConfig = {}) {
       collections,
       taxonomies,
     }),
-    ...results,
-    ...routesResult,
-    ...collectionsResult,
-    ...taxonomiesResult,
+    ...errors,
   ]
   return combine(all)
 }
