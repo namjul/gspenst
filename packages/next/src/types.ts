@@ -1,5 +1,11 @@
 import { LiteralUnion, AsyncReturnType, Split, Entries } from 'type-fest'
-import type { Client } from './repository'
+import type {
+  PageResult,
+  PostResult,
+  TagResult,
+  AuthorResult,
+  ConfigResult,
+} from './api'
 import {
   queryTypes,
   taxonomies,
@@ -35,12 +41,6 @@ export type QueryOptionsObject<T> = ValidateShape<
 
 export type PageProps = Exclude<InternalPageProps, { context: 'internal' }>
 
-export type PostResult = AsyncReturnType<Client['getPost']>
-export type PageResult = AsyncReturnType<Client['getPage']>
-export type TagResult = AsyncReturnType<Client['getTag']>
-export type AuthorResult = AsyncReturnType<Client['getAuthor']>
-export type ConfigResult = AsyncReturnType<Client['getConfigDocument']>
-
 export type ResourceItem = {
   id: ID
   filename: string
@@ -52,23 +52,23 @@ export type ResourceItem = {
 } & (
   | {
       resourceType: Extract<ResourceType, 'post'>
-      data?: PostResult
+      dataResult?: PostResult
     }
   | {
       resourceType: Extract<ResourceType, 'page'>
-      data?: PageResult
+      dataResult?: PageResult
     }
   | {
       resourceType: Extract<ResourceType, 'author'>
-      data?: AuthorResult
+      dataResult?: AuthorResult
     }
   | {
       resourceType: Extract<ResourceType, 'tag'>
-      data?: TagResult
+      dataResult?: TagResult
     }
   | {
       resourceType: Extract<ResourceType, 'config'>
-      data?: ConfigResult
+      dataResult?: ConfigResult
     }
 )
 

@@ -44,7 +44,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   log('Run loader')
 
   if (!theme) {
-    throw new Error('No Gspenst Theme found.')
+    throw new Error('No Gspenst Theme found.') // TODO use `this.emitError`
   }
 
   let themePath = theme
@@ -79,7 +79,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
 
   const routingConfigResult = validate({
     ...defaultRoutingConfig,
-    ...(yaml.load(source) as any),
+    ...(yaml.load(source) as object),
   })
 
   if (routingConfigResult.isErr()) {

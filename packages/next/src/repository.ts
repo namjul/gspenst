@@ -1,6 +1,6 @@
 import slugify from 'slugify'
-import { ExperimentalGetTinaClient } from '../.tina/__generated__/types'
 import redis from './redis'
+import * as api from './api'
 import { toArray, ensureString } from './utils'
 import { assertUnreachable } from './helpers'
 import type { ResourceType, ResourceItem } from './types'
@@ -12,44 +12,44 @@ type Resources = {
   [id: ID]: ResourceItem
 }
 
-const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
-
-export type Client = typeof client
-
 const repository = {
   store: redis,
-  client, // eslint-disable-line new-cap
+  api, // eslint-disable-line new-cap
   async init() {
     await this.store.flushall()
-    const { data } = await this.client.getResources()
+    const resourcesResult = await this.api.getResources()
 
-    const { getCollections: resources } = data
+    if (resourcesResult.isOk()) {
+      const { getCollections: resources } = resourcesResult.value.data
 
-    void (await Promise.all(
-      resources.map(async (resource) => {
-        void (await Promise.all(
-          (resource.documents.edges ?? []).map(async (connectionEdge) => {
-            if (connectionEdge?.node) {
-              const {
-                id,
-                sys: { filename, path: filepath, relativePath },
-              } = connectionEdge.node
+      void (await Promise.all(
+        resources.map(async (resource) => {
+          void (await Promise.all(
+            (resource.documents.edges ?? []).map(async (connectionEdge) => {
+              if (connectionEdge?.node) {
+                const {
+                  id,
+                  sys: { filename, path: filepath, relativePath },
+                } = connectionEdge.node
 
-              await this.set({
-                id,
-                filename,
-                path: filepath,
-                slug: slugify(filename),
-                resourceType: resource.name as ResourceType,
-                relativePath,
-              })
-            }
-          })
-        ))
-      })
-    ))
+                await this.set({
+                  id,
+                  filename,
+                  path: filepath,
+                  slug: slugify(filename),
+                  resourceType: resource.name as ResourceType,
+                  relativePath,
+                })
+              }
+            })
+          ))
+        })
+      ))
+    }
 
     void (await this.getAll())
+
+    return resourcesResult
   },
   async set(resourceItem: ResourceItem) {
     await this.store.hset(
@@ -73,25 +73,25 @@ const repository = {
 
       const resourceItem = JSON.parse(current) as ResourceItem
 
-      if (!resourceItem.data) {
-        const data = await (async () => {
+      if (!resourceItem.dataResult) {
+        const dataResult = await (async () => {
           const { resourceType, relativePath } = resourceItem
           switch (resourceType) {
             case 'page':
-              return this.client.getPage({ relativePath })
+              return this.api.getPage({ relativePath })
             case 'post':
-              return this.client.getPost({ relativePath })
+              return this.api.getPost({ relativePath })
             case 'author':
-              return this.client.getAuthor({ relativePath })
+              return this.api.getAuthor({ relativePath })
             case 'tag':
-              return this.client.getTag({ relativePath })
+              return this.api.getTag({ relativePath })
             case 'config':
-              return this.client.getConfigDocument({ relativePath })
+              return this.api.getConfigDocument({ relativePath })
             default:
               return assertUnreachable(resourceType)
           }
         })() // Immediately invoke the function
-        resourceItem.data = data
+        resourceItem.dataResult = dataResult
       }
 
       acc[resourceItem.id] = resourceItem

@@ -1,3 +1,4 @@
+import { ok } from 'neverthrow'
 import { controller } from './controller'
 import { resources } from './__fixtures__/resources'
 import repository from './repository'
@@ -26,13 +27,13 @@ describe('controller', () => {
         },
       })
       expect(result).toMatchObject({
-        props: {
+        props: ok({
           context: 'page',
           data: {
             entry: undefined,
             headers: undefined,
           },
-        },
+        }),
       })
     })
     test('post', async () => {
@@ -47,13 +48,13 @@ describe('controller', () => {
         },
       })
       expect(result).toMatchObject({
-        props: {
+        props: ok({
           context: 'post',
           data: {
             entry: undefined,
             headers: undefined,
           },
-        },
+        }),
       })
     })
     test.todo('tag')
@@ -70,13 +71,13 @@ describe('controller', () => {
         },
       })
       expect(result).toMatchObject({
-        props: {
+        props: ok({
           context: 'index',
           data: {
             entry: undefined,
             posts: [],
           },
-        },
+        }),
       })
     })
     test.todo('filter')

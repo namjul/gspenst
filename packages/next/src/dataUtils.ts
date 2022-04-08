@@ -21,11 +21,9 @@ export function find(
   )
 }
 
-export function getTemplateHierarchy(routingProperties: RoutingProperties) {
-  if (!routingProperties) {
-    throw new Error('Missing routing properties.')
-  }
-
+export function getTemplateHierarchy(
+  routingProperties: NonNullable<RoutingProperties>
+) {
   const { type } = routingProperties
   const templateList: string[] = []
 

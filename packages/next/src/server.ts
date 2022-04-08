@@ -71,16 +71,17 @@ export const getStaticProps =
 
       const result = await controller(routingProperties)
 
-      if (!result) {
+      if ('redirect' in result) {
+        return { redirect: result.redirect }
+      }
+
+      if (result.props.isErr()) {
+        // TODO differ between notfound and 500 errors
         return {
           notFound: true,
         }
       }
 
-      if ('redirect' in result) {
-        return { redirect: result.redirect }
-      }
-
-      return { props: result.props }
+      return { props: result.props.value }
     }
   }

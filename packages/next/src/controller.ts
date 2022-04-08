@@ -1,3 +1,4 @@
+import { ok, err, Result } from 'neverthrow'
 import type { Redirect } from 'next'
 import type { RoutingProperties } from './routing'
 import { assertUnreachable } from './helpers'
@@ -5,16 +6,8 @@ import { getTemplateHierarchy } from './dataUtils'
 import getHeaders from './getHeaders'
 import repository from './repository'
 import { ensure } from './utils'
-import type {
-  ContextType,
-  Root,
-  AsyncReturnType,
-  PostResult,
-  PageResult,
-  TagResult,
-  AuthorResult,
-  ConfigResult,
-} from './types'
+import type { ContextType, Root, AsyncReturnType } from './types'
+import type { GetPage, GetPost, GetTag, GetAuthor, GetConfig } from './api'
 
 type Pagination = {
   page: number // the current page number
@@ -30,13 +23,7 @@ export type PageProps =
       context: ContextType
       templates: string[]
       data: {
-        entry:
-          | PostResult
-          | PageResult
-          | AuthorResult
-          | TagResult
-          | ConfigResult
-          | undefined
+        entry: GetPost | GetPage | GetAuthor | GetTag | GetConfig | null
         headers?: ReturnType<typeof getHeaders> | undefined
         [name: string]: unknown
       }
@@ -102,58 +89,82 @@ export type PageProps =
 //   | CustomPageProps
 //   | null
 
+type ControllerResult<T> = Result<T, Error>
+
 async function entryController(
   routingProperties: Extract<RoutingProperties, { type: 'entry' }>
-): Promise<PageProps> {
+): Promise<ControllerResult<PageProps>> {
   const resourceID = routingProperties.resourceItem.id
   const resources = await repository.get(resourceID)
   const resourceItem = resources[resourceID]
   ensure(resourceItem)
-  const { resourceType, data } = resourceItem
+  const { resourceType, dataResult } = resourceItem
 
   if (resourceType === 'config') {
-    throw new Error('Should not load config resource.')
+    return err(new Error('Should not load config resource.'))
   }
 
-  const headers =
-    data &&
-    (() => {
-      if ('getPostDocument' in data.data) {
-        return getHeaders(data.data.getPostDocument.data.body as Root)
-      }
-      if ('getPageDocument' in data.data) {
-        return getHeaders(data.data.getPageDocument.data.body as Root)
-      }
-    })() // Immediately invoke the function
+  if (!dataResult) {
+    return err(new Error('Not Found'))
+  }
 
-  return {
+  if (dataResult.isErr()) {
+    return err(dataResult.error)
+  }
+
+  const headers = (() => {
+    if (dataResult.isOk()) {
+      if (dataResult.value && 'getPostDocument' in dataResult.value.data) {
+        return getHeaders(
+          dataResult.value.data.getPostDocument.data.body as Root
+        )
+      }
+      if (dataResult.value && 'getPageDocument' in dataResult.value.data) {
+        return getHeaders(
+          dataResult.value.data.getPageDocument.data.body as Root
+        )
+      }
+    }
+  })() // Immediately invoke the function
+
+  return ok({
     context: resourceType,
     data: {
-      entry: data,
+      entry: dataResult.value,
       headers,
     },
     templates: getTemplateHierarchy(routingProperties),
-  }
+  })
 }
 
 async function collectionController(
   routingProperties: Extract<RoutingProperties, { type: 'collection' }>
-): Promise<PageProps> {
+): Promise<ControllerResult<PageProps>> {
   const resources = await repository.getAll()
   const posts = Object.values(resources).flatMap((resource) => {
     return resource.resourceType === 'post'
-      ? resource.data
-        ? [resource.data]
+      ? resource.dataResult?.isOk()
+        ? resource.dataResult.value
+          ? [resource.dataResult.value]
+          : []
         : []
       : []
   })
-  const entry = resources['content/config/index.json']?.data
+  const entry = resources['content/config/index.json']?.dataResult
 
-  return {
+  if (!entry) {
+    return err(new Error('Not Found'))
+  }
+
+  if (entry.isErr()) {
+    return err(entry.error)
+  }
+
+  return ok({
     context: 'index',
     templates: getTemplateHierarchy(routingProperties),
     data: {
-      entry,
+      entry: entry.value,
       posts,
     },
     pagination: {
@@ -164,19 +175,19 @@ async function collectionController(
       total: 10,
       limit: 10,
     },
-  }
+  })
 }
 
 async function customController(
   routingProperties: Extract<RoutingProperties, { type: 'custom' }>
-): Promise<PageProps> {
-  return {
+): Promise<ControllerResult<PageProps>> {
+  return ok({
     context: null,
     templates: getTemplateHierarchy(routingProperties),
     data: {
-      entry: undefined,
+      entry: null, // TODO embed the first one from the data list
     },
-  }
+  })
 }
 
 export type ControllerReturnType = Exclude<
@@ -187,12 +198,11 @@ export type ControllerReturnType = Exclude<
 export async function controller(
   routingProperties: RoutingProperties
 ): Promise<
-  | { type: 'props'; props: PageProps }
+  | { type: 'props'; props: ControllerResult<PageProps> }
   | { type: 'redirect'; redirect: Redirect }
-  | null
 > {
   if (!routingProperties) {
-    return null
+    return { type: 'props', props: err(new Error('Not Found')) }
   }
 
   const { type } = routingProperties
@@ -204,7 +214,7 @@ export async function controller(
         props: await collectionController(routingProperties),
       }
     case 'channel':
-      return null
+      return { type: 'props', props: err(new Error('Not Found')) } // TODO
     case 'entry':
       return {
         type: 'props',
@@ -218,9 +228,9 @@ export async function controller(
     case 'internal':
       return {
         type: 'props',
-        props: {
+        props: ok({
           context: 'internal',
-        },
+        }),
       }
     case 'redirect':
       return {
