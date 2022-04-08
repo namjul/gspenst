@@ -24,6 +24,7 @@ export class GspenstPlugin extends EventEmitter {
 
     this.isServer = isServer
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     instance = this
     this.state = {}
 

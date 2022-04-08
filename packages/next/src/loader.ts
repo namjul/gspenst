@@ -77,10 +77,18 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const routingConfig = validate({
+  const routingConfigResult = validate({
     ...defaultRoutingConfig,
     ...(yaml.load(source) as any),
   })
+
+  if (routingConfigResult.isErr()) {
+    this.emitWarning(routingConfigResult.error)
+  }
+
+  const routingConfig = routingConfigResult.isOk()
+    ? JSON.stringify(routingConfigResult.value)
+    : serializeError(routingConfigResult.error)
 
   const imports = `
 import * as server from '@gspenst/next/server'
@@ -100,13 +108,11 @@ ${themeConfigPath ? `import themeConfig from '${themeConfigPath}'` : ''}
 const effectHotReload = ${effectHotReload}
 
 export const getStaticPaths = async () => {
-  return server.getStaticPaths(${JSON.stringify(routingConfig)})()
+  return server.getStaticPaths(${routingConfig})()
 }
 
 export const getStaticProps = async (context) => {
-  return server.getStaticProps(${JSON.stringify(
-    routingConfig
-  )},'${routingParameter}')(context)
+  return server.getStaticProps(${routingConfig},'${routingParameter}')(context)
 }
 `
 
@@ -118,3 +124,8 @@ export const getStaticProps = async (context) => {
 }
 
 export default loader
+
+// TODO use `import { serializeError } from 'serialize-error'`
+function serializeError(err: Error) {
+  return JSON.stringify(err, Object.getOwnPropertyNames(err))
+}

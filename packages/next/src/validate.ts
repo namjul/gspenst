@@ -1,3 +1,4 @@
+import { ok, err, combine, Result } from 'neverthrow'
 import { object, number, string, boolean, mixed } from 'yup'
 import { isObject, removeNullish } from './utils'
 import { queryTypes, resourceTypes } from './constants'
@@ -177,22 +178,40 @@ const routingSchema = object({
   taxonomies: taxonomiesSchema,
 }).noUnknown()
 
-function validateDataObject(data: any): asserts data is DataLongForm[''] {
-  dataObjectSchema.validateSync(data, { strict: true })
-}
-
-function validateRouting(routing: any): asserts routing is {
-  routes?: { [s: string]: unknown } | null
-  collections?: { [s: string]: unknown } | null
-  taxonomies?: { tag?: Permalink; author?: Permalink } | null
-} {
-  routingSchema.validateSync(routing, { strict: true })
+function validateRouting(routing: any): Result<
+  {
+    routes?: { [s: string]: unknown } | null
+    collections?: { [s: string]: unknown } | null
+    taxonomies?: { tag?: Permalink; author?: Permalink } | null
+  },
+  Error
+> {
+  try {
+    routingSchema.validateSync(routing, { strict: true })
+    return ok(routing)
+  } catch (e: unknown) {
+    return err(new Error(String(e)))
+  }
 }
 
 function validateRoute(
   route: any
-): asserts route is Exclude<RoutingConfigUnresolved['routes'], Nullish>[''] {
-  routeSchema.validateSync(route, { strict: true })
+): Result<Exclude<RoutingConfigUnresolved['routes'], Nullish>[''], Error> {
+  try {
+    routeSchema.validateSync(route, { strict: true })
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { data } = route
+    if (isObject(data)) {
+      Object.values(data).forEach((obj) => {
+        if (isDataObject(obj as string | DataLongForm[''])) {
+          dataObjectSchema.validateSync(obj, { strict: true })
+        }
+      })
+    }
+    return ok(route)
+  } catch (e: unknown) {
+    return err(new Error(String(e)))
+  }
 }
 
 function transformRoute(
@@ -210,13 +229,15 @@ function transformRoute(
 
 function validateCollection(
   collection: any
-): asserts collection is Exclude<
-  RoutingConfigUnresolved['collections'],
-  Nullish
->[''] {
-  collectionSchema.validateSync(collection, {
-    strict: true,
-  })
+): Result<Exclude<RoutingConfigUnresolved['collections'], Nullish>[''], Error> {
+  try {
+    collectionSchema.validateSync(collection, {
+      strict: true,
+    })
+    return ok(collection)
+  } catch (e: unknown) {
+    return err(new Error(String(e)))
+  }
 }
 
 function transformCollection(
@@ -235,10 +256,15 @@ function transformCollection(
 
 function validateTaxonomies(
   taxonomies: any
-): asserts taxonomies is RoutingConfigUnresolved['taxonomies'] {
-  taxonomiesSchema.validateSync(taxonomies, {
-    strict: true,
-  })
+): Result<RoutingConfigUnresolved['taxonomies'], Error> {
+  try {
+    taxonomiesSchema.validateSync(taxonomies, {
+      strict: true,
+    })
+    return ok(taxonomies)
+  } catch (e: unknown) {
+    return err(new Error(String(e)))
+  }
 }
 
 function transformPermalink(permalink: string) {
@@ -248,12 +274,21 @@ function transformPermalink(permalink: string) {
   return permalink
 }
 
+function isDataObject(
+  data?: string | DataLongForm['']
+): data is DataLongForm[''] {
+  if (isObject(data)) {
+    return true
+  }
+  return false
+}
+
 function transformData(data?: DataShortForm | DataLongForm) {
   if (!data) {
     return undefined
   }
 
-  let dataEntries: { [name: string]: string | object } = {}
+  let dataEntries: { [name: string]: string | DataLongForm[''] } = {}
 
   if (typeof data === 'string') {
     const [resource] = data.split('.')
@@ -288,10 +323,7 @@ function transformData(data?: DataShortForm | DataLongForm) {
 
     let queryOptions: DataQuery, routerOptions: DataRouter
 
-    if (isObject(value)) {
-      // CASE long form
-      validateDataObject(value)
-
+    if (isDataObject(value)) {
       const { type, resourceType, slug, redirect, filter, limit, order } = value
 
       queryOptions = {
@@ -353,51 +385,69 @@ function transformData(data?: DataShortForm | DataLongForm) {
   }
 }
 
+export type ValidationResult = Result<RoutingConfigResolved, Error>
+
 export function validate(routingConfig: any = {}) {
-  validateRouting(routingConfig)
+  const results = []
 
-  const routes =
-    routingConfig.routes &&
-    Object.entries(routingConfig.routes).reduce<
+  const routing = validateRouting(routingConfig)
+
+  if (routing.isErr()) {
+    results.push(routing)
+  } else if (routing.isOk()) {
+    const routes = Object.entries(routing.value.routes ?? {}).reduce<
       RoutingConfigResolved['routes']
-    >((acc, [path, properties]) => {
-      validateRoute(properties)
+    >((acc, [path, route]) => {
+      const result = validateRoute(route)
+      if (result.isErr()) {
+        results.push(result)
+        return acc
+      }
       return {
         ...acc,
-        [path]: transformRoute(properties),
+        [path]: transformRoute(result.value),
       }
     }, {})
 
-  const collections =
-    routingConfig.collections &&
-    Object.entries(routingConfig.collections).reduce<
+    const collections = Object.entries(routing.value.collections ?? {}).reduce<
       RoutingConfigResolved['collections']
-    >((acc, [path, properties]) => {
-      validateCollection(properties)
+    >((acc, [path, collection]) => {
+      const result = validateCollection(collection)
+      if (result.isErr()) {
+        results.push(result)
+        return acc
+      }
       return {
         ...acc,
-        [path]: transformCollection(properties),
+        [path]: transformCollection(result.value),
       }
     }, {})
 
-  validateTaxonomies(routingConfig.taxonomies)
+    const result = validateTaxonomies(routing.value.taxonomies ?? {})
+    let taxonomies
+    if (result.isErr()) {
+      results.push(result)
+    } else {
+      taxonomies = Object.entries(result.value ?? {}).reduce<
+        RoutingConfigResolved['taxonomies']
+      >((acc, [path, permalink]) => {
+        return {
+          ...acc,
+          [path]: transformPermalink(permalink),
+        }
+      }, {})
+    }
 
-  const taxonomies =
-    routingConfig.taxonomies &&
-    Object.entries(routingConfig.taxonomies).reduce<
-      RoutingConfigResolved['taxonomies']
-    >((acc, [path, permalink]) => {
-      return {
-        ...acc,
-        [path]: transformPermalink(permalink),
-      }
-    }, {})
-
-  return {
-    ...(routes && { routes }),
-    ...(collections && { collections }),
-    ...(taxonomies && { taxonomies }),
+    results.push(
+      ok({
+        ...(routes && { routes }),
+        ...(collections && { collections }),
+        ...(taxonomies && { taxonomies }),
+      })
+    )
   }
+
+  return combine(results)
 }
 
 // TODO should I replace `yup` with `https://github.com/pelotom/runtypes` ?
