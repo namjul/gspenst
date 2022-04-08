@@ -1,6 +1,12 @@
+export const routingFields = ['routes', 'collections', 'taxonomies'] as const
 export const queryTypes = ['read', 'browse'] as const
-export const taxonomies = ['tag', 'author'] as const
-export const resourceTypes = ['config', 'post', 'page', ...taxonomies] as const
+export const taxonomyTypes = ['tag', 'author'] as const
+export const resourceTypes = [
+  'config',
+  'post',
+  'page',
+  ...taxonomyTypes,
+] as const
 export const queryOptions = [
   'slug',
   'filter',

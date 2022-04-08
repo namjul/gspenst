@@ -102,11 +102,11 @@ async function entryController(
   const { resourceType, dataResult } = resourceItem
 
   if (resourceType === 'config') {
-    return err(Errors.other('Should not load config resource.'))
+    return err(Errors.other('Should never happen.'))
   }
 
   if (!dataResult) {
-    return err(Errors.other('Not Found'))
+    return err(Errors.notFound())
   }
 
   if (dataResult.isErr()) {

@@ -7,7 +7,7 @@ import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
 import { validate } from './validate'
 import { findContentDir } from './utils'
-import { extractErrorType } from './errors'
+import { formatError } from './errors'
 
 const log = debug('@gspenst/next:loader')
 
@@ -84,12 +84,12 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   })
 
   if (routingConfigResult.isErr()) {
-    this.emitWarning(extractErrorType(routingConfigResult.error))
+    this.emitWarning(formatError(routingConfigResult.error))
   }
 
   const routingConfig = routingConfigResult.isOk()
     ? JSON.stringify(routingConfigResult.value)
-    : serializeError(extractErrorType(routingConfigResult.error))
+    : serializeError(formatError(routingConfigResult.error))
 
   const imports = `
 import * as server from '@gspenst/next/server'

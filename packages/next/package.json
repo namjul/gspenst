@@ -13,6 +13,7 @@
     "@mdx-js/mdx": "^2.0.0-next.9",
     "@preconstruct/next": "^4.0.0",
     "@tinacms/cli": "^0.60.11",
+    "@tryghost/tpl": "^0.1.14",
     "cross-spawn": "^7.0.3",
     "debug": "^4.3.3",
     "find-cache-dir": "^3.3.2",

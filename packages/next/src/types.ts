@@ -9,7 +9,7 @@ import type {
 } from './api'
 import {
   queryTypes,
-  taxonomies,
+  taxonomyTypes,
   resourceTypes,
   queryOptions,
   contextTypes,
@@ -32,7 +32,7 @@ export type ValidateShape<T, Shape> = T extends Shape
   : never
 
 export type ResourceItemMap = { [id: ID]: ResourceItem }
-export type Taxonomies = typeof taxonomies[number]
+export type Taxonomies = typeof taxonomyTypes[number]
 export type QueryType = typeof queryTypes[number]
 export type ResourceType = typeof resourceTypes[number]
 export type ContextType = typeof contextTypes[number]

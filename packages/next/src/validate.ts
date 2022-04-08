@@ -1,7 +1,20 @@
 import { ok, err, combine, Ok, Err } from 'neverthrow'
-import { object, number, string, boolean, mixed } from 'yup'
+import tpl from '@tryghost/tpl'
+import {
+  object,
+  number,
+  string,
+  boolean,
+  mixed,
+  ValidationError as YupCalidationError,
+} from 'yup'
 import { isObject, removeNullish } from './utils'
-import { queryTypes, resourceTypes } from './constants'
+import {
+  queryTypes,
+  resourceTypes,
+  routingFields,
+  taxonomyTypes,
+} from './constants'
 import type {
   QueryType,
   Taxonomies,
@@ -101,6 +114,14 @@ export type RoutingConfigUnresolved = {
     | undefined
 }
 
+const messages = {
+  validationError: 'The following definition "{at}" is invalid: {reason}',
+  // invalidResourceError: 'Resource key not supported. {resourceKey}',
+  // invalidResourceHelp: 'Please use: tag, user, post or page.',
+  // badDatError: 'Please wrap the data definition into a custom name.',
+  // badDataHelp: 'Example:\n data:\n  my-tag:\n    resource: tags\n    ...\n',
+}
+
 const dataStringSchema = string().matches(
   new RegExp(`(${resourceTypes.join('|')})\\..*`),
   'Incorrect Format. Please use e.g. tag.recipes'
@@ -193,7 +214,19 @@ function validateRoute(
     }
     return ok(route)
   } catch (e: unknown) {
-    return err(Errors.other('Yup', e instanceof Error ? e : undefined))
+    return err(
+      e instanceof YupCalidationError
+        ? Errors.validation({
+            message: tpl(messages.validationError, {
+              at: e.path,
+              reason: e.message,
+            }),
+          })
+        : Errors.other(
+            'ValidationError:`yup`',
+            e instanceof Error ? e : undefined
+          )
+    )
   }
 }
 
@@ -206,7 +239,19 @@ function validateCollection(
     })
     return ok(collection)
   } catch (e: unknown) {
-    return err(Errors.other('Yup', e instanceof Error ? e : undefined))
+    return err(
+      e instanceof YupCalidationError
+        ? Errors.validation({
+            message: tpl(messages.validationError, {
+              at: e.path,
+              reason: e.message,
+            }),
+          })
+        : Errors.other(
+            'ValidationError:`yup`',
+            e instanceof Error ? e : undefined
+          )
+    )
   }
 }
 
@@ -219,7 +264,19 @@ function validateTaxonomies(
     })
     return ok(taxonomies)
   } catch (e: unknown) {
-    return err(Errors.other('Yup', e instanceof Error ? e : undefined))
+    return err(
+      e instanceof YupCalidationError
+        ? Errors.validation({
+            message: tpl(messages.validationError, {
+              at: e.path,
+              reason: e.message,
+            }),
+          })
+        : Errors.other(
+            'ValidationError:`yup`',
+            e instanceof Error ? e : undefined
+          )
+    )
   }
 }
 function transformRoute(
@@ -371,23 +428,37 @@ export function validate(routingConfig = {}) {
   const errors: Err<never, ValidationError>[] = []
 
   const unknownProperty = Object.keys(routingConfig).find(
-    (key) => !['routes', 'collections', 'taxonomies'].includes(key)
+    // @ts-expect-error --- key can be invalid
+    (key) => !routingFields.includes(key)
   )
   if (unknownProperty) {
     errors.push(
-      err(Errors.other(`${unknownProperty} is not part of routing config.`))
+      err(
+        Errors.validation({
+          message: tpl(messages.validationError, {
+            at: unknownProperty,
+            reason: 'Not a valid routing Field.',
+          }),
+          help: `Use one of: ${routingFields.join(', ')}`,
+        })
+      )
     )
   }
 
   const unknownTaxonomiesProperty = Object.keys(
     (routingConfig as { taxonomies?: {} }).taxonomies ?? {}
-  ).find((key) => !['tag', 'author'].includes(key))
+    // @ts-expect-error --- key can be invalid
+  ).find((key) => !taxonomyTypes.includes(key))
   if (unknownTaxonomiesProperty) {
     errors.push(
       err(
-        Errors.other(
-          `${unknownProperty} is not part of taxonomies routing config.`
-        )
+        Errors.validation({
+          message: tpl(messages.validationError, {
+            at: unknownProperty,
+            reason: 'Unknown taxonomy.',
+          }),
+          help: `Use one of: ${taxonomyTypes.join(', ')}`,
+        })
       )
     )
   }
