@@ -88,7 +88,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   }
 
   const routingConfig = routingConfigResult.isOk()
-    ? JSON.stringify(routingConfigResult.value)
+    ? JSON.stringify(routingConfigResult.value[0])
     : serializeError(formatError(routingConfigResult.error))
 
   const imports = `
