@@ -240,9 +240,28 @@ export type ConfigConnection = Connection & {
   edges?: Maybe<Array<Maybe<ConfigConnectionEdges>>>
 }
 
+export type PageAuthorsAuthorDocument = AuthorDocument
+
+export type PageAuthors = {
+  __typename?: 'PageAuthors'
+  author?: Maybe<PageAuthorsAuthorDocument>
+}
+
+export type PageTagsTagDocument = TagDocument
+
+export type PageTags = {
+  __typename?: 'PageTags'
+  tag?: Maybe<PageTagsTagDocument>
+}
+
 export type Page = {
   __typename?: 'Page'
   title?: Maybe<Scalars['String']>
+  heroImg?: Maybe<Scalars['String']>
+  excerpt?: Maybe<Scalars['JSON']>
+  authors?: Maybe<Array<Maybe<PageAuthors>>>
+  tags?: Maybe<Array<Maybe<PageTags>>>
+  date?: Maybe<Scalars['String']>
   body?: Maybe<Scalars['JSON']>
 }
 
@@ -474,8 +493,21 @@ export type ConfigMutation = {
   darkMode?: InputMaybe<Scalars['Boolean']>
 }
 
+export type PageAuthorsMutation = {
+  author?: InputMaybe<Scalars['String']>
+}
+
+export type PageTagsMutation = {
+  tag?: InputMaybe<Scalars['String']>
+}
+
 export type PageMutation = {
   title?: InputMaybe<Scalars['String']>
+  heroImg?: InputMaybe<Scalars['String']>
+  excerpt?: InputMaybe<Scalars['JSON']>
+  authors?: InputMaybe<Array<InputMaybe<PageAuthorsMutation>>>
+  tags?: InputMaybe<Array<InputMaybe<PageTagsMutation>>>
+  date?: InputMaybe<Scalars['String']>
   body?: InputMaybe<Scalars['JSON']>
 }
 
@@ -546,7 +578,30 @@ export type PostDocumentQueryFragmentFragment = {
 export type PageDocumentQueryFragmentFragment = {
   __typename: 'PageDocument'
   id: string
-  data: { __typename?: 'Page'; title?: string | null; body?: any | null }
+  data: {
+    __typename?: 'Page'
+    title?: string | null
+    heroImg?: string | null
+    excerpt?: any | null
+    date?: string | null
+    body?: any | null
+    tags?: Array<{
+      __typename: 'PageTags'
+      tag?: {
+        __typename?: 'TagDocument'
+        id: string
+        data: { __typename?: 'Tag'; name?: string | null }
+      } | null
+    } | null> | null
+    authors?: Array<{
+      __typename: 'PageAuthors'
+      author?: {
+        __typename?: 'AuthorDocument'
+        id: string
+        data: { __typename?: 'Author'; name?: string | null }
+      } | null
+    } | null> | null
+  }
 }
 
 export type AuthorDocumentQueryFragmentFragment = {
@@ -714,7 +769,30 @@ export type GetPageQuery = {
   getPageDocument: {
     __typename: 'PageDocument'
     id: string
-    data: { __typename?: 'Page'; title?: string | null; body?: any | null }
+    data: {
+      __typename?: 'Page'
+      title?: string | null
+      heroImg?: string | null
+      excerpt?: any | null
+      date?: string | null
+      body?: any | null
+      tags?: Array<{
+        __typename: 'PageTags'
+        tag?: {
+          __typename?: 'TagDocument'
+          id: string
+          data: { __typename?: 'Tag'; name?: string | null }
+        } | null
+      } | null> | null
+      authors?: Array<{
+        __typename: 'PageAuthors'
+        author?: {
+          __typename?: 'AuthorDocument'
+          id: string
+          data: { __typename?: 'Author'; name?: string | null }
+        } | null
+      } | null> | null
+    }
   }
   getConfigDocument: {
     __typename?: 'ConfigDocument'
@@ -767,7 +845,18 @@ export type ConfigPartsFragment = {
 export type PagePartsFragment = {
   __typename?: 'Page'
   title?: string | null
+  heroImg?: string | null
+  excerpt?: any | null
+  date?: string | null
   body?: any | null
+  authors?: Array<{
+    __typename: 'PageAuthors'
+    author?: { __typename?: 'AuthorDocument'; id: string } | null
+  } | null> | null
+  tags?: Array<{
+    __typename: 'PageTags'
+    tag?: { __typename?: 'TagDocument'; id: string } | null
+  } | null> | null
 }
 
 export type PostPartsFragment = {
@@ -861,7 +950,22 @@ export type GetPageDocumentQuery = {
       relativePath: string
       extension: string
     }
-    data: { __typename?: 'Page'; title?: string | null; body?: any | null }
+    data: {
+      __typename?: 'Page'
+      title?: string | null
+      heroImg?: string | null
+      excerpt?: any | null
+      date?: string | null
+      body?: any | null
+      authors?: Array<{
+        __typename: 'PageAuthors'
+        author?: { __typename?: 'AuthorDocument'; id: string } | null
+      } | null> | null
+      tags?: Array<{
+        __typename: 'PageTags'
+        tag?: { __typename?: 'TagDocument'; id: string } | null
+      } | null> | null
+    }
   }
 }
 
@@ -886,7 +990,22 @@ export type GetPageListQuery = {
           relativePath: string
           extension: string
         }
-        data: { __typename?: 'Page'; title?: string | null; body?: any | null }
+        data: {
+          __typename?: 'Page'
+          title?: string | null
+          heroImg?: string | null
+          excerpt?: any | null
+          date?: string | null
+          body?: any | null
+          authors?: Array<{
+            __typename: 'PageAuthors'
+            author?: { __typename?: 'AuthorDocument'; id: string } | null
+          } | null> | null
+          tags?: Array<{
+            __typename: 'PageTags'
+            tag?: { __typename?: 'TagDocument'; id: string } | null
+          } | null> | null
+        }
       } | null
     } | null> | null
   }
@@ -1153,6 +1272,25 @@ export const PostDocumentQueryFragmentFragmentDoc = gql`
 export const PagePartsFragmentDoc = gql`
   fragment PageParts on Page {
     title
+    heroImg
+    excerpt
+    authors {
+      __typename
+      author {
+        ... on Document {
+          id
+        }
+      }
+    }
+    tags {
+      __typename
+      tag {
+        ... on Document {
+          id
+        }
+      }
+    }
+    date
     body
   }
 `
@@ -1162,9 +1300,29 @@ export const PageDocumentQueryFragmentFragmentDoc = gql`
     id
     data {
       ...PageParts
+      tags {
+        tag {
+          ... on TagDocument {
+            data {
+              ...TagParts
+            }
+          }
+        }
+      }
+      authors {
+        author {
+          ... on AuthorDocument {
+            data {
+              ...AuthorParts
+            }
+          }
+        }
+      }
     }
   }
   ${PagePartsFragmentDoc}
+  ${TagPartsFragmentDoc}
+  ${AuthorPartsFragmentDoc}
 `
 export const AuthorDocumentQueryFragmentFragmentDoc = gql`
   fragment AuthorDocumentQueryFragment on AuthorDocument {

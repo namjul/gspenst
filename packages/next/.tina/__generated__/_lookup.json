@@ -2,13 +2,7 @@
   "DocumentConnection": {
     "type": "DocumentConnection",
     "resolveType": "multiCollectionDocumentList",
-    "collections": [
-      "config",
-      "page",
-      "post",
-      "author",
-      "tag"
-    ]
+    "collections": ["config", "page", "post", "author", "tag"]
   },
   "Node": {
     "type": "Node",
@@ -91,5 +85,17 @@
     "type": "TagConnection",
     "resolveType": "collectionDocumentList",
     "collection": "tag"
+  },
+  "PageAuthorsAuthorDocument": {
+    "type": "PageAuthorsAuthorDocument",
+    "resolveType": "multiCollectionDocument",
+    "createDocument": "create",
+    "updateDocument": "update"
+  },
+  "PageTagsTagDocument": {
+    "type": "PageTagsTagDocument",
+    "resolveType": "multiCollectionDocument",
+    "createDocument": "create",
+    "updateDocument": "update"
   }
 }

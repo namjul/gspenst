@@ -4,6 +4,25 @@ fragment ConfigParts on Config {
 
 fragment PageParts on Page {
   title
+  heroImg
+  excerpt
+  authors {
+    __typename
+    author {
+      ... on Document {
+        id
+      }
+    }
+  }
+  tags {
+    __typename
+    tag {
+      ... on Document {
+        id
+      }
+    }
+  }
+  date
   body
 }
 

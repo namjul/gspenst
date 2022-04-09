@@ -1,7 +1,69 @@
 import { defineSchema, defineConfig } from 'tinacms'
-import type { TinaCollection, TinaTemplate } from 'tinacms'
+import type { TinaCollection, TinaTemplate, TinaField } from 'tinacms'
 
 export function createSchema(templates: TinaTemplate[] = []) {
+  const commonFields: TinaField[] = [
+    {
+      type: 'string',
+      label: 'Title',
+      name: 'title',
+    },
+    {
+      type: 'image',
+      name: 'heroImg',
+      label: 'Hero Image',
+    },
+    {
+      type: 'rich-text',
+      label: 'Excerpt',
+      name: 'excerpt',
+    },
+    {
+      label: 'Authors',
+      name: 'authors',
+      type: 'object',
+      list: true,
+      fields: [
+        {
+          label: 'Author',
+          name: 'author',
+          type: 'reference',
+          collections: ['author'],
+        },
+      ],
+    },
+    {
+      label: 'Tags',
+      name: 'tags',
+      type: 'object',
+      list: true,
+      fields: [
+        {
+          label: 'Tag',
+          name: 'tag',
+          type: 'reference',
+          collections: ['tag'],
+        },
+      ],
+    },
+    {
+      type: 'datetime',
+      label: 'Posted Date',
+      name: 'date',
+      ui: {
+        dateFormat: 'MMMM DD YYYY',
+        timeFormat: 'hh:mm A',
+      },
+    },
+    {
+      type: 'rich-text',
+      label: 'Body',
+      name: 'body',
+      templates,
+      isBody: true,
+    },
+  ]
+
   const configCollection: TinaCollection = {
     label: 'Config',
     name: 'config',
@@ -21,20 +83,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
     name: 'page',
     path: 'content/pages',
     format: 'mdx',
-    fields: [
-      {
-        type: 'string',
-        label: 'Title',
-        name: 'title',
-      },
-      {
-        type: 'rich-text',
-        label: 'Body',
-        name: 'body',
-        templates,
-        isBody: true,
-      },
-    ],
+    fields: [...commonFields],
   }
 
   const postCollection: TinaCollection = {
@@ -42,67 +91,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
     name: 'post',
     path: 'content/posts',
     format: 'mdx',
-    fields: [
-      {
-        type: 'string',
-        label: 'Title',
-        name: 'title',
-      },
-      {
-        type: 'image',
-        name: 'heroImg',
-        label: 'Hero Image',
-      },
-      {
-        type: 'rich-text',
-        label: 'Excerpt',
-        name: 'excerpt',
-      },
-      {
-        label: 'Authors',
-        name: 'authors',
-        type: 'object',
-        list: true,
-        fields: [
-          {
-            label: 'Author',
-            name: 'author',
-            type: 'reference',
-            collections: ['author'],
-          },
-        ],
-      },
-      {
-        label: 'Tags',
-        name: 'tags',
-        type: 'object',
-        list: true,
-        fields: [
-          {
-            label: 'Tag',
-            name: 'tag',
-            type: 'reference',
-            collections: ['tag'],
-          },
-        ],
-      },
-      {
-        type: 'datetime',
-        label: 'Posted Date',
-        name: 'date',
-        ui: {
-          dateFormat: 'MMMM DD YYYY',
-          timeFormat: 'hh:mm A',
-        },
-      },
-      {
-        type: 'rich-text',
-        label: 'Body',
-        name: 'body',
-        templates,
-        isBody: true,
-      },
-    ],
+    fields: [...commonFields],
   }
 
   const authorCollection: TinaCollection = {

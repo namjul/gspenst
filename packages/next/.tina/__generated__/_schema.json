@@ -35,6 +35,60 @@
           "namespace": ["page", "title"]
         },
         {
+          "type": "image",
+          "name": "heroImg",
+          "label": "Hero Image",
+          "namespace": ["page", "heroImg"]
+        },
+        {
+          "type": "rich-text",
+          "label": "Excerpt",
+          "name": "excerpt",
+          "namespace": ["page", "excerpt"]
+        },
+        {
+          "label": "Authors",
+          "name": "authors",
+          "type": "object",
+          "list": true,
+          "fields": [
+            {
+              "label": "Author",
+              "name": "author",
+              "type": "reference",
+              "collections": ["author"],
+              "namespace": ["page", "authors", "author"]
+            }
+          ],
+          "namespace": ["page", "authors"]
+        },
+        {
+          "label": "Tags",
+          "name": "tags",
+          "type": "object",
+          "list": true,
+          "fields": [
+            {
+              "label": "Tag",
+              "name": "tag",
+              "type": "reference",
+              "collections": ["tag"],
+              "namespace": ["page", "tags", "tag"]
+            }
+          ],
+          "namespace": ["page", "tags"]
+        },
+        {
+          "type": "datetime",
+          "label": "Posted Date",
+          "name": "date",
+          "ui": {
+            "dateFormat": "MMMM DD YYYY",
+            "timeFormat": "hh:mm A"
+          },
+          "namespace": ["page", "date"]
+        },
+        {
           "type": "rich-text",
           "label": "Body",
           "name": "body",

@@ -38,7 +38,26 @@ fragment PageDocumentQueryFragment on PageDocument {
   id
   data {
     ...PageParts
+    tags {
+      tag {
+        ... on TagDocument {
+          data {
+            ...TagParts
+          }
+        }
+      }
+    }
+    authors {
+      author {
+        ... on AuthorDocument {
+          data {
+            ...AuthorParts
+          }
+        }
+      }
+    }
   }
+
 }
 
 fragment AuthorDocumentQueryFragment on AuthorDocument {

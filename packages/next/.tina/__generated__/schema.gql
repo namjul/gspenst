@@ -110,8 +110,25 @@ type ConfigConnection implements Connection {
   edges: [ConfigConnectionEdges]
 }
 
+union PageAuthorsAuthorDocument = AuthorDocument
+
+type PageAuthors {
+  author: PageAuthorsAuthorDocument
+}
+
+union PageTagsTagDocument = TagDocument
+
+type PageTags {
+  tag: PageTagsTagDocument
+}
+
 type Page {
   title: String
+  heroImg: String
+  excerpt: JSON
+  authors: [PageAuthors]
+  tags: [PageTags]
+  date: String
   body: JSON
 }
 
@@ -253,8 +270,21 @@ input ConfigMutation {
   darkMode: Boolean
 }
 
+input PageAuthorsMutation {
+  author: String
+}
+
+input PageTagsMutation {
+  tag: String
+}
+
 input PageMutation {
   title: String
+  heroImg: String
+  excerpt: JSON
+  authors: [PageAuthorsMutation]
+  tags: [PageTagsMutation]
+  date: String
   body: JSON
 }
 
