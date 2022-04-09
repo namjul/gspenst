@@ -1,22 +1,17 @@
 import { TinaMarkdown } from 'tinacms/dist/rich-text'
-import type { TinaMarkdownContent } from 'tinacms/dist/rich-text'
+import type { TinaMarkdownContent, Components } from 'tinacms/dist/rich-text'
 import type { Root } from './types'
 
-const components = {
-  // h1: H1,
-  // h2: H2,
-  // h3: H3,
-  // h4: H4,
-  // h5: H5,
-  // h6: H6,
-  // a: A,
-  // pre: Pre,
-}
-
-const MDXTheme = ({ content }: { content: Root }) => {
+const MDXTheme = ({
+  content,
+  components,
+}: {
+  content: Root
+  components?: Components<{}> | undefined
+}) => {
   return (
     <TinaMarkdown
-      components={components}
+      {...(components && { components })}
       content={content as TinaMarkdownContent}
     />
   )

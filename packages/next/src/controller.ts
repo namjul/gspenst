@@ -9,7 +9,7 @@ import type {
   ContextType,
   AsyncReturnType,
   Result,
-  // Simplify,
+  Simplify,
   ConfigResourceItem,
 } from './types'
 import type { GetPage, GetPost, GetTag, GetAuthor, GetConfig } from './api'
@@ -24,94 +24,95 @@ type Pagination = {
   limit: number // the number of posts per page
 }
 
-export type PageProps =
-  | {
-      context: ContextType
-      templates: string[]
-      data: {
-        entry: GetPost | GetPage | GetAuthor | GetTag | GetConfig
-        [name: string]: unknown
-      }
-      pagination?: Pagination
-      route: string
-    }
-  | { context: 'internal' }
-
-// type BasePageProps = {
-//   templates: string[]
-//   data: {
-//     [name: string]: unknown
-//   }
-// }
-//
-// type PostPageProps = Simplify<
-//   BasePageProps & {
-//     context: Extract<ContextType, 'post'>
-//     data: {
-//       entry: GetPost
-//     }
-//   }
-// >
-//
-// type PagePageProps = Simplify<
-//   BasePageProps & {
-//     context: Extract<ContextType, 'page'>
-//     data: {
-//       entry: GetPage
-//     }
-//   }
-// >
-//
-// type AuthorPageProps = Simplify<
-//   BasePageProps & {
-//     context: Extract<ContextType, 'author'>
-//     data: {
-//       entry: GetAuthor
-//     }
-//   }
-// >
-//
-// type TagPageProps = Simplify<
-//   BasePageProps & {
-//     context: Extract<ContextType, 'tag'>
-//     data: {
-//       entry: GetTag
-//     }
-//   }
-// >
-//
-// type IndexPageProps = Simplify<
-//   BasePageProps & {
-//     context: Extract<ContextType, 'index' | 'home' | 'paged'>
-//     data: {
-//       entry: GetConfig
-//       posts: GetPost[]
-//     }
-//     pagination: Pagination
-//   }
-// >
-//
-// type CustomPageProps = Simplify<
-//   BasePageProps & {
-//     context: null
-//     data: {
-//       entry: GetConfig
-//     }
-//   }
-// >
-//
-// type InternalPageProps = {
-//   context: 'internal'
-// }
-//
 // export type PageProps =
-//   | IndexPageProps
-//   | TagPageProps
-//   | AuthorPageProps
-//   | PagePageProps
-//   | PostPageProps
-//   | CustomPageProps
-//   | InternalPageProps
+//   | {
+//       context: ContextType
+//       templates: string[]
+//       data: {
+//         entry: GetPost | GetPage | GetAuthor | GetTag | GetConfig
+//         [name: string]: unknown
+//       }
+//       pagination?: Pagination
+//       route: string
+//     }
+//   | { context: 'internal' }
+
+type BasePageProps = {
+  templates: string[]
+  data: {
+    [name: string]: unknown
+  }
+  route: string
+}
+
+type PostPageProps = Simplify<
+  BasePageProps & {
+    context: Extract<ContextType, 'post'>
+    data: {
+      entry: GetPost
+    }
+  }
+>
+
+type PagePageProps = Simplify<
+  BasePageProps & {
+    context: Extract<ContextType, 'page'>
+    data: {
+      entry: GetPage
+    }
+  }
+>
+
+type AuthorPageProps = Simplify<
+  BasePageProps & {
+    context: Extract<ContextType, 'author'>
+    data: {
+      entry: GetAuthor
+    }
+  }
+>
+
+type TagPageProps = Simplify<
+  BasePageProps & {
+    context: Extract<ContextType, 'tag'>
+    data: {
+      entry: GetTag
+    }
+  }
+>
+
+type IndexPageProps = Simplify<
+  BasePageProps & {
+    context: Extract<ContextType, 'index' | 'home' | 'paged'>
+    data: {
+      entry: GetConfig
+      posts: GetPost[]
+    }
+    pagination: Pagination
+  }
+>
+
+type CustomPageProps = Simplify<
+  BasePageProps & {
+    context: null
+    data: {
+      entry: GetConfig
+    }
+  }
+>
+
+type InternalPageProps = {
+  context: 'internal'
+}
+
+export type PageProps =
+  | IndexPageProps
+  | TagPageProps
+  | AuthorPageProps
+  | PagePageProps
+  | PostPageProps
+  | CustomPageProps
+  | InternalPageProps
 
 type ControllerResult<T> = Result<T>
 

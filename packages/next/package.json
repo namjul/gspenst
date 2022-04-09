@@ -54,7 +54,8 @@
       "index.ts",
       "loader.ts",
       "client.tsx",
-      "server.ts"
+      "server.ts",
+      "componentRegistry.ts"
     ]
   }
 }
