@@ -22,6 +22,7 @@ import {
 } from './constants'
 import type { PageProps as InternalPageProps } from './controller'
 import type { GspenstError } from './errors'
+import type { HeadingsReturn } from './getHeaders'
 
 export type Result<T> = Ok<T, GspenstError> | Err<never, GspenstError>
 
@@ -51,7 +52,10 @@ export type QueryOptionsObject<T> = ValidateShape<
 
 export type PageProps = Simplify<
   Exclude<InternalPageProps, { context: 'internal' }> & {}
->
+> & {
+  loading: boolean
+  headers: HeadingsReturn | undefined
+}
 
 type BaseResourceItem = {
   id: ID

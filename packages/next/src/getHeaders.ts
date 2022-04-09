@@ -34,7 +34,7 @@ function getFlattenedValue(node: Parent): string {
     .join('')
 }
 
-type HeadingsReturn = {
+export type HeadingsReturn = {
   headings: Array<{ value: string; type: string; children: any }>
   titleText?: string
   hasH1: boolean

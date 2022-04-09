@@ -6,13 +6,14 @@ import type { NextPage } from 'next'
 import { isValidElementType } from 'react-is'
 import DynamicTinaProvider from './TinaDynamicProvider'
 import getComponent from './componentRegistry'
-import type { PageProps } from './types'
+import getHeaders from './getHeaders'
+import type { PageProps, Root, Simplify } from './types'
 import type { PageProps as InternalPageProps } from './controller'
 
-type ThemeComponent = React.ComponentType<PageProps & { loading: boolean }>
+type ThemeComponent = React.ComponentType<PageProps>
 
 export type ContainerProps = {
-  pageProps: PageProps
+  pageProps: Simplify<Exclude<InternalPageProps, { context: 'internal' }> & {}>
   Component: ThemeComponent
 }
 
@@ -42,9 +43,19 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
   // overwrite with dynamic value from tina
   pageProps.data.entry.data = data
 
+  const headers = (() => {
+    const entryData = pageProps.data.entry.data
+    if ('getPostDocument' in entryData) {
+      return getHeaders(entryData.getPostDocument.data.body as Root)
+    }
+    if ('getPageDocument' in entryData) {
+      return getHeaders(entryData.getPageDocument.data.body as Root)
+    }
+  })() // Immediately invoke the function
+
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <Component {...pageProps} loading={isLoading} />
+      <Component {...pageProps} loading={isLoading} headers={headers} />
     </ErrorBoundary>
   )
 }

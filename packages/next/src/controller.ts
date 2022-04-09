@@ -3,12 +3,10 @@ import type { Redirect } from 'next'
 import type { RoutingProperties } from './routing'
 import { assertUnreachable } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
-import getHeaders from './getHeaders'
 import repository from './repository'
 import { ensure } from './utils'
 import type {
   ContextType,
-  Root,
   AsyncReturnType,
   Result,
   // Simplify,
@@ -32,17 +30,16 @@ export type PageProps =
       templates: string[]
       data: {
         entry: GetPost | GetPage | GetAuthor | GetTag | GetConfig
-        headers?: ReturnType<typeof getHeaders> | undefined
         [name: string]: unknown
       }
       pagination?: Pagination
+      route: string
     }
   | { context: 'internal' }
 
 // type BasePageProps = {
 //   templates: string[]
 //   data: {
-//     headers?: ReturnType<typeof getHeaders> | undefined
 //     [name: string]: unknown
 //   }
 // }
@@ -139,57 +136,42 @@ async function entryController(
     return dataResult
   }
 
-  const headers = (() => {
-    if (dataResult.isOk()) {
-      if ('getPostDocument' in dataResult.value.data) {
-        return getHeaders(
-          dataResult.value.data.getPostDocument.data.body as Root
-        )
-      }
-      if ('getPageDocument' in dataResult.value.data) {
-        return getHeaders(
-          dataResult.value.data.getPageDocument.data.body as Root
-        )
-      }
-    }
-  })() // Immediately invoke the function
-
   switch (resourceType) {
     case 'post':
       return ok({
         context: 'post',
         data: {
           entry: dataResult.value,
-          headers,
         },
         templates: getTemplateHierarchy(routingProperties),
+        route: routingProperties.request.path,
       })
     case 'page':
       return ok({
         context: 'page',
         data: {
           entry: dataResult.value,
-          headers,
         },
         templates: getTemplateHierarchy(routingProperties),
+        route: routingProperties.request.path,
       })
     case 'author':
       return ok({
         context: 'author',
         data: {
           entry: dataResult.value,
-          headers,
         },
         templates: getTemplateHierarchy(routingProperties),
+        route: routingProperties.request.path,
       })
     case 'tag':
       return ok({
         context: 'tag',
         data: {
           entry: dataResult.value,
-          headers,
         },
         templates: getTemplateHierarchy(routingProperties),
+        route: routingProperties.request.path,
       })
     default:
       return assertUnreachable(resourceType)
@@ -237,6 +219,7 @@ async function collectionController(
       total: 10,
       limit: 10,
     },
+    route: routingProperties.request.path,
   })
 }
 
@@ -266,6 +249,7 @@ async function customController(
     data: {
       entry: entry.value, // TODO embed the first one from the data list
     },
+    route: routingProperties.request.path,
   })
 }
 
