@@ -3,6 +3,8 @@ fragment ConfigParts on Config {
 }
 
 fragment PageParts on Page {
+  date
+  slug
   title
   heroImg
   excerpt
@@ -22,11 +24,12 @@ fragment PageParts on Page {
       }
     }
   }
-  date
   body
 }
 
 fragment PostParts on Post {
+  date
+  slug
   title
   heroImg
   excerpt
@@ -46,14 +49,17 @@ fragment PostParts on Post {
       }
     }
   }
-  date
   body
 }
 
 fragment AuthorParts on Author {
   name
+  date
+  slug
 }
 
 fragment TagParts on Tag {
   name
+  date
+  slug
 }

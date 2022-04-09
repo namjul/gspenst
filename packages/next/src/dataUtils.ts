@@ -1,6 +1,27 @@
-import type { ResourceItem } from './types'
+import type { Key } from 'path-to-regexp'
+import type { ResourceItem, DynamicVariables } from './types'
 import type { RoutingProperties } from './routing'
 import { assertUnreachable } from './helpers'
+
+// TODO force equal array length https://stackoverflow.com/questions/65361696/arguments-of-same-length-typescript
+export function createDynamicVariables(
+  dynamicVariables: string[],
+  keys: Key[]
+) {
+  return dynamicVariables.reduce<Partial<DynamicVariables>>(
+    (acc, current, index) => {
+      const key = keys[index]
+      if (key) {
+        return {
+          [key.name]: current,
+          ...acc,
+        }
+      }
+      return acc
+    },
+    {}
+  )
+}
 
 export function find(
   resources: ResourceItem[],
@@ -12,11 +33,12 @@ export function find(
         ? partialResourceItem.resourceType === resourceItem.resourceType
         : true) &&
       Object.entries(partialResourceItem)
-
         .map(([key, value]) => {
-          return resourceItem[key as keyof typeof partialResourceItem] === value
+          return (
+            String(resourceItem[key as keyof typeof partialResourceItem]) ===
+            String(value)
+          )
         })
-
         .every(Boolean)
   )
 }

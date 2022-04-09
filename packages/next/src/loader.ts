@@ -15,7 +15,7 @@ const contentDir = path.resolve(findContentDir())
 
 type LoaderOptions = Options
 
-// lookup: https://webpack.js.org/api/loaders/
+// api lookup: https://webpack.js.org/api/loaders/
 
 const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
 const isProductionBuild = process.env.NODE_ENV === 'production'

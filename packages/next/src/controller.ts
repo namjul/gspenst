@@ -278,7 +278,10 @@ export async function controller(
         props: await collectionController(routingProperties),
       }
     case 'channel':
-      return { type: 'props', props: err(Errors.notFound()) } // TODO
+      return {
+        type: 'props',
+        props: err(Errors.other('Todo channel controller')),
+      } // TODO
     case 'entry':
       return {
         type: 'props',

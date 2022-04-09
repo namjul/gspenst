@@ -51,7 +51,7 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
     if ('getPageDocument' in entryData) {
       return getHeaders(entryData.getPageDocument.data.body as Root)
     }
-  })() // Immediately invoke the function
+  })() // Immediately-invoked Function Expression
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>

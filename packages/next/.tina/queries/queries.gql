@@ -33,6 +33,30 @@ query getResources {
               relativePath
               extension
             }
+            data {
+              slug
+              date
+              tags {
+                tag {
+                  ... on TagDocument {
+                    id
+                    data {
+                      ...TagParts
+                    }
+                  }
+                }
+              }
+              authors {
+                author {
+                  ... on AuthorDocument {
+                    id
+                    data {
+                      ...AuthorParts
+                    }
+                  }
+                }
+              }
+            }
           }
           ... on PageDocument {
             id
@@ -43,6 +67,30 @@ query getResources {
               path
               relativePath
               extension
+            }
+            data {
+              slug
+              date
+              tags {
+                tag {
+                  ... on TagDocument {
+                    id
+                    data {
+                      ...TagParts
+                    }
+                  }
+                }
+              }
+              authors {
+                author {
+                  ... on AuthorDocument {
+                    id
+                    data {
+                      ...AuthorParts
+                    }
+                  }
+                }
+              }
             }
           }
           ... on AuthorDocument {
@@ -55,6 +103,11 @@ query getResources {
               relativePath
               extension
             }
+            data {
+              slug
+              name
+              date
+            }
           }
           ... on TagDocument {
             id
@@ -65,6 +118,11 @@ query getResources {
               path
               relativePath
               extension
+            }
+            data {
+              slug
+              name
+              date
             }
           }
         }

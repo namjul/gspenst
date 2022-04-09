@@ -5,9 +5,7 @@ export const ExperimentalGetTinaClient = () => {
         data: {
           getConfigDocument: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            data: { darkMode: true },
           },
           __typename: 'Query',
           getCollections: [
@@ -58,6 +56,12 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: 'about.md',
                         extension: '.md',
                       },
+                      data: {
+                        slug: null,
+                        date: null,
+                        tags: null,
+                        authors: null,
+                      },
                     },
                   },
                   {
@@ -72,19 +76,31 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: 'home.md',
                         extension: '.md',
                       },
+                      data: {
+                        slug: null,
+                        date: null,
+                        tags: null,
+                        authors: null,
+                      },
                     },
                   },
                   {
                     node: {
                       __typename: 'PageDocument',
-                      id: 'content/pages/portfolio.md',
+                      id: 'content/pages/portfolio.mdx',
                       sys: {
                         filename: 'portfolio',
-                        basename: 'portfolio.md',
+                        basename: 'portfolio.mdx',
                         breadcrumbs: ['portfolio'],
-                        path: 'content/pages/portfolio.md',
-                        relativePath: 'portfolio.md',
-                        extension: '.md',
+                        path: 'content/pages/portfolio.mdx',
+                        relativePath: 'portfolio.mdx',
+                        extension: '.mdx',
+                      },
+                      data: {
+                        slug: null,
+                        date: null,
+                        tags: null,
+                        authors: null,
                       },
                     },
                   },
@@ -112,6 +128,12 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: '0th-post.mdx',
                         extension: '.mdx',
                       },
+                      data: {
+                        slug: null,
+                        date: '2021-07-03T20:30:00.000Z',
+                        tags: null,
+                        authors: null,
+                      },
                     },
                   },
                   {
@@ -125,6 +147,12 @@ export const ExperimentalGetTinaClient = () => {
                         path: 'content/posts/1th-post.mdx',
                         relativePath: '1th-post.mdx',
                         extension: '.mdx',
+                      },
+                      data: {
+                        slug: null,
+                        date: '2021-07-03T20:30:00.000Z',
+                        tags: null,
+                        authors: null,
                       },
                     },
                   },
@@ -140,6 +168,12 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: '2th-post.mdx',
                         extension: '.mdx',
                       },
+                      data: {
+                        slug: null,
+                        date: '2021-07-03T20:30:00.000Z',
+                        tags: null,
+                        authors: null,
+                      },
                     },
                   },
                   {
@@ -153,6 +187,30 @@ export const ExperimentalGetTinaClient = () => {
                         path: 'content/posts/3th-post.mdx',
                         relativePath: '3th-post.mdx',
                         extension: '.mdx',
+                      },
+                      data: {
+                        slug: null,
+                        date: '2021-07-03T20:30:00.000Z',
+                        tags: [
+                          {
+                            tag: {
+                              id: 'content/tags/tag-1.md',
+                              data: { name: 'Tag 1', date: null, slug: null },
+                            },
+                          },
+                        ],
+                        authors: [
+                          {
+                            author: {
+                              id: 'content/authors/pedro.md',
+                              data: {
+                                name: 'Pedro',
+                                date: null,
+                                slug: 'pedro',
+                              },
+                            },
+                          },
+                        ],
                       },
                     },
                   },
@@ -168,6 +226,30 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: '4th-post.mdx',
                         extension: '.mdx',
                       },
+                      data: {
+                        slug: null,
+                        date: '2021-07-03T20:30:00.000Z',
+                        tags: [
+                          {
+                            tag: {
+                              id: 'content/tags/tag-2.md',
+                              data: { name: 'Tag 2', date: null, slug: '' },
+                            },
+                          },
+                        ],
+                        authors: [
+                          {
+                            author: {
+                              id: 'content/authors/napolean.md',
+                              data: {
+                                name: 'Napolean',
+                                date: null,
+                                slug: null,
+                              },
+                            },
+                          },
+                        ],
+                      },
                     },
                   },
                   {
@@ -181,6 +263,12 @@ export const ExperimentalGetTinaClient = () => {
                         path: 'content/posts/5th-post.mdx',
                         relativePath: '5th-post.mdx',
                         extension: '.mdx',
+                      },
+                      data: {
+                        slug: null,
+                        date: '2021-07-03T20:30:00.000Z',
+                        tags: null,
+                        authors: null,
                       },
                     },
                   },
@@ -196,6 +284,12 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: '6th-post.mdx',
                         extension: '.mdx',
                       },
+                      data: {
+                        slug: null,
+                        date: '2021-07-12T07:00:00.000Z',
+                        tags: null,
+                        authors: null,
+                      },
                     },
                   },
                   {
@@ -209,6 +303,46 @@ export const ExperimentalGetTinaClient = () => {
                         path: 'content/posts/7th-post.mdx',
                         relativePath: '7th-post.mdx',
                         extension: '.mdx',
+                      },
+                      data: {
+                        slug: null,
+                        date: '2021-07-03T20:30:00.000Z',
+                        tags: [
+                          {
+                            tag: {
+                              id: 'content/tags/tag-1.md',
+                              data: { name: 'Tag 1', date: null, slug: null },
+                            },
+                          },
+                          {
+                            tag: {
+                              id: 'content/tags/tag-2.md',
+                              data: { name: 'Tag 2', date: null, slug: '' },
+                            },
+                          },
+                        ],
+                        authors: [
+                          {
+                            author: {
+                              id: 'content/authors/napolean.md',
+                              data: {
+                                name: 'Napolean',
+                                date: null,
+                                slug: null,
+                              },
+                            },
+                          },
+                          {
+                            author: {
+                              id: 'content/authors/pedro.md',
+                              data: {
+                                name: 'Pedro',
+                                date: null,
+                                slug: 'pedro',
+                              },
+                            },
+                          },
+                        ],
                       },
                     },
                   },
@@ -224,6 +358,12 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: '8th-post.mdx',
                         extension: '.mdx',
                       },
+                      data: {
+                        slug: null,
+                        date: '2021-07-03T20:30:00.000Z',
+                        tags: null,
+                        authors: null,
+                      },
                     },
                   },
                   {
@@ -237,6 +377,12 @@ export const ExperimentalGetTinaClient = () => {
                         path: 'content/posts/9th-post.mdx',
                         relativePath: '9th-post.mdx',
                         extension: '.mdx',
+                      },
+                      data: {
+                        slug: null,
+                        date: '2021-07-03T20:30:00.000Z',
+                        tags: null,
+                        authors: null,
                       },
                     },
                   },
@@ -264,6 +410,7 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: 'napolean.md',
                         extension: '.md',
                       },
+                      data: { slug: null, name: 'Napolean', date: null },
                     },
                   },
                   {
@@ -278,6 +425,49 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: 'pedro.md',
                         extension: '.md',
                       },
+                      data: { slug: 'pedro', name: 'Pedro', date: null },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              __typename: 'Collection',
+              name: 'tag',
+              slug: 'tag',
+              path: 'content/tags',
+              matches: null,
+              documents: {
+                totalCount: 2,
+                edges: [
+                  {
+                    node: {
+                      __typename: 'TagDocument',
+                      id: 'content/tags/tag-1.md',
+                      sys: {
+                        filename: 'tag-1',
+                        basename: 'tag-1.md',
+                        breadcrumbs: ['tag-1'],
+                        path: 'content/tags/tag-1.md',
+                        relativePath: 'tag-1.md',
+                        extension: '.md',
+                      },
+                      data: { slug: null, name: 'Tag 1', date: null },
+                    },
+                  },
+                  {
+                    node: {
+                      __typename: 'TagDocument',
+                      id: 'content/tags/tag-2.md',
+                      sys: {
+                        filename: 'tag-2',
+                        basename: 'tag-2.md',
+                        breadcrumbs: ['tag-2'],
+                        path: 'content/tags/tag-2.md',
+                        relativePath: 'tag-2.md',
+                        extension: '.md',
+                      },
+                      data: { slug: '', name: 'Tag 2', date: null },
                     },
                   },
                 ],

@@ -1,4 +1,5 @@
-import { getTemplateHierarchy } from './dataUtils'
+import { resources } from './__fixtures__/resources'
+import { getTemplateHierarchy, find } from './dataUtils'
 
 describe('computing template hierarchy', () => {
   test('collection', () => {
@@ -109,5 +110,32 @@ describe('computing template hierarchy', () => {
         templates: ['team'],
       })
     ).toEqual(['team', 'index'])
+  })
+})
+
+describe('dynamic variables', () => {
+  test.todo('simple')
+})
+
+describe('find', () => {
+  test('simple', () => {
+    const resourceItem = find(Object.values(resources), { slug: '0th-post' })
+    expect(resourceItem).toMatchObject(resources['content/posts/0th-post.mdx']!)
+  })
+  test('complex', () => {
+    // @ts-expect-error- testing with string value '11'
+    const resourceItem = find(Object.values(resources), {
+      year: 2022,
+      month: '11',
+    })
+    expect(resourceItem).toMatchObject(resources['content/posts/2th-post.mdx']!)
+  })
+  test('returns undefined', () => {
+    const resourceItem = find(Object.values(resources), {
+      year: 2022,
+      month: 11,
+      primary_tag: 'sdf',
+    })
+    expect(resourceItem).toBeUndefined()
   })
 })

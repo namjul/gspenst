@@ -1,8 +1,25 @@
 import { defineSchema, defineConfig } from 'tinacms'
 import type { TinaCollection, TinaTemplate, TinaField } from 'tinacms'
 
+const commonFields: TinaField[] = [
+  {
+    type: 'datetime',
+    label: 'Posted Date',
+    name: 'date',
+    ui: {
+      dateFormat: 'MMMM DD YYYY',
+      timeFormat: 'hh:mm A',
+    },
+  },
+  {
+    type: 'string',
+    label: 'Slug',
+    name: 'slug',
+  },
+]
+
 export function createSchema(templates: TinaTemplate[] = []) {
-  const commonFields: TinaField[] = [
+  const postFields: TinaField[] = [
     {
       type: 'string',
       label: 'Title',
@@ -47,15 +64,6 @@ export function createSchema(templates: TinaTemplate[] = []) {
       ],
     },
     {
-      type: 'datetime',
-      label: 'Posted Date',
-      name: 'date',
-      ui: {
-        dateFormat: 'MMMM DD YYYY',
-        timeFormat: 'hh:mm A',
-      },
-    },
-    {
       type: 'rich-text',
       label: 'Body',
       name: 'body',
@@ -83,7 +91,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
     name: 'page',
     path: 'content/pages',
     format: 'mdx',
-    fields: [...commonFields],
+    fields: [...commonFields, ...postFields],
   }
 
   const postCollection: TinaCollection = {
@@ -91,7 +99,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
     name: 'post',
     path: 'content/posts',
     format: 'mdx',
-    fields: [...commonFields],
+    fields: [...commonFields, ...postFields],
   }
 
   const authorCollection: TinaCollection = {
@@ -104,6 +112,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
         label: 'Name',
         name: 'name',
       },
+      ...commonFields,
     ],
   }
 
@@ -117,6 +126,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
         label: 'Name',
         name: 'name',
       },
+      ...commonFields,
     ],
   }
 

@@ -5,7 +5,15 @@ import {
   Split,
   Entries,
   Simplify,
+  Get,
 } from 'type-fest'
+import type {
+  Post,
+  Page,
+  Author,
+  Tag,
+  Config,
+} from '../.tina/__generated__/types'
 import type {
   PageResult,
   PostResult,
@@ -24,12 +32,26 @@ import type { PageProps as InternalPageProps } from './controller'
 import type { GspenstError } from './errors'
 import type { HeadingsReturn } from './getHeaders'
 
+export type {
+  LiteralUnion,
+  AsyncReturnType,
+  Split,
+  Entries,
+  Simplify,
+  Post,
+  Page,
+  Author,
+  Tag,
+  Config,
+  Get,
+}
+
 export type Result<T> = Ok<T, GspenstError> | Err<never, GspenstError>
 
 export type { TinaTemplate } from 'tinacms'
 
 export type Nullish = null | undefined
-export type Maybe<T> = T | null
+export type Optional<T> = NonNullable<T> | undefined | null
 
 // validate shapes: https://fettblog.eu/typescript-match-the-exact-object-shape/
 export type ValidateShape<T, Shape> = T extends Shape
@@ -54,43 +76,53 @@ export type PageProps = Simplify<
   Exclude<InternalPageProps, { context: 'internal' }> & {}
 > & {
   loading: boolean
-  headers: HeadingsReturn | undefined
+  headers: Optional<HeadingsReturn>
 }
+
+export type Slug = string
 
 type BaseResourceItem = {
   id: ID
   filename: string
   path: string
-  slug: string
   relativePath: string
+}
+
+export type DynamicVariables = {
+  slug: Slug
+  year: number
+  month: number
+  day: number
+  primary_tag: Optional<Slug>
+  primary_author: Optional<Slug>
 }
 
 export type PostResourceItem = Simplify<
   BaseResourceItem & {
     resourceType: Extract<ResourceType, 'post'>
     dataResult?: PostResult
-  }
+  } & DynamicVariables
 >
 
 export type PageResourceItem = Simplify<
   BaseResourceItem & {
     resourceType: Extract<ResourceType, 'page'>
     dataResult?: PageResult
-  }
+  } & DynamicVariables
 >
 
 export type TagResourceItem = Simplify<
   BaseResourceItem & {
     resourceType: Extract<ResourceType, 'tag'>
     dataResult?: TagResult
-  }
+  } & DynamicVariables
 >
 
 export type AuthorResourceItem = Simplify<
   BaseResourceItem & {
     resourceType: Extract<ResourceType, 'author'>
     dataResult?: AuthorResult
-  }
+  } & DynamicVariables
 >
 
 export type ConfigResourceItem = Simplify<
@@ -107,7 +139,7 @@ export type ResourceItem =
   | ConfigResourceItem
 
 export type QueryOptions = QueryOptionsObject<{
-  slug: string
+  slug: Slug
   filter: string | Nullish
   limit: number | 'all' | Nullish
   order: string | Nullish // '{property} ASC|DSC'
@@ -172,8 +204,6 @@ export type Options = {
 export type Dict<T = any> = Record<string, T>
 
 export type Unpacked<T> = T extends Array<infer U> ? U : T
-
-export type { LiteralUnion, AsyncReturnType, Split, Entries, Simplify }
 
 // MDX
 

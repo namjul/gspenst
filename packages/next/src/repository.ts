@@ -1,10 +1,16 @@
 import slugify from 'slugify'
+import type { GetResourcesQuery } from '../.tina/__generated__/types'
 import redis from './redis'
 import * as api from './api'
 import { toArray, ensureString } from './utils'
 import { assertUnreachable } from './helpers'
-import type { ResourceType, ResourceItem } from './types'
+import type { ResourceType, ResourceItem, Get, DynamicVariables } from './types'
 import { find } from './dataUtils'
+
+type ResourcesNode = Get<
+  GetResourcesQuery,
+  'getCollections[0].documents.edges[0].node'
+>
 
 // https://github.com/sindresorhus/map-obj
 
@@ -27,19 +33,38 @@ const repository = {
           void (await Promise.all(
             (resource.documents.edges ?? []).map(async (connectionEdge) => {
               if (connectionEdge?.node) {
+                const { node } = connectionEdge
                 const {
+                  __typename,
                   id,
                   sys: { filename, path: filepath, relativePath },
-                } = connectionEdge.node
+                } = node
 
-                await this.set({
-                  id,
-                  filename,
-                  path: filepath,
-                  slug: slugify(filename),
-                  resourceType: resource.name as ResourceType,
-                  relativePath,
-                })
+                if (__typename === 'ConfigDocument') {
+                  await this.set({
+                    id,
+                    filename,
+                    path: filepath,
+                    resourceType: 'config',
+                    relativePath,
+                  })
+                } else {
+                  const dynamicVariables = await this._generateDynamicVariables(
+                    node
+                  )
+
+                  await this.set({
+                    id,
+                    filename,
+                    path: filepath,
+                    resourceType: resource.name as Exclude<
+                      ResourceType,
+                      'config'
+                    >,
+                    relativePath,
+                    ...dynamicVariables,
+                  })
+                }
               }
             })
           ))
@@ -107,9 +132,50 @@ const repository = {
   ): Promise<ResourceItem | undefined> {
     return find(Object.values(await this.getAll()), partialResourceItem)
   },
+
+  async _generateDynamicVariables(
+    node: NonNullable<Exclude<ResourcesNode, { __typename: 'ConfigDocument' }>>
+  ): Promise<DynamicVariables> {
+    const {
+      __typename,
+      data,
+      sys: { filename },
+    } = node
+
+    const [slug, primary_tag, primary_author] = (() => {
+      if (__typename === 'PageDocument' || __typename === 'PostDocument') {
+        return [
+          node.data.slug || filename, // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
+          data.tags?.[0]?.tag?.data.slug, // TODO use existing resource
+          data.authors?.[0]?.author?.data.slug, // TODO use existing resource
+        ]
+      }
+      return [data.slug || node.data.name || filename] // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
+    })() // Immediately-invoked Function Expression
+
+    const date = new Date(data.date!) // TODO warn if date is not defined
+    const [day, month, year] = date
+      .toLocaleString('en-GB', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })
+      .split('/')
+      .map(Number) as [number, number, number]
+
+    return {
+      slug: slugify(slug),
+      year,
+      month,
+      day,
+      primary_tag,
+      primary_author,
+    }
+  },
 }
 
 type Repository = typeof repository
 
 export type { Repository }
+
 export default repository

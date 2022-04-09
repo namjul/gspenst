@@ -6,6 +6,9 @@ import pkg from '../package.json'
 import { startTinaServer } from './tinaServer'
 import repository from './repository'
 
+// api lookup: https://webpack.js.org/api/plugins/
+// example: https://github.com/shellscape/webpack-plugin-serve/blob/master/lib/index.js
+
 const key = `${pkg.name}:plugin`
 const log = debug(key)
 let instance: GspenstPlugin | null = null

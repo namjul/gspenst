@@ -29,6 +29,22 @@
       "format": "mdx",
       "fields": [
         {
+          "type": "datetime",
+          "label": "Posted Date",
+          "name": "date",
+          "ui": {
+            "dateFormat": "MMMM DD YYYY",
+            "timeFormat": "hh:mm A"
+          },
+          "namespace": ["page", "date"]
+        },
+        {
+          "type": "string",
+          "label": "Slug",
+          "name": "slug",
+          "namespace": ["page", "slug"]
+        },
+        {
           "type": "string",
           "label": "Title",
           "name": "title",
@@ -79,16 +95,6 @@
           "namespace": ["page", "tags"]
         },
         {
-          "type": "datetime",
-          "label": "Posted Date",
-          "name": "date",
-          "ui": {
-            "dateFormat": "MMMM DD YYYY",
-            "timeFormat": "hh:mm A"
-          },
-          "namespace": ["page", "date"]
-        },
-        {
           "type": "rich-text",
           "label": "Body",
           "name": "body",
@@ -105,6 +111,22 @@
       "path": "content/posts",
       "format": "mdx",
       "fields": [
+        {
+          "type": "datetime",
+          "label": "Posted Date",
+          "name": "date",
+          "ui": {
+            "dateFormat": "MMMM DD YYYY",
+            "timeFormat": "hh:mm A"
+          },
+          "namespace": ["post", "date"]
+        },
+        {
+          "type": "string",
+          "label": "Slug",
+          "name": "slug",
+          "namespace": ["post", "slug"]
+        },
         {
           "type": "string",
           "label": "Title",
@@ -156,16 +178,6 @@
           "namespace": ["post", "tags"]
         },
         {
-          "type": "datetime",
-          "label": "Posted Date",
-          "name": "date",
-          "ui": {
-            "dateFormat": "MMMM DD YYYY",
-            "timeFormat": "hh:mm A"
-          },
-          "namespace": ["post", "date"]
-        },
-        {
           "type": "rich-text",
           "label": "Body",
           "name": "body",
@@ -186,6 +198,22 @@
           "label": "Name",
           "name": "name",
           "namespace": ["author", "name"]
+        },
+        {
+          "type": "datetime",
+          "label": "Posted Date",
+          "name": "date",
+          "ui": {
+            "dateFormat": "MMMM DD YYYY",
+            "timeFormat": "hh:mm A"
+          },
+          "namespace": ["author", "date"]
+        },
+        {
+          "type": "string",
+          "label": "Slug",
+          "name": "slug",
+          "namespace": ["author", "slug"]
         }
       ],
       "namespace": ["author"]
@@ -200,6 +228,22 @@
           "label": "Name",
           "name": "name",
           "namespace": ["tag", "name"]
+        },
+        {
+          "type": "datetime",
+          "label": "Posted Date",
+          "name": "date",
+          "ui": {
+            "dateFormat": "MMMM DD YYYY",
+            "timeFormat": "hh:mm A"
+          },
+          "namespace": ["tag", "date"]
+        },
+        {
+          "type": "string",
+          "label": "Slug",
+          "name": "slug",
+          "namespace": ["tag", "slug"]
         }
       ],
       "namespace": ["tag"]

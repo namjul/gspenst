@@ -106,13 +106,13 @@ export default (_config: NextraBlogTheme) => {
       case 'post':
         entry = props.data.entry.data.getPostDocument.data
         author = entry.authors?.[0]?.author?.data.name
-        tag = entry.tags?.[0]?.tag?.data.name
+        tag = entry.tags?.[0]?.tag?.data.slug
         date = entry.date
         body = entry.body as Root
         break
       case 'page':
         entry = props.data.entry.data.getPageDocument.data
-        tag = entry.tags?.[0]?.tag?.data.name
+        tag = entry.tags?.[0]?.tag?.data.slug
         date = entry.date
         body = entry.body as Root
         break
@@ -123,10 +123,12 @@ export default (_config: NextraBlogTheme) => {
       filename: 'empty',
       route: props.route,
       meta: {
-        type: context ?? 'post',
-        author: author ?? 'no author',
-        tag: tag ?? 'no tag',
-        date: date ?? 'no date',
+        /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+        type: context || 'post',
+        author: author || 'no author',
+        tag: tag || 'no tag',
+        date: date || 'no date',
+        /* eslint-enable */
       },
       pageMap: [],
       titleText: props.headers?.titleText || 'my title', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
