@@ -14,7 +14,7 @@ describe('controller', () => {
   describe('entry', () => {
     const type = 'entry'
     test('page', async () => {
-      const resourceItem = resources['content/pages/about.md']!
+      const resourceItem = resources['content/pages/home.md']!
       const result = await controller({
         type,
         resourceItem: {
@@ -22,17 +22,13 @@ describe('controller', () => {
           resourceType: resourceItem.resourceType,
         },
         request: {
-          path: '/about',
-          slug: 'about',
+          path: '/home',
+          slug: 'home',
         },
       })
       expect(result).toMatchObject({
         props: ok({
           context: 'page',
-          data: {
-            entry: undefined,
-            headers: undefined,
-          },
         }),
       })
     })
@@ -50,10 +46,6 @@ describe('controller', () => {
       expect(result).toMatchObject({
         props: ok({
           context: 'post',
-          data: {
-            entry: undefined,
-            headers: undefined,
-          },
         }),
       })
     })
@@ -73,10 +65,6 @@ describe('controller', () => {
       expect(result).toMatchObject({
         props: ok({
           context: 'index',
-          data: {
-            entry: undefined,
-            posts: [],
-          },
         }),
       })
     })

@@ -6,7 +6,14 @@ import { getTemplateHierarchy } from './dataUtils'
 import getHeaders from './getHeaders'
 import repository from './repository'
 import { ensure } from './utils'
-import type { ContextType, Root, AsyncReturnType, Result } from './types'
+import type {
+  ContextType,
+  Root,
+  AsyncReturnType,
+  Result,
+  // Simplify,
+  ConfigResourceItem,
+} from './types'
 import type { GetPage, GetPost, GetTag, GetAuthor, GetConfig } from './api'
 import * as Errors from './errors'
 
@@ -24,7 +31,7 @@ export type PageProps =
       context: ContextType
       templates: string[]
       data: {
-        entry: GetPost | GetPage | GetAuthor | GetTag | GetConfig | null
+        entry: GetPost | GetPage | GetAuthor | GetTag | GetConfig
         headers?: ReturnType<typeof getHeaders> | undefined
         [name: string]: unknown
       }
@@ -40,45 +47,64 @@ export type PageProps =
 //   }
 // }
 //
-// type PostPageProps = BasePageProps & {
-//   context: Extract<ContextType, 'post'>
-//   data: {
-//     entry: PostResult
+// type PostPageProps = Simplify<
+//   BasePageProps & {
+//     context: Extract<ContextType, 'post'>
+//     data: {
+//       entry: GetPost
+//     }
 //   }
-// }
+// >
 //
-// type PagePageProps = BasePageProps & {
-//   context: Extract<ContextType, 'page'>
-//   data: {
-//     entry: PageResult
+// type PagePageProps = Simplify<
+//   BasePageProps & {
+//     context: Extract<ContextType, 'page'>
+//     data: {
+//       entry: GetPage
+//     }
 //   }
-// }
+// >
 //
-// type AuthorPageProps = BasePageProps & {
-//   context: Extract<ContextType, 'author'>
-//   data: {
-//     entry: AuthorResult
+// type AuthorPageProps = Simplify<
+//   BasePageProps & {
+//     context: Extract<ContextType, 'author'>
+//     data: {
+//       entry: GetAuthor
+//     }
 //   }
-// }
+// >
 //
-// type TagPageProps = BasePageProps & {
-//   context: Extract<ContextType, 'tag'>
-//   data: {
-//     entry: TagResult
+// type TagPageProps = Simplify<
+//   BasePageProps & {
+//     context: Extract<ContextType, 'tag'>
+//     data: {
+//       entry: GetTag
+//     }
 //   }
-// }
+// >
 //
-// type IndexPageProps = BasePageProps & {
-//   context: Extract<ContextType, 'index' | 'home' | 'paged'>
-//   data: {
-//     entry: ConfigResult
-//     posts: PostResult[]
+// type IndexPageProps = Simplify<
+//   BasePageProps & {
+//     context: Extract<ContextType, 'index' | 'home' | 'paged'>
+//     data: {
+//       entry: GetConfig
+//       posts: GetPost[]
+//     }
+//     pagination: Pagination
 //   }
-//   pagination: Pagination
-// }
+// >
 //
-// type CustomPageProps = BasePageProps & {
-//   context: null
+// type CustomPageProps = Simplify<
+//   BasePageProps & {
+//     context: null
+//     data: {
+//       entry: GetConfig
+//     }
+//   }
+// >
+//
+// type InternalPageProps = {
+//   context: 'internal'
 // }
 //
 // export type PageProps =
@@ -88,7 +114,7 @@ export type PageProps =
 //   | PagePageProps
 //   | PostPageProps
 //   | CustomPageProps
-//   | null
+//   | InternalPageProps
 
 type ControllerResult<T> = Result<T>
 
@@ -115,12 +141,12 @@ async function entryController(
 
   const headers = (() => {
     if (dataResult.isOk()) {
-      if (dataResult.value && 'getPostDocument' in dataResult.value.data) {
+      if ('getPostDocument' in dataResult.value.data) {
         return getHeaders(
           dataResult.value.data.getPostDocument.data.body as Root
         )
       }
-      if (dataResult.value && 'getPageDocument' in dataResult.value.data) {
+      if ('getPageDocument' in dataResult.value.data) {
         return getHeaders(
           dataResult.value.data.getPageDocument.data.body as Root
         )
@@ -128,14 +154,46 @@ async function entryController(
     }
   })() // Immediately invoke the function
 
-  return ok({
-    context: resourceType,
-    data: {
-      entry: dataResult.value,
-      headers,
-    },
-    templates: getTemplateHierarchy(routingProperties),
-  })
+  switch (resourceType) {
+    case 'post':
+      return ok({
+        context: 'post',
+        data: {
+          entry: dataResult.value,
+          headers,
+        },
+        templates: getTemplateHierarchy(routingProperties),
+      })
+    case 'page':
+      return ok({
+        context: 'page',
+        data: {
+          entry: dataResult.value,
+          headers,
+        },
+        templates: getTemplateHierarchy(routingProperties),
+      })
+    case 'author':
+      return ok({
+        context: 'author',
+        data: {
+          entry: dataResult.value,
+          headers,
+        },
+        templates: getTemplateHierarchy(routingProperties),
+      })
+    case 'tag':
+      return ok({
+        context: 'tag',
+        data: {
+          entry: dataResult.value,
+          headers,
+        },
+        templates: getTemplateHierarchy(routingProperties),
+      })
+    default:
+      return assertUnreachable(resourceType)
+  }
 }
 
 async function collectionController(
@@ -145,17 +203,20 @@ async function collectionController(
   const posts = Object.values(resources).flatMap((resource) => {
     return resource.resourceType === 'post'
       ? resource.dataResult?.isOk()
-        ? resource.dataResult.value
-          ? [resource.dataResult.value]
-          : []
+        ? [resource.dataResult.value]
         : []
       : []
   })
-  const entry = resources['content/config/index.json']?.dataResult
+  const configResourceID = 'content/config/index.json'
+  const configResourceItem = resources[configResourceID] as
+    | ConfigResourceItem
+    | undefined
 
-  if (!entry) {
+  if (!configResourceItem || !configResourceItem.dataResult) {
     return err(Errors.notFound(routingProperties.request.path))
   }
+
+  const entry = configResourceItem.dataResult
 
   if (entry.isErr()) {
     return entry
@@ -182,11 +243,28 @@ async function collectionController(
 async function customController(
   routingProperties: Extract<RoutingProperties, { type: 'custom' }>
 ): Promise<ControllerResult<PageProps>> {
+  const resources = await repository.getAll()
+
+  const configResourceID = 'content/config/index.json'
+  const configResourceItem = resources[configResourceID] as
+    | ConfigResourceItem
+    | undefined
+
+  if (!configResourceItem || !configResourceItem.dataResult) {
+    return err(Errors.notFound(routingProperties.request.path))
+  }
+
+  const entry = configResourceItem.dataResult
+
+  if (entry.isErr()) {
+    return entry
+  }
+
   return ok({
     context: null,
     templates: getTemplateHierarchy(routingProperties),
     data: {
-      entry: null, // TODO embed the first one from the data list
+      entry: entry.value, // TODO embed the first one from the data list
     },
   })
 }
@@ -238,7 +316,6 @@ export async function controller(
         type: 'redirect',
         redirect: routingProperties,
       }
-
     default:
       return assertUnreachable(type)
   }

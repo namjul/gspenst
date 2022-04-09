@@ -73,6 +73,10 @@ query getResources {
   }
 }
 
+query getConfig {
+  ...ConfigQueryFragment
+}
+
 query getPost($relativePath: String!) {
   ...ConfigQueryFragment
   getPostDocument(relativePath: $relativePath) {

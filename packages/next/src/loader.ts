@@ -92,28 +92,34 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     : serializeError(formatError(routingConfigResult.error))
 
   const imports = `
-import * as server from '@gspenst/next/server'
-import ClientPage from '@gspenst/next/client'
-import withLayout from '${themePath}'
-${themeConfigPath ? `import themeConfig from '${themeConfigPath}'` : ''}
+import * as __gspenst_server__ from '@gspenst/next/server'
+import GspenstClientPage from '@gspenst/next/client'
+import __gspenst_withTheme__ from '${themePath}'
+${
+  themeConfigPath
+    ? `import __gspenst_themeConfig__ from '${themeConfigPath}'`
+    : ''
+}
 `
 
-  const component = `export default function GspenstPage (props) {
-  return <ClientPage pageProps={props} Component={withLayout(${
-    themeConfigPath ? 'themeConfig' : 'null'
-  })} />
+  const component = `
+const GspenstLayout = __gspenst_withTheme__(${
+    themeConfigPath ? '__gspenst_themeConfig__' : 'null'
+  })
+
+export default function GspenstPage (props) {
+  return <GspenstClientPage pageProps={props} Component={GspenstLayout} />
 }`
 
   const dataFetchingFunctions = `
-
 const effectHotReload = ${effectHotReload}
 
 export const getStaticPaths = async () => {
-  return server.getStaticPaths(${routingConfig})()
+  return __gspenst_server__.getStaticPaths(${routingConfig})()
 }
 
 export const getStaticProps = async (context) => {
-  return server.getStaticProps(${routingConfig},'${routingParameter}')(context)
+  return __gspenst_server__.getStaticProps(${routingConfig},'${routingParameter}')(context)
 }
 `
 

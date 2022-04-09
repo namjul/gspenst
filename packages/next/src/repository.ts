@@ -86,7 +86,7 @@ const repository = {
             case 'tag':
               return this.api.getTag({ relativePath })
             case 'config':
-              return this.api.getConfigDocument({ relativePath })
+              return this.api.getConfig()
             default:
               return assertUnreachable(resourceType)
           }

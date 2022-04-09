@@ -288,9 +288,348 @@ export const ExperimentalGetTinaClient = () => {
       }
     },
 
-    getPost: async () => undefined,
-    getPage: async () => undefined,
+    getPost: async () => ({
+      data: {
+        getConfigDocument: {
+          id: 'content/config/index.json',
+          data: {
+            darkMode: true,
+          },
+        },
+        getPostDocument: {
+          __typename: 'PostDocument',
+          id: 'content/posts/3th-post.mdx',
+          data: {
+            title: 'Third Post',
+            heroImg: null,
+            excerpt: {
+              type: 'root',
+              children: [
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                    },
+                  ],
+                },
+              ],
+            },
+            authors: null,
+            tags: null,
+            date: '2021-07-03T20:30:00.000Z',
+            body: {
+              type: 'root',
+              children: [],
+            },
+          },
+        },
+      },
+      query:
+        '\n    query getPost($relativePath: String!) {\n  ...ConfigQueryFragment\n  getPostDocument(relativePath: $relativePath) {\n    ...PostDocumentQueryFragment\n  }\n}\n    \n    fragment ConfigQueryFragment on Query {\n  getConfigDocument(relativePath: "index.json") {\n    id\n    data {\n      ...ConfigParts\n    }\n  }\n}\n    \n    fragment ConfigParts on Config {\n  darkMode\n}\n    \n\n    fragment PostDocumentQueryFragment on PostDocument {\n  __typename\n  id\n  data {\n    ...PostParts\n    tags {\n      tag {\n        ... on TagDocument {\n          data {\n            ...TagParts\n          }\n        }\n      }\n    }\n    authors {\n      author {\n        ... on AuthorDocument {\n          data {\n            ...AuthorParts\n          }\n        }\n      }\n    }\n  }\n}\n    \n    fragment PostParts on Post {\n  title\n  heroImg\n  excerpt\n  authors {\n    __typename\n    author {\n      ... on Document {\n        id\n      }\n    }\n  }\n  tags {\n    __typename\n    tag {\n      ... on Document {\n        id\n      }\n    }\n  }\n  date\n  body\n}\n    \n\n    fragment TagParts on Tag {\n  name\n}\n    \n\n    fragment AuthorParts on Author {\n  name\n}\n    ',
+      variables: {
+        relativePath: '3th-post.mdx',
+      },
+    }),
+    getPage: async () => ({
+      data: {
+        getConfigDocument: {
+          id: 'content/config/index.json',
+          data: {
+            darkMode: true,
+          },
+        },
+        getPageDocument: {
+          __typename: 'PageDocument',
+          id: 'content/pages/home.md',
+          data: {
+            title: null,
+            body: {
+              type: 'root',
+              children: [
+                {
+                  type: 'h1',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Heading 1',
+                    },
+                  ],
+                },
+                {
+                  type: 'h2',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Heading 2',
+                    },
+                  ],
+                },
+                {
+                  type: 'h3',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Heading 3',
+                    },
+                  ],
+                },
+                {
+                  type: 'h4',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Heading 4',
+                    },
+                  ],
+                },
+                {
+                  type: 'h5',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Heading 5',
+                    },
+                  ],
+                },
+                {
+                  type: 'h6',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Heading 6',
+                    },
+                  ],
+                },
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Paragraph',
+                    },
+                  ],
+                },
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'a',
+                      url: 'www.google.at',
+                      children: [
+                        {
+                          type: 'text',
+                          text: 'Link',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'img',
+                      url: '',
+                      alt: '',
+                      caption: null,
+                    },
+                  ],
+                },
+                {
+                  type: 'blockquote',
+                  children: [
+                    {
+                      type: 'p',
+                      children: [
+                        {
+                          type: 'text',
+                          text: 'Quote',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  type: 'ul',
+                  children: [
+                    {
+                      type: 'li',
+                      children: [
+                        {
+                          type: 'lic',
+                          children: [
+                            {
+                              type: 'text',
+                              text: '- U List',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      type: 'li',
+                      children: [
+                        {
+                          type: 'lic',
+                          children: [
+                            {
+                              type: 'text',
+                              text: '- U List',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      type: 'li',
+                      children: [
+                        {
+                          type: 'lic',
+                          children: [
+                            {
+                              type: 'text',
+                              text: '- U List',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  type: 'ol',
+                  children: [
+                    {
+                      type: 'li',
+                      children: [
+                        {
+                          type: 'lic',
+                          children: [
+                            {
+                              type: 'text',
+                              text: '- O List',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      type: 'li',
+                      children: [
+                        {
+                          type: 'lic',
+                          children: [
+                            {
+                              type: 'text',
+                              text: '- O List',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      type: 'li',
+                      children: [
+                        {
+                          type: 'lic',
+                          children: [
+                            {
+                              type: 'text',
+                              text: '- O List',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      code: true,
+                      text: 'Code',
+                    },
+                  ],
+                },
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      bold: true,
+                      type: 'text',
+                      text: 'Bold',
+                      value: 'Bold',
+                    },
+                  ],
+                },
+                {
+                  type: 'code_block',
+                  lang: 'js',
+                  children: [
+                    {
+                      type: 'code_line',
+                      children: [
+                        {
+                          type: 'text',
+                          text: "console.log('Hello World')",
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      italic: true,
+                      type: 'text',
+                      text: 'Italic',
+                      value: 'Italic',
+                    },
+                  ],
+                },
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'a',
+                      url: 'www.google.at',
+                      children: [
+                        {
+                          code: true,
+                          text: 'text',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+      query:
+        '\n    query getPage($relativePath: String!) {\n  ...ConfigQueryFragment\n  getPageDocument(relativePath: $relativePath) {\n    ...PageDocumentQueryFragment\n  }\n}\n    \n    fragment ConfigQueryFragment on Query {\n  getConfigDocument(relativePath: "index.json") {\n    id\n    data {\n      ...ConfigParts\n    }\n  }\n}\n    \n    fragment ConfigParts on Config {\n  darkMode\n}\n    \n\n    fragment PageDocumentQueryFragment on PageDocument {\n  __typename\n  id\n  data {\n    ...PageParts\n  }\n}\n    \n    fragment PageParts on Page {\n  title\n  body\n}\n    ',
+      variables: {
+        relativePath: 'home.md',
+      },
+    }),
     getAuthor: async () => undefined,
-    getConfigDocument: async () => undefined,
+    getConfig: async () => ({
+      data: {
+        getConfigDocument: {
+          id: 'content/config/index.json',
+          data: {
+            darkMode: true,
+          },
+        },
+      },
+      query:
+        '\n    query getConfig {\n  ...ConfigQueryFragment\n}\n    \n    fragment ConfigQueryFragment on Query {\n  getConfigDocument(relativePath: "index.json") {\n    id\n    data {\n      ...ConfigParts\n    }\n  }\n}\n    \n    fragment ConfigParts on Config {\n  darkMode\n}\n    ',
+      variables: {},
+    }),
   }
 }

@@ -23,6 +23,7 @@
     "js-yaml": "^4.1.0",
     "neverthrow": "^4.3.1",
     "path-to-regexp": "^6.2.0",
+    "react-error-boundary": "^3.1.4",
     "react-is": "^18.0.0",
     "remark-gfm": "^1.0.0",
     "runtypes": "^6.5.1",

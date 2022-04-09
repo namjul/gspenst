@@ -47,18 +47,18 @@ type Query {
   getCollections: [Collection!]!
   node(id: String): Node!
   getDocument(collection: String, relativePath: String): DocumentNode!
-  getDocumentList(before: String, after: String, first: Float, last: Float): DocumentConnection!
+  getDocumentList(before: String, after: String, first: Float, last: Float, sort: String): DocumentConnection!
   getDocumentFields: JSON!
   getConfigDocument(relativePath: String): ConfigDocument!
-  getConfigList(before: String, after: String, first: Float, last: Float): ConfigConnection!
+  getConfigList(before: String, after: String, first: Float, last: Float, sort: String): ConfigConnection!
   getPageDocument(relativePath: String): PageDocument!
-  getPageList(before: String, after: String, first: Float, last: Float): PageConnection!
+  getPageList(before: String, after: String, first: Float, last: Float, sort: String): PageConnection!
   getPostDocument(relativePath: String): PostDocument!
-  getPostList(before: String, after: String, first: Float, last: Float): PostConnection!
+  getPostList(before: String, after: String, first: Float, last: Float, sort: String): PostConnection!
   getAuthorDocument(relativePath: String): AuthorDocument!
-  getAuthorList(before: String, after: String, first: Float, last: Float): AuthorConnection!
+  getAuthorList(before: String, after: String, first: Float, last: Float, sort: String): AuthorConnection!
   getTagDocument(relativePath: String): TagDocument!
-  getTagList(before: String, after: String, first: Float, last: Float): TagConnection!
+  getTagList(before: String, after: String, first: Float, last: Float, sort: String): TagConnection!
 }
 
 type DocumentConnectionEdges {
@@ -81,7 +81,7 @@ type Collection {
   matches: String
   templates: [JSON]
   fields: [JSON]
-  documents(before: String, after: String, first: Float, last: Float): DocumentConnection!
+  documents(before: String, after: String, first: Float, last: Float, sort: String): DocumentConnection!
 }
 
 union DocumentNode = ConfigDocument | PageDocument | PostDocument | AuthorDocument | TagDocument

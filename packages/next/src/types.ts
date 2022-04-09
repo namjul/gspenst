@@ -1,5 +1,11 @@
 import { Ok, Err } from 'neverthrow'
-import { LiteralUnion, AsyncReturnType, Split, Entries } from 'type-fest'
+import {
+  LiteralUnion,
+  AsyncReturnType,
+  Split,
+  Entries,
+  Simplify,
+} from 'type-fest'
 import type {
   PageResult,
   PostResult,
@@ -43,38 +49,58 @@ export type QueryOptionsObject<T> = ValidateShape<
   }
 >
 
-export type PageProps = Exclude<InternalPageProps, { context: 'internal' }>
+export type PageProps = Simplify<
+  Exclude<InternalPageProps, { context: 'internal' }> & {}
+>
 
-export type ResourceItem = {
+type BaseResourceItem = {
   id: ID
   filename: string
   path: string
   slug: string
-  resourceType: ResourceType
   relativePath: string
-  // data?: PostResult | PageResult | TagResult | AuthorResult | undefined
-} & (
-  | {
-      resourceType: Extract<ResourceType, 'post'>
-      dataResult?: PostResult
-    }
-  | {
-      resourceType: Extract<ResourceType, 'page'>
-      dataResult?: PageResult
-    }
-  | {
-      resourceType: Extract<ResourceType, 'author'>
-      dataResult?: AuthorResult
-    }
-  | {
-      resourceType: Extract<ResourceType, 'tag'>
-      dataResult?: TagResult
-    }
-  | {
-      resourceType: Extract<ResourceType, 'config'>
-      dataResult?: ConfigResult
-    }
-)
+}
+
+export type PostResourceItem = Simplify<
+  BaseResourceItem & {
+    resourceType: Extract<ResourceType, 'post'>
+    dataResult?: PostResult
+  }
+>
+
+export type PageResourceItem = Simplify<
+  BaseResourceItem & {
+    resourceType: Extract<ResourceType, 'page'>
+    dataResult?: PageResult
+  }
+>
+
+export type TagResourceItem = Simplify<
+  BaseResourceItem & {
+    resourceType: Extract<ResourceType, 'tag'>
+    dataResult?: TagResult
+  }
+>
+
+export type AuthorResourceItem = Simplify<
+  BaseResourceItem & {
+    resourceType: Extract<ResourceType, 'author'>
+    dataResult?: AuthorResult
+  }
+>
+
+export type ConfigResourceItem = Simplify<
+  BaseResourceItem & {
+    resourceType: Extract<ResourceType, 'config'>
+    dataResult?: ConfigResult
+  }
+>
+export type ResourceItem =
+  | PostResourceItem
+  | PageResourceItem
+  | AuthorResourceItem
+  | TagResourceItem
+  | ConfigResourceItem
 
 export type QueryOptions = QueryOptionsObject<{
   slug: string
@@ -89,11 +115,6 @@ export type QueryOptions = QueryOptionsObject<{
 
 export type DataForm = `${Exclude<ResourceType, 'config'>}.${string}`
 
-export type ResourceMapItem = {}
-export type FileMap = {
-  [filePath: string]: ResourceMapItem
-}
-
 export type Options = {
   theme: string
   themeConfig?: string
@@ -104,13 +125,6 @@ export type Options = {
 // export type RemarkPlugin = Unpacked<
 //   Exclude<MDXOptions['remarkPlugins'], undefined>
 // >
-
-export type Config = {
-  filename: string
-  // route: string
-  // meta: string
-  // pageMap: string
-}
 
 /* ------------------------------ Domain Type ------------------------------ */
 
@@ -155,7 +169,7 @@ export type Dict<T = any> = Record<string, T>
 
 export type Unpacked<T> = T extends Array<infer U> ? U : T
 
-export type { LiteralUnion, AsyncReturnType, Split, Entries }
+export type { LiteralUnion, AsyncReturnType, Split, Entries, Simplify }
 
 // MDX
 
