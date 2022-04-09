@@ -6,7 +6,7 @@ const MDXTheme = ({
   content,
   components,
 }: {
-  content: Root
+  content: Root | undefined
   components?: Components<{}> | undefined
 }) => {
   return (

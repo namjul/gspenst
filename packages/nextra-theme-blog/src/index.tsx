@@ -16,8 +16,8 @@ const MdxTheme = (
   }
 
   if (GspenstMdxTheme) {
-    // @ts-expect-error --- TODO solve type incompatibility between tinacms `Components` and `@mdx-js/react`'s `MDXComponents`
     const mdxTheme = (
+      // @ts-expect-error --- TODO solve type incompatibility between tinacms `Components` and `@mdx-js/react`'s `MDXComponents`
       <GspenstMdxTheme components={components} content={props.content} />
     )
     return MDXLayout ? <MDXLayout {...props}>mdxTheme</MDXLayout> : mdxTheme
