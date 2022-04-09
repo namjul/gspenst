@@ -41,7 +41,13 @@ type Heading = {
 type PageOpt = {
   filename: string
   route: string
-  meta: Record<string, any>
+  meta: {
+    author: string
+    date: string
+    tag: string
+    type: string
+    [key: string]: any
+  }
   pageMap: PageMapItem[]
   titleText: string | undefined
   headings?: Heading[]
@@ -92,16 +98,23 @@ export default (_config: NextraBlogTheme) => {
   const Comp = (props: PageProps) => {
     // console.log('PageProps(theme)', props)
 
-    let body
+    let author, tag, date, body, entry
 
     const { context } = props
 
     switch (context) {
       case 'post':
-        body = props.data.entry.data.getPostDocument.data.body as Root
+        entry = props.data.entry.data.getPostDocument.data
+        author = entry.authors?.[0]?.author?.data.name
+        tag = entry.tags?.[0]?.tag?.data.name
+        date = entry.date
+        body = entry.body as Root
         break
       case 'page':
-        body = props.data.entry.data.getPageDocument.data.body as Root
+        entry = props.data.entry.data.getPageDocument.data
+        tag = entry.tags?.[0]?.tag?.data.name
+        date = entry.date
+        body = entry.body as Root
         break
       default:
     }
@@ -110,7 +123,10 @@ export default (_config: NextraBlogTheme) => {
       filename: 'empty',
       route: props.route,
       meta: {
-        type: context,
+        type: context ?? 'post',
+        author: author ?? 'no author',
+        tag: tag ?? 'no tag',
+        date: date ?? 'no date',
       },
       pageMap: [],
       titleText: props.headers?.titleText || 'my title', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
@@ -129,7 +145,7 @@ export default (_config: NextraBlogTheme) => {
     //       route: '/something' + index,
     //       frontMatter: { type: 'post' },
     //     }
-    //   })
+    // })
     //   pageOptions.pageMap = pageMap
     //   pageOptions.meta.type = 'posts'
     // }
