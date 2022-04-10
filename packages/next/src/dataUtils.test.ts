@@ -123,9 +123,9 @@ describe('find', () => {
     expect(resourceItem).toMatchObject(resources['content/posts/0th-post.mdx']!)
   })
   test('complex', () => {
-    // @ts-expect-error- testing with string value '11'
     const resourceItem = find(Object.values(resources), {
       year: 2022,
+      // @ts-expect-error- testing with string value '11'
       month: '11',
     })
     expect(resourceItem).toMatchObject(resources['content/posts/2th-post.mdx']!)

@@ -46,9 +46,3 @@ export function ensureString(value: unknown): asserts value is string {
     throw new Error("Value isn't a string type")
   }
 }
-
-export function ensure(value: unknown): asserts value {
-  if (value === undefined || value === null) {
-    throw new Error('Value must be defined')
-  }
-}

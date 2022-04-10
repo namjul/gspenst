@@ -84,14 +84,17 @@ const repository = {
     )
   },
 
-  async get(id: ID | ID[] = []) {
-    const ids = toArray(id)
-    if (ids.length === 0) {
-      return {}
+  async get<T extends ID | ID[]>(
+    id: T
+  ): Promise<T extends ID[] ? Resources : ResourceItem | undefined> {
+    if (!id) {
+      return undefined as any
     }
-    return (await this.store.hmget('resources', ...ids)).reduce<
-      Promise<Resources>
-    >(async (promise, current) => {
+
+    const ids = toArray(id)
+    const result = await (
+      await this.store.hmget('resources', ...ids)
+    ).reduce<Promise<Resources>>(async (promise, current) => {
       const acc = await promise
 
       ensureString(current)
@@ -122,6 +125,14 @@ const repository = {
       acc[resourceItem.id] = resourceItem
       return Promise.resolve(acc)
     }, Promise.resolve({}))
+
+    if (Array.isArray(id)) {
+      return result as any
+    }
+    // TODO what is going on with the types here?
+    const y = id
+    const x = y as string
+    return result[x] as any
   },
   async getAll() {
     const ids = await this.store.hkeys('resources')

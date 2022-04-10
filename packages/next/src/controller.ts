@@ -4,7 +4,6 @@ import type { RoutingProperties } from './routing'
 import { assertUnreachable } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
-import { ensure } from './utils'
 import type {
   ContextType,
   AsyncReturnType,
@@ -120,17 +119,16 @@ async function entryController(
   routingProperties: Extract<RoutingProperties, { type: 'entry' }>
 ): Promise<ControllerResult<PageProps>> {
   const resourceID = routingProperties.resourceItem.id
-  const resources = await repository.get(resourceID)
-  const resourceItem = resources[resourceID]
-  ensure(resourceItem)
+  const resourceItem = await repository.get(resourceID)
+
+  if (!resourceItem || !resourceItem.dataResult) {
+    return err(Errors.notFound())
+  }
+
   const { resourceType, dataResult } = resourceItem
 
   if (resourceType === 'config') {
     return err(Errors.other('Should never happen.'))
-  }
-
-  if (!dataResult) {
-    return err(Errors.notFound())
   }
 
   if (dataResult.isErr()) {
