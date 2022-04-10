@@ -154,15 +154,20 @@ const repository = {
     } = node
 
     const [slug, primary_tag, primary_author] = (() => {
+      /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+      const empty = 'all'
       if (__typename === 'PageDocument' || __typename === 'PostDocument') {
+        const tag = data.tags?.[0]?.tag
+        const author = data.authors?.[0]?.author
         return [
-          node.data.slug || filename, // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
-          data.tags?.[0]?.tag?.data.slug, // TODO use existing resource
-          data.authors?.[0]?.author?.data.slug, // TODO use existing resource
+          node.data.slug || filename,
+          tag?.data.slug || tag?.sys.filename || empty,
+          author?.data.slug || author?.sys.filename || empty,
         ]
       }
-      return [data.slug || node.data.name || filename] // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
-    })() // Immediately-invoked Function Expression
+      return [data.slug || node.data.name || filename, empty, empty]
+      /* eslint-enable */
+    })() // IIFE
 
     const date = new Date(data.date!) // TODO warn if date is not defined
     const [day, month, year] = date

@@ -40,6 +40,9 @@ query getResources {
                 tag {
                   ... on TagDocument {
                     id
+                    sys {
+                      filename
+                    }
                     data {
                       ...TagParts
                     }
@@ -50,6 +53,9 @@ query getResources {
                 author {
                   ... on AuthorDocument {
                     id
+                    sys {
+                      filename
+                    }
                     data {
                       ...AuthorParts
                     }
@@ -75,6 +81,9 @@ query getResources {
                 tag {
                   ... on TagDocument {
                     id
+                    sys {
+                      filename
+                    }
                     data {
                       ...TagParts
                     }
@@ -85,6 +94,9 @@ query getResources {
                 author {
                   ... on AuthorDocument {
                     id
+                    sys {
+                      filename
+                    }
                     data {
                       ...AuthorParts
                     }

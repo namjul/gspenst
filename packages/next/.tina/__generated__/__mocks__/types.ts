@@ -195,6 +195,7 @@ export const ExperimentalGetTinaClient = () => {
                           {
                             tag: {
                               id: 'content/tags/tag-1.md',
+                              sys: { filename: 'tag-1' },
                               data: { name: 'Tag 1', date: null, slug: null },
                             },
                           },
@@ -203,11 +204,8 @@ export const ExperimentalGetTinaClient = () => {
                           {
                             author: {
                               id: 'content/authors/pedro.md',
-                              data: {
-                                name: 'Pedro',
-                                date: null,
-                                slug: 'pedro',
-                              },
+                              sys: { filename: 'pedro' },
+                              data: { name: 'Pedro', date: null, slug: null },
                             },
                           },
                         ],
@@ -233,6 +231,7 @@ export const ExperimentalGetTinaClient = () => {
                           {
                             tag: {
                               id: 'content/tags/tag-2.md',
+                              sys: { filename: 'tag-2' },
                               data: { name: 'Tag 2', date: null, slug: '' },
                             },
                           },
@@ -241,6 +240,7 @@ export const ExperimentalGetTinaClient = () => {
                           {
                             author: {
                               id: 'content/authors/napolean.md',
+                              sys: { filename: 'napolean' },
                               data: {
                                 name: 'Napolean',
                                 date: null,
@@ -311,12 +311,14 @@ export const ExperimentalGetTinaClient = () => {
                           {
                             tag: {
                               id: 'content/tags/tag-1.md',
+                              sys: { filename: 'tag-1' },
                               data: { name: 'Tag 1', date: null, slug: null },
                             },
                           },
                           {
                             tag: {
                               id: 'content/tags/tag-2.md',
+                              sys: { filename: 'tag-2' },
                               data: { name: 'Tag 2', date: null, slug: '' },
                             },
                           },
@@ -325,6 +327,7 @@ export const ExperimentalGetTinaClient = () => {
                           {
                             author: {
                               id: 'content/authors/napolean.md',
+                              sys: { filename: 'napolean' },
                               data: {
                                 name: 'Napolean',
                                 date: null,
@@ -335,11 +338,8 @@ export const ExperimentalGetTinaClient = () => {
                           {
                             author: {
                               id: 'content/authors/pedro.md',
-                              data: {
-                                name: 'Pedro',
-                                date: null,
-                                slug: 'pedro',
-                              },
+                              sys: { filename: 'pedro' },
+                              data: { name: 'Pedro', date: null, slug: null },
                             },
                           },
                         ],
@@ -425,7 +425,7 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: 'pedro.md',
                         extension: '.md',
                       },
-                      data: { slug: 'pedro', name: 'Pedro', date: null },
+                      data: { slug: null, name: 'Pedro', date: null },
                     },
                   },
                 ],

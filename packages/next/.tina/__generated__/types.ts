@@ -710,6 +710,7 @@ export type GetResourcesQuery = {
                   tag?: {
                     __typename?: 'TagDocument'
                     id: string
+                    sys: { __typename?: 'SystemInfo'; filename: string }
                     data: {
                       __typename?: 'Tag'
                       name?: string | null
@@ -723,6 +724,7 @@ export type GetResourcesQuery = {
                   author?: {
                     __typename?: 'AuthorDocument'
                     id: string
+                    sys: { __typename?: 'SystemInfo'; filename: string }
                     data: {
                       __typename?: 'Author'
                       name?: string | null
@@ -754,6 +756,7 @@ export type GetResourcesQuery = {
                   tag?: {
                     __typename?: 'TagDocument'
                     id: string
+                    sys: { __typename?: 'SystemInfo'; filename: string }
                     data: {
                       __typename?: 'Tag'
                       name?: string | null
@@ -767,6 +770,7 @@ export type GetResourcesQuery = {
                   author?: {
                     __typename?: 'AuthorDocument'
                     id: string
+                    sys: { __typename?: 'SystemInfo'; filename: string }
                     data: {
                       __typename?: 'Author'
                       name?: string | null
@@ -1576,6 +1580,9 @@ export const GetResourcesDocument = gql`
                   tag {
                     ... on TagDocument {
                       id
+                      sys {
+                        filename
+                      }
                       data {
                         ...TagParts
                       }
@@ -1586,6 +1593,9 @@ export const GetResourcesDocument = gql`
                   author {
                     ... on AuthorDocument {
                       id
+                      sys {
+                        filename
+                      }
                       data {
                         ...AuthorParts
                       }
@@ -1611,6 +1621,9 @@ export const GetResourcesDocument = gql`
                   tag {
                     ... on TagDocument {
                       id
+                      sys {
+                        filename
+                      }
                       data {
                         ...TagParts
                       }
@@ -1621,6 +1634,9 @@ export const GetResourcesDocument = gql`
                   author {
                     ... on AuthorDocument {
                       id
+                      sys {
+                        filename
+                      }
                       data {
                         ...AuthorParts
                       }
