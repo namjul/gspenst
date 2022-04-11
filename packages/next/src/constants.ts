@@ -27,3 +27,11 @@ export const contextTypes = [
   'tag',
   'author',
 ] as const
+export const routingContextTypes = [
+  'collection',
+  'channel',
+  'entry',
+  'custom',
+  'redirect',
+  'internal',
+] as const

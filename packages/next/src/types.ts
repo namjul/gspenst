@@ -27,6 +27,7 @@ import {
   resourceTypes,
   queryOptions,
   contextTypes,
+  routingContextTypes,
 } from './constants'
 import type { PageProps as InternalPageProps } from './controller'
 import type { GspenstError } from './errors'
@@ -64,6 +65,7 @@ export type ResourceItemMap = { [id: ID]: ResourceItem }
 export type Taxonomies = typeof taxonomyTypes[number]
 export type QueryType = typeof queryTypes[number]
 export type ResourceType = typeof resourceTypes[number]
+export type RoutingContextType = typeof routingContextTypes[number]
 export type ContextType = typeof contextTypes[number]
 export type QueryOptionsObject<T> = ValidateShape<
   T,

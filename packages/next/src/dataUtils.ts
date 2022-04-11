@@ -1,6 +1,6 @@
 import type { Key } from 'path-to-regexp'
 import type { ResourceItem, DynamicVariables } from './types'
-import type { RoutingProperties } from './routing'
+import type { RoutingContext } from './routing'
 import { assertUnreachable } from './helpers'
 
 // TODO force equal array length https://stackoverflow.com/questions/65361696/arguments-of-same-length-typescript
@@ -23,10 +23,10 @@ export function createDynamicVariables(
   )
 }
 
-export function find(
-  resources: ResourceItem[],
-  partialResourceItem: Partial<ResourceItem>
-): ResourceItem | undefined {
+export function find<T extends ResourceItem>(
+  resources: T[],
+  partialResourceItem: Partial<T>
+): T | undefined {
   return Object.values(resources).find(
     (resourceItem) =>
       (partialResourceItem.resourceType
@@ -44,7 +44,7 @@ export function find(
 }
 
 export function getTemplateHierarchy(
-  routingProperties: NonNullable<RoutingProperties>
+  routingProperties: NonNullable<RoutingContext>
 ) {
   const { type } = routingProperties
   const templateList: string[] = []

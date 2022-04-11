@@ -141,6 +141,7 @@ describe('routing mapping', () => {
         type: 'channel',
         name: 'author',
         templates: [],
+        options: {},
         request: {
           path: '/category-2/pedro/',
         },

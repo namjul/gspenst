@@ -1,6 +1,6 @@
 import { ok, err } from 'neverthrow'
 import type { Redirect } from 'next'
-import type { RoutingProperties } from './routing'
+import type { RoutingContext } from './routing'
 import { assertUnreachable } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
@@ -116,7 +116,7 @@ export type PageProps =
 type ControllerResult<T> = Result<T>
 
 async function entryController(
-  routingProperties: Extract<RoutingProperties, { type: 'entry' }>
+  routingProperties: Extract<RoutingContext, { type: 'entry' }>
 ): Promise<ControllerResult<PageProps>> {
   const resourceID = routingProperties.resourceItem.id
   const resourceItem = await repository.get(resourceID)
@@ -178,7 +178,7 @@ async function entryController(
 }
 
 async function collectionController(
-  routingProperties: Extract<RoutingProperties, { type: 'collection' }>
+  routingProperties: Extract<RoutingContext, { type: 'collection' }>
 ): Promise<ControllerResult<PageProps>> {
   const resources = await repository.getAll()
   const posts = Object.values(resources).flatMap((resource) => {
@@ -223,7 +223,7 @@ async function collectionController(
 }
 
 async function customController(
-  routingProperties: Extract<RoutingProperties, { type: 'custom' }>
+  routingProperties: Extract<RoutingContext, { type: 'custom' }>
 ): Promise<ControllerResult<PageProps>> {
   const resources = await repository.getAll()
 
@@ -258,7 +258,7 @@ export type ControllerReturnType = Exclude<
 >
 
 export async function controller(
-  routingProperties: RoutingProperties
+  routingProperties: RoutingContext
 ): Promise<
   | { type: 'props'; props: ControllerResult<PageProps> }
   | { type: 'redirect'; redirect: Redirect }

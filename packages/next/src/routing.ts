@@ -8,6 +8,7 @@ import type {
   PageResourceItem,
   ConfigResourceItem,
   ResourceType,
+  RoutingContextType,
   Entries,
   Taxonomies,
 } from './types'
@@ -40,9 +41,15 @@ export type Redirect =
       basePath?: false
     }
 
-export type RoutingProperties =
+type Request = {
+  path: string
+  slug?: string | undefined
+  page?: number | undefined
+}
+
+export type RoutingContext =
   | {
-      type: 'collection'
+      type: Extract<RoutingContextType, 'collection'>
       name: string
       options?: {
         filter?: string
@@ -53,46 +60,33 @@ export type RoutingProperties =
         [key: string]: DataQuery
       }
       templates?: string[]
-      request: {
-        path: string
-        slug?: string | undefined
-        page?: number | undefined
-      }
+      request: Request
     }
   | {
-      type: 'channel'
+      type: Extract<RoutingContextType, 'channel'>
       name: string
       data?: {
         [key: string]: DataQuery
       }
       templates?: string[]
-      request: {
-        path: string
-        slug?: string | undefined
-        page?: number | undefined
-      }
+      request: Request
     }
   | {
-      type: 'entry'
+      type: Extract<RoutingContextType, 'entry'>
       resourceItem: Pick<ResourceItem, 'id' | 'resourceType'>
       templates?: string[]
-      request: {
-        path: string
-        slug: string
-      }
+      request: Request
     }
   | {
-      type: 'custom'
+      type: Extract<RoutingContextType, 'custom'>
       data?: {
         [key: string]: DataQuery
       }
       templates?: string[]
-      request: {
-        path: string
-      }
+      request: Request
     }
-  | ({ type: 'redirect' } & Redirect)
-  | { type: 'internal' }
+  | ({ type: Extract<RoutingContextType, 'redirect'> } & Redirect)
+  | { type: Extract<RoutingContextType, 'internal'> }
   | null
 
 class ParentRouter {
@@ -114,7 +108,7 @@ class ParentRouter {
     request: string,
     resources: EntryResourceItem[],
     routers: ParentRouter[]
-  ): Promise<RoutingProperties> {
+  ): Promise<RoutingContext> {
     if (this.nextRouter) {
       return this.nextRouter.handle(request, resources, routers)
     }
@@ -134,6 +128,14 @@ class ParentRouter {
     return routers.find((router) =>
       router.isRedirectEnabled(resourceType, slug)
     )
+  }
+
+  createRedirectContext(router: ParentRouter) {
+    return {
+      type: 'redirect' as const,
+      destination: router.getRoute(),
+      statusCode: 301 as const,
+    }
   }
 
   isRedirectEnabled(resourceType: ResourceType, slug: string): boolean {
@@ -199,13 +201,16 @@ class StaticRoutesRouter extends ParentRouter {
     const [match] = this.routeRegExp.exec(request) ?? []
 
     if (match) {
-      return {
-        type: 'custom' as const,
-        templates: [...toArray(this.config.template ?? [])],
-        request: { path: match },
-      }
+      return this.#createContext(match)
     }
     return super.handle(request, resources, routers)
+  }
+  #createContext(_path: string) {
+    return {
+      type: 'custom' as const,
+      templates: [...toArray(this.config.template ?? [])],
+      request: { path: _path },
+    }
   }
   resolvePaths(): string[] {
     return [this.getRoute()]
@@ -235,13 +240,7 @@ class TaxonomyRouter extends ParentRouter {
     const [pageMatch, page] = this.pagesRegExp.exec(request) ?? []
 
     if (pageMatch && page) {
-      return {
-        type: 'channel' as const,
-        name: this.taxonomyKey,
-        options: {},
-        request: { path: pageMatch, page: Number(page) },
-        templates: [],
-      }
+      return this.#createContext(pageMatch, Number(page))
     }
 
     const [permalinkMatch, ...dynamicVariables] =
@@ -258,7 +257,7 @@ class TaxonomyRouter extends ParentRouter {
         resourceType: this.taxonomyKey,
       }) // TODO use queryFilter
 
-      if (resourceItem && resourceItem.resourceType !== 'config') {
+      if (resourceItem) {
         // CASE check if its redirected
         const router = this.respectDominantRouter(
           routers,
@@ -267,24 +266,26 @@ class TaxonomyRouter extends ParentRouter {
         )
 
         if (router) {
-          return {
-            type: 'redirect' as const,
-            destination: router.getRoute(),
-            statusCode: 301 as const,
-          }
+          return this.createRedirectContext(router)
         }
 
-        return {
-          type: 'channel' as const,
-          name: this.taxonomyKey,
-          templates: [],
-          request: {
-            path: permalinkMatch,
-          },
-        }
+        return this.#createContext(permalinkMatch)
       }
     }
     return super.handle(request, resources, routers)
+  }
+
+  #createContext(_path: string, page?: number) {
+    return {
+      type: 'channel' as const,
+      name: this.taxonomyKey,
+      options: {},
+      request: {
+        path: _path,
+        page,
+      },
+      templates: [],
+    }
   }
 
   resolvePaths(resources: EntryResourceItemMap): string[] {
@@ -324,25 +325,13 @@ class CollectionRouter extends ParentRouter {
     const [routeMatch] = this.routeRegExp.exec(request) ?? []
 
     if (routeMatch) {
-      return {
-        type: 'collection' as const,
-        name: this.routerName,
-        options: {},
-        request: { path: routeMatch },
-        templates: [],
-      }
+      return this.#createEntriesContext(routeMatch)
     }
 
     const [pageMatch, page] = this.pagesRegExp.exec(request) ?? []
 
     if (pageMatch && page) {
-      return {
-        type: 'collection' as const,
-        name: this.routerName,
-        options: {},
-        request: { path: pageMatch, page: Number(page) },
-        templates: [],
-      }
+      return this.#createEntriesContext(pageMatch, Number(page))
     }
 
     const [permalinkMatch, ...dynamicVariables] =
@@ -359,7 +348,7 @@ class CollectionRouter extends ParentRouter {
         resourceType: 'post',
       }) // TODO use queryFilter
 
-      if (resourceItem && resourceItem.resourceType !== 'config') {
+      if (resourceItem) {
         // CASE check if its redirected
         const router = this.respectDominantRouter(
           routers,
@@ -368,27 +357,38 @@ class CollectionRouter extends ParentRouter {
         )
 
         if (router) {
-          return {
-            type: 'redirect' as const,
-            destination: router.getRoute(),
-            statusCode: 301 as const,
-          }
+          return this.createRedirectContext(router)
         }
 
-        return {
-          type: 'entry' as const,
-          resourceItem: {
-            id: resourceItem.id,
-            resourceType: resourceItem.resourceType,
-          },
-          request: { path: permalinkMatch, slug: resourceItem.slug },
-          templates: [],
-        }
+        return this.#createEntryContext(permalinkMatch, resourceItem)
       }
     }
 
     return super.handle(request, resources, routers)
   }
+
+  #createEntriesContext(_path: string, page?: number) {
+    return {
+      type: 'collection' as const,
+      name: this.routerName,
+      options: {},
+      request: { path: _path, page },
+      templates: [],
+    }
+  }
+
+  #createEntryContext(_path: string, resourceItem: EntryResourceItem) {
+    return {
+      type: 'entry' as const,
+      resourceItem: {
+        id: resourceItem.id,
+        resourceType: resourceItem.resourceType,
+      },
+      request: { path: _path, slug: resourceItem.slug },
+      templates: [],
+    }
+  }
+
   resolvePaths(resources: EntryResourceItemMap, postStack: ID[]): string[] {
     const paths: string[] = []
     const collectionPosts: EntryResourceItem[] = []
@@ -444,31 +444,32 @@ class StaticPagesRouter extends ParentRouter {
       const router = this.respectDominantRouter(routers, 'page', slug)
 
       if (router) {
-        return {
-          type: 'redirect' as const,
-          destination: router.getRoute(),
-          statusCode: 301 as const,
-        }
+        return this.createRedirectContext(router)
       }
 
       const resourceItem = find(this.resources, { slug, resourceType: 'page' })
       if (resourceItem) {
-        return {
-          type: 'entry' as const,
-          resourceItem: {
-            id: resourceItem.id,
-            resourceType: resourceItem.resourceType,
-          },
-          request: {
-            path: match,
-            slug,
-          },
-          templates: [],
-        }
+        return this.#createContext(match, resourceItem)
       }
     }
     return super.handle(request, resources, routers)
   }
+
+  #createContext(_path: string, resourceItem: EntryResourceItem) {
+    return {
+      type: 'entry' as const,
+      resourceItem: {
+        id: resourceItem.id,
+        resourceType: resourceItem.resourceType,
+      },
+      request: {
+        path: _path,
+        slug: resourceItem.slug,
+      },
+      templates: [],
+    }
+  }
+
   resolvePaths(resources: EntryResourceItemMap): string[] {
     const paths = Object.values(resources)
       .filter(
@@ -549,7 +550,7 @@ export class RouterManager {
     return paths
   }
 
-  async handle(params: string[] | string = []): Promise<RoutingProperties> {
+  async handle(params: string[] | string = []): Promise<RoutingContext> {
     if (params) {
       const request = `/${toArray(params).join('/')}/`
       const result = this.router.handle(
