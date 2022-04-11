@@ -7,6 +7,7 @@ import type { PageProps } from './controller'
 import { controller } from './controller'
 import repository from './repository'
 import { formatError } from './errors'
+import resolvePaths from './resolvePaths'
 
 const log = debug('@gspenst/next:server')
 
@@ -42,10 +43,8 @@ export const getStaticPaths =
     } else {
       log('Page [...slug].js getStaticPaths')
 
-      const resources = await repository.getAll()
-      const router = new RouterManager(routingConfig, resources)
+      const paths = await resolvePaths(routingConfig)
 
-      const paths = await router.resolvePaths()
       return {
         paths,
         fallback: staticExport ? false : 'blocking',

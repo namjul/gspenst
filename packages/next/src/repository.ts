@@ -28,9 +28,11 @@ type GetValue<T extends ID | ID[]> = T extends ID[]
   ? Resources<ResourceItem>
   : ResourceItem | undefined
 
-type GetAllValue<T extends Optional<ResourceType>> = T extends null | undefined
-  ? Resources<ResourceItem>
-  : Resources<Extract<ResourceItem, { resourceType: T }>>
+type GetAllValue<T extends Optional<ResourceType>> = Resources<
+  T extends null | undefined
+    ? ResourceItem
+    : Extract<ResourceItem, { resourceType: T }>
+>
 
 const repository = {
   store: redis,
@@ -152,12 +154,11 @@ const repository = {
     const resources = await this.get(ids)
 
     if (resourceType) {
-      const x = Object.fromEntries(
+      return Object.fromEntries(
         Object.entries(resources).filter((resource) => {
           return resource[1].resourceType === resourceType
         })
-      )
-      return x as GetAllValue<T>
+      ) as GetAllValue<T>
     }
     return resources as GetAllValue<T>
   },

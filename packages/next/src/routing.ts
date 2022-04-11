@@ -1,7 +1,7 @@
 import path from 'path'
 import { slugify } from '@tryghost/string'
 import debug from 'debug'
-import { compile, pathToRegexp } from 'path-to-regexp'
+import { pathToRegexp } from 'path-to-regexp'
 import type { Key } from 'path-to-regexp'
 import { toArray } from './utils'
 import type {
@@ -24,8 +24,6 @@ import type {
 import { find, createDynamicVariables } from './dataUtils'
 
 const log = debug('@gspenst/next:routing')
-
-const POST_PER_PAGE = 5
 
 type EntryResourceItem = Exclude<ResourceItem, ConfigResourceItem>
 type EntryResourceItemMap = { [id: ID]: EntryResourceItem }
@@ -117,10 +115,6 @@ class ParentRouter {
     return null
   }
 
-  resolvePaths(_resources: EntryResourceItemMap, _resourceIDs: ID[]): string[] {
-    return []
-  }
-
   respectDominantRouter(
     routers: ParentRouter[],
     resourceType: ResourceType,
@@ -180,9 +174,6 @@ class AdminRouter extends ParentRouter {
     }
     return super.handle(request, resources, routers)
   }
-  resolvePaths(): string[] {
-    return ['/admin']
-  }
 }
 
 class StaticRoutesRouter extends ParentRouter {
@@ -212,9 +203,6 @@ class StaticRoutesRouter extends ParentRouter {
       templates: [...toArray(this.config.template ?? [])],
       request: { path: _path },
     }
-  }
-  resolvePaths(): string[] {
-    return [this.getRoute()]
   }
 }
 
@@ -287,16 +275,6 @@ class TaxonomyRouter extends ParentRouter {
       },
       templates: [],
     }
-  }
-
-  resolvePaths(resources: EntryResourceItemMap): string[] {
-    const paths = Object.values(resources)
-      .filter((resourceItem) => resourceItem.resourceType === this.taxonomyKey)
-      .reduce<string[]>((acc, resourceItem) => {
-        acc.push(compile(this.permalink)(resourceItem))
-        return acc
-      }, [])
-    return paths
   }
 }
 
@@ -391,33 +369,6 @@ class CollectionRouter extends ParentRouter {
       templates: [...toArray(this.config.template ?? [])],
     }
   }
-
-  resolvePaths(resources: EntryResourceItemMap, postStack: ID[]): string[] {
-    const paths: string[] = []
-    const collectionPosts: EntryResourceItem[] = []
-    for (let len = postStack.length - 1; len >= 0; len -= 1) {
-      const resourceItemID = postStack[len]
-      const resourceItem = resourceItemID && resources[resourceItemID]
-      if (resourceItem) {
-        collectionPosts.push(resourceItem)
-        const isOwned = true // TODO filter using filter option `const isOwned = this.nql.queryJSON(resource)`
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (isOwned) {
-          paths.push(compile(this.permalink)(resourceItem))
-
-          // Remove owned resourceItem
-          postStack.splice(len, 1)
-        }
-      }
-    }
-
-    const paginationPath = Array.from(
-      { length: collectionPosts.length / POST_PER_PAGE },
-      (_, i) => path.join(this.getRoute(), 'page', String(i + 1))
-    )
-
-    return [this.getRoute()].concat(paths).concat(paginationPath)
-  }
 }
 
 class StaticPagesRouter extends ParentRouter {
@@ -471,19 +422,6 @@ class StaticPagesRouter extends ParentRouter {
       },
       templates: [],
     }
-  }
-
-  resolvePaths(resources: EntryResourceItemMap): string[] {
-    const paths = Object.values(resources)
-      .filter(
-        (resourceItem): resourceItem is PageResourceItem =>
-          resourceItem.resourceType === 'page'
-      )
-      .reduce<string[]>((acc, resourceItem) => {
-        acc.push(`/${resourceItem.slug}`)
-        return acc
-      }, [])
-    return paths
   }
 }
 
@@ -540,17 +478,6 @@ export class RouterManager {
     this.routers.reduce((acc, router) => acc.mount(router))
 
     log('Routers instantiated')
-  }
-
-  async resolvePaths(): Promise<string[]> {
-    const postStack = Object.values(this.resources)
-      .filter(({ resourceType }) => resourceType === 'post')
-      .map(({ id }) => id)
-    const paths = this.routers.flatMap((router) =>
-      router.resolvePaths(this.resources, postStack)
-    )
-    log('Router paths: ', paths)
-    return paths
   }
 
   async handle(params: string[] | string = []): Promise<RoutingContext> {
