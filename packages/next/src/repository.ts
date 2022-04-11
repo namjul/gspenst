@@ -1,4 +1,4 @@
-import slugify from 'slugify'
+import { slugify } from '@tryghost/string'
 import type { GetResourcesQuery } from '../.tina/__generated__/types'
 import redis from './redis'
 import * as api from './api'

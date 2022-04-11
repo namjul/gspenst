@@ -1,4 +1,5 @@
 import path from 'path'
+import { slugify } from '@tryghost/string'
 import debug from 'debug'
 import { compile, pathToRegexp } from 'path-to-regexp'
 import type { Key } from 'path-to-regexp'
@@ -130,10 +131,10 @@ class ParentRouter {
     )
   }
 
-  createRedirectContext(router: ParentRouter) {
+  createRedirectContext(router: ParentRouter | string) {
     return {
       type: 'redirect' as const,
-      destination: router.getRoute(),
+      destination: typeof router === 'string' ? router : router.getRoute(),
       statusCode: 301 as const,
     }
   }
@@ -553,6 +554,10 @@ export class RouterManager {
   async handle(params: string[] | string = []): Promise<RoutingContext> {
     if (params) {
       const request = `/${toArray(params).join('/')}/`
+      const requestSlugified = `/${toArray(params).map(slugify).join('/')}/`
+      if (request !== requestSlugified) {
+        return this.router.createRedirectContext(requestSlugified)
+      }
       const result = this.router.handle(
         request,
         Object.values(this.resources),
