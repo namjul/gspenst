@@ -46,3 +46,16 @@ export function ensureString(value: unknown): asserts value is string {
     throw new Error("Value isn't a string type")
   }
 }
+
+export async function findAsyncSequential<T>(
+  array: T[],
+  predicate: (t: T) => Promise<boolean>
+): Promise<T | undefined> {
+  for (const t of array) {
+    // eslint-disable-next-line no-await-in-loop
+    if (await predicate(t)) {
+      return t
+    }
+  }
+  return undefined
+}

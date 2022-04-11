@@ -15,17 +15,18 @@ describe('controller', () => {
     const type = 'entry'
     test('page', async () => {
       const resourceItem = resources['content/pages/home.md']!
-      const result = await controller({
-        type,
-        resourceItem: {
-          id: resourceItem.id,
+      const result = await controller([
+        {
+          type,
           resourceType: resourceItem.resourceType,
+          request: {
+            path: '/home',
+            variables: {
+              slug: 'home',
+            },
+          },
         },
-        request: {
-          path: '/home',
-          slug: 'home',
-        },
-      })
+      ])
       expect(result).toMatchObject({
         props: ok({
           context: 'page',
@@ -35,14 +36,18 @@ describe('controller', () => {
     test('post', async () => {
       const resourceItem = resources['content/posts/1th-post.mdx']!
       expect(resourceItem).toBeDefined()
-      const result = await controller({
-        type,
-        resourceItem,
-        request: {
-          path: '/posts/first-post',
-          slug: 'first-post',
+      const result = await controller([
+        {
+          type,
+          resourceType: 'post',
+          request: {
+            path: '/posts/1th-post',
+            variables: {
+              slug: '1th-post',
+            },
+          },
         },
-      })
+      ])
       expect(result).toMatchObject({
         props: ok({
           context: 'post',
@@ -55,13 +60,15 @@ describe('controller', () => {
   describe('collection', () => {
     const type = 'collection'
     test('simple', async () => {
-      const result = await controller({
-        type,
-        name: 'index',
-        request: {
-          path: '/',
+      const result = await controller([
+        {
+          type,
+          name: 'index',
+          request: {
+            path: '/',
+          },
         },
-      })
+      ])
       expect(result).toMatchObject({
         props: ok({
           context: 'index',

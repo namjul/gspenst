@@ -45,6 +45,8 @@ export const getStaticPaths =
 
       const paths = await resolvePaths(routingConfig)
 
+      console.log('PATHS: ', paths)
+
       return {
         paths,
         fallback: staticExport ? false : 'blocking',
@@ -68,9 +70,7 @@ export const getStaticProps =
       const resources = await repository.getAll()
       const router = new RouterManager(routingConfig, resources)
 
-      const routingProperties = params
-        ? await router.handle(params[routingParameter])
-        : null
+      const routingProperties = await router.handle(params?.[routingParameter])
 
       const result = await controller(routingProperties)
 

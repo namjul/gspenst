@@ -152,7 +152,7 @@ export type QueryOptions = QueryOptionsObject<{
 }>
 
 export type DataQuery = {
-  resourceType: ResourceType
+  resourceType: Exclude<ResourceType, 'config'>
   type: QueryType
   options: QueryOptions
 }

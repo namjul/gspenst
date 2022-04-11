@@ -1,27 +1,6 @@
-import type { Key } from 'path-to-regexp'
-import type { ResourceItem, DynamicVariables } from './types'
+import type { ResourceItem } from './types'
 import type { RoutingContext } from './routing'
 import { assertUnreachable } from './helpers'
-
-// TODO force equal array length https://stackoverflow.com/questions/65361696/arguments-of-same-length-typescript
-export function createDynamicVariables(
-  dynamicVariables: string[],
-  keys: Key[]
-) {
-  return dynamicVariables.reduce<Partial<DynamicVariables>>(
-    (acc, current, index) => {
-      const key = keys[index]
-      if (key) {
-        return {
-          [key.name]: current,
-          ...acc,
-        }
-      }
-      return acc
-    },
-    {}
-  )
-}
 
 export function find<T extends ResourceItem>(
   resources: T[],
@@ -59,9 +38,9 @@ export function getTemplateHierarchy(
       if ('name' in routingProperties && routingProperties.name !== 'index') {
         templateList.unshift(routingProperties.name)
 
-        if (routingProperties.request.slug) {
+        if (routingProperties.request.variables?.slug) {
           templateList.unshift(
-            `${routingProperties.name}-${routingProperties.request.slug}`
+            `${routingProperties.name}-${routingProperties.request.variables.slug}`
           )
         }
       }
@@ -77,16 +56,14 @@ export function getTemplateHierarchy(
     case 'entry':
       templateList.push('post')
 
-      if (routingProperties.resourceItem.resourceType === 'page') {
+      if (routingProperties.resourceType === 'page') {
         templateList.unshift('page')
       }
 
       templateList.unshift(
-        `${
-          routingProperties.resourceItem.resourceType === 'page'
-            ? 'page'
-            : 'post'
-        }-${routingProperties.request.slug}`
+        `${routingProperties.resourceType === 'page' ? 'page' : 'post'}-${
+          routingProperties.request.variables?.slug
+        }`
       ) // slugTemplate
 
       // TODO add customTemplate

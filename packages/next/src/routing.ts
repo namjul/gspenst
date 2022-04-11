@@ -13,6 +13,8 @@ import type {
   Entries,
   Taxonomies,
   DataQuery,
+  DynamicVariables,
+  Simplify,
 } from './types'
 
 import type {
@@ -21,7 +23,6 @@ import type {
   CollectionConfig,
   Data,
 } from './validate'
-import { find, createDynamicVariables } from './dataUtils'
 
 const log = debug('@gspenst/next:routing')
 
@@ -42,8 +43,9 @@ export type Redirect =
 
 type Request = {
   path: string
-  slug?: string | undefined
-  page?: number | undefined
+  variables?:
+    | Simplify<Partial<DynamicVariables & { page: number | undefined }>>
+    | undefined
 }
 
 export type RoutingContext =
@@ -72,7 +74,7 @@ export type RoutingContext =
     }
   | {
       type: Extract<RoutingContextType, 'entry'>
-      resourceItem: Pick<ResourceItem, 'id' | 'resourceType'>
+      resourceType: ResourceType
       templates?: string[]
       request: Request
     }
@@ -86,7 +88,6 @@ export type RoutingContext =
     }
   | ({ type: Extract<RoutingContextType, 'redirect'> } & Redirect)
   | { type: Extract<RoutingContextType, 'internal'> }
-  | null
 
 class ParentRouter {
   name: string
@@ -105,20 +106,20 @@ class ParentRouter {
 
   async handle(
     request: string,
-    resources: EntryResourceItem[],
+    contexts: RoutingContext[],
     routers: ParentRouter[]
-  ): Promise<RoutingContext> {
+  ): Promise<RoutingContext[]> {
     if (this.nextRouter) {
-      return this.nextRouter.handle(request, resources, routers)
+      return this.nextRouter.handle(request, contexts, routers)
     }
 
-    return null
+    return contexts
   }
 
   respectDominantRouter(
     routers: ParentRouter[],
     resourceType: ResourceType,
-    slug: string
+    slug: string | undefined
   ): ParentRouter | undefined {
     return routers.find((router) =>
       router.isRedirectEnabled(resourceType, slug)
@@ -133,7 +134,10 @@ class ParentRouter {
     }
   }
 
-  isRedirectEnabled(resourceType: ResourceType, slug: string): boolean {
+  isRedirectEnabled(
+    resourceType: ResourceType,
+    slug: string | undefined
+  ): boolean {
     if (!this.data || Object.keys(this.data.router).length === 0) {
       return false
     }
@@ -146,6 +150,28 @@ class ParentRouter {
       }
       return false
     })
+  }
+
+  // TODO force equal array length https://stackoverflow.com/questions/65361696/arguments-of-same-length-typescript
+  extractVariables(values: string[], keys: Key[]) {
+    return values.reduce<Partial<DynamicVariables & { page: number }>>(
+      // return values.reduce<Record<string, string>>(
+      (acc, current, index) => {
+        const key = keys[index]
+        if (key && current) {
+          return {
+            [key.name]: ['page', 'year', 'month', 'day'].includes(
+              key.name as string
+            )
+              ? Number(current)
+              : current,
+            ...acc,
+          }
+        }
+        return acc
+      },
+      {}
+    )
   }
 
   getRoute() {
@@ -162,17 +188,17 @@ class AdminRouter extends ParentRouter {
   }
   async handle(
     request: string,
-    resources: EntryResourceItem[],
+    context: RoutingContext[],
     routers: ParentRouter[]
   ) {
     const [match] = this.routeRegExp.exec(request) ?? []
 
     if (match) {
-      return {
+      context.push({
         type: 'internal' as const,
-      }
+      })
     }
-    return super.handle(request, resources, routers)
+    return super.handle(request, context, routers)
   }
 }
 
@@ -187,15 +213,15 @@ class StaticRoutesRouter extends ParentRouter {
   }
   async handle(
     request: string,
-    resources: EntryResourceItem[],
+    contexts: RoutingContext[],
     routers: ParentRouter[]
   ) {
     const [match] = this.routeRegExp.exec(request) ?? []
 
     if (match) {
-      return this.#createContext(match)
+      contexts.push(this.#createContext(match))
     }
-    return super.handle(request, resources, routers)
+    return super.handle(request, contexts, routers)
   }
   #createContext(_path: string) {
     return {
@@ -210,68 +236,49 @@ class TaxonomyRouter extends ParentRouter {
   taxonomyKey: Taxonomies
   permalink: string
   permalinkRegExp: RegExp
-  pagesRegExp: RegExp
   keys: Key[] = []
   constructor(key: Taxonomies, permalink: string) {
     super('TaxonomyRouter')
     this.taxonomyKey = key
     this.permalink = permalink
-    this.permalinkRegExp = pathToRegexp(this.permalink, this.keys)
-    this.pagesRegExp = pathToRegexp(
-      path.join(`/${this.taxonomyKey}`, 'page', ':page(\\d+)')
+    this.permalinkRegExp = pathToRegexp(
+      path.join(`/${this.permalink}`, '{page/:page(\\d+)}?'),
+      this.keys
     )
   }
   async handle(
     request: string,
-    resources: EntryResourceItem[],
+    contexts: RoutingContext[],
     routers: ParentRouter[]
   ) {
-    const [pageMatch, page] = this.pagesRegExp.exec(request) ?? []
-
-    if (pageMatch && page) {
-      return this.#createContext(pageMatch, Number(page))
-    }
-
     const [permalinkMatch, ...dynamicVariables] =
       this.permalinkRegExp.exec(request) ?? []
 
     if (permalinkMatch && dynamicVariables.length) {
-      const dynamicVariable = createDynamicVariables(
-        dynamicVariables,
-        this.keys
+      const variables = this.extractVariables(dynamicVariables, this.keys)
+
+      const router = this.respectDominantRouter(
+        routers,
+        this.taxonomyKey,
+        variables.slug
       )
-
-      const resourceItem = find(resources, {
-        ...dynamicVariable,
-        resourceType: this.taxonomyKey,
-      }) // TODO use queryFilter
-
-      if (resourceItem) {
-        // CASE check if its redirected
-        const router = this.respectDominantRouter(
-          routers,
-          this.taxonomyKey,
-          resourceItem.slug
-        )
-
-        if (router) {
-          return this.createRedirectContext(router)
-        }
-
-        return this.#createContext(permalinkMatch)
+      if (router) {
+        contexts.push(this.createRedirectContext(router))
+      } else {
+        contexts.push(this.#createContext(permalinkMatch, variables))
       }
     }
-    return super.handle(request, resources, routers)
+    return super.handle(request, contexts, routers)
   }
 
-  #createContext(_path: string, page?: number) {
+  #createContext(_path: string, variables?: Request['variables']) {
     return {
       type: 'channel' as const,
       name: this.taxonomyKey,
       options: {},
       request: {
         path: _path,
-        page,
+        variables,
       },
       templates: [],
     }
@@ -300,52 +307,41 @@ class CollectionRouter extends ParentRouter {
   }
   async handle(
     request: string,
-    resources: EntryResourceItem[],
+    contexts: RoutingContext[],
     routers: ParentRouter[]
   ) {
     const [routeMatch] = this.routeRegExp.exec(request) ?? []
 
     if (routeMatch) {
-      return this.#createEntriesContext(routeMatch)
+      contexts.push(this.#createEntriesContext(routeMatch))
     }
 
     const [pageMatch, page] = this.pagesRegExp.exec(request) ?? []
 
     if (pageMatch && page) {
-      return this.#createEntriesContext(pageMatch, Number(page))
+      contexts.push(this.#createEntriesContext(pageMatch, Number(page)))
     }
 
     const [permalinkMatch, ...dynamicVariables] =
       this.permalinkRegExp.exec(request) ?? []
 
     if (permalinkMatch && dynamicVariables.length) {
-      const dynamicVariable = createDynamicVariables(
-        dynamicVariables,
-        this.keys
+      const dynamicVariable = this.extractVariables(dynamicVariables, this.keys)
+
+      const router = this.respectDominantRouter(
+        routers,
+        'post',
+        dynamicVariable.slug
       )
 
-      const resourceItem = find(resources, {
-        ...dynamicVariable,
-        resourceType: 'post',
-      }) // TODO use queryFilter
-
-      if (resourceItem) {
-        // CASE check if its redirected
-        const router = this.respectDominantRouter(
-          routers,
-          'post',
-          resourceItem.slug
-        )
-
-        if (router) {
-          return this.createRedirectContext(router)
-        }
-
-        return this.#createEntryContext(permalinkMatch, resourceItem)
+      if (router) {
+        contexts.push(this.createRedirectContext(router))
+      } else {
+        contexts.push(this.#createEntryContext(permalinkMatch, dynamicVariable))
       }
     }
 
-    return super.handle(request, resources, routers)
+    return super.handle(request, contexts, routers)
   }
 
   #createEntriesContext(_path: string, page?: number) {
@@ -353,19 +349,16 @@ class CollectionRouter extends ParentRouter {
       type: 'collection' as const,
       name: this.routerName,
       options: {},
-      request: { path: _path, page },
+      request: { path: _path, variables: { page } },
       templates: [...toArray(this.config.template ?? [])],
     }
   }
 
-  #createEntryContext(_path: string, resourceItem: EntryResourceItem) {
+  #createEntryContext(_path: string, variables: Request['variables']) {
     return {
       type: 'entry' as const,
-      resourceItem: {
-        id: resourceItem.id,
-        resourceType: resourceItem.resourceType,
-      },
-      request: { path: _path, slug: resourceItem.slug },
+      resourceType: 'post' as const,
+      request: { path: _path, variables },
       templates: [...toArray(this.config.template ?? [])],
     }
   }
@@ -388,7 +381,7 @@ class StaticPagesRouter extends ParentRouter {
   }
   async handle(
     request: string,
-    resources: EntryResourceItem[],
+    contexts: RoutingContext[],
     routers: ParentRouter[]
   ) {
     const [match, slug] = this.routeRegExp.exec(request) ?? []
@@ -398,27 +391,22 @@ class StaticPagesRouter extends ParentRouter {
       const router = this.respectDominantRouter(routers, 'page', slug)
 
       if (router) {
-        return this.createRedirectContext(router)
-      }
-
-      const resourceItem = find(this.resources, { slug, resourceType: 'page' })
-      if (resourceItem) {
-        return this.#createContext(match, resourceItem)
+        contexts.push(this.createRedirectContext(router))
+      } else {
+        // const resourceItem = find(this.resources, { slug, resourceType: 'page' })
+        contexts.push(this.#createContext(match, { slug }))
       }
     }
-    return super.handle(request, resources, routers)
+    return super.handle(request, contexts, routers)
   }
 
-  #createContext(_path: string, resourceItem: EntryResourceItem) {
+  #createContext(_path: string, variables?: Request['variables']) {
     return {
       type: 'entry' as const,
-      resourceItem: {
-        id: resourceItem.id,
-        resourceType: resourceItem.resourceType,
-      },
+      resourceType: 'page' as const,
       request: {
         path: _path,
-        slug: resourceItem.slug,
+        variables,
       },
       templates: [],
     }
@@ -480,20 +468,15 @@ export class RouterManager {
     log('Routers instantiated')
   }
 
-  async handle(params: string[] | string = []): Promise<RoutingContext> {
+  async handle(params: string[] | string = []): Promise<RoutingContext[]> {
     if (params) {
       const request = `/${toArray(params).join('/')}/`
       const requestSlugified = `/${toArray(params).map(slugify).join('/')}/`
       if (request !== requestSlugified) {
-        return this.router.createRedirectContext(requestSlugified)
+        return [this.router.createRedirectContext(requestSlugified)]
       }
-      const result = this.router.handle(
-        request,
-        Object.values(this.resources),
-        this.routers
-      )
-      return result
+      return this.router.handle(request, [], this.routers)
     }
-    return null
+    return []
   }
 }

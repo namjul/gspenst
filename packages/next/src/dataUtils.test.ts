@@ -40,7 +40,9 @@ describe('computing template hierarchy', () => {
         name: 'tag',
         request: {
           path: '/tag/',
-          slug: 'my-tag',
+          variables: {
+            slug: 'my-tag',
+          },
         },
       })
     ).toEqual(['tag-my-tag', 'tag', 'index'])
@@ -50,7 +52,9 @@ describe('computing template hierarchy', () => {
         name: 'author',
         request: {
           path: '/author/napoleon/',
-          slug: 'napoleon',
+          variables: {
+            slug: 'napoleon',
+          },
         },
       })
     ).toEqual(['author-napoleon', 'author', 'index'])
@@ -59,26 +63,24 @@ describe('computing template hierarchy', () => {
     expect(
       getTemplateHierarchy({
         type: 'entry',
-        resourceItem: {
-          id: 'content/posts/first-post.md',
-          resourceType: 'post',
-        },
+        resourceType: 'post',
         request: {
           path: '/first-post/',
-          slug: 'first-post',
+          variables: {
+            slug: 'first-post',
+          },
         },
       })
     ).toEqual(['post-first-post', 'post'])
     expect(
       getTemplateHierarchy({
         type: 'entry',
-        resourceItem: {
-          id: 'content/pages/portfolio.md',
-          resourceType: 'page',
-        },
+        resourceType: 'page',
         request: {
           path: '/portfolio/',
-          slug: 'portfolio',
+          variables: {
+            slug: 'portfolio',
+          },
         },
       })
     ).toEqual(['page-portfolio', 'page', 'post'])

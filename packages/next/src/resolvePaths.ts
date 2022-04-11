@@ -55,10 +55,17 @@ export async function resolveTaxonomiesPaths(
       const acc = await promise
 
       if (permalink) {
-        const taxonomyEntries = await repository.getAll(key)
-        Object.values(taxonomyEntries).forEach((taxonomy) => {
+        const taxonomyEntries = Object.values(await repository.getAll(key))
+        taxonomyEntries.forEach((taxonomy) => {
           acc.push(compile(permalink)(taxonomy))
         })
+
+        Array.from(
+          { length: taxonomyEntries.length / POST_PER_PAGE },
+          (_, i) => {
+            return acc.push(path.join(permalink, 'page', String(i + 1)))
+          }
+        )
       }
 
       return Promise.resolve(acc)
