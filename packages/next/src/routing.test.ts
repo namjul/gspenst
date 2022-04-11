@@ -274,7 +274,7 @@ describe('routing mapping', () => {
           id: 'content/posts/5th-post.mdx',
           resourceType: 'post',
         },
-        templates: [],
+        templates: ['index'],
         type: 'entry',
       })
     })

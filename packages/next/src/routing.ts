@@ -306,13 +306,15 @@ class CollectionRouter extends ParentRouter {
   routeRegExp: RegExp
   permalinkRegExp: RegExp
   pagesRegExp: RegExp
+  config: CollectionConfig
   keys: Key[] = []
   constructor(mainRoute: string, config: CollectionConfig) {
     super('CollectionRouter', config.data)
     this.route = mainRoute
+    this.config = config
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
     this.routeRegExp = pathToRegexp(this.route)
-    this.permalink = config.permalink
+    this.permalink = this.config.permalink
     this.permalinkRegExp = pathToRegexp(this.permalink, this.keys)
     this.pagesRegExp = pathToRegexp(
       path.join(this.route, 'page', ':page(\\d+)')
@@ -374,7 +376,7 @@ class CollectionRouter extends ParentRouter {
       name: this.routerName,
       options: {},
       request: { path: _path, page },
-      templates: [],
+      templates: [...toArray(this.config.template ?? [])],
     }
   }
 
@@ -386,7 +388,7 @@ class CollectionRouter extends ParentRouter {
         resourceType: resourceItem.resourceType,
       },
       request: { path: _path, slug: resourceItem.slug },
-      templates: [],
+      templates: [...toArray(this.config.template ?? [])],
     }
   }
 
