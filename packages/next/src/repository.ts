@@ -4,7 +4,13 @@ import redis from './redis'
 import * as api from './api'
 import { toArray, ensureString } from './utils'
 import { assertUnreachable } from './helpers'
-import type { ResourceType, ResourceItem, Get, DynamicVariables } from './types'
+import type {
+  ResourceType,
+  ResourceItem,
+  Get,
+  DynamicVariables,
+  Optional,
+} from './types'
 import { find } from './dataUtils'
 
 type ResourcesNode = Get<
@@ -14,9 +20,17 @@ type ResourcesNode = Get<
 
 // https://github.com/sindresorhus/map-obj
 
-type Resources = {
-  [id: ID]: ResourceItem
+type Resources<T extends ResourceItem> = {
+  [id: ID]: T
 }
+
+type GetValue<T extends ID | ID[]> = T extends ID[]
+  ? Resources<ResourceItem>
+  : ResourceItem | undefined
+
+type GetAllValue<T extends Optional<ResourceType>> = T extends null | undefined
+  ? Resources<ResourceItem>
+  : Resources<Extract<ResourceItem, { resourceType: T }>>
 
 const repository = {
   store: redis,
@@ -84,17 +98,15 @@ const repository = {
     )
   },
 
-  async get<T extends ID | ID[]>(
-    id: T
-  ): Promise<T extends ID[] ? Resources : ResourceItem | undefined> {
+  async get<T extends ID | ID[]>(id: T): Promise<GetValue<T>> {
     if (!id) {
-      return undefined as any
+      return undefined as GetValue<T>
     }
 
     const ids = toArray(id)
     const result = await (
       await this.store.hmget('resources', ...ids)
-    ).reduce<Promise<Resources>>(async (promise, current) => {
+    ).reduce<Promise<Resources<ResourceItem>>>(async (promise, current) => {
       const acc = await promise
 
       ensureString(current)
@@ -127,17 +139,29 @@ const repository = {
     }, Promise.resolve({}))
 
     if (Array.isArray(id)) {
-      return result as any
+      return result as GetValue<T>
     }
-    // TODO what is going on with the types here?
-    const y = id
-    const x = y as string
-    return result[x] as any
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion --- for some reason typescript does recognize id as `string |  string[]`
+    return result[id as string] as GetValue<T>
   },
-  async getAll() {
+
+  async getAll<T extends Optional<ResourceType>>(
+    resourceType?: T
+  ): Promise<GetAllValue<T>> {
     const ids = await this.store.hkeys('resources')
-    return this.get(ids)
+    const resources = await this.get(ids)
+
+    if (resourceType) {
+      const x = Object.fromEntries(
+        Object.entries(resources).filter((resource) => {
+          return resource[1].resourceType === resourceType
+        })
+      )
+      return x as GetAllValue<T>
+    }
+    return resources as GetAllValue<T>
   },
+
   async find(
     partialResourceItem: Partial<ResourceItem>
   ): Promise<ResourceItem | undefined> {
