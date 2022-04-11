@@ -177,6 +177,52 @@ async function entryController(
   }
 }
 
+async function channelController(
+  routingProperties: Extract<RoutingContext, { type: 'channel' }>
+): Promise<ControllerResult<PageProps>> {
+  const resources = await repository.getAll()
+  const posts = Object.values(resources).flatMap((resource) => {
+    return resource.resourceType === 'post'
+      ? resource.dataResult?.isOk()
+        ? [resource.dataResult.value]
+        : []
+      : []
+  })
+
+  const configResourceID = 'content/config/index.json'
+  const configResourceItem = resources[configResourceID] as
+    | ConfigResourceItem
+    | undefined
+
+  if (!configResourceItem || !configResourceItem.dataResult) {
+    return err(Errors.notFound(routingProperties.request.path))
+  }
+
+  const entry = configResourceItem.dataResult
+
+  if (entry.isErr()) {
+    return entry
+  }
+
+  return ok({
+    context: 'index',
+    templates: getTemplateHierarchy(routingProperties),
+    data: {
+      entry: entry.value,
+      posts,
+    },
+    pagination: {
+      page: 1,
+      prev: null,
+      next: null,
+      pages: 1,
+      total: 10,
+      limit: 10,
+    },
+    route: routingProperties.request.path,
+  })
+}
+
 async function collectionController(
   routingProperties: Extract<RoutingContext, { type: 'collection' }>
 ): Promise<ControllerResult<PageProps>> {
@@ -278,7 +324,7 @@ export async function controller(
     case 'channel':
       return {
         type: 'props',
-        props: err(Errors.other('Todo channel controller')),
+        props: await channelController(routingProperties),
       } // TODO
     case 'entry':
       return {
