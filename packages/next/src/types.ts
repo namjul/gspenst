@@ -142,14 +142,20 @@ export type ResourceItem =
 
 export type QueryOptions = QueryOptionsObject<{
   slug: Slug
-  filter: string | Nullish
-  limit: number | 'all' | Nullish
-  order: string | Nullish // '{property} ASC|DSC'
+  filter: Optional<string>
+  limit: Optional<number | 'all'>
+  order: Optional<string> // '{property} ASC|DSC'
   // include: string
   // visibility: string
   // status: string
   // page: string
 }>
+
+export type DataQuery = {
+  resourceType: ResourceType
+  type: QueryType
+  options: QueryOptions
+}
 
 export type DataForm = `${Exclude<ResourceType, 'config'>}.${string}`
 

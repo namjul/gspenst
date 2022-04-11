@@ -12,6 +12,7 @@ import type {
   RoutingContextType,
   Entries,
   Taxonomies,
+  DataQuery,
 } from './types'
 
 import type {
@@ -19,7 +20,6 @@ import type {
   RouteConfig,
   CollectionConfig,
   Data,
-  DataQuery,
 } from './validate'
 import { find, createDynamicVariables } from './dataUtils'
 

@@ -16,7 +16,7 @@ import {
   taxonomyTypes,
 } from './constants'
 import type {
-  QueryType,
+  DataQuery,
   Taxonomies,
   DataForm,
   Split,
@@ -33,12 +33,6 @@ type Result<T, E = ValidationError> = Ok<T, E> | Err<never, E>
 export type Permalink = string
 
 export type Template = string | undefined
-
-export type DataQuery = {
-  resourceType: Exclude<ResourceType, 'config'>
-  type: QueryType
-  options: QueryOptions
-}
 
 export type DataRouter = {
   redirect: boolean
