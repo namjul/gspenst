@@ -80,7 +80,6 @@ export const getStaticProps =
       }
 
       if (result.props.isErr()) {
-        // TODO differ between notfound and 500 errors
         if (result.props.error.type === 'NotFound') {
           return {
             notFound: true,
