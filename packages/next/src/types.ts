@@ -156,6 +156,7 @@ export type DataForm = `${Exclude<ResourceType, 'config'>}.${string}`
 export type Options = {
   theme: string
   themeConfig?: string
+  staticExport?: boolean
   // mdxOptions?: MDXOptions
   // sources?: Source[]
 }

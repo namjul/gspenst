@@ -40,7 +40,11 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   this.cacheable(true)
 
   const options = this.getOptions()
-  const { theme, themeConfig } = options
+  const {
+    theme,
+    themeConfig,
+    staticExport = process.env.GSPENST_STATIC_EXPORT,
+  } = options
 
   log('Run loader')
 
@@ -115,7 +119,7 @@ export default function GspenstPage (props) {
 const effectHotReload = ${effectHotReload}
 
 export const getStaticPaths = async () => {
-  return __gspenst_server__.getStaticPaths(${routingConfig})()
+  return __gspenst_server__.getStaticPaths(${routingConfig}, !!${staticExport})()
 }
 
 export const getStaticProps = async (context) => {

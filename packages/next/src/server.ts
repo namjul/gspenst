@@ -32,7 +32,10 @@ function isErrorLike(
 }
 
 export const getStaticPaths =
-  (routingConfig: RoutingConfigResolved | ErrorLike): GetStaticPaths =>
+  (
+    routingConfig: RoutingConfigResolved | ErrorLike,
+    staticExport: boolean
+  ): GetStaticPaths =>
   async () => {
     if (isErrorLike(routingConfig)) {
       throw deserializeError(routingConfig)
@@ -45,7 +48,7 @@ export const getStaticPaths =
       const paths = await router.resolvePaths()
       return {
         paths,
-        fallback: false, // TODO allow for `blocking`
+        fallback: staticExport ? false : 'blocking',
       }
     }
   }

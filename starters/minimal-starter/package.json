@@ -6,7 +6,7 @@
     "build": "next build",
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "dev": "next dev",
-    "export": "npm run build && next export",
+    "export": "GSPENST_STATIC_EXPORT=true npm run build && next export",
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },
