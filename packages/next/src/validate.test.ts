@@ -184,81 +184,21 @@ describe('routing object validation & transformation', () => {
         ).toBe(true)
       })
     })
-
-    describe('transformation', () => {
-      describe('template property', () => {
-        test('single value', () => {
-          const object = validate({
-            routes: {
-              '/about/': 'about',
-              '/me/': {
-                template: 'me',
-              },
-            },
-            collections: {
-              '/': {
-                permalink: '/{slug}/',
-                template: 'test',
-              },
-            },
-          })
-          expect(object).toEqual(
-            ok([
-              {
-                routes: {
-                  '/about/': {
-                    template: 'about',
-                  },
-                  '/me/': {
-                    template: 'me',
-                  },
-                },
-                collections: {
-                  '/': {
-                    permalink: '/:slug/',
-                    template: 'test',
-                  },
-                },
-                taxonomies: {},
-              },
-            ])
-          )
-        })
-      })
-
-      test('shortform', () => {
+  })
+  describe('transformation', () => {
+    describe('template property', () => {
+      test('single value', () => {
         const object = validate({
           routes: {
-            '/food/': {
-              data: 'page.food',
-              template: 'Page',
-            },
-            '/music/': {
-              data: 'tag.music',
-            },
-            '/ghost/': {
-              data: 'author.ghost',
-            },
-            '/lala/': {
-              data: {
-                carsten: 'author.carsten',
-              },
+            '/about/': 'about',
+            '/me/': {
+              template: 'me',
             },
           },
           collections: {
-            '/more/': {
-              permalink: '/{slug}/',
-              data: 'page.home',
-              filter: 'tags:[photo, video] + id:-5',
-              limit: 4,
-            },
-            '/podcast/': {
-              permalink: '/podcast/{slug}/',
-              data: 'tag.something',
-            },
             '/': {
               permalink: '/{slug}/',
-              data: 'tag.sport',
+              template: 'test',
             },
           },
         })
@@ -266,125 +206,17 @@ describe('routing object validation & transformation', () => {
           ok([
             {
               routes: {
-                '/food/': {
-                  data: {
-                    query: {
-                      page: {
-                        resourceType: 'page',
-                        type: 'read',
-                        options: {
-                          slug: 'food',
-                        },
-                      },
-                    },
-                    router: {
-                      page: [{ redirect: true, slug: 'food' }],
-                    },
-                  },
-                  template: 'Page',
+                '/about/': {
+                  template: 'about',
                 },
-                '/music/': {
-                  data: {
-                    query: {
-                      tag: {
-                        resourceType: 'tag',
-                        type: 'read',
-                        options: {
-                          slug: 'music',
-                        },
-                      },
-                    },
-                    router: {
-                      tag: [{ redirect: true, slug: 'music' }],
-                    },
-                  },
-                },
-                '/ghost/': {
-                  data: {
-                    query: {
-                      author: {
-                        resourceType: 'author',
-                        type: 'read',
-                        options: {
-                          slug: 'ghost',
-                        },
-                      },
-                    },
-                    router: {
-                      author: [{ redirect: true, slug: 'ghost' }],
-                    },
-                  },
-                },
-                '/lala/': {
-                  data: {
-                    query: {
-                      carsten: {
-                        resourceType: 'author',
-                        type: 'read',
-                        options: {
-                          slug: 'carsten',
-                        },
-                      },
-                    },
-                    router: {
-                      author: [{ redirect: true, slug: 'carsten' }],
-                    },
-                  },
+                '/me/': {
+                  template: 'me',
                 },
               },
               collections: {
-                '/more/': {
-                  permalink: '/:slug/',
-                  filter: 'tags:[photo, video] + id:-5',
-                  limit: 4,
-                  data: {
-                    query: {
-                      page: {
-                        resourceType: 'page',
-                        type: 'read',
-                        options: {
-                          slug: 'home',
-                        },
-                      },
-                    },
-                    router: {
-                      page: [{ redirect: true, slug: 'home' }],
-                    },
-                  },
-                },
-                '/podcast/': {
-                  permalink: '/podcast/:slug/',
-                  data: {
-                    query: {
-                      tag: {
-                        resourceType: 'tag',
-                        type: 'read',
-                        options: {
-                          slug: 'something',
-                        },
-                      },
-                    },
-                    router: {
-                      tag: [{ redirect: true, slug: 'something' }],
-                    },
-                  },
-                },
                 '/': {
                   permalink: '/:slug/',
-                  data: {
-                    query: {
-                      tag: {
-                        resourceType: 'tag',
-                        type: 'read',
-                        options: {
-                          slug: 'sport',
-                        },
-                      },
-                    },
-                    router: {
-                      tag: [{ redirect: true, slug: 'sport' }],
-                    },
-                  },
+                  template: 'test',
                 },
               },
               taxonomies: {},
@@ -392,57 +224,216 @@ describe('routing object validation & transformation', () => {
           ])
         )
       })
+    })
 
-      test('longform', () => {
-        const object = validate({
-          routes: {
-            '/food/': {
-              data: {
-                people: {
-                  resourceType: 'author',
-                  type: 'read',
-                  slug: 'gutelaune',
-                  redirect: false,
-                },
-              },
-              template: 'Page',
+    test('shortform', () => {
+      const object = validate({
+        routes: {
+          '/food/': {
+            data: 'page.food',
+            template: 'Page',
+          },
+          '/music/': {
+            data: 'tag.music',
+          },
+          '/ghost/': {
+            data: 'author.ghost',
+          },
+          '/lala/': {
+            data: {
+              carsten: 'author.carsten',
             },
           },
-        })
-
-        expect(object).toEqual(
-          ok([
-            {
-              routes: {
-                '/food/': {
-                  template: 'Page',
-                  data: {
-                    query: {
-                      people: {
-                        options: {
-                          slug: 'gutelaune',
-                        },
-                        resourceType: 'author',
-                        type: 'read',
-                      },
+        },
+        collections: {
+          '/more/': {
+            permalink: '/{slug}/',
+            data: 'page.home',
+            filter: 'tags:[photo, video] + id:-5',
+            limit: 4,
+          },
+          '/podcast/': {
+            permalink: '/podcast/{slug}/',
+            data: 'tag.something',
+          },
+          '/': {
+            permalink: '/{slug}/',
+            data: 'tag.sport',
+          },
+        },
+      })
+      expect(object).toEqual(
+        ok([
+          {
+            routes: {
+              '/food/': {
+                data: {
+                  query: {
+                    page: {
+                      resourceType: 'page',
+                      type: 'read',
+                      slug: 'food',
+                      redirect: true,
                     },
-                    router: {
-                      author: [
-                        {
-                          redirect: false,
-                          slug: 'gutelaune',
-                        },
-                      ],
+                  },
+                  router: {
+                    page: [{ redirect: true, slug: 'food' }],
+                  },
+                },
+                template: 'Page',
+              },
+              '/music/': {
+                data: {
+                  query: {
+                    tag: {
+                      resourceType: 'tag',
+                      type: 'read',
+                      slug: 'music',
+                      redirect: true,
                     },
+                  },
+                  router: {
+                    tag: [{ redirect: true, slug: 'music' }],
                   },
                 },
               },
-              collections: {},
-              taxonomies: {},
+              '/ghost/': {
+                data: {
+                  query: {
+                    author: {
+                      resourceType: 'author',
+                      type: 'read',
+                      slug: 'ghost',
+                      redirect: true,
+                    },
+                  },
+                  router: {
+                    author: [{ redirect: true, slug: 'ghost' }],
+                  },
+                },
+              },
+              '/lala/': {
+                data: {
+                  query: {
+                    carsten: {
+                      resourceType: 'author',
+                      type: 'read',
+                      slug: 'carsten',
+                      redirect: true,
+                    },
+                  },
+                  router: {
+                    author: [{ redirect: true, slug: 'carsten' }],
+                  },
+                },
+              },
             },
-          ])
-        )
+            collections: {
+              '/more/': {
+                permalink: '/:slug/',
+                filter: 'tags:[photo, video] + id:-5',
+                limit: 4,
+                data: {
+                  query: {
+                    page: {
+                      resourceType: 'page',
+                      type: 'read',
+                      slug: 'home',
+                      redirect: true,
+                    },
+                  },
+                  router: {
+                    page: [{ redirect: true, slug: 'home' }],
+                  },
+                },
+              },
+              '/podcast/': {
+                permalink: '/podcast/:slug/',
+                data: {
+                  query: {
+                    tag: {
+                      resourceType: 'tag',
+                      type: 'read',
+                      slug: 'something',
+                      redirect: true,
+                    },
+                  },
+                  router: {
+                    tag: [{ redirect: true, slug: 'something' }],
+                  },
+                },
+              },
+              '/': {
+                permalink: '/:slug/',
+                data: {
+                  query: {
+                    tag: {
+                      resourceType: 'tag',
+                      type: 'read',
+                      slug: 'sport',
+                      redirect: true,
+                    },
+                  },
+                  router: {
+                    tag: [{ redirect: true, slug: 'sport' }],
+                  },
+                },
+              },
+            },
+            taxonomies: {},
+          },
+        ])
+      )
+    })
+
+    test('longform', () => {
+      const object = validate({
+        routes: {
+          '/food/': {
+            data: {
+              people: {
+                resourceType: 'author',
+                type: 'read',
+                slug: 'gutelaune',
+                redirect: false,
+              },
+            },
+            template: 'Page',
+          },
+        },
       })
+
+      expect(object).toEqual(
+        ok([
+          {
+            routes: {
+              '/food/': {
+                template: 'Page',
+                data: {
+                  query: {
+                    people: {
+                      redirect: false,
+                      slug: 'gutelaune',
+                      resourceType: 'author',
+                      type: 'read',
+                    },
+                  },
+                  router: {
+                    author: [
+                      {
+                        redirect: false,
+                        slug: 'gutelaune',
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            collections: {},
+            taxonomies: {},
+          },
+        ])
+      )
     })
   })
 })

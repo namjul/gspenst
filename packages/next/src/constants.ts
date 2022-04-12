@@ -7,8 +7,7 @@ export const resourceTypes = [
   'page',
   ...taxonomyTypes,
 ] as const
-export const queryOptions = [
-  'slug',
+export const queryFilterOptions = [
   'filter',
   'limit',
   'order',
@@ -17,7 +16,7 @@ export const queryOptions = [
   // 'status',
   // 'page',
 ] as const
-export const contextTypes = [
+export const themeContextTypes = [
   null,
   'index',
   'home',

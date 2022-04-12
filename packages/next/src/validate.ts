@@ -21,8 +21,8 @@ import type {
   DataForm,
   Split,
   ResourceType,
-  QueryOptions,
   Nullish,
+  QueryFilterOptions,
 } from './types'
 import * as Errors from './errors'
 
@@ -79,7 +79,7 @@ export type RoutingConfigResolved = {
 
 type DataShortForm = string | { [name: string]: string }
 type DataLongForm = {
-  [name: string]: Omit<DataQuery, 'options'> & QueryOptions & DataRouter
+  [name: string]: DataQuery
 }
 
 export type RoutingConfigUnresolved = {
@@ -98,7 +98,7 @@ export type RoutingConfigUnresolved = {
           permalink: Permalink
           template?: string | undefined
           data?: DataShortForm | DataLongForm
-        } & QueryOptions
+        } & QueryFilterOptions
       }
     | undefined
   taxonomies?:
@@ -336,80 +336,56 @@ function transformData(data?: DataShortForm | DataLongForm) {
   const query: Data['query'] = {}
 
   Object.entries(dataEntries).forEach(([key, value]) => {
-    const defaultRouterOptions = {
-      redirect: true,
-    }
-    const defaultQueryOptions = {
-      post: {
-        type: queryTypes[0],
-      },
-      page: {
-        type: queryTypes[0],
-      },
-      author: {
-        type: queryTypes[0],
-      },
-      tag: {
-        type: queryTypes[0],
-      },
-    } as const
-
-    let queryOptions: DataQuery, routerOptions: DataRouter
+    let queryOptions: DataQuery, routerOptions: DataRouter | undefined
 
     if (isDataObject(value)) {
-      const { type, resourceType, slug, redirect, filter, limit, order } = value
-
-      queryOptions = {
-        ...defaultQueryOptions[resourceType],
-        ...removeNullish({
+      if (value.type === 'read') {
+        const { type, slug, redirect, resourceType } = value
+        queryOptions = {
           type,
           resourceType,
-          options: {
-            slug,
-            filter,
-            limit,
-            order,
-          },
-        }),
-      }
-
-      routerOptions = {
-        ...defaultRouterOptions,
-        ...removeNullish({
-          redirect,
           slug,
-        }),
+          redirect: redirect ?? true,
+        }
+        routerOptions = {
+          redirect: redirect ?? true,
+          slug,
+        }
+      } else {
+        const { type, resourceType, filter, limit, order } = value
+        queryOptions = {
+          type,
+          resourceType,
+          filter,
+          limit,
+          order,
+        }
       }
     } else {
       // CASE short form
       const [resourceType, slug] = value.split('.') as Split<DataForm, '.'>
 
       queryOptions = {
-        ...defaultQueryOptions[resourceType],
-        ...removeNullish({
-          resourceType,
-          options: {
-            slug,
-            filter: undefined,
-            limit: undefined,
-            order: undefined,
-          },
-        }),
+        type: 'read',
+        resourceType,
+        slug,
+        redirect: true,
       }
 
       routerOptions = {
-        ...defaultRouterOptions,
-        ...removeNullish({
-          slug,
-        }),
+        redirect: true,
+        slug,
       }
     }
+
     query[key] = queryOptions
     const { resourceType } = queryOptions
     if (!router[resourceType]) {
       router[resourceType] = []
     }
-    router[resourceType]?.push(routerOptions)
+    if (routerOptions) {
+      router[resourceType]?.push(routerOptions)
+    }
   }, {})
 
   return {

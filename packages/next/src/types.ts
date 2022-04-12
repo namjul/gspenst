@@ -25,8 +25,8 @@ import {
   queryTypes,
   taxonomyTypes,
   resourceTypes,
-  queryOptions,
-  contextTypes,
+  queryFilterOptions,
+  themeContextTypes,
   routingContextTypes,
   dynamicVariables,
 } from './constants'
@@ -67,11 +67,11 @@ export type Taxonomies = typeof taxonomyTypes[number]
 export type QueryType = typeof queryTypes[number]
 export type ResourceType = typeof resourceTypes[number]
 export type RoutingContextType = typeof routingContextTypes[number]
-export type ContextType = typeof contextTypes[number]
-export type QueryOptionsObject<T> = ValidateShape<
+export type ThemeContextType = typeof themeContextTypes[number]
+export type QueryFilterOptionsObject<T> = ValidateShape<
   T,
   {
-    [key in typeof queryOptions[number]]: any
+    [key in typeof queryFilterOptions[number]]: any
   }
 >
 export type DynamicVariablesObject<T> = ValidateShape<
@@ -147,8 +147,7 @@ export type ResourceItem =
   | TagResourceItem
   | ConfigResourceItem
 
-export type QueryOptions = QueryOptionsObject<{
-  slug: Slug
+export type QueryFilterOptions = QueryFilterOptionsObject<{
   filter: Optional<string>
   limit: Optional<number | 'all'>
   order: Optional<string> // '{property} ASC|DSC'
@@ -158,11 +157,17 @@ export type QueryOptions = QueryOptionsObject<{
   // page: string
 }>
 
-export type DataQuery = {
-  resourceType: Exclude<ResourceType, 'config'>
-  type: QueryType
-  options: QueryOptions
-}
+export type DataQuery =
+  | {
+      type: Extract<QueryType, 'read'>
+      resourceType: Exclude<ResourceType, 'config'>
+      slug: Slug
+      redirect?: boolean
+    }
+  | ({
+      type: Extract<QueryType, 'browse'>
+      resourceType: Exclude<ResourceType, 'config'>
+    } & QueryFilterOptions)
 
 export type DataForm = `${Exclude<ResourceType, 'config'>}.${string}`
 

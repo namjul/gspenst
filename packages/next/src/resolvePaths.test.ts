@@ -33,12 +33,7 @@ describe('resolvePaths', () => {
                   page: {
                     type: 'read',
                     resourceType: 'page',
-                    options: {
-                      slug: 'home',
-                      filter: undefined,
-                      order: undefined,
-                      limit: undefined,
-                    },
+                    slug: 'home',
                   },
                 },
                 router: {
