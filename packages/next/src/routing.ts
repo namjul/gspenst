@@ -37,7 +37,7 @@ export type Redirect =
 
 type Request = {
   path: string
-  variables?:
+  params?:
     | Simplify<Partial<DynamicVariables & { page: number | undefined }>>
     | undefined
 }
@@ -46,38 +46,37 @@ export type RoutingContext =
   | {
       type: Extract<RoutingContextType, 'collection'>
       name: string
-      options?: {
-        filter?: string
-        order?: string
-        limit?: string
-      }
-      data?: {
+      filter?: string
+      order?: string
+      limit?: string
+      data: {
         [key: string]: DataQuery
       }
-      templates?: string[]
+      templates: string[]
       request: Request
     }
   | {
       type: Extract<RoutingContextType, 'channel'>
       name: string
-      data?: {
+      filter?: string
+      data: {
         [key: string]: DataQuery
       }
-      templates?: string[]
+      templates: string[]
       request: Request
     }
   | {
       type: Extract<RoutingContextType, 'entry'>
       resourceType: ResourceType
-      templates?: string[]
+      templates: string[]
       request: Request
     }
   | {
       type: Extract<RoutingContextType, 'custom'>
-      data?: {
+      data: {
         [key: string]: DataQuery
       }
-      templates?: string[]
+      templates: string[]
       request: Request
     }
   | ({ type: Extract<RoutingContextType, 'redirect'> } & Redirect)
@@ -147,7 +146,7 @@ class ParentRouter {
   }
 
   // TODO force equal array length https://stackoverflow.com/questions/65361696/arguments-of-same-length-typescript
-  extractVariables(values: string[], keys: Key[]) {
+  extractParams(values: string[], keys: Key[]) {
     return values.reduce<Partial<DynamicVariables & { page: number }>>(
       // return values.reduce<Record<string, string>>(
       (acc, current, index) => {
@@ -222,6 +221,7 @@ class StaticRoutesRouter extends ParentRouter {
       type: 'custom' as const,
       templates: [...toArray(this.config.template ?? [])],
       request: { path: _path },
+      data: {},
     }
   }
 }
@@ -245,36 +245,36 @@ class TaxonomyRouter extends ParentRouter {
     contexts: RoutingContext[],
     routers: ParentRouter[]
   ) {
-    const [permalinkMatch, ...dynamicVariables] =
+    const [permalinkMatch, ...paramKeys] =
       this.permalinkRegExp.exec(request) ?? []
 
-    if (permalinkMatch && dynamicVariables.length) {
-      const variables = this.extractVariables(dynamicVariables, this.keys)
+    if (permalinkMatch && paramKeys.length) {
+      const params = this.extractParams(paramKeys, this.keys)
 
       const router = this.respectDominantRouter(
         routers,
         this.taxonomyKey,
-        variables.slug
+        params.slug
       )
       if (router) {
         contexts.push(this.createRedirectContext(router))
       } else {
-        contexts.push(this.#createContext(permalinkMatch, variables))
+        contexts.push(this.#createContext(permalinkMatch, params))
       }
     }
     return super.handle(request, contexts, routers)
   }
 
-  #createContext(_path: string, variables?: Request['variables']) {
+  #createContext(_path: string, params?: Request['params']) {
     return {
       type: 'channel' as const,
       name: this.taxonomyKey,
-      options: {},
       request: {
         path: _path,
-        variables,
+        params,
       },
       templates: [],
+      data: {},
     }
   }
 }
@@ -316,22 +316,18 @@ class CollectionRouter extends ParentRouter {
       contexts.push(this.#createEntriesContext(pageMatch, Number(page)))
     }
 
-    const [permalinkMatch, ...dynamicVariables] =
+    const [permalinkMatch, ...paramKeys] =
       this.permalinkRegExp.exec(request) ?? []
 
-    if (permalinkMatch && dynamicVariables.length) {
-      const dynamicVariable = this.extractVariables(dynamicVariables, this.keys)
+    if (permalinkMatch && paramKeys.length) {
+      const params = this.extractParams(paramKeys, this.keys)
 
-      const router = this.respectDominantRouter(
-        routers,
-        'post',
-        dynamicVariable.slug
-      )
+      const router = this.respectDominantRouter(routers, 'post', params.slug)
 
       if (router) {
         contexts.push(this.createRedirectContext(router))
       } else {
-        contexts.push(this.#createEntryContext(permalinkMatch, dynamicVariable))
+        contexts.push(this.#createEntryContext(permalinkMatch, params))
       }
     }
 
@@ -342,17 +338,17 @@ class CollectionRouter extends ParentRouter {
     return {
       type: 'collection' as const,
       name: this.routerName,
-      options: {},
-      request: { path: _path, variables: { page } },
+      request: { path: _path, params: { page } },
       templates: [...toArray(this.config.template ?? [])],
+      data: {},
     }
   }
 
-  #createEntryContext(_path: string, variables: Request['variables']) {
+  #createEntryContext(_path: string, params: Request['params']) {
     return {
       type: 'entry' as const,
       resourceType: 'post' as const,
-      request: { path: _path, variables },
+      request: { path: _path, params },
       templates: [...toArray(this.config.template ?? [])],
     }
   }
@@ -383,13 +379,13 @@ class StaticPagesRouter extends ParentRouter {
     return super.handle(request, contexts, routers)
   }
 
-  #createContext(_path: string, variables?: Request['variables']) {
+  #createContext(_path: string, params?: Request['params']) {
     return {
       type: 'entry' as const,
       resourceType: 'page' as const,
       request: {
         path: _path,
-        variables,
+        params,
       },
       templates: [],
     }

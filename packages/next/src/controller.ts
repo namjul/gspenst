@@ -125,7 +125,7 @@ async function entryController(
   routingProperties: Extract<RoutingContext, { type: 'entry' }>
 ): Promise<ControllerResult<PageProps>> {
   const resourceItem = await repository.find(
-    routingProperties.request.variables ?? {}
+    routingProperties.request.params ?? {}
   )
 
   // const query: DataQuery = {
@@ -331,7 +331,7 @@ export async function controller(
 
       switch (type) {
         case 'entry':
-          if (await repository.find(context.request.variables ?? {})) {
+          if (await repository.find(context.request.params ?? {})) {
             return true
           }
           return false

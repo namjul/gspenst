@@ -9,7 +9,7 @@ describe('routing mapping', () => {
         resourceType: 'page',
         request: {
           path: '/about/',
-          variables: {
+          params: {
             slug: 'about',
           },
         },
@@ -30,10 +30,10 @@ describe('routing mapping', () => {
         type: 'channel',
         name: 'author',
         templates: [],
-        options: {},
+        data: {},
         request: {
           path: '/category-2/pedro/',
-          variables: {
+          params: {
             slug: 'pedro',
           },
         },
@@ -57,11 +57,11 @@ describe('routing mapping', () => {
       {
         type: 'collection',
         name: 'index',
-        options: {},
+        data: {},
         templates: [],
         request: {
           path: '/page/1/',
-          variables: {
+          params: {
             page: 1,
           },
         },
@@ -71,11 +71,11 @@ describe('routing mapping', () => {
       {
         type: 'channel',
         name: 'author',
-        options: {},
+        data: {},
         templates: [],
         request: {
           path: '/author/pedro/page/1/',
-          variables: {
+          params: {
             page: 1,
             slug: 'pedro',
           },
@@ -141,13 +141,14 @@ describe('routing mapping', () => {
           path: '/about/team/',
         },
         templates: ['team'],
+        data: {},
       },
     ])
     expect(await router.handle(['about'])).toEqual([
       {
         request: {
           path: '/about/',
-          variables: {
+          params: {
             slug: 'about',
           },
         },
@@ -170,7 +171,7 @@ describe('routing mapping', () => {
       {
         request: {
           path: '/4th-post/',
-          variables: {
+          params: {
             slug: '4th-post',
           },
         },
@@ -183,7 +184,7 @@ describe('routing mapping', () => {
       {
         request: {
           path: '/home/',
-          variables: {
+          params: {
             slug: 'home',
           },
         },
@@ -208,7 +209,7 @@ describe('routing mapping', () => {
       {
         request: {
           path: '/5th-post/',
-          variables: {
+          params: {
             slug: '5th-post',
           },
         },
@@ -219,7 +220,7 @@ describe('routing mapping', () => {
       {
         request: {
           path: '/5th-post/',
-          variables: {
+          params: {
             slug: '5th-post',
           },
         },

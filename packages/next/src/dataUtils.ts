@@ -38,15 +38,15 @@ export function getTemplateHierarchy(
       if ('name' in routingProperties && routingProperties.name !== 'index') {
         templateList.unshift(routingProperties.name)
 
-        if (routingProperties.request.variables?.slug) {
+        if (routingProperties.request.params?.slug) {
           templateList.unshift(
-            `${routingProperties.name}-${routingProperties.request.variables.slug}`
+            `${routingProperties.name}-${routingProperties.request.params.slug}`
           )
         }
       }
 
       // CASE: collections/channels can define a template list
-      routingProperties.templates?.forEach((template) => {
+      routingProperties.templates.forEach((template) => {
         if (!templateList.includes(template)) {
           templateList.unshift(template)
         }
@@ -62,7 +62,7 @@ export function getTemplateHierarchy(
 
       templateList.unshift(
         `${routingProperties.resourceType === 'page' ? 'page' : 'post'}-${
-          routingProperties.request.variables?.slug
+          routingProperties.request.params?.slug
         }`
       ) // slugTemplate
 

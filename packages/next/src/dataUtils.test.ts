@@ -10,6 +10,8 @@ describe('computing template hierarchy', () => {
         request: {
           path: '/posts/',
         },
+        templates: [],
+        data: {},
       })
     ).toEqual(['index'])
     expect(
@@ -20,6 +22,7 @@ describe('computing template hierarchy', () => {
           path: '/posts/',
         },
         templates: ['index'],
+        data: {},
       })
     ).toEqual(['index'])
     expect(
@@ -30,6 +33,7 @@ describe('computing template hierarchy', () => {
           path: '/posts/',
         },
         templates: ['my-custom-template'],
+        data: {},
       })
     ).toEqual(['my-custom-template', 'posts', 'index'])
   })
@@ -40,10 +44,12 @@ describe('computing template hierarchy', () => {
         name: 'tag',
         request: {
           path: '/tag/',
-          variables: {
+          params: {
             slug: 'my-tag',
           },
         },
+        templates: [],
+        data: {},
       })
     ).toEqual(['tag-my-tag', 'tag', 'index'])
     expect(
@@ -52,10 +58,12 @@ describe('computing template hierarchy', () => {
         name: 'author',
         request: {
           path: '/author/napoleon/',
-          variables: {
+          params: {
             slug: 'napoleon',
           },
         },
+        templates: [],
+        data: {},
       })
     ).toEqual(['author-napoleon', 'author', 'index'])
   })
@@ -66,10 +74,11 @@ describe('computing template hierarchy', () => {
         resourceType: 'post',
         request: {
           path: '/first-post/',
-          variables: {
+          params: {
             slug: 'first-post',
           },
         },
+        templates: [],
       })
     ).toEqual(['post-first-post', 'post'])
     expect(
@@ -78,10 +87,11 @@ describe('computing template hierarchy', () => {
         resourceType: 'page',
         request: {
           path: '/portfolio/',
-          variables: {
+          params: {
             slug: 'portfolio',
           },
         },
+        templates: [],
       })
     ).toEqual(['page-portfolio', 'page', 'post'])
   })
@@ -92,6 +102,8 @@ describe('computing template hierarchy', () => {
         request: {
           path: '/team/',
         },
+        data: {},
+        templates: [],
       })
     ).toEqual(['index'])
     expect(
@@ -100,6 +112,7 @@ describe('computing template hierarchy', () => {
         request: {
           path: '/team/',
         },
+        data: {},
         templates: ['index'],
       })
     ).toEqual(['index'])
@@ -109,6 +122,7 @@ describe('computing template hierarchy', () => {
         request: {
           path: '/team/',
         },
+        data: {},
         templates: ['team'],
       })
     ).toEqual(['team', 'index'])

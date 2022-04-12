@@ -21,10 +21,11 @@ describe('controller', () => {
           resourceType: resourceItem.resourceType,
           request: {
             path: '/home',
-            variables: {
+            params: {
               slug: 'home',
             },
           },
+          templates: [],
         },
       ])
       expect(result).toMatchObject({
@@ -42,10 +43,11 @@ describe('controller', () => {
           resourceType: 'post',
           request: {
             path: '/posts/1th-post',
-            variables: {
+            params: {
               slug: '1th-post',
             },
           },
+          templates: [],
         },
       ])
       expect(result).toMatchObject({
@@ -67,6 +69,8 @@ describe('controller', () => {
           request: {
             path: '/',
           },
+          data: {},
+          templates: [],
         },
       ])
       expect(result).toMatchObject({
