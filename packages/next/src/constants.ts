@@ -35,3 +35,11 @@ export const routingContextTypes = [
   'redirect',
   'internal',
 ] as const
+export const dynamicVariables = [
+  'slug',
+  'year',
+  'month',
+  'day',
+  'primary_tag',
+  'primary_author',
+] as const

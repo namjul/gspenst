@@ -28,6 +28,7 @@ import {
   queryOptions,
   contextTypes,
   routingContextTypes,
+  dynamicVariables,
 } from './constants'
 import type { PageProps as InternalPageProps } from './controller'
 import type { GspenstError } from './errors'
@@ -73,6 +74,12 @@ export type QueryOptionsObject<T> = ValidateShape<
     [key in typeof queryOptions[number]]: any
   }
 >
+export type DynamicVariablesObject<T> = ValidateShape<
+  T,
+  {
+    [key in typeof dynamicVariables[number]]: any
+  }
+>
 
 export type PageProps = Simplify<
   Exclude<InternalPageProps, { context: 'internal' }> & {}
@@ -90,14 +97,14 @@ type BaseResourceItem = {
   relativePath: string
 }
 
-export type DynamicVariables = {
+export type DynamicVariables = DynamicVariablesObject<{
   slug: Slug
   year: number
   month: number
   day: number
   primary_tag: Optional<Slug>
   primary_author: Optional<Slug>
-}
+}>
 
 export type PostResourceItem = Simplify<
   BaseResourceItem & {
