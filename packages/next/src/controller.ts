@@ -3,11 +3,9 @@ import type { Redirect } from 'next'
 import type { RoutingContext } from './routing'
 import { assertUnreachable } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
-import { findAsyncSequential } from './utils'
 import repository from './repository'
 import type {
   ContextType,
-  AsyncReturnType,
   Result,
   Simplify,
   ConfigResourceItem,
@@ -313,82 +311,64 @@ async function customController(
   })
 }
 
-export type ControllerReturnType = Exclude<
-  AsyncReturnType<typeof controller>,
-  null
->
+type ControllerReturnType =
+  | { type: 'props'; props: ControllerResult<PageProps> }
+  | { type: 'redirect'; redirect: Redirect }
 
 export async function controller(
   routingContexts: RoutingContext[] = []
-): Promise<
-  | { type: 'props'; props: ControllerResult<PageProps> }
-  | { type: 'redirect'; redirect: Redirect }
-> {
-  const routingContext = await findAsyncSequential(
-    routingContexts,
-    async (context) => {
+): Promise<ControllerReturnType> {
+  for (const context of routingContexts) {
+    // eslint-disable-next-line no-await-in-loop
+    const result: ControllerReturnType = await (async () => {
       const { type } = context
 
       switch (type) {
-        case 'entry':
-          if (await repository.find(context.request.params ?? {})) {
-            return true
-          }
-          return false
         case 'collection':
+          return {
+            type: 'props',
+            props: await collectionController(context),
+          }
         case 'channel':
-        case 'redirect':
-        case 'internal':
+          return {
+            type: 'props',
+            props: await channelController(context),
+          }
+        case 'entry':
+          return {
+            type: 'props',
+            props: await entryController(context),
+          }
         case 'custom':
-          return true
+          return {
+            type: 'props',
+            props: await customController(context),
+          }
+        case 'internal':
+          return {
+            type: 'props',
+            props: ok({
+              context: 'internal',
+            }),
+          }
+        case 'redirect':
+          return {
+            type: 'redirect',
+            redirect: context,
+          }
         default:
           return assertUnreachable(type)
       }
+    })() // Immediately invoke the function
+
+    if (result.type === 'props') {
+      if (result.props.isOk()) {
+        return result
+      }
     }
-  )
-
-  if (!routingContext) {
-    return { type: 'props', props: err(Errors.notFound()) }
   }
 
-  const { type } = routingContext
-
-  switch (type) {
-    case 'collection':
-      return {
-        type: 'props',
-        props: await collectionController(routingContext),
-      }
-    case 'channel':
-      return {
-        type: 'props',
-        props: await channelController(routingContext),
-      }
-    case 'entry':
-      return {
-        type: 'props',
-        props: await entryController(routingContext),
-      }
-    case 'custom':
-      return {
-        type: 'props',
-        props: await customController(routingContext),
-      }
-    case 'internal':
-      return {
-        type: 'props',
-        props: ok({
-          context: 'internal',
-        }),
-      }
-    case 'redirect':
-      return {
-        type: 'redirect',
-        redirect: routingContext,
-      }
-    default:
-      return assertUnreachable(type)
-  }
+  return { type: 'props', props: err(Errors.notFound()) }
 }
 
 // getList(
