@@ -5,7 +5,6 @@ import { RouterManager } from './routing'
 import type { RoutingConfigResolved } from './validate'
 import type { PageProps } from './controller'
 import { controller } from './controller'
-import repository from './repository'
 import { formatError } from './errors'
 import resolvePaths from './resolvePaths'
 
@@ -67,8 +66,7 @@ export const getStaticProps =
 
       log('Page [...slug].js getStaticProps')
 
-      const resources = await repository.getAll()
-      const router = new RouterManager(routingConfig, resources)
+      const router = new RouterManager(routingConfig)
 
       const routingProperties = await router.handle(params?.[routingParameter])
 
