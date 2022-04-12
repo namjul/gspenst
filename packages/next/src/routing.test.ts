@@ -134,14 +134,13 @@ describe('routing mapping', () => {
         author: '/author/:slug',
       },
     })
-    expect(await router.handle(['about', 'team'])).toEqual([
+    expect(await router.handle(['about', 'team'])).toMatchObject([
       {
         type: 'custom',
         request: {
           path: '/about/team/',
         },
         templates: ['team'],
-        data: {},
       },
     ])
     expect(await router.handle(['about'])).toEqual([

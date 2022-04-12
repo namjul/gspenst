@@ -221,7 +221,7 @@ class StaticRoutesRouter extends ParentRouter {
       type: 'custom' as const,
       templates: [...toArray(this.config.template ?? [])],
       request: { path: _path },
-      data: {},
+      data: this.data?.query ?? {},
     }
   }
 }
@@ -274,7 +274,7 @@ class TaxonomyRouter extends ParentRouter {
         params,
       },
       templates: [],
-      data: {},
+      data: this.data?.query ?? {},
     }
   }
 }
@@ -340,7 +340,7 @@ class CollectionRouter extends ParentRouter {
       name: this.routerName,
       request: { path: _path, params: { page } },
       templates: [...toArray(this.config.template ?? [])],
-      data: {},
+      data: this.data ?? {},
     }
   }
 
