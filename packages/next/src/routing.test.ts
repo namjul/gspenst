@@ -1,9 +1,8 @@
 import { RouterManager } from './routing'
-import { resources } from './__fixtures__/resources'
 
 describe('routing mapping', () => {
   test('empty config', async () => {
-    const router = new RouterManager({}, resources)
+    const router = new RouterManager({})
     expect(await router.handle('about')).toEqual([
       {
         type: 'entry',
@@ -20,15 +19,12 @@ describe('routing mapping', () => {
   })
 
   test('taxonomies', async () => {
-    const router = new RouterManager(
-      {
-        taxonomies: {
-          tag: '/category-1/:slug',
-          author: '/category-2/:slug',
-        },
+    const router = new RouterManager({
+      taxonomies: {
+        tag: '/category-1/:slug',
+        author: '/category-2/:slug',
       },
-      resources
-    )
+    })
     expect(await router.handle(['category-2', 'pedro'])).toEqual([
       {
         type: 'channel',
@@ -46,20 +42,17 @@ describe('routing mapping', () => {
   })
 
   test('paging', async () => {
-    const router = new RouterManager(
-      {
-        collections: {
-          '/': {
-            permalink: '/:slug',
-          },
-        },
-        taxonomies: {
-          tag: '/tag/:slug',
-          author: '/author/:slug',
+    const router = new RouterManager({
+      collections: {
+        '/': {
+          permalink: '/:slug',
         },
       },
-      resources
-    )
+      taxonomies: {
+        tag: '/tag/:slug',
+        author: '/author/:slug',
+      },
+    })
     expect(await router.handle(['page', '1'])).toEqual([
       {
         type: 'collection',
@@ -91,59 +84,56 @@ describe('routing mapping', () => {
     ])
   })
   test('redirect route', async () => {
-    const router = new RouterManager(
-      {
-        routes: {
-          '/about/team': {
-            template: 'team',
-            data: {
-              query: {},
-              router: {
-                page: [
-                  {
-                    redirect: true,
-                    slug: 'about',
-                  },
-                ],
-                post: [
-                  {
-                    redirect: true,
-                    slug: '4th-post',
-                  },
-                  {
-                    redirect: false,
-                    slug: '5th-post',
-                  },
-                ],
-                author: [
-                  {
-                    redirect: true,
-                    slug: 'pedro',
-                  },
-                ],
-              },
+    const router = new RouterManager({
+      routes: {
+        '/about/team': {
+          template: 'team',
+          data: {
+            query: {},
+            router: {
+              page: [
+                {
+                  redirect: true,
+                  slug: 'about',
+                },
+              ],
+              post: [
+                {
+                  redirect: true,
+                  slug: '4th-post',
+                },
+                {
+                  redirect: false,
+                  slug: '5th-post',
+                },
+              ],
+              author: [
+                {
+                  redirect: true,
+                  slug: 'pedro',
+                },
+              ],
             },
           },
-        },
-        collections: {
-          '/': {
-            permalink: '/:slug',
-            template: 'index',
-            data: {
-              query: {},
-              router: {
-                page: [{ redirect: true, slug: 'home' }],
-              },
-            },
-          },
-        },
-        taxonomies: {
-          tag: '/tag/:slug',
-          author: '/author/:slug',
         },
       },
-      resources
-    )
+      collections: {
+        '/': {
+          permalink: '/:slug',
+          template: 'index',
+          data: {
+            query: {},
+            router: {
+              page: [{ redirect: true, slug: 'home' }],
+            },
+          },
+        },
+      },
+      taxonomies: {
+        tag: '/tag/:slug',
+        author: '/author/:slug',
+      },
+    })
     expect(await router.handle(['about', 'team'])).toEqual([
       {
         type: 'custom',
@@ -176,6 +166,17 @@ describe('routing mapping', () => {
         type: 'redirect',
         destination: '/about/team',
         statusCode: 301,
+      },
+      {
+        request: {
+          path: '/4th-post/',
+          variables: {
+            slug: '4th-post',
+          },
+        },
+        resourceType: 'page',
+        templates: [],
+        type: 'entry',
       },
     ])
     expect(await router.handle(['home'])).toEqual([
@@ -213,6 +214,17 @@ describe('routing mapping', () => {
         },
         resourceType: 'post',
         templates: ['index'],
+        type: 'entry',
+      },
+      {
+        request: {
+          path: '/5th-post/',
+          variables: {
+            slug: '5th-post',
+          },
+        },
+        resourceType: 'page',
+        templates: [],
         type: 'entry',
       },
     ])

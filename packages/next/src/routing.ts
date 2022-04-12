@@ -5,9 +5,6 @@ import { pathToRegexp } from 'path-to-regexp'
 import type { Key } from 'path-to-regexp'
 import { toArray } from './utils'
 import type {
-  ResourceItem,
-  PageResourceItem,
-  ConfigResourceItem,
   ResourceType,
   RoutingContextType,
   Entries,
@@ -25,9 +22,6 @@ import type {
 } from './validate'
 
 const log = debug('@gspenst/next:routing')
-
-type EntryResourceItem = Exclude<ResourceItem, ConfigResourceItem>
-type EntryResourceItemMap = { [id: ID]: EntryResourceItem }
 
 export type Redirect =
   | {
@@ -365,19 +359,10 @@ class CollectionRouter extends ParentRouter {
 }
 
 class StaticPagesRouter extends ParentRouter {
-  resources: PageResourceItem[]
   routeRegExp: RegExp
-  keys: Key[] = []
-  constructor(resources: EntryResourceItemMap) {
+  constructor() {
     super('StaticPagesRouter')
-    this.resources = Object.values(resources).filter(
-      (resource): resource is PageResourceItem =>
-        resource.resourceType === 'page'
-    )
-    this.routeRegExp = pathToRegexp(
-      `/(${this.resources.map(({ slug }) => slug).join('|')})/`,
-      this.keys
-    )
+    this.routeRegExp = pathToRegexp('/:slug/')
   }
   async handle(
     request: string,
@@ -387,13 +372,11 @@ class StaticPagesRouter extends ParentRouter {
     const [match, slug] = this.routeRegExp.exec(request) ?? []
 
     if (match && slug) {
-      // CASE check if its redirected
       const router = this.respectDominantRouter(routers, 'page', slug)
 
       if (router) {
         contexts.push(this.createRedirectContext(router))
       } else {
-        // const resourceItem = find(this.resources, { slug, resourceType: 'page' })
         contexts.push(this.#createContext(match, { slug }))
       }
     }
@@ -417,24 +400,25 @@ export class RouterManager {
   config: RoutingConfigResolved
   router: ParentRouter
   routers: ParentRouter[] = []
-  resources: EntryResourceItemMap
-  constructor(
-    routingConfig: RoutingConfigResolved,
-    resources: { [id: ID]: ResourceItem }
-  ) {
-    this.resources = Object.fromEntries(
-      Object.entries(resources).filter(
-        (resource): resource is [ID, EntryResourceItem] =>
-          resource[1].resourceType !== 'config'
-      )
-    )
+  constructor(routingConfig: RoutingConfigResolved) {
     this.config = routingConfig
     this.router = new ParentRouter('SiteRouter')
     this.routers.push(this.router)
 
+    /**
+     * 1. Admin: Strongest inbuilt features, which you can never override.
+     * 2. Static Routes: Very strong, because you can override any urls and redirect to a static route.
+     * 3. Taxonomies: Stronger than collections, because it's an inbuilt feature.
+     * 4. Collections
+     * 5. Static Pages: Weaker than collections, because we first try to find a post slug and fallback to lookup a static page.
+     * 6. Internal Apps: Weakest
+     */
+
+    // 1.
     const adminRouter = new AdminRouter()
     this.routers.push(adminRouter)
 
+    // 2.
     const routes = Object.entries(this.config.routes ?? {}) as Entries<
       typeof this.config.routes
     >
@@ -443,6 +427,7 @@ export class RouterManager {
       this.routers.push(staticRoutesRouter)
     })
 
+    // 3.
     const collections = Object.entries(
       this.config.collections ?? {}
     ) as Entries<typeof this.config.collections>
@@ -451,9 +436,7 @@ export class RouterManager {
       this.routers.push(collectionRouter)
     })
 
-    const staticPagesRouter = new StaticPagesRouter(this.resources)
-    this.routers.push(staticPagesRouter)
-
+    // 4.
     const taxonomies = Object.entries(this.config.taxonomies ?? {}) as Entries<
       typeof this.config.taxonomies
     >
@@ -461,6 +444,10 @@ export class RouterManager {
       const taxonomyRouter = new TaxonomyRouter(key, permalink as string)
       this.routers.push(taxonomyRouter)
     })
+
+    // 5.
+    const staticPagesRouter = new StaticPagesRouter()
+    this.routers.push(staticPagesRouter)
 
     // mount routers into a chain of responsibilities
     this.routers.reduce((acc, router) => acc.mount(router))
