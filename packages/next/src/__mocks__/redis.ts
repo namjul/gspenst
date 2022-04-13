@@ -2,6 +2,7 @@ const redis = {
   cache: {} as Record<string, Record<string, any>>,
   async flushall() {
     this.cache = {}
+    return 'OK'
   },
   async hset(key: string, field: string, value: any) {
     if (!this.cache[key]) {
@@ -9,6 +10,7 @@ const redis = {
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.cache[key]![field] = value
+    return 1
   },
   async hmget(key: string, ...fields: string[]) {
     return (await this.hkeys(key))

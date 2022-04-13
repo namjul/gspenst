@@ -1,4 +1,4 @@
-import { Ok, Err } from 'neverthrow'
+import { Ok, Err, ResultAsync as ResultAsyncInner } from 'neverthrow'
 import {
   LiteralUnion,
   AsyncReturnType,
@@ -49,6 +49,7 @@ export type {
 }
 
 export type Result<T> = Ok<T, GspenstError> | Err<never, GspenstError>
+export type ResultAsync<T> = ResultAsyncInner<T , GspenstError>
 
 export type { TinaTemplate } from 'tinacms'
 

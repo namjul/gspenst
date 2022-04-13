@@ -1,17 +1,21 @@
 import { slugify } from '@tryghost/string'
+import { okAsync, errAsync, combine } from 'neverthrow'
 import type { GetResourcesQuery } from '../.tina/__generated__/types'
-import redis from './redis'
 import * as api from './api'
-import { toArray, ensureString } from './utils'
+import db from './db'
+import { toArray } from './utils'
 import { assertUnreachable } from './helpers'
 import type {
   ResourceType,
   ResourceItem,
   Get,
   DynamicVariables,
+  ResultAsync,
   Optional,
 } from './types'
-import { find } from './dataUtils'
+import * as Errors from './errors'
+
+type RepoResultAsync<T> = ResultAsync<T>
 
 type ResourcesNode = Get<
   GetResourcesQuery,
@@ -20,158 +24,169 @@ type ResourcesNode = Get<
 
 // https://github.com/sindresorhus/map-obj
 
-type Resources<T extends ResourceItem> = {
-  [id: ID]: T
-}
+type GetValue<T extends ID | ID[]> = RepoResultAsync<
+  T extends ID[] ? ResourceItem[] : ResourceItem
+>
 
-type GetValue<T extends ID | ID[]> = T extends ID[]
-  ? Resources<ResourceItem>
-  : ResourceItem | undefined
-
-type GetAllValue<T extends Optional<ResourceType>> = Resources<
-  T extends null | undefined
+type FindAllValue<T extends Optional<ResourceType>> = RepoResultAsync<
+  (T extends null | undefined
     ? ResourceItem
-    : Extract<ResourceItem, { resourceType: T }>
+    : Extract<ResourceItem, { resourceType: T }>)[]
 >
 
 const repository = {
-  store: redis,
-  api, // eslint-disable-line new-cap
-  async init() {
-    await this.store.flushall()
-    const resourcesResult = await this.api.getResources()
+  init() {
+    const result = combine([db.clear(), api.getResources()]).map((results) => {
+      return results.map((r) => {
+        if (r === 'OK') {
+          return r
+        }
 
-    if (resourcesResult.isOk()) {
-      const { getCollections: resources } = resourcesResult.value.data
+        const { getCollections: resources } = r.data
 
-      void (await Promise.all(
-        resources.map(async (resource) => {
-          void (await Promise.all(
-            (resource.documents.edges ?? []).map(async (connectionEdge) => {
-              if (connectionEdge?.node) {
-                const { node } = connectionEdge
-                const {
-                  __typename,
+        return resources.flatMap((resource) => {
+          return (resource.documents.edges ?? []).map((connectionEdge) => {
+            if (connectionEdge?.node) {
+              const { node } = connectionEdge
+              const {
+                __typename,
+                id,
+                sys: { filename, path: filepath, relativePath },
+              } = node
+
+              if (__typename === 'ConfigDocument') {
+                return this.set({
                   id,
-                  sys: { filename, path: filepath, relativePath },
-                } = node
+                  filename,
+                  path: filepath,
+                  resourceType: 'config',
+                  relativePath,
+                })
+              } else {
+                const dynamicVariables = this._generateDynamicVariables(node)
 
-                if (__typename === 'ConfigDocument') {
-                  await this.set({
-                    id,
-                    filename,
-                    path: filepath,
-                    resourceType: 'config',
-                    relativePath,
-                  })
-                } else {
-                  const dynamicVariables = await this._generateDynamicVariables(
-                    node
-                  )
-
-                  await this.set({
-                    id,
-                    filename,
-                    path: filepath,
-                    resourceType: resource.name as Exclude<
-                      ResourceType,
-                      'config'
-                    >,
-                    relativePath,
-                    ...dynamicVariables,
-                  })
-                }
+                return this.set({
+                  id,
+                  filename,
+                  path: filepath,
+                  resourceType: resource.name as Exclude<
+                    ResourceType,
+                    'config'
+                  >,
+                  relativePath,
+                  ...dynamicVariables,
+                })
               }
-            })
-          ))
+            }
+            return errAsync(Errors.other('Should not happen'))
+          })
         })
-      ))
-    }
+      })
+    })
 
-    void (await this.getAll())
+    // void (await this.getAll()) // TODO describe why doing this here
 
-    return resourcesResult
+    return result
   },
-  async set(resourceItem: ResourceItem) {
-    await this.store.hset(
-      'resources',
-      resourceItem.id,
-      JSON.stringify(resourceItem)
-    )
+  set(resourceItem: ResourceItem) {
+    return db.set('resources', resourceItem.id, JSON.stringify(resourceItem))
   },
 
-  async get<T extends ID | ID[]>(id: T): Promise<GetValue<T>> {
-    if (!id) {
-      return undefined as GetValue<T>
-    }
-
+  get<T extends ID | ID[]>(id: T): GetValue<T> {
     const ids = toArray(id)
-    const result = await (
-      await this.store.hmget('resources', ...ids)
-    ).reduce<Promise<Resources<ResourceItem>>>(async (promise, current) => {
-      const acc = await promise
 
-      ensureString(current)
+    const result = db.get('resources', ...ids).map((values) => {
+      const resources = values.map((current, index) => {
+        if (!current) {
+          return errAsync(Errors.notFound(`Repo: ${ids[index]}`))
+        }
 
-      const resourceItem = JSON.parse(current) as ResourceItem
+        const resourceItem = JSON.parse(current) as ResourceItem
 
-      if (!resourceItem.dataResult) {
-        const dataResult = await (async () => {
-          const { resourceType, relativePath } = resourceItem
-          switch (resourceType) {
-            case 'page':
-              return this.api.getPage({ relativePath })
-            case 'post':
-              return this.api.getPost({ relativePath })
-            case 'author':
-              return this.api.getAuthor({ relativePath })
-            case 'tag':
-              return this.api.getTag({ relativePath })
-            case 'config':
-              return this.api.getConfig()
-            default:
-              return assertUnreachable(resourceType)
-          }
-        })() // Immediately invoke the function
-        resourceItem.dataResult = dataResult
+        if (!resourceItem.dataResult) {
+          const dataResult = (() => {
+            const { resourceType, relativePath } = resourceItem
+            switch (resourceType) {
+              case 'page':
+                return api.getPage({ relativePath })
+              case 'post':
+                return api.getPost({ relativePath })
+              case 'author':
+                return api.getAuthor({ relativePath })
+              case 'tag':
+                return api.getTag({ relativePath })
+              case 'config':
+                return api.getConfig()
+              default:
+                return assertUnreachable(resourceType)
+            }
+          })() // Immediately invoke the function
+          resourceItem.dataResult = dataResult
+        }
+
+        return resourceItem
+      })
+
+      if (ids.length === 1) {
+        return resources[0]
       }
+      return resources
+    })
 
-      acc[resourceItem.id] = resourceItem
-      return Promise.resolve(acc)
-    }, Promise.resolve({}))
-
-    if (Array.isArray(id)) {
-      return result as GetValue<T>
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion --- for some reason typescript does recognize id as `string |  string[]`
-    return result[id as string] as GetValue<T>
+    return result as GetValue<T>
   },
 
-  async getAll<T extends Optional<ResourceType>>(
-    resourceType?: T
-  ): Promise<GetAllValue<T>> {
-    const ids = await this.store.hkeys('resources')
-    const resources = await this.get(ids)
-
-    if (resourceType) {
-      return Object.fromEntries(
-        Object.entries(resources).filter((resource) => {
-          return resource[1].resourceType === resourceType
-        })
-      ) as GetAllValue<T>
-    }
-    return resources as GetAllValue<T>
+  getAll() {
+    return db.keys('resources').andThen((ids) => this.get(ids))
   },
 
   async find(
     partialResourceItem: Partial<ResourceItem>
-  ): Promise<ResourceItem | undefined> {
-    return find(Object.values(await this.getAll()), partialResourceItem)
+  ): Promise<RepoResultAsync<ResourceItem | undefined>> {
+    const resources = await this.getAll()
+    if (resources.isOk()) {
+      const found = Object.values(resources.value).find(
+        this.match(partialResourceItem)
+      )
+      return okAsync(found)
+    }
+    return errAsync(resources.error)
   },
 
-  async _generateDynamicVariables(
+  async findAll<T extends Optional<ResourceType>>(
+    resourceType?: T
+  ): Promise<FindAllValue<T>> {
+    const resources = await this.getAll()
+    if (resources.isOk()) {
+      if (resourceType) {
+        const found = Object.values(resources.value).filter(
+          this.match({ resourceType })
+        )
+        return okAsync(found) as FindAllValue<T>
+      }
+      return okAsync(resources.value) as FindAllValue<T>
+    }
+    return errAsync(resources.error) as FindAllValue<T>
+  },
+
+  match<T extends ResourceItem>(partialResourceItem: Partial<T>) {
+    return (resourceItem: T) =>
+      (partialResourceItem.resourceType
+        ? partialResourceItem.resourceType === resourceItem.resourceType
+        : true) &&
+      Object.entries(partialResourceItem)
+        .map(([key, value]) => {
+          return (
+            String(resourceItem[key as keyof typeof partialResourceItem]) ===
+            String(value)
+          )
+        })
+        .every(Boolean)
+  },
+
+  _generateDynamicVariables(
     node: NonNullable<Exclude<ResourcesNode, { __typename: 'ConfigDocument' }>>
-  ): Promise<DynamicVariables> {
+  ): DynamicVariables {
     const {
       __typename,
       data,

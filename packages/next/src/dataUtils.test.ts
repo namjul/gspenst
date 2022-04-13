@@ -132,26 +132,3 @@ describe('computing template hierarchy', () => {
 describe('dynamic variables', () => {
   test.todo('simple')
 })
-
-describe('find', () => {
-  test('simple', () => {
-    const resourceItem = find(Object.values(resources), { slug: '0th-post' })
-    expect(resourceItem).toMatchObject(resources['content/posts/0th-post.mdx']!)
-  })
-  test('complex', () => {
-    const resourceItem = find(Object.values(resources), {
-      year: 2022,
-      // @ts-expect-error- testing with string value '11'
-      month: '11',
-    })
-    expect(resourceItem).toMatchObject(resources['content/posts/2th-post.mdx']!)
-  })
-  test('returns undefined', () => {
-    const resourceItem = find(Object.values(resources), {
-      year: 2022,
-      month: 11,
-      primary_tag: 'sdf',
-    })
-    expect(resourceItem).toBeUndefined()
-  })
-})

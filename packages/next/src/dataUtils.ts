@@ -1,26 +1,5 @@
-import type { ResourceItem } from './types'
 import type { RoutingContext } from './routing'
 import { assertUnreachable } from './helpers'
-
-export function find<T extends ResourceItem>(
-  resources: T[],
-  partialResourceItem: Partial<T>
-): T | undefined {
-  return Object.values(resources).find(
-    (resourceItem) =>
-      (partialResourceItem.resourceType
-        ? partialResourceItem.resourceType === resourceItem.resourceType
-        : true) &&
-      Object.entries(partialResourceItem)
-        .map(([key, value]) => {
-          return (
-            String(resourceItem[key as keyof typeof partialResourceItem]) ===
-            String(value)
-          )
-        })
-        .every(Boolean)
-  )
-}
 
 export function getTemplateHierarchy(
   routingProperties: NonNullable<RoutingContext>
