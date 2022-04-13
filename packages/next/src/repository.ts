@@ -12,26 +12,28 @@ import type {
   DynamicVariables,
   ResultAsync,
   Optional,
+  WithRequired,
 } from './types'
 import * as Errors from './errors'
 
 type RepoResultAsync<T> = ResultAsync<T>
 
-type ResourcesNode = Get<
-  GetResourcesQuery,
-  'getCollections[0].documents.edges[0].node'
+type ResourcesNode = Exclude<
+  Get<GetResourcesQuery, 'getCollections[0].documents.edges[0].node'>,
+  { __typename: 'ConfigDocument' }
 >
 
 // https://github.com/sindresorhus/map-obj
 
-type GetValue<T extends ID | ID[]> = RepoResultAsync<
-  T extends ID[] ? ResourceItem[] : ResourceItem
->
+type ResourceItemLoaded = WithRequired<ResourceItem, 'dataResult'>
+type GetValue<T extends ID | ID[]> = T extends ID[]
+  ? RepoResultAsync<ResourceItemLoaded[]>
+  : RepoResultAsync<ResourceItemLoaded>
 
 type FindAllValue<T extends Optional<ResourceType>> = RepoResultAsync<
   (T extends null | undefined
-    ? ResourceItem
-    : Extract<ResourceItem, { resourceType: T }>)[]
+    ? ResourceItemLoaded
+    : Extract<ResourceItemLoaded, { resourceType: T }>)[]
 >
 
 const repository = {
@@ -45,7 +47,7 @@ const repository = {
         const { getCollections: resources } = r.data
 
         return resources.flatMap((resource) => {
-          return (resource.documents.edges ?? []).map((connectionEdge) => {
+          return (resource.documents.edges ?? []).flatMap((connectionEdge) => {
             if (connectionEdge?.node) {
               const { node } = connectionEdge
               const {
@@ -55,13 +57,7 @@ const repository = {
               } = node
 
               if (__typename === 'ConfigDocument') {
-                return this.set({
-                  id,
-                  filename,
-                  path: filepath,
-                  resourceType: 'config',
-                  relativePath,
-                })
+                return []
               } else {
                 const dynamicVariables = this._generateDynamicVariables(node)
 
@@ -89,66 +85,82 @@ const repository = {
     return result
   },
   set(resourceItem: ResourceItem) {
-    return db.set('resources', resourceItem.id, JSON.stringify(resourceItem))
+    return db.set<ResourceItem>('resources', resourceItem.id, resourceItem)
   },
 
-  get<T extends ID | ID[]>(id: T): GetValue<T> {
+  async get<T extends ID | ID[]>(id: T): Promise<GetValue<T>> {
     const ids = toArray(id)
 
-    const result = db.get('resources', ...ids).map((values) => {
-      const resources = values.map((current, index) => {
-        if (!current) {
-          return errAsync(Errors.notFound(`Repo: ${ids[index]}`))
-        }
+    const result = await db.get<ResourceItem>('resources', ...ids)
 
-        const resourceItem = JSON.parse(current) as ResourceItem
+    if (result.isOk()) {
+      const resources = await Promise.all(
+        result.value.map(async (resourceItem) => {
+          if (resourceItem.dataResult) {
+            return okAsync(resourceItem as ResourceItemLoaded)
+          } else {
+            const dataResult = await (async () => {
+              const { resourceType, relativePath } = resourceItem
+              switch (resourceType) {
+                case 'page':
+                  return api.getPage({ relativePath })
+                case 'post':
+                  return api.getPost({ relativePath })
+                case 'author':
+                  return api.getAuthor({ relativePath })
+                case 'tag':
+                  return api.getTag({ relativePath })
+                default:
+                  return assertUnreachable(resourceType)
+              }
+            })() // Immediately invoke the function
 
-        if (!resourceItem.dataResult) {
-          const dataResult = (() => {
-            const { resourceType, relativePath } = resourceItem
-            switch (resourceType) {
-              case 'page':
-                return api.getPage({ relativePath })
-              case 'post':
-                return api.getPost({ relativePath })
-              case 'author':
-                return api.getAuthor({ relativePath })
-              case 'tag':
-                return api.getTag({ relativePath })
-              case 'config':
-                return api.getConfig()
-              default:
-                return assertUnreachable(resourceType)
+            if (dataResult.isErr()) {
+              const x = errAsync(dataResult.error)
+              return x
             }
-          })() // Immediately invoke the function
-          resourceItem.dataResult = dataResult
-        }
+            resourceItem.dataResult = dataResult.value
 
-        return resourceItem
-      })
+            return okAsync(resourceItem as ResourceItemLoaded)
+          }
+        })
+      )
 
       if (ids.length === 1) {
-        return resources[0]
+        return resources[0]!
       }
-      return resources
-    })
 
-    return result as GetValue<T>
+      const x = combine(resources)
+      return x
+
+      // TODO save resourceItem with dataResult now set
+    } else {
+      const x = errAsync(result.error)
+      return x
+    }
   },
 
-  getAll() {
-    return db.keys('resources').andThen((ids) => this.get(ids))
+  async getAll() {
+    const idsResult = await db.keys('resources')
+    if (idsResult.isErr()) {
+      return errAsync(idsResult.error)
+    }
+    return this.get(idsResult.value)
   },
 
   async find(
     partialResourceItem: Partial<ResourceItem>
-  ): Promise<RepoResultAsync<ResourceItem | undefined>> {
+  ): Promise<RepoResultAsync<ResourceItemLoaded>> {
     const resources = await this.getAll()
     if (resources.isOk()) {
-      const found = Object.values(resources.value).find(
-        this.match(partialResourceItem)
-      )
-      return okAsync(found)
+      const found = resources.value.find(this.match(partialResourceItem))
+      return found
+        ? okAsync(found)
+        : errAsync(
+            Errors.notFound(
+              `Repo: ${JSON.stringify(partialResourceItem, null, 2)}`
+            )
+          )
     }
     return errAsync(resources.error)
   },
@@ -185,7 +197,7 @@ const repository = {
   },
 
   _generateDynamicVariables(
-    node: NonNullable<Exclude<ResourcesNode, { __typename: 'ConfigDocument' }>>
+    node: NonNullable<ResourcesNode>
   ): DynamicVariables {
     const {
       __typename,

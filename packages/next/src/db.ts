@@ -6,31 +6,46 @@ import * as Errors from './errors'
 
 type DBResultAsync<T> = ResultAsync<T>
 
+type AObject =
+  | {
+      [index: number]: any
+    }
+  | Record<string, any>
+
 const db = {
   clear(): DBResultAsync<'OK'> {
     return ResultAsyncInternal.fromPromise(redis.flushall(), (error: unknown) =>
       Errors.other('Db', error instanceof Error ? error : undefined)
     )
   },
-  set(key: string, field: string, value: string): DBResultAsync<number> {
+  set<T extends AObject>(
+    key: string,
+    field: string,
+    value: T
+  ): DBResultAsync<number> {
     return ResultAsyncInternal.fromPromise(
-      redis.hset(key, field, value),
+      redis.hset(key, field, JSON.stringify(value)),
       (error: unknown) =>
         Errors.other('Db', error instanceof Error ? error : undefined)
     )
   },
-  get(key: string, ...fields: string[]): DBResultAsync<(string | null)[]> {
+  get<T extends AObject>(key: string, ...fields: string[]): DBResultAsync<T[]> {
     return ResultAsyncInternal.fromPromise(
-      redis.hmget(key, ...fields),
+      (async () => {
+        const result = await redis.hmget(key, ...fields)
+        const foundIndex = result.findIndex((y) => y === null)
+        if (foundIndex >= 0) {
+          throw new Error(`Db: ${fields[foundIndex]} is \`null\``)
+        }
+        return result.map((value) => JSON.parse(value!)) as T[]
+      })(),
       (error: unknown) =>
         Errors.other('Db', error instanceof Error ? error : undefined)
     )
   },
   keys(key: string): DBResultAsync<string[]> {
-    return ResultAsyncInternal.fromPromise(
-      redis.hkeys(key),
-      (error: unknown) =>
-        Errors.other('Db', error instanceof Error ? error : undefined)
+    return ResultAsyncInternal.fromPromise(redis.hkeys(key), (error: unknown) =>
+      Errors.other('Db', error instanceof Error ? error : undefined)
     )
   },
 }

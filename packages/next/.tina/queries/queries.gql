@@ -1,5 +1,4 @@
 query getResources {
-  ...ConfigQueryFragment
   __typename
   getCollections {
     __typename

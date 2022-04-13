@@ -2,6 +2,7 @@ import path from 'path'
 import { slugify } from '@tryghost/string'
 import debug from 'debug'
 import { pathToRegexp } from 'path-to-regexp'
+// import { permalinkToRegexp } from './helpers'; // TODO use this instead
 import type { Key } from 'path-to-regexp'
 import { toArray } from './utils'
 import type {

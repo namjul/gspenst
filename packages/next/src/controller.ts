@@ -5,13 +5,11 @@ import { assertUnreachable } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
 import type {
-  ContextType,
+  ThemeContextType,
   Result,
   Simplify,
-  ConfigResourceItem,
-  // DataQuery
+  // DataQuery,
 } from './types'
-import type { GetPage, GetPost, GetTag, GetAuthor, GetConfig } from './api'
 import * as Errors from './errors'
 
 type Pagination = {
@@ -46,46 +44,46 @@ type BasePageProps = {
 
 type PostPageProps = Simplify<
   BasePageProps & {
-    context: Extract<ContextType, 'post'>
+    context: Extract<ThemeContextType, 'post'>
     data: {
-      entry: GetPost
+      // entry: GetPost
     }
   }
 >
 
 type PagePageProps = Simplify<
   BasePageProps & {
-    context: Extract<ContextType, 'page'>
+    context: Extract<ThemeContextType, 'page'>
     data: {
-      entry: GetPage
+      // entry: GetPage
     }
   }
 >
 
 type AuthorPageProps = Simplify<
   BasePageProps & {
-    context: Extract<ContextType, 'author'>
+    context: Extract<ThemeContextType, 'author'>
     data: {
-      entry: GetAuthor
+      // entry: GetAuthor
     }
   }
 >
 
 type TagPageProps = Simplify<
   BasePageProps & {
-    context: Extract<ContextType, 'tag'>
+    context: Extract<ThemeContextType, 'tag'>
     data: {
-      entry: GetTag
+      // entry: GetTag
     }
   }
 >
 
 type IndexPageProps = Simplify<
   BasePageProps & {
-    context: Extract<ContextType, 'index' | 'home' | 'paged'>
+    context: Extract<ThemeContextType, 'index' | 'home' | 'paged'>
     data: {
-      entry: GetConfig
-      posts: GetPost[]
+      // entry: GetConfig
+      // posts: GetPost[]
     }
     pagination: Pagination
   }
@@ -95,7 +93,7 @@ type CustomPageProps = Simplify<
   BasePageProps & {
     context: null
     data: {
-      entry: GetConfig
+      // entry: GetConfig
     }
   }
 >
@@ -116,15 +114,28 @@ export type PageProps =
 type ControllerResult<T> = Result<T>
 
 // async function processQuery(query: DataQuery) {
+//   const { type } = query
 //
+//   if (type === 'read') {
+//     const resourceItemResult = await repository.find({
+//       slug: query.slug,
+//     })
+//
+//     return resourceItemResult.map(({ dataResult }) => dataResult)
+//   } else {
+//     const resourcesResult = await repository.findAll(query.resourceType)
+//
+//     return resourcesResult.map((resources) => {
+//       return resources.map(({ dataResult }) => dataResult)
+//     })
+//   }
 // }
 
 async function entryController(
   routingProperties: Extract<RoutingContext, { type: 'entry' }>
 ): Promise<ControllerResult<PageProps>> {
-  const resourceItem = await repository.find(
-    routingProperties.request.params ?? {}
-  )
+  const { params } = routingProperties.request
+  const resourceItemResult = await repository.find(params ?? {})
 
   // const query: DataQuery = {
   //   resourceType: routingProperties.resourceItem.resourceType,
@@ -134,95 +145,85 @@ async function entryController(
   //   }
   // }
 
-  if (!resourceItem || !resourceItem.dataResult) {
-    return err(Errors.notFound())
-  }
+  return resourceItemResult.map((resourceItem) => {
+    const { resourceType, dataResult } = resourceItem
 
-  const { resourceType, dataResult } = resourceItem
-
-  if (resourceType === 'config') {
-    return err(Errors.other('Should never happen.'))
-  }
-
-  if (dataResult.isErr()) {
-    return dataResult
-  }
-
-  switch (resourceType) {
-    case 'post':
-      return ok({
-        context: 'post',
-        data: {
-          entry: dataResult.value,
-        },
-        templates: getTemplateHierarchy(routingProperties),
-        route: routingProperties.request.path,
-      })
-    case 'page':
-      return ok({
-        context: 'page',
-        data: {
-          entry: dataResult.value,
-        },
-        templates: getTemplateHierarchy(routingProperties),
-        route: routingProperties.request.path,
-      })
-    case 'author':
-      return ok({
-        context: 'author',
-        data: {
-          entry: dataResult.value,
-        },
-        templates: getTemplateHierarchy(routingProperties),
-        route: routingProperties.request.path,
-      })
-    case 'tag':
-      return ok({
-        context: 'tag',
-        data: {
-          entry: dataResult.value,
-        },
-        templates: getTemplateHierarchy(routingProperties),
-        route: routingProperties.request.path,
-      })
-    default:
-      return assertUnreachable(resourceType)
-  }
+    switch (resourceType) {
+      case 'post':
+        return {
+          context: 'post' as const,
+          data: {
+            entry: dataResult,
+          },
+          templates: getTemplateHierarchy(routingProperties),
+          route: routingProperties.request.path,
+        }
+      case 'page':
+        return {
+          context: 'page' as const,
+          data: {
+            entry: dataResult,
+          },
+          templates: getTemplateHierarchy(routingProperties),
+          route: routingProperties.request.path,
+        }
+      case 'author':
+        return {
+          context: 'author' as const,
+          data: {
+            entry: dataResult,
+          },
+          templates: getTemplateHierarchy(routingProperties),
+          route: routingProperties.request.path,
+        }
+      case 'tag':
+        return {
+          context: 'tag' as const,
+          data: {
+            entry: dataResult,
+          },
+          templates: getTemplateHierarchy(routingProperties),
+          route: routingProperties.request.path,
+        }
+      default:
+        return assertUnreachable(resourceType)
+    }
+  })
 }
 
 async function channelController(
   routingProperties: Extract<RoutingContext, { type: 'channel' }>
 ): Promise<ControllerResult<PageProps>> {
-  const resources = await repository.getAll()
-  const posts = Object.values(resources).flatMap((resource) => {
-    return resource.resourceType === 'post'
-      ? resource.dataResult?.isOk()
-        ? [resource.dataResult.value]
-        : []
-      : []
-  })
+  // const posts = (await repository.findAll('post'))
 
-  const configResourceID = 'content/config/index.json'
-  const configResourceItem = resources[configResourceID] as
-    | ConfigResourceItem
-    | undefined
+  // const configResourceID = 'content/config/index.json'
+  // const configResourceItem = resources[configResourceID] as
+  //   | ConfigResourceItem
+  //   | undefined
+  //
+  // if (!configResourceItem || !configResourceItem.dataResult) {
+  //   return err(Errors.notFound(routingProperties.request.path))
+  // }
+  //
+  // const entry = configResourceItem.dataResult
+  //
+  // if (entry.isErr()) {
+  //   return entry
+  // }
 
-  if (!configResourceItem || !configResourceItem.dataResult) {
-    return err(Errors.notFound(routingProperties.request.path))
-  }
-
-  const entry = configResourceItem.dataResult
-
-  if (entry.isErr()) {
-    return entry
-  }
+  // const dataEntries = await Promise.all(
+  //   Object.entries(routingProperties.data).map(async ([name, query]) => {
+  //     return [name, await processQuery(query)] as const
+  //   })
+  // )
 
   return ok({
     context: 'index',
     templates: getTemplateHierarchy(routingProperties),
     data: {
-      entry: entry.value,
-      posts,
+      // entry: entry.value,
+      // posts,
+      // ...dataEntries,
     },
     pagination: {
       page: 1,
@@ -239,35 +240,43 @@ async function channelController(
 async function collectionController(
   routingProperties: Extract<RoutingContext, { type: 'collection' }>
 ): Promise<ControllerResult<PageProps>> {
-  const resources = await repository.getAll()
-  const posts = Object.values(resources).flatMap((resource) => {
-    return resource.resourceType === 'post'
-      ? resource.dataResult?.isOk()
-        ? [resource.dataResult.value]
-        : []
-      : []
-  })
-  const configResourceID = 'content/config/index.json'
-  const configResourceItem = resources[configResourceID] as
-    | ConfigResourceItem
-    | undefined
+  // const posts = await repository.findAll('post')
+  //
+  // if (posts.isErr()) {
+  //   return err(posts.error)
+  // }
 
-  if (!configResourceItem || !configResourceItem.dataResult) {
-    return err(Errors.notFound(routingProperties.request.path))
-  }
+  // const configResourceID = 'content/config/index.json'
+  // const configResourceItem = await repository.get(configResourceID)
+  //
+  // if (configResourceItem.isErr()) {
+  //   return err(configResourceItem.error)
+  // }
+  //
+  // const entry = configResourceItem.value.dataResult
+  //
+  // if (entry.isErr()) {
+  //   return err(
+  //     Errors.other(
+  //       'Controller: ',
+  //       entry.error instanceof Error ? entry.error : undefined
+  //     )
+  //   )
+  // }
 
-  const entry = configResourceItem.dataResult
-
-  if (entry.isErr()) {
-    return entry
-  }
+  // const dataEntries = await Promise.all(
+  //   Object.entries(routingProperties.data).map(async ([name, query]) => {
+  //     return [name, await processQuery(query)] as const
+  //   })
+  // )
 
   return ok({
     context: 'index',
     templates: getTemplateHierarchy(routingProperties),
     data: {
-      entry: entry.value,
-      posts,
+      // entry: entry.value,
+      // posts,
+      // ...dataEntries,
     },
     pagination: {
       page: 1,
@@ -284,28 +293,35 @@ async function collectionController(
 async function customController(
   routingProperties: Extract<RoutingContext, { type: 'custom' }>
 ): Promise<ControllerResult<PageProps>> {
-  const resources = await repository.getAll()
+  // const resources = await repository.getAll()
 
-  const configResourceID = 'content/config/index.json'
-  const configResourceItem = resources[configResourceID] as
-    | ConfigResourceItem
-    | undefined
+  // const configResourceID = 'content/config/index.json'
+  // const configResourceItem = resources[configResourceID] as
+  //   | ConfigResourceItem
+  //   | undefined
+  //
+  // if (!configResourceItem || !configResourceItem.dataResult) {
+  //   return err(Errors.notFound(routingProperties.request.path))
+  // }
+  //
+  // const entry = configResourceItem.dataResult
+  //
+  // if (entry.isErr()) {
+  //   return entry
+  // }
 
-  if (!configResourceItem || !configResourceItem.dataResult) {
-    return err(Errors.notFound(routingProperties.request.path))
-  }
-
-  const entry = configResourceItem.dataResult
-
-  if (entry.isErr()) {
-    return entry
-  }
+  // const dataEntries = await Promise.all(
+  //   Object.entries(routingProperties.data).map(async ([name, query]) => {
+  //     return [name, await processQuery(query)] as const
+  //   })
+  // )
 
   return ok({
     context: null,
     templates: getTemplateHierarchy(routingProperties),
     data: {
-      entry: entry.value, // TODO embed the first one from the data list
+      // entry: entry.value, // TODO embed the first one from the data list
+      // ...Object.fromEntries(dataEntries),
     },
     route: routingProperties.request.path,
   })

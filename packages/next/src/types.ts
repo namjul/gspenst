@@ -14,13 +14,7 @@ import type {
   Tag,
   Config,
 } from '../.tina/__generated__/types'
-import type {
-  PageResult,
-  PostResult,
-  TagResult,
-  AuthorResult,
-  ConfigResult,
-} from './api'
+import type { GetPage, GetPost, GetTag, GetAuthor } from './api'
 import {
   queryTypes,
   taxonomyTypes,
@@ -34,34 +28,33 @@ import type { PageProps as InternalPageProps } from './controller'
 import type { GspenstError } from './errors'
 import type { HeadingsReturn } from './getHeaders'
 
-export type {
-  LiteralUnion,
-  AsyncReturnType,
-  Split,
-  Entries,
-  Simplify,
-  Post,
-  Page,
-  Author,
-  Tag,
-  Config,
-  Get,
-}
+/* --- Utils --- */
 
-export type Result<T> = Ok<T, GspenstError> | Err<never, GspenstError>
-export type ResultAsync<T> = ResultAsyncInner<T , GspenstError>
-
-export type { TinaTemplate } from 'tinacms'
-
+export type Dict<T = any> = Record<string, T>
+export type Unpacked<T> = T extends Array<infer U> ? U : T
+export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
 export type Nullish = null | undefined
 export type Optional<T> = NonNullable<T> | undefined | null
-
+export type { LiteralUnion, AsyncReturnType, Split, Entries, Simplify, Get }
 // validate shapes: https://fettblog.eu/typescript-match-the-exact-object-shape/
 export type ValidateShape<T, Shape> = T extends Shape
   ? Exclude<keyof T, keyof Shape> extends never
     ? T
     : never
   : never
+
+/* --- Domain --- */
+
+export type { Post, Page, Author, Tag, Config }
+
+export type Result<T> =
+  | Ok<T, GspenstError>
+  | Ok<T, never>
+  | Err<T, GspenstError>
+  | Err<never, GspenstError>
+export type ResultAsync<T> = ResultAsyncInner<T, GspenstError>
+
+export type { TinaTemplate } from 'tinacms'
 
 export type ResourceItemMap = { [id: ID]: ResourceItem }
 export type Taxonomies = typeof taxonomyTypes[number]
@@ -85,8 +78,8 @@ export type DynamicVariablesObject<T> = ValidateShape<
 export type PageProps = Simplify<
   Exclude<InternalPageProps, { context: 'internal' }> & {}
 > & {
-  loading: boolean
-  headers: Optional<HeadingsReturn>
+  loading?: boolean
+  headers?: Optional<HeadingsReturn>
 }
 
 export type Slug = string
@@ -110,43 +103,36 @@ export type DynamicVariables = DynamicVariablesObject<{
 export type PostResourceItem = Simplify<
   BaseResourceItem & {
     resourceType: Extract<ResourceType, 'post'>
-    dataResult?: PostResult
+    dataResult?: GetPost
   } & DynamicVariables
 >
 
 export type PageResourceItem = Simplify<
   BaseResourceItem & {
     resourceType: Extract<ResourceType, 'page'>
-    dataResult?: PageResult
+    dataResult?: GetPage
   } & DynamicVariables
 >
 
 export type TagResourceItem = Simplify<
   BaseResourceItem & {
     resourceType: Extract<ResourceType, 'tag'>
-    dataResult?: TagResult
+    dataResult?: GetTag
   } & DynamicVariables
 >
 
 export type AuthorResourceItem = Simplify<
   BaseResourceItem & {
     resourceType: Extract<ResourceType, 'author'>
-    dataResult?: AuthorResult
+    dataResult?: GetAuthor
   } & DynamicVariables
 >
 
-export type ConfigResourceItem = Simplify<
-  BaseResourceItem & {
-    resourceType: Extract<ResourceType, 'config'>
-    dataResult?: ConfigResult
-  }
->
 export type ResourceItem =
   | PostResourceItem
   | PageResourceItem
   | AuthorResourceItem
   | TagResourceItem
-  | ConfigResourceItem
 
 export type QueryFilterOptions = QueryFilterOptionsObject<{
   filter: Optional<string>
@@ -161,16 +147,16 @@ export type QueryFilterOptions = QueryFilterOptionsObject<{
 export type DataQuery =
   | {
       type: Extract<QueryType, 'read'>
-      resourceType: Exclude<ResourceType, 'config'>
+      resourceType: ResourceType
       slug: Slug
       redirect?: boolean
     }
   | ({
       type: Extract<QueryType, 'browse'>
-      resourceType: Exclude<ResourceType, 'config'>
+      resourceType: ResourceType
     } & QueryFilterOptions)
 
-export type DataForm = `${Exclude<ResourceType, 'config'>}.${string}`
+export type DataForm = `${ResourceType}.${string}`
 
 export type Options = {
   theme: string
@@ -180,54 +166,7 @@ export type Options = {
   // sources?: Source[]
 }
 
-// export type RemarkPlugin = Unpacked<
-//   Exclude<MDXOptions['remarkPlugins'], undefined>
-// >
-
-/* ------------------------------ Domain Type ------------------------------ */
-
-// export type Entry<T = Record<string, unknown>> = {
-//   id: ID
-// } & T
-//
-// export type Post = Entry<{
-//   title: string
-//   slug: string
-//   url: string
-//   updated: DateTimeString
-//   created: DateTimeString
-//   featured: boolean
-// }>
-//
-// export type Tag = Entry<{
-//   name: string
-//   description: string
-//   slug: string
-//   color: string
-// }>
-//
-// export type Author = Entry<{
-//   name: string
-//   description: string
-//   slug: string
-//   thumbnail: string
-// }>
-//
-// export type Page = Post
-//
-// export type Setting = Entry<{
-//   title: string
-//   description: string
-//   // navigation: []
-// }>
-
-/* --- Utils --- */
-
-export type Dict<T = any> = Record<string, T>
-
-export type Unpacked<T> = T extends Array<infer U> ? U : T
-
-// MDX
+/* --- MDX --- */
 
 export interface Text extends Literal {
   type: 'text'

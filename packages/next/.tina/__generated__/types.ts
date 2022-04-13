@@ -823,11 +823,6 @@ export type GetResourcesQuery = {
       } | null> | null
     }
   }>
-  getConfigDocument: {
-    __typename?: 'ConfigDocument'
-    id: string
-    data: { __typename?: 'Config'; darkMode?: boolean | null }
-  }
 }
 
 export type GetConfigQueryVariables = Exact<{ [key: string]: never }>
@@ -1539,7 +1534,6 @@ export const TagDocumentQueryFragmentFragmentDoc = gql`
 `
 export const GetResourcesDocument = gql`
   query getResources {
-    ...ConfigQueryFragment
     __typename
     getCollections {
       __typename
@@ -1682,7 +1676,6 @@ export const GetResourcesDocument = gql`
       }
     }
   }
-  ${ConfigQueryFragmentFragmentDoc}
   ${TagPartsFragmentDoc}
   ${AuthorPartsFragmentDoc}
 `

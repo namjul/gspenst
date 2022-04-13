@@ -8,7 +8,6 @@ const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
 type ApiResultAsync<T> = ResultAsync<T>
 
 export type GetResources = AsyncReturnType<typeof client.getResources>
-export type ResourcesResult = ReturnType<typeof getResources>
 export function getResources(): ApiResultAsync<GetResources> {
   return ResultAsyncInternal.fromPromise(
     client.getResources(),
@@ -18,7 +17,6 @@ export function getResources(): ApiResultAsync<GetResources> {
 }
 
 export type GetPage = AsyncReturnType<typeof client.getPage>
-export type PageResult = ReturnType<typeof getPage>
 export function getPage(variables: {
   relativePath: string
 }): ApiResultAsync<GetPage> {
@@ -30,7 +28,6 @@ export function getPage(variables: {
 }
 
 export type GetPost = AsyncReturnType<typeof client.getPost>
-export type PostResult = ReturnType<typeof getPost>
 export function getPost(variables: {
   relativePath: string
 }): ApiResultAsync<GetPost> {
@@ -42,7 +39,6 @@ export function getPost(variables: {
 }
 
 export type GetAuthor = AsyncReturnType<typeof client.getAuthor>
-export type AuthorResult = ReturnType<typeof getAuthor>
 export function getAuthor(variables: {
   relativePath: string
 }): ApiResultAsync<GetAuthor> {
@@ -54,7 +50,6 @@ export function getAuthor(variables: {
 }
 
 export type GetTag = AsyncReturnType<typeof client.getTag>
-export type TagResult = ReturnType<typeof getTag>
 export function getTag(variables: {
   relativePath: string
 }): ApiResultAsync<GetTag> {
@@ -66,7 +61,6 @@ export function getTag(variables: {
 }
 
 export type GetConfig = AsyncReturnType<typeof client.getConfig>
-export type ConfigResult = ReturnType<typeof getConfig>
 export function getConfig(): ApiResultAsync<GetConfig> {
   return ResultAsyncInternal.fromPromise(client.getConfig(), (error: unknown) =>
     Errors.other('Api', error instanceof Error ? error : undefined)

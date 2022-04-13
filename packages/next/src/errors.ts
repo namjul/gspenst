@@ -1,5 +1,3 @@
-import { assertUnreachable } from './helpers'
-
 export type GspenstError =
   | { type: 'Other'; error: Error | undefined; context?: string }
   | { type: 'Validation'; message: string; help?: string | undefined }
@@ -29,4 +27,3 @@ export const notFound = (context?: string): GspenstError => ({
 })
 
 // export const invalidRouting = ()
-
