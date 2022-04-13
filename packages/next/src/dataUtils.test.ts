@@ -1,5 +1,4 @@
-import { resources } from './__fixtures__/resources'
-import { getTemplateHierarchy, find } from './dataUtils'
+import { getTemplateHierarchy } from './dataUtils'
 
 describe('computing template hierarchy', () => {
   test('collection', () => {

@@ -5,7 +5,7 @@ import { RouterManager } from './routing'
 import type { RoutingConfigResolved } from './validate'
 import type { PageProps } from './controller'
 import { controller } from './controller'
-import { formatError } from './errors'
+import { formatError } from './helpers'
 import resolvePaths from './resolvePaths'
 
 const log = debug('@gspenst/next:server')
@@ -43,12 +43,15 @@ export const getStaticPaths =
       log('Page [...slug].js getStaticPaths')
 
       const paths = await resolvePaths(routingConfig)
+      if (paths.isOk()) {
+        console.log('PATHS: ', paths)
 
-      console.log('PATHS: ', paths)
-
-      return {
-        paths,
-        fallback: staticExport ? false : 'blocking',
+        return {
+          paths: paths.value,
+          fallback: staticExport ? false : 'blocking',
+        }
+      } else {
+        throw formatError(paths.error)
       }
     }
   }

@@ -7,7 +7,8 @@ import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
 import { validate } from './validate'
 import { findContentDir } from './utils'
-import { formatError } from './errors'
+import { formatError } from './helpers'
+import defaultRoutes from './defaultRoutes';
 
 const log = debug('@gspenst/next:loader')
 
@@ -19,20 +20,6 @@ type LoaderOptions = Options
 
 const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
 const isProductionBuild = process.env.NODE_ENV === 'production'
-
-export const defaultRoutingConfig = {
-  routes: {},
-  collections: {
-    '/': {
-      permalink: '/{slug}/',
-      template: 'index',
-    },
-  },
-  taxonomies: {
-    tag: '/tag/{slug}',
-    author: '/author/{slug}',
-  },
-}
 
 const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   const callback = this.async()
@@ -83,7 +70,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   )[1]
 
   const routingConfigResult = validate({
-    ...defaultRoutingConfig,
+    ...defaultRoutes,
     ...(yaml.load(source) as object),
   })
 

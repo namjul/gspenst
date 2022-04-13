@@ -1,30 +1,57 @@
 import resolvePaths from './resolvePaths'
+import repository from './repository'
+import defaultRoutes from './defaultRoutes'
 import { validate } from './validate'
 
-jest.mock('./repository')
+jest.mock('../.tina/__generated__/types')
+jest.mock('./redis')
+
+beforeAll(async () => {
+  void (await repository.init())
+})
 
 describe('resolvePaths', () => {
   describe('resolving paths', () => {
     test('empty config', async () => {
-      expect(await resolvePaths({})).toEqual([
+      const result = (await resolvePaths({}))._unsafeUnwrap()
+      expect(result).toEqual([
         '/admin',
-        '/home',
         '/about',
+        '/home',
         '/portfolio',
       ])
     })
     test('default routing config', async () => {
-      const routingConfig = validate()
-      expect(await resolvePaths(routingConfig._unsafeUnwrap()[0]!)).toEqual([
+      const result = await resolvePaths(
+        validate(defaultRoutes)._unsafeUnwrap()[0]!
+      )
+      expect(result._unsafeUnwrap()).toEqual([
         '/admin',
-        '/home',
+        '/',
+        '/9th-post/',
+        '/8th-post/',
+        '/7th-post/',
+        '/6th-post/',
+        '/5th-post/',
+        '/4th-post/',
+        '/3th-post/',
+        '/2th-post/',
+        '/1th-post/',
+        '/0th-post/',
+        '/page/1',
+        '/page/2',
         '/about',
+        '/home',
         '/portfolio',
+        '/tag/tag-1',
+        '/tag/tag-2',
+        '/author/napolean',
+        '/author/pedro',
       ])
     })
     test('routes', async () => {
       expect(
-        await resolvePaths({
+       (await resolvePaths({
           routes: {
             '/features/': {
               template: 'Features',
@@ -42,7 +69,7 @@ describe('resolvePaths', () => {
               },
             },
           },
-        })
+        }))._unsafeUnwrap()
       ).toContain('/features/')
     })
     test('collections', async () => {
@@ -58,7 +85,7 @@ describe('resolvePaths', () => {
           },
         },
       })
-      expect(paths).toEqual([
+      expect(paths._unsafeUnwrap()).toEqual([
         '/admin',
         '/',
         '/9th-post/',
@@ -74,18 +101,18 @@ describe('resolvePaths', () => {
         '/page/1',
         '/page/2',
         '/posts/',
-        '/home',
         '/about',
+        '/home',
         '/portfolio',
       ])
     })
     test('taxonomies', async () => {
-      const paths = await resolvePaths({
+      const paths = (await resolvePaths({
         taxonomies: {
           tag: '/category-1/:slug',
           author: '/category-2/:slug',
         },
-      })
+      }))._unsafeUnwrap()
       expect(paths).toContain('/category-2/napolean')
       expect(paths).toContain('/category-2/pedro')
     })

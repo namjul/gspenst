@@ -452,7 +452,7 @@ export const ExperimentalGetTinaClient = () => {
                         relativePath: 'tag-1.md',
                         extension: '.md',
                       },
-                      data: { slug: null, name: 'Tag 1', date: null },
+                      data: { slug: 'tag-1', name: 'Tag 1', date: null },
                     },
                   },
                   {
@@ -808,6 +808,7 @@ export const ExperimentalGetTinaClient = () => {
       },
     }),
     getAuthor: async () => undefined,
+    getTag: async () => undefined,
     getConfig: async () => ({
       data: {
         getConfigDocument: {

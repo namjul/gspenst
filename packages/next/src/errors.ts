@@ -30,23 +30,3 @@ export const notFound = (context?: string): GspenstError => ({
 
 // export const invalidRouting = ()
 
-export function formatError(error: GspenstError) {
-  const { type } = error
-  switch (type) {
-    case 'Other':
-      if (error.error) {
-        return new Error(`${error.type}: ${error.context}`, {
-          cause: error.error,
-        })
-      }
-      return new Error(`${error.type}: ${error.context}`)
-    case 'Validation':
-      return new Error(
-        `${error.type}: ${error.message}${error.help ? `\n${error.help}` : ''}`
-      )
-    case 'NotFound':
-      return new Error(`${error.type}: ${error.context}`)
-    default:
-      return assertUnreachable(type)
-  }
-}

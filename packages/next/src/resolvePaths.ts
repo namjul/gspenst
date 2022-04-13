@@ -1,46 +1,61 @@
 import path from 'path'
-import { compile } from 'path-to-regexp'
+import { ok, err, combine } from 'neverthrow'
 import type { RoutingConfigResolved } from './validate'
-import type { ResourceItem, Entries } from './types'
+import type { ResourceItem, Entries, Result } from './types'
 import repository from './repository'
+import { compilePermalink } from './helpers'
 
 const POST_PER_PAGE = 5
 
 function resolveRoutesPaths(routingConfig: RoutingConfigResolved) {
-  return Object.keys(routingConfig.routes ?? {})
+  return Object.keys(routingConfig.routes ?? {}).map(ok)
 }
 
 async function resolveCollectionsPaths(routingConfig: RoutingConfigResolved) {
-  const postStack = Object.values(await repository.getAll('post'))
+  const postStackResult = await repository.findAll('post')
 
-  return Object.entries(routingConfig.collections ?? {}).reduce<string[]>(
-    (acc, [mainRoute, config]) => {
-      acc.push(mainRoute)
+  if (postStackResult.isOk()) {
+    const collections = Object.entries(
+      routingConfig.collections ?? {}
+    ) as Entries<typeof routingConfig.collections>
 
-      const collectionPosts: ResourceItem[] = []
-      for (let len = postStack.length - 1; len >= 0; len -= 1) {
-        const resourceItem = postStack[len]
-        if (resourceItem) {
-          collectionPosts.push(resourceItem)
-          const isOwned = true // TODO filter using filter option `const isOwned = this.nql.queryJSON(resource)`
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          if (isOwned) {
-            acc.push(compile(config.permalink)(resourceItem))
+    const result = await Promise.all(
+      collections.flatMap(([mainRoute, config]) => {
+        const paths: Result<string>[] = [ok(String(mainRoute))]
+        const postStack = postStackResult.value
 
-            // Remove owned resourceItem
-            postStack.splice(len, 1)
+        const collectionPosts: ResourceItem[] = []
+        for (let len = postStack.length - 1; len >= 0; len -= 1) {
+          const resourceItem = postStack[len]
+          if (resourceItem) {
+            collectionPosts.push(resourceItem)
+            const isOwned = true // TODO filter using filter option `const isOwned = this.nql.queryJSON(resource)`
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            if (isOwned) {
+              paths.push(compilePermalink(config.permalink, resourceItem))
+
+              // Remove owned resourceItem
+              postStack.splice(len, 1)
+            }
           }
         }
-      }
 
-      Array.from({ length: collectionPosts.length / POST_PER_PAGE }, (_, i) => {
-        return acc.push(path.join(mainRoute, 'page', String(i + 1)))
+        Array.from(
+          { length: collectionPosts.length / POST_PER_PAGE },
+          (_, i) => {
+            return paths.push(
+              ok(path.join(String(mainRoute), 'page', String(i + 1)))
+            )
+          }
+        )
+
+        return paths
       })
+    )
+    return result
+  }
 
-      return acc
-    },
-    []
-  )
+  return [err(postStackResult.error)]
 }
 
 export async function resolveTaxonomiesPaths(
@@ -50,49 +65,49 @@ export async function resolveTaxonomiesPaths(
     typeof routingConfig.taxonomies
   >
 
-  return taxonomies.reduce<Promise<string[]>>(
-    async (promise, [key, permalink]) => {
-      const acc = await promise
-
-      if (permalink) {
-        const taxonomyEntries = Object.values(await repository.getAll(key))
-        taxonomyEntries.forEach((taxonomy) => {
-          acc.push(compile(permalink)(taxonomy))
-        })
-
-        Array.from(
-          { length: taxonomyEntries.length / POST_PER_PAGE },
-          (_, i) => {
-            return acc.push(path.join(permalink, 'page', String(i + 1)))
-          }
-        )
-      }
-
-      return Promise.resolve(acc)
-    },
-    Promise.resolve([])
-  )
+  return (
+    await Promise.all(
+      taxonomies.map(async ([key, permalink]) => {
+        const taxonomiesResult = await repository.findAll(key)
+        if (taxonomiesResult.isOk()) {
+          return taxonomiesResult.value.flatMap((taxonomy) => {
+            return [
+              compilePermalink(permalink!, taxonomy),
+              ...Array.from(
+                { length: taxonomiesResult.value.length / POST_PER_PAGE },
+                (_, i) => {
+                  return ok(path.join(permalink!, 'page', String(i + 1)))
+                }
+              ),
+            ]
+          })
+        }
+        return [err(taxonomiesResult.error)]
+      })
+    )
+  ).flat()
 }
 
 export async function resolvePagesPaths() {
-  const pages = await repository.getAll('page')
-
-  return Object.values(pages).reduce<string[]>((acc, resourceItem) => {
-    acc.push(`/${resourceItem.slug}`)
-    return acc
-  }, [])
+  const pages = await repository.findAll('page')
+  if (pages.isOk()) {
+    return pages.value.map((resourceItem) => {
+      return ok(`/${resourceItem.slug}`)
+    })
+  }
+  return [err(pages.error)]
 }
 
 export default async function resolvePaths(
   routingConfig: RoutingConfigResolved
 ) {
   const paths = [
-    '/admin',
+    ok('/admin'),
     ...resolveRoutesPaths(routingConfig),
     ...(await resolveCollectionsPaths(routingConfig)),
     ...(await resolvePagesPaths()),
     ...(await resolveTaxonomiesPaths(routingConfig)),
   ]
 
-  return paths
+  return combine(paths)
 }
