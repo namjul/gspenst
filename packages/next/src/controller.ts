@@ -141,59 +141,22 @@ async function processQuery(query: DataQuery) {
 async function entryController(
   routingProperties: Extract<RoutingContext, { type: 'entry' }>
 ): Promise<ControllerResult<PageProps>> {
-  const { params } = routingProperties.request
-  const resourceItemResult = await repository.find(params ?? {})
+  const { resourceType, request } = routingProperties
+  const query: DataQuery = {
+    resourceType,
+    type: 'read',
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain --- TODO: return ErrResult if `slug` is not defined
+    slug: request.params?.slug!,
+  }
 
-  // const query: DataQuery = {
-  //   resourceType: routingProperties.resourceItem.resourceType,
-  //   type: 'read',
-  //   options: {
-  //
-  //   }
-  // }
-
-  return resourceItemResult.map((resourceItem) => {
-    const { resourceType, dataResult } = resourceItem
-
-    switch (resourceType) {
-      case 'post':
-        return {
-          context: 'post' as const,
-          data: {
-            entry: dataResult,
-          },
-          templates: getTemplateHierarchy(routingProperties),
-          route: routingProperties.request.path,
-        }
-      case 'page':
-        return {
-          context: 'page' as const,
-          data: {
-            entry: dataResult,
-          },
-          templates: getTemplateHierarchy(routingProperties),
-          route: routingProperties.request.path,
-        }
-      case 'author':
-        return {
-          context: 'author' as const,
-          data: {
-            entry: dataResult,
-          },
-          templates: getTemplateHierarchy(routingProperties),
-          route: routingProperties.request.path,
-        }
-      case 'tag':
-        return {
-          context: 'tag' as const,
-          data: {
-            entry: dataResult,
-          },
-          templates: getTemplateHierarchy(routingProperties),
-          route: routingProperties.request.path,
-        }
-      default:
-        return assertUnreachable(resourceType)
+  return (await processQuery(query)).map((entry) => {
+    return {
+      context: resourceType,
+      data: {
+        entry,
+      },
+      templates: getTemplateHierarchy(routingProperties),
+      route: routingProperties.request.path,
     }
   })
 }
@@ -343,20 +306,33 @@ async function customController(
   //   return entry
   // }
 
-  // const dataEntries = await Promise.all(
-  //   Object.entries(routingProperties.data).map(async ([name, query]) => {
-  //     return [name, await processQuery(query)] as const
-  //   })
-  // )
+  const keys = Object.keys(routingProperties.data ?? {})
+  const dataResults = await Promise.all(
+    keys.map(
+      async (key) => processQuery(routingProperties.data?.[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
+    )
+  )
 
-  return ok({
-    context: null,
-    templates: getTemplateHierarchy(routingProperties),
-    data: {
-      // entry: entry.value, // TODO embed the first one from the data list
-      // ...Object.fromEntries(dataEntries),
-    },
-    route: routingProperties.request.path,
+  return combine(dataResults).map((y) => {
+    const dataEntries = keys.reduce<{
+      [key: string]: X
+    }>((acc, current, index) => {
+      const dataResult = y[index]!
+      return {
+        ...acc,
+        [current]: dataResult,
+      }
+    }, {})
+
+    return {
+      context: null,
+      templates: getTemplateHierarchy(routingProperties),
+      data: {
+        // entry: entry.value, // TODO embed the first one from the data list
+        ...dataEntries,
+      },
+      route: routingProperties.request.path,
+    }
   })
 }
 
@@ -417,9 +393,12 @@ export async function controller(
         return result
       }
     }
+    if (result.type === 'redirect') {
+      return result
+    }
   }
 
-  return { type: 'props', props: err(Errors.notFound()) }
+  return { type: 'props', props: err(Errors.notFound('No controller found')) }
 }
 
 // getList(
