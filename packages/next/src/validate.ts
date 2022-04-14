@@ -201,8 +201,10 @@ function validateRoute(
     const { data } = route
     if (isObject(data)) {
       Object.values(data).forEach((obj) => {
-        if (isDataObject(obj as string | DataLongForm[''])) {
+        if (isObject(obj)) {
           dataObjectSchema.validateSync(obj, { strict: true })
+        } else if (typeof obj === 'string') {
+          dataSchema.validateSync(obj, { strict: true })
         }
       })
     }

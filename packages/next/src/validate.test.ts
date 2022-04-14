@@ -134,6 +134,17 @@ describe('routing object validation & transformation', () => {
             routes: {
               '/food/': {
                 data: {
+                  something: 'something.test',
+                },
+              },
+            },
+          }).isErr()
+        ).toBe(true)
+        expect(
+          validate({
+            routes: {
+              '/food/': {
+                data: {
                   something: {
                     resource: 'post',
                   },
