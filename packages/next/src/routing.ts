@@ -50,9 +50,11 @@ export type RoutingContext =
       filter?: string
       order?: string
       limit?: string
-      data: {
-        [key: string]: DataQuery
-      }
+      data:
+        | {
+            [key: string]: DataQuery
+          }
+        | undefined
       templates: string[]
       request: Request
     }
@@ -60,9 +62,11 @@ export type RoutingContext =
       type: Extract<RoutingContextType, 'channel'>
       name: string
       filter?: string
-      data: {
-        [key: string]: DataQuery
-      }
+      data:
+        | {
+            [key: string]: DataQuery
+          }
+        | undefined
       templates: string[]
       request: Request
     }
@@ -74,9 +78,11 @@ export type RoutingContext =
     }
   | {
       type: Extract<RoutingContextType, 'custom'>
-      data: {
-        [key: string]: DataQuery
-      }
+      data:
+        | {
+            [key: string]: DataQuery
+          }
+        | undefined
       templates: string[]
       request: Request
     }
@@ -222,7 +228,7 @@ class StaticRoutesRouter extends ParentRouter {
       type: 'custom' as const,
       templates: [...toArray(this.config.template ?? [])],
       request: { path: _path },
-      data: this.data?.query ?? {},
+      data: this.data?.query,
     }
   }
 }
@@ -275,7 +281,7 @@ class TaxonomyRouter extends ParentRouter {
         params,
       },
       templates: [],
-      data: this.data?.query ?? {},
+      data: this.data?.query,
     }
   }
 }
@@ -341,7 +347,7 @@ class CollectionRouter extends ParentRouter {
       name: this.routerName,
       request: { path: _path, params: { page } },
       templates: [...toArray(this.config.template ?? [])],
-      data: this.data ?? {},
+      data: this.data?.query,
     }
   }
 

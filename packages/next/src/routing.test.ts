@@ -30,7 +30,7 @@ describe('routing mapping', () => {
         type: 'channel',
         name: 'author',
         templates: [],
-        data: {},
+        data: undefined,
         request: {
           path: '/category-2/pedro/',
           params: {
@@ -57,7 +57,7 @@ describe('routing mapping', () => {
       {
         type: 'collection',
         name: 'index',
-        data: {},
+        data: undefined,
         templates: [],
         request: {
           path: '/page/1/',
@@ -71,7 +71,7 @@ describe('routing mapping', () => {
       {
         type: 'channel',
         name: 'author',
-        data: {},
+        data: undefined,
         templates: [],
         request: {
           path: '/author/pedro/page/1/',
