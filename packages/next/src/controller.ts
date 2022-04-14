@@ -1,4 +1,4 @@
-import { ok, err } from 'neverthrow'
+import { ok, err, combine } from 'neverthrow'
 import type { Redirect } from 'next'
 import type { RoutingContext } from './routing'
 import { assertUnreachable } from './helpers'
@@ -8,7 +8,8 @@ import type {
   ThemeContextType,
   Result,
   Simplify,
-  // DataQuery,
+  DataQuery,
+  AsyncReturnType,
 } from './types'
 import * as Errors from './errors'
 
@@ -113,23 +114,29 @@ export type PageProps =
 
 type ControllerResult<T> = Result<T>
 
-// async function processQuery(query: DataQuery) {
-//   const { type } = query
-//
-//   if (type === 'read') {
-//     const resourceItemResult = await repository.find({
-//       slug: query.slug,
-//     })
-//
-//     return resourceItemResult.map(({ dataResult }) => dataResult)
-//   } else {
-//     const resourcesResult = await repository.findAll(query.resourceType)
-//
-//     return resourcesResult.map((resources) => {
-//       return resources.map(({ dataResult }) => dataResult)
-//     })
-//   }
-// }
+type ExtractGeneric<Type> = Type extends Result<infer X> ? X : never
+type X = ExtractGeneric<AsyncReturnType<typeof processQuery>>
+
+async function processQuery(query: DataQuery) {
+  const { type } = query
+
+  switch (type) {
+    case 'read':
+      return (
+        await repository.find({
+          slug: query.slug,
+        })
+      ).map(({ dataResult }) => {
+        return dataResult
+      })
+    case 'browse':
+      return (await repository.findAll(query.resourceType)).map((resources) => {
+        return resources.map(({ dataResult }) => dataResult)
+      })
+    default:
+      return assertUnreachable(type)
+  }
+}
 
 async function entryController(
   routingProperties: Extract<RoutingContext, { type: 'entry' }>
@@ -211,29 +218,42 @@ async function channelController(
   //   return entry
   // }
 
-  // const dataEntries = await Promise.all(
-  //   Object.entries(routingProperties.data).map(async ([name, query]) => {
-  //     return [name, await processQuery(query)] as const
-  //   })
-  // )
+  const keys = Object.keys(routingProperties.data ?? {})
+  const dataResults = await Promise.all(
+    keys.map(
+      async (key) => processQuery(routingProperties.data?.[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
+    )
+  )
 
-  return ok({
-    context: 'index',
-    templates: getTemplateHierarchy(routingProperties),
-    data: {
-      // entry: entry.value,
-      // posts,
-      // ...dataEntries,
-    },
-    pagination: {
-      page: 1,
-      prev: null,
-      next: null,
-      pages: 1,
-      total: 10,
-      limit: 10,
-    },
-    route: routingProperties.request.path,
+  return combine(dataResults).map((y) => {
+    const dataEntries = keys.reduce<{
+      [key: string]: X
+    }>((acc, current, index) => {
+      const dataResult = y[index]!
+      return {
+        ...acc,
+        [current]: dataResult,
+      }
+    }, {})
+
+    return {
+      context: 'index',
+      templates: getTemplateHierarchy(routingProperties),
+      data: {
+        // entry: entry.value,
+        // posts,
+        ...dataEntries,
+      },
+      pagination: {
+        page: 1,
+        prev: null,
+        next: null,
+        pages: 1,
+        total: 10,
+        limit: 10,
+      },
+      route: routingProperties.request.path,
+    }
   })
 }
 
@@ -264,29 +284,42 @@ async function collectionController(
   //   )
   // }
 
-  // const dataEntries = await Promise.all(
-  //   Object.entries(routingProperties.data).map(async ([name, query]) => {
-  //     return [name, await processQuery(query)] as const
-  //   })
-  // )
+  const keys = Object.keys(routingProperties.data ?? {})
+  const dataResults = await Promise.all(
+    keys.map(
+      async (key) => processQuery(routingProperties.data?.[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
+    )
+  )
 
-  return ok({
-    context: 'index',
-    templates: getTemplateHierarchy(routingProperties),
-    data: {
-      // entry: entry.value,
-      // posts,
-      // ...dataEntries,
-    },
-    pagination: {
-      page: 1,
-      prev: null,
-      next: null,
-      pages: 1,
-      total: 10,
-      limit: 10,
-    },
-    route: routingProperties.request.path,
+  return combine(dataResults).map((y) => {
+    const dataEntries = keys.reduce<{
+      [key: string]: X
+    }>((acc, current, index) => {
+      const dataResult = y[index]!
+      return {
+        ...acc,
+        [current]: dataResult,
+      }
+    }, {})
+
+    return {
+      context: 'index',
+      templates: getTemplateHierarchy(routingProperties),
+      data: {
+        // entry: entry.value,
+        // posts,
+        ...dataEntries,
+      },
+      pagination: {
+        page: 1,
+        prev: null,
+        next: null,
+        pages: 1,
+        total: 10,
+        limit: 10,
+      },
+      route: routingProperties.request.path,
+    }
   })
 }
 
@@ -379,6 +412,8 @@ export async function controller(
 
     if (result.type === 'props') {
       if (result.props.isOk()) {
+        return result
+      } else if (result.props.error.type !== 'NotFound') {
         return result
       }
     }

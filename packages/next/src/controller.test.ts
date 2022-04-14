@@ -81,13 +81,66 @@ describe('controller', () => {
     })
     test.todo('filter')
     test.todo('a post is only in a single collection')
-    test.todo('with data')
+    test('with data', async () => {
+      const result = await controller([
+        {
+          type,
+          name: 'index',
+          request: {
+            path: '/',
+          },
+          data: {
+            page: {
+              type: 'read',
+              resourceType: 'page',
+              slug: 'home',
+            },
+          },
+          templates: [],
+        },
+      ])
+      expect(result).toMatchObject({
+        props: ok({
+          context: 'index',
+          data: {
+            page: { data: {}, variables: { relativePath: 'home.md' } },
+          },
+        }),
+      })
+    })
   })
   describe('channel', () => {
+    const type = 'channel'
     test.todo('simple')
     test.todo('filter')
     test.todo('posts can be in multiple channels')
-    test.todo('with data')
+    test('with data', async () => {
+      const result = await controller([
+        {
+          type,
+          name: 'index',
+          request: {
+            path: '/features',
+          },
+          data: {
+            page: {
+              type: 'read',
+              resourceType: 'page',
+              slug: 'home',
+            },
+          },
+          templates: [],
+        },
+      ])
+      expect(result).toMatchObject({
+        props: ok({
+          context: 'index',
+          data: {
+            page: { data: {}, variables: { relativePath: 'home.md' } },
+          },
+        }),
+      })
+    })
   })
   describe('custom', () => {
     test.todo('simple')
