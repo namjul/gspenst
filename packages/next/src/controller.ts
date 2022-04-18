@@ -2,7 +2,7 @@ import { ok, err, combine } from 'neverthrow'
 import type { Redirect } from 'next'
 import nql from '@tryghost/nql'
 import type { RoutingContext } from './routing'
-import { assertUnreachable } from './helpers'
+import { absurd } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
 import type {
@@ -143,7 +143,7 @@ async function processQuery(query: DataQuery) {
           .map(({ dataResult }) => dataResult)
       })
     default:
-      return assertUnreachable(type)
+      return absurd(type)
   }
 }
 
@@ -417,7 +417,7 @@ export async function controller(
             redirect: context,
           }
         default:
-          return assertUnreachable(type)
+          return absurd(type)
       }
     })() // Immediately invoke the function
 

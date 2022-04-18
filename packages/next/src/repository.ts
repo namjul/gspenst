@@ -4,7 +4,7 @@ import type { GetResourcesQuery } from '../.tina/__generated__/types'
 import * as api from './api'
 import db from './db'
 import { toArray } from './utils'
-import { assertUnreachable } from './helpers'
+import { absurd } from './helpers'
 import type {
   ResourceType,
   ResourceItem,
@@ -111,7 +111,7 @@ const repository = {
                 case 'tag':
                   return api.getTag({ relativePath })
                 default:
-                  return assertUnreachable(resourceType)
+                  return absurd(resourceType)
               }
             })() // Immediately invoke the function
 

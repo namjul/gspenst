@@ -1,5 +1,5 @@
 import type { RoutingContext } from './routing'
-import { assertUnreachable } from './helpers'
+import { absurd } from './helpers'
 
 export function getTemplateHierarchy(
   routingProperties: NonNullable<RoutingContext>
@@ -54,6 +54,6 @@ export function getTemplateHierarchy(
       throw new Error('Should not reach this part.')
 
     default:
-      return assertUnreachable(type)
+      return absurd(type)
   }
 }

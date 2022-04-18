@@ -3,8 +3,8 @@ import { compile, pathToRegexp } from 'path-to-regexp'
 import type { Result, ResourceItem } from './types'
 import * as Errors from './errors'
 
-export const assertUnreachable = (_: never): never => {
-  throw new Error('Should not have reached here')
+export function absurd(_: never): never {
+  throw new Error('absurd')
 }
 
 export function compilePermalink(
@@ -54,7 +54,7 @@ export function formatError(error: Errors.GspenstError) {
     case 'NotFound':
       return new Error(`${error.type}: ${error.context}`)
     default:
-      return assertUnreachable(type)
+      return absurd(type)
   }
 }
 
