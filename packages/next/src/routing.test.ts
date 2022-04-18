@@ -31,6 +31,9 @@ describe('routing mapping', () => {
         name: 'author',
         templates: [],
         data: undefined,
+        filter: "tags:'pedro'+tags.visibility:public",
+        limit: undefined,
+        order: undefined,
         request: {
           path: '/category-2/pedro/',
           params: {
@@ -46,6 +49,9 @@ describe('routing mapping', () => {
       collections: {
         '/': {
           permalink: '/:slug',
+          filter: undefined,
+          limit: undefined,
+          order: undefined,
         },
       },
       taxonomies: {
@@ -73,6 +79,9 @@ describe('routing mapping', () => {
         name: 'author',
         data: undefined,
         templates: [],
+        filter: "tags:'pedro'+tags.visibility:public",
+        limit: undefined,
+        order: undefined,
         request: {
           path: '/author/pedro/page/1/',
           params: {
@@ -127,6 +136,9 @@ describe('routing mapping', () => {
               page: [{ redirect: true, slug: 'home' }],
             },
           },
+          filter: undefined,
+          limit: undefined,
+          order: undefined,
         },
       },
       taxonomies: {

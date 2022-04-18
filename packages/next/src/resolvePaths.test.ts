@@ -14,12 +14,7 @@ describe('resolvePaths', () => {
   describe('resolving paths', () => {
     test('empty config', async () => {
       const result = (await resolvePaths({}))._unsafeUnwrap()
-      expect(result).toEqual([
-        '/admin',
-        '/about',
-        '/home',
-        '/portfolio',
-      ])
+      expect(result).toEqual(['/admin', '/about', '/home', '/portfolio'])
     })
     test('default routing config', async () => {
       const result = await resolvePaths(
@@ -51,25 +46,27 @@ describe('resolvePaths', () => {
     })
     test('routes', async () => {
       expect(
-       (await resolvePaths({
-          routes: {
-            '/features/': {
-              template: 'Features',
-              data: {
-                query: {
-                  page: {
-                    type: 'read',
-                    resourceType: 'page',
-                    slug: 'home',
+        (
+          await resolvePaths({
+            routes: {
+              '/features/': {
+                template: 'Features',
+                data: {
+                  query: {
+                    page: {
+                      type: 'read',
+                      resourceType: 'page',
+                      slug: 'home',
+                    },
                   },
-                },
-                router: {
-                  page: [{ redirect: true, slug: 'home' }],
+                  router: {
+                    page: [{ redirect: true, slug: 'home' }],
+                  },
                 },
               },
             },
-          },
-        }))._unsafeUnwrap()
+          })
+        )._unsafeUnwrap()
       ).toContain('/features/')
     })
     test('collections', async () => {
@@ -78,10 +75,16 @@ describe('resolvePaths', () => {
           '/': {
             permalink: '/:slug/',
             template: 'index',
+            filter: undefined,
+            limit: undefined,
+            order: undefined,
           },
           '/posts/': {
             permalink: '/posts/:slug/',
             template: 'index',
+            filter: undefined,
+            limit: undefined,
+            order: undefined,
           },
         },
       })
@@ -107,12 +110,14 @@ describe('resolvePaths', () => {
       ])
     })
     test('taxonomies', async () => {
-      const paths = (await resolvePaths({
-        taxonomies: {
-          tag: '/category-1/:slug',
-          author: '/category-2/:slug',
-        },
-      }))._unsafeUnwrap()
+      const paths = (
+        await resolvePaths({
+          taxonomies: {
+            tag: '/category-1/:slug',
+            author: '/category-2/:slug',
+          },
+        })
+      )._unsafeUnwrap()
       expect(paths).toContain('/category-2/napolean')
       expect(paths).toContain('/category-2/pedro')
     })

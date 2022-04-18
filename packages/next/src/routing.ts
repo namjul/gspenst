@@ -13,6 +13,7 @@ import type {
   DataQuery,
   DynamicVariables,
   Simplify,
+  QueryFilterOptions,
 } from './types'
 
 import type {
@@ -44,12 +45,9 @@ type Request = {
 }
 
 export type RoutingContext =
-  | {
+  | ({
       type: Extract<RoutingContextType, 'collection'>
       name: string
-      filter?: string
-      order?: string
-      limit?: string
       data:
         | {
             [key: string]: DataQuery
@@ -57,11 +55,10 @@ export type RoutingContext =
         | undefined
       templates: string[]
       request: Request
-    }
-  | {
+    } & QueryFilterOptions)
+  | ({
       type: Extract<RoutingContextType, 'channel'>
       name: string
-      filter?: string
       data:
         | {
             [key: string]: DataQuery
@@ -69,7 +66,7 @@ export type RoutingContext =
         | undefined
       templates: string[]
       request: Request
-    }
+    } & QueryFilterOptions)
   | {
       type: Extract<RoutingContextType, 'entry'>
       resourceType: ResourceType
@@ -282,6 +279,9 @@ class TaxonomyRouter extends ParentRouter {
       },
       templates: [],
       data: this.data?.query,
+      filter: `tags:'${params?.slug ?? '%s'}'+tags.visibility:public`,
+      limit: undefined,
+      order: undefined,
     }
   }
 }
@@ -348,6 +348,9 @@ class CollectionRouter extends ParentRouter {
       request: { path: _path, params: { page } },
       templates: [...toArray(this.config.template ?? [])],
       data: this.data?.query,
+      filter: this.config.filter,
+      limit: this.config.limit,
+      order: this.config.order,
     }
   }
 

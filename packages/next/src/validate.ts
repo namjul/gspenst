@@ -57,7 +57,7 @@ export type CollectionConfig = {
   permalink: Permalink
   template?: Template
   data?: Data | undefined
-}
+} & QueryFilterOptions
 
 export type RoutingConfigResolved = {
   routes?:
@@ -181,6 +181,9 @@ const collectionSchema = object({
   permalink: permalinkSchema.required(),
   template: string().optional(),
   data: dataSchema.optional(), // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+  filter: string().optional(),
+  order: string().optional(),
+  limit: number().optional(),
 })
   .concat(queryOptionsSchema)
   .noUnknown()
@@ -481,7 +484,7 @@ export function validate(routingConfig = {}) {
     }),
     ...errors,
   ]
-  return combine(all)
+  return combine(all) // TODO use `combineWithAllErrors` to capture all errors
 }
 
 // TODO should I replace `yup` with `https://github.com/pelotom/runtypes` ?

@@ -96,8 +96,8 @@ export type DynamicVariables = DynamicVariablesObject<{
   year: number
   month: number
   day: number
-  primary_tag: Optional<Slug>
-  primary_author: Optional<Slug>
+  primary_tag: Slug
+  primary_author: Slug
 }>
 
 export type PostResourceItem = Simplify<
@@ -162,8 +162,6 @@ export type Options = {
   theme: string
   themeConfig?: string
   staticExport?: boolean
-  // mdxOptions?: MDXOptions
-  // sources?: Source[]
 }
 
 /* --- MDX --- */

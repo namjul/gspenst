@@ -1,5 +1,6 @@
 import { ok, err, combine } from 'neverthrow'
 import type { Redirect } from 'next'
+import nql from '@tryghost/nql'
 import type { RoutingContext } from './routing'
 import { assertUnreachable } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
@@ -115,7 +116,9 @@ export type PageProps =
 type ControllerResult<T> = Result<T>
 
 type ExtractGeneric<Type> = Type extends Result<infer X> ? X : never
-type X = ExtractGeneric<AsyncReturnType<typeof processQuery>>
+type ProcessQueryReturnType = ExtractGeneric<
+  AsyncReturnType<typeof processQuery>
+>
 
 async function processQuery(query: DataQuery) {
   const { type } = query
@@ -131,7 +134,13 @@ async function processQuery(query: DataQuery) {
       })
     case 'browse':
       return (await repository.findAll(query.resourceType)).map((resources) => {
-        return resources.map(({ dataResult }) => dataResult)
+        return resources
+          .filter((resourceItem) => {
+            return query.filter
+              ? nql(query.filter).queryJSON(resourceItem)
+              : true
+          })
+          .map(({ dataResult }) => dataResult)
       })
     default:
       return assertUnreachable(type)
@@ -181,16 +190,29 @@ async function channelController(
   //   return entry
   // }
 
-  const keys = Object.keys(routingProperties.data ?? {})
+  const postsQuery: DataQuery = {
+    type: 'browse',
+    resourceType: 'post',
+    filter: routingProperties.filter,
+    limit: routingProperties.limit,
+    order: routingProperties.order,
+  }
+
+  const data: { [name: string]: DataQuery } = {
+    ...routingProperties.data,
+    posts: postsQuery,
+  }
+
+  const keys = Object.keys(data)
   const dataResults = await Promise.all(
-    keys.map(
-      async (key) => processQuery(routingProperties.data?.[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
-    )
+    keys.map(async (key) => {
+      return processQuery(data[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
+    })
   )
 
   return combine(dataResults).map((y) => {
     const dataEntries = keys.reduce<{
-      [key: string]: X
+      [key: string]: ProcessQueryReturnType
     }>((acc, current, index) => {
       const dataResult = y[index]!
       return {
@@ -247,18 +269,31 @@ async function collectionController(
   //   )
   // }
 
-  const keys = Object.keys(routingProperties.data ?? {})
+  const postsQuery: DataQuery = {
+    type: 'browse',
+    resourceType: 'post',
+    filter: routingProperties.filter,
+    limit: routingProperties.limit,
+    order: routingProperties.order,
+  }
+
+  const data: { [name: string]: DataQuery } = {
+    ...routingProperties.data,
+    posts: postsQuery,
+  }
+
+  const keys = Object.keys(data)
   const dataResults = await Promise.all(
-    keys.map(
-      async (key) => processQuery(routingProperties.data?.[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
-    )
+    keys.map(async (key) => {
+      return processQuery(data[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
+    })
   )
 
-  return combine(dataResults).map((y) => {
+  return combine(dataResults).map((dataEntry) => {
     const dataEntries = keys.reduce<{
-      [key: string]: X
+      [key: string]: ProcessQueryReturnType
     }>((acc, current, index) => {
-      const dataResult = y[index]!
+      const dataResult = dataEntry[index]!
       return {
         ...acc,
         [current]: dataResult,
@@ -315,7 +350,7 @@ async function customController(
 
   return combine(dataResults).map((y) => {
     const dataEntries = keys.reduce<{
-      [key: string]: X
+      [key: string]: ProcessQueryReturnType
     }>((acc, current, index) => {
       const dataResult = y[index]!
       return {
@@ -400,23 +435,3 @@ export async function controller(
 
   return { type: 'props', props: err(Errors.notFound('No controller found')) }
 }
-
-// getList(
-//   resource: Resource,
-//   filter: string,
-//   order: string,
-//   limit: string,
-//   remember: boolean = false
-// ) {
-//   // 1. get remember/non-rememberd resources from cache
-//   // 2. filter
-//   // 3. order
-//   // 4. limit
-//   // 5. remember
-//   // 6. map through `this.map()` or fetch resource-collection(with filter applied https://github.com/tinacms/tinacms/pull/2618) and filter there
-// }
-//
-// clear() {
-//   // 1. clear cache
-//   // 2. clear remember cache
-// }

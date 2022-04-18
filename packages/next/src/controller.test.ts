@@ -71,6 +71,9 @@ describe('controller', () => {
           },
           data: {},
           templates: [],
+          filter: undefined,
+          limit: undefined,
+          order: undefined,
         },
       ])
       expect(result).toMatchObject({
@@ -97,6 +100,9 @@ describe('controller', () => {
             },
           },
           templates: [],
+          filter: undefined,
+          limit: undefined,
+          order: undefined,
         },
       ])
       expect(result).toMatchObject({
@@ -130,6 +136,9 @@ describe('controller', () => {
             },
           },
           templates: [],
+          filter: undefined,
+          limit: undefined,
+          order: undefined,
         },
       ])
       expect(result).toMatchObject({
