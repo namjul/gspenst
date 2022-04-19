@@ -149,7 +149,7 @@ export type DataQuery =
       type: Extract<QueryType, 'read'>
       resourceType: ResourceType
       slug: Slug
-      redirect?: boolean
+      redirect?: boolean | undefined
     }
   | ({
       type: Extract<QueryType, 'browse'>

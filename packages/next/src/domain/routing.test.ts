@@ -1,25 +1,26 @@
 import { ok } from 'neverthrow'
-import { validate } from './validate'
+import { parseRouting } from './routing'
 
-describe('routing object validation & transformation', () => {
+describe('routing object parsing', () => {
   describe('validation', () => {
     test('works with no parameter', () => {
-      const object = validate()
+      const object = parseRouting({})
       expect(object.isOk()).toBe(true)
     })
+
     test('throws error when using wrong fields', () => {
       expect(
-        validate({
+        parseRouting({
           routess: {},
         }).isErr()
       ).toBe(true)
       expect(
-        validate({
+        parseRouting({
           collection: {},
         }).isErr()
       ).toBe(true)
       expect(
-        validate({
+        parseRouting({
           taxonomy: {},
         }).isErr()
       ).toBe(true)
@@ -27,7 +28,7 @@ describe('routing object validation & transformation', () => {
 
     test('throws error when using :w+ notiation in taxonomies', () => {
       expect(
-        validate({
+        parseRouting({
           taxonomies: {
             tag: '/categories/:slug/',
           },
@@ -37,7 +38,7 @@ describe('routing object validation & transformation', () => {
 
     test('throws error when permalink is missing (collection)', () => {
       expect(
-        validate({
+        parseRouting({
           collections: {
             permalink: '/{slug}/',
           },
@@ -45,9 +46,9 @@ describe('routing object validation & transformation', () => {
       ).toBe(true)
     })
 
-    it('throws error when using an undefined taxonomy', () => {
+    test('throws error when using an undefined taxonomy', () => {
       expect(
-        validate({
+        parseRouting({
           taxonomies: {
             sweet_baked_good: '/patisserie/{slug}',
           },
@@ -57,7 +58,7 @@ describe('routing object validation & transformation', () => {
 
     test('throws error when using wrong field properties', () => {
       expect(
-        validate({
+        parseRouting({
           routes: {
             '/': {
               foo: 'bar',
@@ -65,15 +66,17 @@ describe('routing object validation & transformation', () => {
           },
         }).isErr()
       ).toBe(true)
+
       expect(
-        validate({
+        parseRouting({
           routes: {
-            '/': '',
+            '/': 123,
           },
         }).isErr()
       ).toBe(true)
+
       expect(
-        validate({
+        parseRouting({
           collections: {
             '/': {
               foo: 'bar',
@@ -81,18 +84,11 @@ describe('routing object validation & transformation', () => {
           },
         }).isErr()
       ).toBe(true)
-      expect(
-        validate({
-          taxonomies: {
-            sweet_baked_good: '/patisserie/{slug}',
-          },
-        }).isErr()
-      ).toBe(true)
     })
 
     test('no validation error for routes', () => {
       expect(
-        validate({
+        parseRouting({
           routes: {
             '/home/': 'bar',
           },
@@ -100,106 +96,99 @@ describe('routing object validation & transformation', () => {
       ).toBe(true)
     })
 
-    describe('data property', () => {
-      test('throws error when using wrong data', () => {
-        expect(
-          validate({
-            routes: {
-              '/food/': {
-                data: 'tag:test',
+    test('throws error when using wrong data', () => {
+      expect(
+        parseRouting({
+          routes: {
+            '/food/': {
+              data: 'tag:test',
+            },
+          },
+        }).isErr()
+      ).toBe(true)
+
+      expect(
+        parseRouting({
+          routes: {
+            '/food/': {
+              data: 'something.test',
+            },
+          },
+        }).isErr()
+      ).toBe(true)
+
+      expect(
+        parseRouting({
+          routes: {
+            '/food/': {
+              data: 234,
+            },
+          },
+        }).isErr()
+      ).toBe(true)
+
+      expect(
+        parseRouting({
+          routes: {
+            '/food/': {
+              data: {
+                something: 'something.test',
               },
             },
-          }).isErr()
-        ).toBe(true)
-        expect(
-          validate({
-            routes: {
-              '/food/': {
-                data: 'something.test',
-              },
-            },
-          }).isErr()
-        ).toBe(true)
-        expect(
-          validate({
-            routes: {
-              '/food/': {
-                data: 234,
-              },
-            },
-          }).isErr()
-        ).toBe(true)
-        expect(
-          validate({
-            routes: {
-              '/food/': {
-                data: {
-                  something: 'something.test',
+          },
+        }).isErr()
+      ).toBe(true)
+
+      expect(
+        parseRouting({
+          routes: {
+            '/food/': {
+              data: {
+                something: {
+                  resource: 'post',
                 },
               },
             },
-          }).isErr()
-        ).toBe(true)
-        expect(
-          validate({
-            routes: {
-              '/food/': {
-                data: {
-                  something: {
-                    resource: 'post',
-                  },
+          },
+        }).isErr()
+      ).toBe(true)
+
+      expect(
+        parseRouting({
+          routes: {
+            '/food/': {
+              data: {
+                something: {
+                  type: 'read',
+                  resource: 'post',
                 },
               },
             },
-          }).isErr()
-        ).toBe(true)
-        expect(
-          validate({
-            routes: {
-              '/food/': {
-                data: {
-                  something: {
-                    resourceType: 'post',
-                  },
+          },
+        }).isErr()
+      ).toBe(true)
+
+      expect(
+        parseRouting({
+          routes: {
+            '/food/': {
+              data: {
+                something: {
+                  resourceType: 'post',
+                  type: 'reads',
                 },
               },
             },
-          }).isErr()
-        ).toBe(true)
-        expect(
-          validate({
-            routes: {
-              '/food/': {
-                data: {
-                  something: {
-                    resourceType: 'posts',
-                  },
-                },
-              },
-            },
-          }).isErr()
-        ).toBe(true)
-        expect(
-          validate({
-            routes: {
-              '/food/': {
-                data: {
-                  something: {
-                    resourceType: 'post',
-                    type: 'reads',
-                  },
-                },
-              },
-            },
-          }).isErr()
-        ).toBe(true)
-      })
+          },
+        }).isErr()
+      ).toBe(true)
     })
   })
+
   describe('transformation', () => {
     describe('template property', () => {
       test('single value', () => {
-        const object = validate({
+        const object = parseRouting({
           routes: {
             '/about/': 'about',
             '/me/': {
@@ -214,68 +203,66 @@ describe('routing object validation & transformation', () => {
           },
         })
         expect(object).toEqual(
-          ok([
-            {
-              routes: {
-                '/about/': {
-                  template: 'about',
-                },
-                '/me/': {
-                  template: 'me',
-                },
+          ok({
+            routes: {
+              '/about/': {
+                template: 'about',
               },
-              collections: {
-                '/': {
-                  permalink: '/:slug/',
-                  template: 'test',
-                },
+              '/me/': {
+                template: 'me',
               },
-              taxonomies: {},
             },
-          ])
+            collections: {
+              '/': {
+                permalink: '/:slug/',
+                template: 'test',
+              },
+            },
+          })
         )
       })
     })
 
-    test('shortform', () => {
-      const object = validate({
-        routes: {
-          '/food/': {
-            data: 'page.food',
-            template: 'Page',
-          },
-          '/music/': {
-            data: 'tag.music',
-          },
-          '/ghost/': {
-            data: 'author.ghost',
-          },
-          '/lala/': {
-            data: {
-              carsten: 'author.carsten',
+    describe('data property', () => {
+      test('shortform', () => {
+        const object = parseRouting({
+          routes: {
+            '/food/': {
+              data: 'page.food',
+              template: 'Page',
+            },
+            '/music/': {
+              data: 'tag.music',
+            },
+            '/ghost/': {
+              data: 'author.ghost',
+            },
+            '/lala/': {
+              data: {
+                carsten: 'author.carsten',
+                leo: 'author.leo',
+              },
             },
           },
-        },
-        collections: {
-          '/more/': {
-            permalink: '/{slug}/',
-            data: 'page.home',
-            filter: 'tags:[photo, video] + id:-5',
-            limit: 4,
+          collections: {
+            '/more/': {
+              permalink: '/{slug}/',
+              data: 'page.home',
+              filter: 'tags:[photo, video] + id:-5',
+              limit: 4,
+            },
+            '/podcast/': {
+              permalink: '/podcast/{slug}/',
+              data: 'tag.something',
+            },
+            '/': {
+              permalink: '/{slug}/',
+              data: 'tag.sport',
+            },
           },
-          '/podcast/': {
-            permalink: '/podcast/{slug}/',
-            data: 'tag.something',
-          },
-          '/': {
-            permalink: '/{slug}/',
-            data: 'tag.sport',
-          },
-        },
-      })
-      expect(object).toEqual(
-        ok([
-          {
+        })
+        expect(object).toEqual(
+          ok({
             routes: {
               '/food/': {
                 data: {
@@ -332,9 +319,18 @@ describe('routing object validation & transformation', () => {
                       slug: 'carsten',
                       redirect: true,
                     },
+                    leo: {
+                      resourceType: 'author',
+                      type: 'read',
+                      slug: 'leo',
+                      redirect: true,
+                    },
                   },
                   router: {
-                    author: [{ redirect: true, slug: 'carsten' }],
+                    author: [
+                      { redirect: true, slug: 'carsten' },
+                      { redirect: true, slug: 'leo' },
+                    ],
                   },
                 },
               },
@@ -391,32 +387,29 @@ describe('routing object validation & transformation', () => {
                 },
               },
             },
-            taxonomies: {},
-          },
-        ])
-      )
-    })
-
-    test('longform', () => {
-      const object = validate({
-        routes: {
-          '/food/': {
-            data: {
-              people: {
-                resourceType: 'author',
-                type: 'read',
-                slug: 'gutelaune',
-                redirect: false,
-              },
-            },
-            template: 'Page',
-          },
-        },
+          })
+        )
       })
 
-      expect(object).toEqual(
-        ok([
-          {
+      test('longform', () => {
+        const object = parseRouting({
+          routes: {
+            '/food/': {
+              data: {
+                people: {
+                  resourceType: 'author',
+                  type: 'read',
+                  slug: 'gutelaune',
+                  redirect: false,
+                },
+              },
+              template: 'Page',
+            },
+          },
+        })
+
+        expect(object).toEqual(
+          ok({
             routes: {
               '/food/': {
                 template: 'Page',
@@ -440,11 +433,9 @@ describe('routing object validation & transformation', () => {
                 },
               },
             },
-            collections: {},
-            taxonomies: {},
-          },
-        ])
-      )
+          })
+        )
+      })
     })
   })
 })

@@ -2,6 +2,7 @@ import { ok, err, combine } from 'neverthrow'
 import type { Redirect } from 'next'
 import nql from '@tryghost/nql'
 import type { RoutingContext } from './routing'
+import type { DataQuery } from './domain/routing';
 import { absurd } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
@@ -9,7 +10,6 @@ import type {
   ThemeContextType,
   Result,
   Simplify,
-  DataQuery,
   AsyncReturnType,
 } from './types'
 import * as Errors from './errors'
@@ -156,6 +156,7 @@ async function entryController(
     type: 'read',
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain --- TODO: return ErrResult if `slug` is not defined
     slug: request.params?.slug!,
+    redirect: false
   }
 
   return (await processQuery(query)).map((entry) => {

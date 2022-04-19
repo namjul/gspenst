@@ -5,10 +5,11 @@ import debug from 'debug'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
-import { validate } from './validate'
+import { parseRouting } from './domain/routing'
+import type { RoutingConfigResolved } from './domain/routing'
 import { findContentDir } from './utils'
 import { formatError } from './helpers'
-import defaultRoutes from './defaultRoutes';
+import defaultRoutes from './defaultRoutes'
 
 const log = debug('@gspenst/next:loader')
 
@@ -69,7 +70,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const routingConfigResult = validate({
+  const routingConfigResult = parseRouting({
     ...defaultRoutes,
     ...(yaml.load(source) as object),
   })
@@ -78,9 +79,10 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     this.emitWarning(formatError(routingConfigResult.error))
   }
 
-  const routingConfig = routingConfigResult.isOk()
-    ? JSON.stringify(routingConfigResult.value[0])
-    : serializeError(formatError(routingConfigResult.error))
+  const routingConfig: RoutingConfigResolved | string =
+    routingConfigResult.isOk()
+      ? JSON.stringify(routingConfigResult.value[0])
+      : serializeError(formatError(routingConfigResult.error))
 
   const imports = `
 import * as __gspenst_server__ from '@gspenst/next/server'

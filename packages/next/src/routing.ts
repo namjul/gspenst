@@ -10,18 +10,11 @@ import type {
   RoutingContextType,
   Entries,
   Taxonomies,
-  DataQuery,
   DynamicVariables,
   Simplify,
-  QueryFilterOptions,
 } from './types'
 
-import type {
-  RoutingConfigResolved,
-  RouteConfig,
-  CollectionConfig,
-  Data,
-} from './validate'
+import type { RoutingConfigResolved, Collection, Route, Data, DataQuery, QueryFilterOptions } from './domain/routing'
 
 const log = debug('@gspenst/next:routing')
 
@@ -201,8 +194,8 @@ class AdminRouter extends ParentRouter {
 
 class StaticRoutesRouter extends ParentRouter {
   routeRegExp: RegExp
-  config: RouteConfig
-  constructor(mainRoute: string, config: RouteConfig) {
+  config: Route
+  constructor(mainRoute: string, config: Route) {
     super('StaticRoutesRouter', config.data)
     this.route = mainRoute
     this.config = config
@@ -292,9 +285,9 @@ class CollectionRouter extends ParentRouter {
   routeRegExp: RegExp
   permalinkRegExp: RegExp
   pagesRegExp: RegExp
-  config: CollectionConfig
+  config: Collection
   keys: Key[] = []
-  constructor(mainRoute: string, config: CollectionConfig) {
+  constructor(mainRoute: string, config: Collection) {
     super('CollectionRouter', config.data)
     this.route = mainRoute
     this.config = config
@@ -429,7 +422,7 @@ export class RouterManager {
       typeof this.config.routes
     >
     routes.forEach(([key, value]) => {
-      const staticRoutesRouter = new StaticRoutesRouter(key as string, value)
+      const staticRoutesRouter = new StaticRoutesRouter(key, value)
       this.routers.push(staticRoutesRouter)
     })
 
@@ -438,7 +431,7 @@ export class RouterManager {
       this.config.collections ?? {}
     ) as Entries<typeof this.config.collections>
     collections.forEach(([key, value]) => {
-      const collectionRouter = new CollectionRouter(key as string, value)
+      const collectionRouter = new CollectionRouter(key, value)
       this.routers.push(collectionRouter)
     })
 
