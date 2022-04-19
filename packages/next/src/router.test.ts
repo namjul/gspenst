@@ -1,4 +1,4 @@
-import { RouterManager } from './routing'
+import { RouterManager } from './router'
 
 describe('routing mapping', () => {
   test('empty config', async () => {

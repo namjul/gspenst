@@ -1,7 +1,7 @@
 import debug from 'debug'
 import { deserializeError } from 'serialize-error'
 import type { GetStaticProps, GetStaticPaths } from 'next'
-import { RouterManager } from './routing'
+import { RouterManager } from './router'
 import type { RoutingConfigResolved } from './domain/routing'
 import type { PageProps } from './controller'
 import { controller } from './controller'

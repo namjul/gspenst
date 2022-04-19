@@ -14,7 +14,14 @@ import type {
   Simplify,
 } from './types'
 
-import type { RoutingConfigResolved, Collection, Route, Data, DataQuery, QueryFilterOptions } from './domain/routing'
+import type {
+  RoutingConfigResolved,
+  Collection,
+  Route,
+  Data,
+  DataQuery,
+  QueryFilterOptions,
+} from './domain/routing'
 
 const log = debug('@gspenst/next:routing')
 
