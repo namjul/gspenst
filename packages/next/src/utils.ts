@@ -29,14 +29,6 @@ export function removeNullish<T extends Record<string, any>>(obj: T) {
   return obj as NonNullable<T>
 }
 
-type ToArray<T> = T extends any[] ? T : T[]
-export function toArray<T>(arg: T) {
-  if (Array.isArray(arg)) {
-    return arg as ToArray<T>
-  }
-  return (typeof arg === 'undefined' ? [] : [arg]) as ToArray<T>
-}
-
 export function isObject(arg: unknown): arg is object {
   return typeof arg === 'object' && arg != null
 }

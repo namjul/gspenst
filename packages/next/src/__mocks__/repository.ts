@@ -1,4 +1,3 @@
-import { toArray } from '../utils'
 import type { ResourceType } from '../types'
 import { resources } from '../__fixtures__/resources'
 
@@ -8,7 +7,7 @@ const repository = {
       return undefined
     }
 
-    const ids = toArray(id)
+    const ids = [id].flat()
 
     const result = Object.fromEntries(ids.map((_id) => [_id, resources[_id]]))
 

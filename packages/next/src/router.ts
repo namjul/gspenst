@@ -4,7 +4,6 @@ import debug from 'debug'
 import { pathToRegexp } from 'path-to-regexp'
 // import { permalinkToRegexp } from './helpers'; // TODO use this instead
 import type { Key } from 'path-to-regexp'
-import { toArray } from './utils'
 import type {
   ResourceType,
   RoutingContextType,
@@ -223,7 +222,7 @@ class StaticRoutesRouter extends ParentRouter {
   #createContext(_path: string) {
     return {
       type: 'custom' as const,
-      templates: [...toArray(this.config.template ?? [])],
+      templates: [this.config.template ?? []].flat(),
       request: { path: _path },
       data: this.data?.query,
     }
@@ -346,7 +345,7 @@ class CollectionRouter extends ParentRouter {
       type: 'collection' as const,
       name: this.routerName,
       request: { path: _path, params: { page } },
-      templates: [...toArray(this.config.template ?? [])],
+      templates: [this.config.template ?? []].flat(),
       data: this.data?.query,
       filter: this.config.filter,
       limit: this.config.limit,
@@ -359,7 +358,7 @@ class CollectionRouter extends ParentRouter {
       type: 'entry' as const,
       resourceType: 'post' as const,
       request: { path: _path, params },
-      templates: [...toArray(this.config.template ?? [])],
+      templates: [this.config.template ?? []].flat(),
     }
   }
 }
@@ -463,8 +462,8 @@ export class RouterManager {
 
   async handle(params: string[] | string = []): Promise<RoutingContext[]> {
     if (params) {
-      const request = `/${toArray(params).join('/')}/`
-      const requestSlugified = `/${toArray(params).map(slugify).join('/')}/`
+      const request = `/${[params].flat().join('/')}/`
+      const requestSlugified = `/${[params].flat().map(slugify).join('/')}/`
       if (request !== requestSlugified) {
         return [this.router.createRedirectContext(requestSlugified)]
       }

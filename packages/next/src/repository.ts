@@ -3,7 +3,6 @@ import { okAsync, errAsync, combine } from 'neverthrow'
 import type { GetResourcesQuery } from '../.tina/__generated__/types'
 import * as api from './api'
 import db from './db'
-import { toArray } from './utils'
 import { absurd } from './helpers'
 import type {
   ResourceType,
@@ -89,7 +88,7 @@ const repository = {
   },
 
   async get<T extends ID | ID[]>(id: T): Promise<GetValue<T>> {
-    const ids = toArray(id)
+    const ids = [id].flat()
 
     const result = await db.get<ResourceItem>('resources', ...ids)
 
