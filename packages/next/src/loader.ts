@@ -5,8 +5,8 @@ import debug from 'debug'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
-import { parseRouting } from './domain/routing'
-import type { RoutingConfigResolved } from './domain/routing'
+import { parseRoutes } from './domain/routes'
+import type { RoutingConfigResolved } from './domain/routes'
 import { findContentDir } from './utils'
 import { formatError } from './helpers'
 import defaultRoutes from './defaultRoutes'
@@ -70,7 +70,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const routingConfigResult = parseRouting({
+  const routingConfigResult = parseRoutes({
     ...defaultRoutes,
     ...(yaml.load(source) as object),
   })

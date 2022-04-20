@@ -1,7 +1,7 @@
 import resolvePaths from './resolvePaths'
 import repository from './repository'
 import defaultRoutes from './defaultRoutes'
-import { parseRouting } from './domain/routing'
+import { parseRoutes } from './domain/routes'
 
 jest.mock('../.tina/__generated__/types')
 jest.mock('./redis')
@@ -18,7 +18,7 @@ describe('resolvePaths', () => {
     })
     test('default routing config', async () => {
       const result = await resolvePaths(
-        parseRouting(defaultRoutes)._unsafeUnwrap()[0]!
+        parseRoutes(defaultRoutes)._unsafeUnwrap()[0]!
       )
       expect(result._unsafeUnwrap()).toEqual([
         '/admin',

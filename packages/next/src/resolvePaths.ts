@@ -1,6 +1,6 @@
 import path from 'path'
 import { ok, err, combine } from 'neverthrow'
-import type { RoutingConfigResolved } from './domain/routing'
+import type { RoutingConfigResolved } from './domain/routes'
 import type { ResourceItem, Entries, Result } from './types'
 import repository from './repository'
 import { compilePermalink } from './helpers'

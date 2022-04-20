@@ -1,26 +1,26 @@
 import { ok } from 'neverthrow'
-import { parseRouting } from './routing'
+import { parseRoutes } from './routes'
 
 describe('routing object parsing', () => {
   describe('validation', () => {
     test('works with no parameter', () => {
-      const object = parseRouting({})
+      const object = parseRoutes({})
       expect(object.isOk()).toBe(true)
     })
 
     test('throws error when using wrong fields', () => {
       expect(
-        parseRouting({
+        parseRoutes({
           routess: {},
         }).isErr()
       ).toBe(true)
       expect(
-        parseRouting({
+        parseRoutes({
           collection: {},
         }).isErr()
       ).toBe(true)
       expect(
-        parseRouting({
+        parseRoutes({
           taxonomy: {},
         }).isErr()
       ).toBe(true)
@@ -28,7 +28,7 @@ describe('routing object parsing', () => {
 
     test('throws error when using :w+ notiation in taxonomies', () => {
       expect(
-        parseRouting({
+        parseRoutes({
           taxonomies: {
             tag: '/categories/:slug/',
           },
@@ -38,7 +38,7 @@ describe('routing object parsing', () => {
 
     test('throws error when permalink is missing (collection)', () => {
       expect(
-        parseRouting({
+        parseRoutes({
           collections: {
             permalink: '/{slug}/',
           },
@@ -48,7 +48,7 @@ describe('routing object parsing', () => {
 
     test('throws error when using an undefined taxonomy', () => {
       expect(
-        parseRouting({
+        parseRoutes({
           taxonomies: {
             sweet_baked_good: '/patisserie/{slug}',
           },
@@ -58,7 +58,7 @@ describe('routing object parsing', () => {
 
     test('throws error when using wrong field properties', () => {
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/': {
               foo: 'bar',
@@ -68,7 +68,7 @@ describe('routing object parsing', () => {
       ).toBe(true)
 
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/': 123,
           },
@@ -76,7 +76,7 @@ describe('routing object parsing', () => {
       ).toBe(true)
 
       expect(
-        parseRouting({
+        parseRoutes({
           collections: {
             '/': {
               foo: 'bar',
@@ -88,7 +88,7 @@ describe('routing object parsing', () => {
 
     test('no validation error for routes', () => {
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/home/': 'bar',
           },
@@ -98,7 +98,7 @@ describe('routing object parsing', () => {
 
     test('throws error when using wrong data', () => {
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/food/': {
               data: 'tag:test',
@@ -108,7 +108,7 @@ describe('routing object parsing', () => {
       ).toBe(true)
 
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/food/': {
               data: 'something.test',
@@ -118,7 +118,7 @@ describe('routing object parsing', () => {
       ).toBe(true)
 
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/food/': {
               data: 234,
@@ -128,7 +128,7 @@ describe('routing object parsing', () => {
       ).toBe(true)
 
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/food/': {
               data: {
@@ -140,7 +140,7 @@ describe('routing object parsing', () => {
       ).toBe(true)
 
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/food/': {
               data: {
@@ -154,7 +154,7 @@ describe('routing object parsing', () => {
       ).toBe(true)
 
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/food/': {
               data: {
@@ -169,7 +169,7 @@ describe('routing object parsing', () => {
       ).toBe(true)
 
       expect(
-        parseRouting({
+        parseRoutes({
           routes: {
             '/food/': {
               data: {
@@ -188,7 +188,7 @@ describe('routing object parsing', () => {
   describe('transformation', () => {
     describe('template property', () => {
       test('single value', () => {
-        const object = parseRouting({
+        const object = parseRoutes({
           routes: {
             '/about/': 'about',
             '/me/': {
@@ -203,29 +203,31 @@ describe('routing object parsing', () => {
           },
         })
         expect(object).toEqual(
-          ok({
-            routes: {
-              '/about/': {
-                template: 'about',
+          ok([
+            {
+              routes: {
+                '/about/': {
+                  template: 'about',
+                },
+                '/me/': {
+                  template: 'me',
+                },
               },
-              '/me/': {
-                template: 'me',
+              collections: {
+                '/': {
+                  permalink: '/:slug/',
+                  template: 'test',
+                },
               },
             },
-            collections: {
-              '/': {
-                permalink: '/:slug/',
-                template: 'test',
-              },
-            },
-          })
+          ])
         )
       })
     })
 
     describe('data property', () => {
       test('shortform', () => {
-        const object = parseRouting({
+        const object = parseRoutes({
           routes: {
             '/food/': {
               data: 'page.food',
@@ -262,137 +264,139 @@ describe('routing object parsing', () => {
           },
         })
         expect(object).toEqual(
-          ok({
-            routes: {
-              '/food/': {
-                data: {
-                  query: {
-                    page: {
-                      resourceType: 'page',
-                      type: 'read',
-                      slug: 'food',
-                      redirect: true,
+          ok([
+            {
+              routes: {
+                '/food/': {
+                  data: {
+                    query: {
+                      page: {
+                        resourceType: 'page',
+                        type: 'read',
+                        slug: 'food',
+                        redirect: true,
+                      },
+                    },
+                    router: {
+                      page: [{ redirect: true, slug: 'food' }],
                     },
                   },
-                  router: {
-                    page: [{ redirect: true, slug: 'food' }],
+                  template: 'Page',
+                },
+                '/music/': {
+                  data: {
+                    query: {
+                      tag: {
+                        resourceType: 'tag',
+                        type: 'read',
+                        slug: 'music',
+                        redirect: true,
+                      },
+                    },
+                    router: {
+                      tag: [{ redirect: true, slug: 'music' }],
+                    },
                   },
                 },
-                template: 'Page',
-              },
-              '/music/': {
-                data: {
-                  query: {
-                    tag: {
-                      resourceType: 'tag',
-                      type: 'read',
-                      slug: 'music',
-                      redirect: true,
+                '/ghost/': {
+                  data: {
+                    query: {
+                      author: {
+                        resourceType: 'author',
+                        type: 'read',
+                        slug: 'ghost',
+                        redirect: true,
+                      },
+                    },
+                    router: {
+                      author: [{ redirect: true, slug: 'ghost' }],
                     },
                   },
-                  router: {
-                    tag: [{ redirect: true, slug: 'music' }],
+                },
+                '/lala/': {
+                  data: {
+                    query: {
+                      carsten: {
+                        resourceType: 'author',
+                        type: 'read',
+                        slug: 'carsten',
+                        redirect: true,
+                      },
+                      leo: {
+                        resourceType: 'author',
+                        type: 'read',
+                        slug: 'leo',
+                        redirect: true,
+                      },
+                    },
+                    router: {
+                      author: [
+                        { redirect: true, slug: 'carsten' },
+                        { redirect: true, slug: 'leo' },
+                      ],
+                    },
                   },
                 },
               },
-              '/ghost/': {
-                data: {
-                  query: {
-                    author: {
-                      resourceType: 'author',
-                      type: 'read',
-                      slug: 'ghost',
-                      redirect: true,
+              collections: {
+                '/more/': {
+                  permalink: '/:slug/',
+                  filter: 'tags:[photo, video] + id:-5',
+                  limit: 4,
+                  data: {
+                    query: {
+                      page: {
+                        resourceType: 'page',
+                        type: 'read',
+                        slug: 'home',
+                        redirect: true,
+                      },
                     },
-                  },
-                  router: {
-                    author: [{ redirect: true, slug: 'ghost' }],
+                    router: {
+                      page: [{ redirect: true, slug: 'home' }],
+                    },
                   },
                 },
-              },
-              '/lala/': {
-                data: {
-                  query: {
-                    carsten: {
-                      resourceType: 'author',
-                      type: 'read',
-                      slug: 'carsten',
-                      redirect: true,
+                '/podcast/': {
+                  permalink: '/podcast/:slug/',
+                  data: {
+                    query: {
+                      tag: {
+                        resourceType: 'tag',
+                        type: 'read',
+                        slug: 'something',
+                        redirect: true,
+                      },
                     },
-                    leo: {
-                      resourceType: 'author',
-                      type: 'read',
-                      slug: 'leo',
-                      redirect: true,
+                    router: {
+                      tag: [{ redirect: true, slug: 'something' }],
                     },
                   },
-                  router: {
-                    author: [
-                      { redirect: true, slug: 'carsten' },
-                      { redirect: true, slug: 'leo' },
-                    ],
+                },
+                '/': {
+                  permalink: '/:slug/',
+                  data: {
+                    query: {
+                      tag: {
+                        resourceType: 'tag',
+                        type: 'read',
+                        slug: 'sport',
+                        redirect: true,
+                      },
+                    },
+                    router: {
+                      tag: [{ redirect: true, slug: 'sport' }],
+                    },
                   },
                 },
               },
             },
-            collections: {
-              '/more/': {
-                permalink: '/:slug/',
-                filter: 'tags:[photo, video] + id:-5',
-                limit: 4,
-                data: {
-                  query: {
-                    page: {
-                      resourceType: 'page',
-                      type: 'read',
-                      slug: 'home',
-                      redirect: true,
-                    },
-                  },
-                  router: {
-                    page: [{ redirect: true, slug: 'home' }],
-                  },
-                },
-              },
-              '/podcast/': {
-                permalink: '/podcast/:slug/',
-                data: {
-                  query: {
-                    tag: {
-                      resourceType: 'tag',
-                      type: 'read',
-                      slug: 'something',
-                      redirect: true,
-                    },
-                  },
-                  router: {
-                    tag: [{ redirect: true, slug: 'something' }],
-                  },
-                },
-              },
-              '/': {
-                permalink: '/:slug/',
-                data: {
-                  query: {
-                    tag: {
-                      resourceType: 'tag',
-                      type: 'read',
-                      slug: 'sport',
-                      redirect: true,
-                    },
-                  },
-                  router: {
-                    tag: [{ redirect: true, slug: 'sport' }],
-                  },
-                },
-              },
-            },
-          })
+          ])
         )
       })
 
       test('longform', () => {
-        const object = parseRouting({
+        const object = parseRoutes({
           routes: {
             '/food/': {
               data: {
@@ -409,31 +413,33 @@ describe('routing object parsing', () => {
         })
 
         expect(object).toEqual(
-          ok({
-            routes: {
-              '/food/': {
-                template: 'Page',
-                data: {
-                  query: {
-                    people: {
-                      redirect: false,
-                      slug: 'gutelaune',
-                      resourceType: 'author',
-                      type: 'read',
-                    },
-                  },
-                  router: {
-                    author: [
-                      {
+          ok([
+            {
+              routes: {
+                '/food/': {
+                  template: 'Page',
+                  data: {
+                    query: {
+                      people: {
                         redirect: false,
                         slug: 'gutelaune',
+                        resourceType: 'author',
+                        type: 'read',
                       },
-                    ],
+                    },
+                    router: {
+                      author: [
+                        {
+                          redirect: false,
+                          slug: 'gutelaune',
+                        },
+                      ],
+                    },
                   },
                 },
               },
             },
-          })
+          ])
         )
       })
     })

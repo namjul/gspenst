@@ -21,7 +21,7 @@ import type {
   Data,
   DataQuery,
   QueryFilterOptions,
-} from './domain/routing'
+} from './domain/routes'
 
 const log = debug('@gspenst/next:routing')
 

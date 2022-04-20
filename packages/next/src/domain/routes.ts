@@ -65,6 +65,7 @@ const dataQueryBrowse = z
     resourceType: resourceTypeSchema,
   })
   .merge(queryFilterOptions)
+  .strict()
 // type DataQueryBrowse = z.infer<typeof dataQueryBrowse>
 
 const dataQuery = z.discriminatedUnion('type', [dataQueryRead, dataQueryBrowse])
@@ -86,13 +87,14 @@ const resourceTypes = [
 
 type DataForm = `${ResourceType}.${string}`
 
-const dataString = z.custom<DataForm>(
-  (value) =>
-    new RegExp(`(${resourceTypes.join('|')})\\..*`).test(value as string),
-  {
-    message: 'Incorrect Format. Please use e.g. tag.recipes',
-  }
-)
+const dataString = z
+  .string()
+  .refine(
+    (value) => new RegExp(`(${resourceTypes.join('|')})\\..*`).test(value),
+    {
+      message: 'Incorrect Format. Please use e.g. tag.recipes',
+    }
+  )
 
 const dataStringTransform = dataString.transform((value) => {
   const [_resourceType] = value.split('.') as Split<DataForm, '.'>
@@ -178,9 +180,24 @@ const routingSchema = z
   })
   .strict()
 
+// const errorMap: z.ZodErrorMap = (error, ctx) => {
+//   switch (error.code) {
+//     case z.ZodIssueCode.invalid_type:
+//       return { message: 'da' }
+//     case z.ZodIssueCode.invalid_type:
+//       if (error.expected === "string") {
+//         return { message: 'hier' }
+//       }
+//       break;
+//   }
+//
+//   // fall back to default message!
+//   return { message: ctx.defaultError };
+// };
+
 export type RoutingConfigResolved = z.output<typeof routingSchema>
 
-export const parseRouting = (input: unknown) => {
+export const parseRoutes = (input: unknown) => {
   const result = routingSchema.safeParse(input)
 
   const resultList: Result<RoutingConfigResolved>[] = []
@@ -188,12 +205,13 @@ export const parseRouting = (input: unknown) => {
   if (result.success) {
     resultList.push(ok(result.data))
   } else {
-    // TODO use combineWithAllErrors
     result.error.issues.forEach((issue) => {
-      const message = `${issue.code} at ${issue.path.join('.')}`
+      const message = `${issue.code} at ${issue.path.join('/')}`
       const help = issue.message
+
       resultList.push(err(Errors.validation({ message, help })))
     })
   }
+  // TODO use combineWithAllErrors
   return combine(resultList)
 }
