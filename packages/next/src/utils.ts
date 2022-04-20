@@ -37,8 +37,12 @@ export function toArray<T>(arg: T) {
   return (typeof arg === 'undefined' ? [] : [arg]) as ToArray<T>
 }
 
-export function isObject(arg: any): arg is object {
+export function isObject(arg: unknown): arg is object {
   return typeof arg === 'object' && arg != null
+}
+
+export function isString(arg: unknown): arg is string {
+  return typeof arg === 'string'
 }
 
 export function ensureString(value: unknown): asserts value is string {

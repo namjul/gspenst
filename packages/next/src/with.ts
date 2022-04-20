@@ -4,6 +4,7 @@ import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
 import type { Options } from './types'
 import { GspenstPlugin } from './plugin'
+import { staticExport } from './env'
 
 const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 const yamlExtensions = ['yml', 'yaml']
@@ -54,6 +55,7 @@ export default (...args: [string | Options, string]) =>
             {
               loader: '@gspenst/next/loader',
               options: {
+                staticExport,
                 ...options,
                 isServer: context.isServer,
               },

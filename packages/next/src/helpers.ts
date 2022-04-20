@@ -2,6 +2,7 @@ import { ok, err } from 'neverthrow'
 import { compile, pathToRegexp } from 'path-to-regexp'
 import type { Result, ResourceItem } from './types'
 import * as Errors from './errors'
+import { nodeEnvironment } from './env'
 
 export function absurd(_: never): never {
   throw new Error('absurd')
@@ -57,6 +58,8 @@ export function formatError(error: Errors.GspenstError) {
       return absurd(type)
   }
 }
+
+export const isProductionBuild = nodeEnvironment === 'production'
 
 // export const safeJsonParse = ResultInternal.fromThrowable(
 //   JSON.parse,

@@ -8,7 +8,7 @@ import type { Options } from './types'
 import { parseRoutes } from './domain/routes'
 import type { RoutingConfigResolved } from './domain/routes'
 import { findContentDir } from './utils'
-import { formatError } from './helpers'
+import { formatError, isProductionBuild } from './helpers'
 import defaultRoutes from './defaultRoutes'
 
 const log = debug('@gspenst/next:loader')
@@ -20,7 +20,6 @@ type LoaderOptions = Options
 // api lookup: https://webpack.js.org/api/loaders/
 
 const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
-const isProductionBuild = process.env.NODE_ENV === 'production'
 
 const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   const callback = this.async()
@@ -28,11 +27,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   this.cacheable(true)
 
   const options = this.getOptions()
-  const {
-    theme,
-    themeConfig,
-    staticExport = process.env.GSPENST_STATIC_EXPORT,
-  } = options
+  const { theme, themeConfig, staticExport } = options
 
   log('Run loader')
 
