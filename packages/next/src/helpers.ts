@@ -38,27 +38,6 @@ export function permalinkToRegexp(permalink: string): Result<RegExp> {
   }
 }
 
-export function formatError(error: Errors.GspenstError) {
-  const { type } = error
-  switch (type) {
-    case 'Other':
-      if (error.error) {
-        return new Error(`${error.type}: ${error.context}`, {
-          cause: error.error,
-        })
-      }
-      return new Error(`${error.type}: ${error.context}`)
-    case 'Validation':
-      return new Error(
-        `${error.type}: ${error.message}${error.help ? `\n${error.help}` : ''}`
-      )
-    case 'NotFound':
-      return new Error(`${error.type}: ${error.context}`)
-    default:
-      return absurd(type)
-  }
-}
-
 export const isProductionBuild = nodeEnvironment === 'production'
 
 // export const safeJsonParse = ResultInternal.fromThrowable(

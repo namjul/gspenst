@@ -1,35 +1,15 @@
 import debug from 'debug'
-import { deserializeError } from 'serialize-error'
+import { deserializeError, isErrorLike } from 'serialize-error'
+import type { ErrorLike } from 'serialize-error'
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import { RouterManager } from './router'
 import type { RoutingConfigResolved } from './domain/routes'
 import type { PageProps } from './controller'
 import { controller } from './controller'
-import { formatError } from './helpers'
+import { format } from './errors'
 import resolvePaths from './resolvePaths'
 
 const log = debug('@gspenst/next:server')
-
-// TODO use from `serialize-error` when its released https://github.com/sindresorhus/serialize-error/releases
-type ErrorLike = {
-  [key: string]: unknown
-  name: string
-  message: string
-  stack: string
-  cause?: unknown
-  code?: string
-}
-
-function isErrorLike(
-  value?: RoutingConfigResolved | ErrorLike
-): value is ErrorLike {
-  return !!(
-    value &&
-    typeof value === 'object' &&
-    'message' in value &&
-    'stack' in value
-  )
-}
 
 export const getStaticPaths =
   (
@@ -51,7 +31,7 @@ export const getStaticPaths =
           fallback: staticExport ? false : 'blocking',
         }
       } else {
-        throw formatError(paths.error)
+        throw format(paths.error)
       }
     }
   }
@@ -85,7 +65,7 @@ export const getStaticProps =
             notFound: true,
           }
         }
-        throw formatError(result.props.error)
+        throw format(result.props.error)
       }
 
       return { props: result.props.value }

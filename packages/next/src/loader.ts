@@ -6,9 +6,9 @@ import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
 import type { Options } from './types'
 import { parseRoutes } from './domain/routes'
-import type { RoutingConfigResolved } from './domain/routes'
 import { findContentDir } from './utils'
-import { formatError, isProductionBuild } from './helpers'
+import { isProductionBuild } from './helpers'
+import { format } from './errors'
 import defaultRoutes from './defaultRoutes'
 
 const log = debug('@gspenst/next:loader')
@@ -71,13 +71,12 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   })
 
   if (routingConfigResult.isErr()) {
-    this.emitWarning(formatError(routingConfigResult.error))
+    this.emitWarning(format(routingConfigResult.error))
   }
 
-  const routingConfig: RoutingConfigResolved | string =
-    routingConfigResult.isOk()
-      ? JSON.stringify(routingConfigResult.value[0])
-      : serializeError(formatError(routingConfigResult.error))
+  const routingConfig = routingConfigResult.isOk()
+    ? JSON.stringify(routingConfigResult.value[0])
+    : serializeError(format(routingConfigResult.error))
 
   const imports = `
 import * as __gspenst_server__ from '@gspenst/next/server'
@@ -120,7 +119,12 @@ export const getStaticProps = async (context) => {
 
 export default loader
 
-// TODO use `import { serializeError } from 'serialize-error'`
-function serializeError(err: Error) {
-  return JSON.stringify(err, Object.getOwnPropertyNames(err))
+// TODO use `import { serializeError } from 'serialize-error'` when https://github.com/vercel/next.js/discussions/32239 is solved
+function serializeError(error: Error) {
+  return JSON.stringify(
+    error,
+    Object.getOwnPropertyNames(error).concat(
+      Object.getOwnPropertyNames(Object.getPrototypeOf(error))
+    )
+  )
 }

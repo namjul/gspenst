@@ -1,7 +1,7 @@
 // https://github.com/ruizb/domain-modeling-ts/blob/master/method-2/implementation-and-types.ts
 
 import { z } from 'zod'
-import { ok, err, combine } from 'neverthrow'
+import { ok, err, combineWithAllErrors } from 'neverthrow'
 import type { Split, Result } from '../types'
 import * as Errors from '../errors'
 
@@ -180,21 +180,6 @@ const routingSchema = z
   })
   .strict()
 
-// const errorMap: z.ZodErrorMap = (error, ctx) => {
-//   switch (error.code) {
-//     case z.ZodIssueCode.invalid_type:
-//       return { message: 'da' }
-//     case z.ZodIssueCode.invalid_type:
-//       if (error.expected === "string") {
-//         return { message: 'hier' }
-//       }
-//       break;
-//   }
-//
-//   // fall back to default message!
-//   return { message: ctx.defaultError };
-// };
-
 export type RoutingConfigResolved = z.output<typeof routingSchema>
 
 export const parseRoutes = (input: unknown) => {
@@ -202,16 +187,27 @@ export const parseRoutes = (input: unknown) => {
 
   const resultList: Result<RoutingConfigResolved>[] = []
 
+  const processIssue = (issue: z.ZodIssue): z.ZodIssue[] => {
+    if (issue.code === z.ZodIssueCode.invalid_union) {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      return issue.unionErrors.flatMap(processError)
+    }
+    return [issue]
+  }
+
+  const processError = (error: z.ZodError): z.ZodIssue[] => {
+    return error.issues.flatMap<z.ZodIssue>(processIssue)
+  }
+
   if (result.success) {
     resultList.push(ok(result.data))
   } else {
-    result.error.issues.forEach((issue) => {
+    processError(result.error).forEach((issue) => {
       const message = `${issue.code} at ${issue.path.join('/')}`
       const help = issue.message
 
       resultList.push(err(Errors.validation({ message, help })))
     })
   }
-  // TODO use combineWithAllErrors
-  return combine(resultList)
+  return combineWithAllErrors(resultList)
 }

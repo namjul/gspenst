@@ -74,31 +74,4 @@ export default (...args: [string | Options, string]) =>
       //   externalDir: true, // seems to replace @preconstruc/next https://github.com/preconstruct/preconstruct/issues/444#issuecomment-1029218560
       // },
     } as NextConfig)
-
-    // // Since Next.js doesn't provide some kind of real "plugin system" we're (ab)using the `redirects` option here
-    // // in order to hook into and block the `next build` and initial `next dev` run.
-    // redirects: async () => {
-    //   if (isBuild) {
-    //     await runContentlayerBuild()
-    //   } else if (isNextDev && !devServerStarted) {
-    //     devServerStarted = true
-    //     // TODO also block here until first Contentlayer run is complete
-    //     runContentlayerDev()
-    //   }
-    //
-    //   return nextConfig.redirects?.() ?? []
-    // },
-    // webpack(config: any, options: any) {
-    //   config.watchOptions = {
-    //     ...config.watchOptions,
-    //     // ignored: /node_modules([\\]+|\/)+(?!\.contentlayer)/,
-    //     ignored: ['**/node_modules/!(.contentlayer)/**/*'],
-    //   }
-    //
-    //   if (typeof nextConfig.webpack === 'function') {
-    //     return nextConfig.webpack(config, options)
-    //   }
-    //
-    //   return config
-    // },
   }
