@@ -5,14 +5,12 @@ import { pathToRegexp } from 'path-to-regexp'
 // import { permalinkToRegexp } from './helpers'; // TODO use this instead
 import type { Key } from 'path-to-regexp'
 import type {
-  ResourceType,
   RoutingContextType,
   Entries,
-  Taxonomies,
-  DynamicVariables,
   Simplify,
 } from './types'
-
+import type { ResourceType, DynamicVariables } from './domain/resource'
+import type { Taxonomies } from './domain/taxonomy';
 import type {
   RoutingConfigResolved,
   Collection,

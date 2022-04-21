@@ -8,6 +8,10 @@ import { convert as convertAuthor } from './author'
 import { convert as convertTag } from './tag'
 import { postSchema } from './post'
 
+export const getPageSchema = z.custom<GetPage>(value => value)
+
+export const resourceType = z.literal('page')
+
 const pageSchema = z.object({}).merge(postSchema).strict()
 
 type Page = z.infer<typeof pageSchema>

@@ -1,4 +1,4 @@
-import type { ResourceItemMap } from '../types'
+import type { Resource } from '../domain/resource'
 
 export const resources = {
   'content/posts/0th-post.mdx': {
@@ -196,4 +196,4 @@ export const resources = {
     primary_tag: 'tag-1',
     primary_author: 'author-1',
   },
-} as ResourceItemMap
+} as { [id: ID]: Resource }

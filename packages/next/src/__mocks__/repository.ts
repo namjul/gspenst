@@ -1,4 +1,4 @@
-import type { ResourceType } from '../types'
+import type { ResourceType } from '../domain/resource'
 import { resources } from '../__fixtures__/resources'
 
 const repository = {

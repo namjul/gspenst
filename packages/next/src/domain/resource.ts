@@ -1,9 +1,8 @@
 import { z } from 'zod'
-
-const resourceTypePost = z.literal('post')
-const resourceTypePage = z.literal('page')
-const resourceTypeAuthor = z.literal('author')
-const resourceTypeTag = z.literal('tag')
+import { getPostSchema, resourceType as resourceTypePost } from './post';
+import { getPageSchema, resourceType as resourceTypePage } from './page';
+import { getTagSchema, resourceType as resourceTypeTag } from './tag';
+import { getAuthorSchema, resourceType as resourceTypeAuthor } from './author';
 
 export const resourceTypes = [
   resourceTypePost.value,
@@ -39,30 +38,33 @@ const resourceBaseSchema = z.object({
 
 const postResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
-    type: resourceTypePost,
-    // dataResult: TODO
+    resourceType: resourceTypePost,
+    dataResult: getPostSchema.optional()
   })
 )
 
 const pageResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
-    type: resourceTypePage,
+    resourceType: resourceTypePage,
+    dataResult: getPageSchema.optional()
   })
 )
 
 const authorResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
-    type: resourceTypeAuthor,
+    resourceType: resourceTypeAuthor,
+    dataResult: getAuthorSchema.optional()
   })
 )
 
 const tagResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
-    type: resourceTypeTag,
+    resourceType: resourceTypeTag,
+    dataResult: getTagSchema.optional()
   })
 )
 
-const resourceSchema = z.discriminatedUnion('type', [
+const resourceSchema = z.discriminatedUnion('resourceType', [
   postResource,
   pageResource,
   authorResource,

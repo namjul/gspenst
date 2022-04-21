@@ -4,13 +4,10 @@ import type { GetResourcesQuery } from '../.tina/__generated__/types'
 import * as api from './api'
 import db from './db'
 import { absurd } from './helpers'
+import type { DynamicVariables, ResourceType, Resource } from './domain/resource'
 import type {
-  ResourceType,
-  ResourceItem,
   Get,
-  DynamicVariables,
   ResultAsync,
-  Optional,
   WithRequired,
 } from './types'
 import * as Errors from './errors'
@@ -22,14 +19,12 @@ type ResourcesNode = Exclude<
   { __typename: 'ConfigDocument' }
 >
 
-// https://github.com/sindresorhus/map-obj
-
-type ResourceItemLoaded = WithRequired<ResourceItem, 'dataResult'>
+type ResourceItemLoaded = WithRequired<Resource, 'dataResult'>
 type GetValue<T extends ID | ID[]> = T extends ID[]
   ? RepoResultAsync<ResourceItemLoaded[]>
   : RepoResultAsync<ResourceItemLoaded>
 
-type FindAllValue<T extends Optional<ResourceType>> = RepoResultAsync<
+type FindAllValue<T extends ResourceType> = RepoResultAsync<
   (T extends null | undefined
     ? ResourceItemLoaded
     : Extract<ResourceItemLoaded, { resourceType: T }>)[]
@@ -83,14 +78,14 @@ const repository = {
 
     return result
   },
-  set(resourceItem: ResourceItem) {
-    return db.set<ResourceItem>('resources', resourceItem.id, resourceItem)
+  set(resourceItem: Resource) {
+    return db.set<Resource>('resources', resourceItem.id, resourceItem)
   },
 
   async get<T extends ID | ID[]>(id: T): Promise<GetValue<T>> {
     const ids = [id].flat()
 
-    const result = await db.get<ResourceItem>('resources', ...ids)
+    const result = await db.get<Resource>('resources', ...ids)
 
     if (result.isOk()) {
       const resources = await Promise.all(
@@ -148,7 +143,7 @@ const repository = {
   },
 
   async find(
-    partialResourceItem: Partial<ResourceItem>
+    partialResourceItem: Partial<Resource>
   ): Promise<RepoResultAsync<ResourceItemLoaded>> {
     const resources = await this.getAll()
     if (resources.isOk()) {
@@ -164,7 +159,7 @@ const repository = {
     return errAsync(resources.error)
   },
 
-  async findAll<T extends Optional<ResourceType>>(
+  async findAll<T extends ResourceType>(
     resourceType?: T
   ): Promise<FindAllValue<T>> {
     const resources = await this.getAll()
@@ -180,7 +175,7 @@ const repository = {
     return errAsync(resources.error) as FindAllValue<T>
   },
 
-  match<T extends ResourceItem>(partialResourceItem: Partial<T>) {
+  match<T extends Resource>(partialResourceItem: Partial<T>) {
     return (resourceItem: T) =>
       (partialResourceItem.resourceType
         ? partialResourceItem.resourceType === resourceItem.resourceType

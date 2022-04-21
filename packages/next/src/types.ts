@@ -15,13 +15,9 @@ import type {
   Tag,
   Config,
 } from '../.tina/__generated__/types'
-import type { GetPage, GetPost, GetTag, GetAuthor } from './api'
 import {
-  taxonomyTypes,
-  resourceTypes,
   themeContextTypes,
   routingContextTypes,
-  dynamicVariables,
 } from './constants'
 import type { PageProps as InternalPageProps } from './controller'
 import type { GspenstError } from './errors'
@@ -39,7 +35,6 @@ export type ResultAsync<T> = ResultAsyncInner<T, GspenstError>
 export type Dict<T = any> = Record<string, T>
 export type Unpacked<T> = T extends Array<infer U> ? U : T
 export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
-export type Optional<T> = NonNullable<T> | undefined | null
 export type {
   LiteralUnion,
   AsyncReturnType,
@@ -49,12 +44,6 @@ export type {
   Get,
   SetOptional,
 }
-// validate shapes: https://fettblog.eu/typescript-match-the-exact-object-shape/
-export type ValidateShape<T, Shape> = T extends Shape
-  ? Exclude<keyof T, keyof Shape> extends never
-    ? T
-    : never
-  : never
 
 /* --- Domain --- */
 
@@ -62,76 +51,15 @@ export type { Post, Page, Author, Tag, Config }
 
 export type { TinaTemplate } from 'tinacms'
 
-export type ResourceItemMap = { [id: ID]: ResourceItem }
-export type Taxonomies = typeof taxonomyTypes[number]
-export type ResourceType = typeof resourceTypes[number]
 export type RoutingContextType = typeof routingContextTypes[number]
 export type ThemeContextType = typeof themeContextTypes[number]
-export type DynamicVariablesObject<T> = ValidateShape<
-  T,
-  {
-    [key in typeof dynamicVariables[number]]: any
-  }
->
 
 export type PageProps = Simplify<
   Exclude<InternalPageProps, { context: 'internal' }> & {}
 > & {
   loading?: boolean
-  headers?: Optional<HeadingsReturn>
+  headers?: HeadingsReturn
 }
-
-export type Slug = string
-
-type BaseResourceItem = {
-  id: ID
-  filename: string
-  path: string
-  relativePath: string
-}
-
-export type DynamicVariables = DynamicVariablesObject<{
-  slug: Slug
-  year: number
-  month: number
-  day: number
-  primary_tag: Slug
-  primary_author: Slug
-}>
-
-export type PostResourceItem = Simplify<
-  BaseResourceItem & {
-    resourceType: Extract<ResourceType, 'post'>
-    dataResult?: GetPost
-  } & DynamicVariables
->
-
-export type PageResourceItem = Simplify<
-  BaseResourceItem & {
-    resourceType: Extract<ResourceType, 'page'>
-    dataResult?: GetPage
-  } & DynamicVariables
->
-
-export type TagResourceItem = Simplify<
-  BaseResourceItem & {
-    resourceType: Extract<ResourceType, 'tag'>
-    dataResult?: GetTag
-  } & DynamicVariables
->
-
-export type AuthorResourceItem = Simplify<
-  BaseResourceItem & {
-    resourceType: Extract<ResourceType, 'author'>
-    dataResult?: GetAuthor
-  } & DynamicVariables
->
-
-export type ResourceItem =
-  | PostResourceItem
-  | PageResourceItem
-  | AuthorResourceItem
-  | TagResourceItem
 
 export type LoaderOptions = {
   theme: string

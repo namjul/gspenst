@@ -5,6 +5,10 @@ import type { GetAuthor } from '../api'
 import type { Get, SetOptional, Result } from '../types'
 import type { Author as AuthorGenerated } from '../../.tina/__generated__/types'
 
+export const getAuthorSchema = z.custom<GetAuthor>(value => value)
+
+export const resourceType = z.literal('author')
+
 export const authorSchema = z
   .object({
     id: z.string(), // TODO z.uuid()

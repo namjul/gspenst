@@ -1,7 +1,8 @@
 import path from 'path'
 import { ok, err, combine } from 'neverthrow'
 import type { RoutingConfigResolved } from './domain/routes'
-import type { ResourceItem, Entries, Result } from './types'
+import type { Entries, Result } from './types'
+import type { Resource } from './domain/resource'
 import repository from './repository'
 import { compilePermalink } from './helpers'
 
@@ -24,7 +25,7 @@ async function resolveCollectionsPaths(routingConfig: RoutingConfigResolved) {
         const paths: Result<string>[] = [ok(String(mainRoute))]
         const postStack = postStackResult.value
 
-        const collectionPosts: ResourceItem[] = []
+        const collectionPosts: Resource[] = []
         for (let len = postStack.length - 1; len >= 0; len -= 1) {
           const resourceItem = postStack[len]
           if (resourceItem) {
