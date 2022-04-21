@@ -1,8 +1,11 @@
 import { z } from 'zod'
-import { getPostSchema, resourceType as resourceTypePost } from './post';
-import { getPageSchema, resourceType as resourceTypePage } from './page';
-import { getTagSchema, resourceType as resourceTypeTag } from './tag';
-import { getAuthorSchema, resourceType as resourceTypeAuthor } from './author';
+import { slugify } from '@tryghost/string'
+import type { Get } from '../types'
+import type { GetResourcesQuery } from '../../.tina/__generated__/types'
+import { getPostSchema, resourceType as resourceTypePost } from './post'
+import { getPageSchema, resourceType as resourceTypePage } from './page'
+import { getTagSchema, resourceType as resourceTypeTag } from './tag'
+import { getAuthorSchema, resourceType as resourceTypeAuthor } from './author'
 
 export const resourceTypes = [
   resourceTypePost.value,
@@ -39,28 +42,28 @@ const resourceBaseSchema = z.object({
 const postResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
     resourceType: resourceTypePost,
-    dataResult: getPostSchema.optional()
+    dataResult: getPostSchema.optional(),
   })
 )
 
 const pageResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
     resourceType: resourceTypePage,
-    dataResult: getPageSchema.optional()
+    dataResult: getPageSchema.optional(),
   })
 )
 
 const authorResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
     resourceType: resourceTypeAuthor,
-    dataResult: getAuthorSchema.optional()
+    dataResult: getAuthorSchema.optional(),
   })
 )
 
 const tagResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
     resourceType: resourceTypeTag,
-    dataResult: getTagSchema.optional()
+    dataResult: getTagSchema.optional(),
   })
 )
 
@@ -74,3 +77,53 @@ const resourceSchema = z.discriminatedUnion('resourceType', [
 export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
+
+type ResourcesNode = Exclude<
+  Get<GetResourcesQuery, 'getCollections[0].documents.edges[0].node'>,
+  { __typename: 'ConfigDocument' }
+>
+
+export function generateDynamicVariables(
+  node: NonNullable<ResourcesNode>
+): DynamicVariables {
+  const {
+    __typename,
+    data,
+    sys: { filename },
+  } = node
+
+  const [slug, primary_tag, primary_author] = (() => {
+    /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+    const empty = 'all'
+    if (__typename === 'PageDocument' || __typename === 'PostDocument') {
+      const tag = data.tags?.[0]?.tag
+      const author = data.authors?.[0]?.author
+      return [
+        node.data.slug || filename,
+        tag?.data.slug || tag?.sys.filename || empty,
+        author?.data.slug || author?.sys.filename || empty,
+      ]
+    }
+    return [data.slug || node.data.name || filename, empty, empty]
+    /* eslint-enable */
+  })() // IIFE
+
+  const date = new Date(data.date)
+  const [day, month, year] = date
+    .toLocaleString('en-GB', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    .split('/')
+    .map(Number) as [number, number, number]
+
+  return {
+    slug: slugify(slug),
+    year,
+    month,
+    day,
+    primary_tag,
+    primary_author,
+  }
+}

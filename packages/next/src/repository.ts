@@ -1,23 +1,13 @@
-import { slugify } from '@tryghost/string'
 import { okAsync, errAsync, combine } from 'neverthrow'
-import type { GetResourcesQuery } from '../.tina/__generated__/types'
 import * as api from './api'
 import db from './db'
 import { absurd } from './helpers'
-import type { DynamicVariables, ResourceType, Resource } from './domain/resource'
-import type {
-  Get,
-  ResultAsync,
-  WithRequired,
-} from './types'
+import type { ResourceType, Resource } from './domain/resource'
+import { generateDynamicVariables } from './domain/resource'
+import type { ResultAsync, WithRequired } from './types'
 import * as Errors from './errors'
 
 type RepoResultAsync<T> = ResultAsync<T>
-
-type ResourcesNode = Exclude<
-  Get<GetResourcesQuery, 'getCollections[0].documents.edges[0].node'>,
-  { __typename: 'ConfigDocument' }
->
 
 type ResourceItemLoaded = WithRequired<Resource, 'dataResult'>
 type GetValue<T extends ID | ID[]> = T extends ID[]
@@ -53,7 +43,7 @@ const repository = {
               if (__typename === 'ConfigDocument') {
                 return []
               } else {
-                const dynamicVariables = this._generateDynamicVariables(node)
+                const dynamicVariables = generateDynamicVariables(node)
 
                 return this.set({
                   id,
@@ -188,51 +178,6 @@ const repository = {
           )
         })
         .every(Boolean)
-  },
-
-  _generateDynamicVariables(
-    node: NonNullable<ResourcesNode>
-  ): DynamicVariables {
-    const {
-      __typename,
-      data,
-      sys: { filename },
-    } = node
-
-    const [slug, primary_tag, primary_author] = (() => {
-      /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-      const empty = 'all'
-      if (__typename === 'PageDocument' || __typename === 'PostDocument') {
-        const tag = data.tags?.[0]?.tag
-        const author = data.authors?.[0]?.author
-        return [
-          node.data.slug || filename,
-          tag?.data.slug || tag?.sys.filename || empty,
-          author?.data.slug || author?.sys.filename || empty,
-        ]
-      }
-      return [data.slug || node.data.name || filename, empty, empty]
-      /* eslint-enable */
-    })() // IIFE
-
-    const date = new Date(data.date!) // TODO warn if date is not defined
-    const [day, month, year] = date
-      .toLocaleString('en-GB', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      })
-      .split('/')
-      .map(Number) as [number, number, number]
-
-    return {
-      slug: slugify(slug),
-      year,
-      month,
-      day,
-      primary_tag,
-      primary_author,
-    }
   },
 }
 
