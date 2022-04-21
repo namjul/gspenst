@@ -4,23 +4,11 @@ import { z } from 'zod'
 import { ok, err, combineWithAllErrors } from 'neverthrow'
 import type { Split, Result } from '../types'
 import * as Errors from '../errors'
+import { resourceTypeSchema, resourceTypes } from './resource'
+import type { ResourceType } from './resource'
 
 const queryTypeRead = z.literal('read')
 const queryTypeBrowse = z.literal('browse')
-
-const resourceTypePost = z.literal('post')
-const resourceTypePage = z.literal('page')
-const resourceTypeAuthor = z.literal('author')
-const resourceTypeTag = z.literal('tag')
-
-const resourceTypeSchema = z.union([
-  resourceTypePost,
-  resourceTypePage,
-  resourceTypeAuthor,
-  resourceTypeTag,
-])
-
-type ResourceType = z.infer<typeof resourceTypeSchema>
 
 const slugSchema = z.string()
 
@@ -77,13 +65,6 @@ const template = z.string()
 const templateTransform = template.transform((value) => ({
   template: value,
 }))
-
-const resourceTypes = [
-  resourceTypePost.value,
-  resourceTypePage.value,
-  resourceTypeAuthor.value,
-  resourceTypeTag.value,
-]
 
 type DataForm = `${ResourceType}.${string}`
 

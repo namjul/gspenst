@@ -4,7 +4,7 @@ import path from 'path'
 import debug from 'debug'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
-import type { Options } from './types'
+import type { LoaderOptions } from './types'
 import { parseRoutes } from './domain/routes'
 import { findContentDir } from './utils'
 import { isProductionBuild } from './helpers'
@@ -14,8 +14,6 @@ import defaultRoutes from './defaultRoutes'
 const log = debug('@gspenst/next:loader')
 
 const contentDir = path.resolve(findContentDir())
-
-type LoaderOptions = Options
 
 // api lookup: https://webpack.js.org/api/loaders/
 

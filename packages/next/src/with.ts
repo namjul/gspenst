@@ -2,7 +2,7 @@ import debug from 'debug'
 import withPreconstruct from '@preconstruct/next'
 import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
-import type { Options } from './types'
+import type { LoaderOptions } from './types'
 import { GspenstPlugin } from './plugin'
 import { staticExport } from './env'
 
@@ -13,7 +13,7 @@ const yamlExtensionTest = /\[\[\.\.\.\w+\]\]\.(yml|yaml)$/
 
 const log = debug('@gspenst/next:with')
 
-export default (...args: [string | Options, string]) =>
+export default (...args: [string | LoaderOptions, string]) =>
   (nextConfig: NextConfig = {}): NextConfig => {
     const options =
       typeof args[0] === 'string'

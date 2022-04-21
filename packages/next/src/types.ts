@@ -5,6 +5,7 @@ import {
   Split,
   Entries,
   Simplify,
+  SetOptional,
   Get,
 } from 'type-fest'
 import type {
@@ -16,10 +17,8 @@ import type {
 } from '../.tina/__generated__/types'
 import type { GetPage, GetPost, GetTag, GetAuthor } from './api'
 import {
-  queryTypes,
   taxonomyTypes,
   resourceTypes,
-  queryFilterOptions,
   themeContextTypes,
   routingContextTypes,
   dynamicVariables,
@@ -28,14 +27,28 @@ import type { PageProps as InternalPageProps } from './controller'
 import type { GspenstError } from './errors'
 import type { HeadingsReturn } from './getHeaders'
 
+export type Result<T> =
+  | Ok<T, GspenstError>
+  | Ok<T, never>
+  | Err<T, GspenstError>
+  | Err<never, GspenstError>
+export type ResultAsync<T> = ResultAsyncInner<T, GspenstError>
+
 /* --- Utils --- */
 
 export type Dict<T = any> = Record<string, T>
 export type Unpacked<T> = T extends Array<infer U> ? U : T
 export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
-export type Nullish = null | undefined
 export type Optional<T> = NonNullable<T> | undefined | null
-export type { LiteralUnion, AsyncReturnType, Split, Entries, Simplify, Get }
+export type {
+  LiteralUnion,
+  AsyncReturnType,
+  Split,
+  Entries,
+  Simplify,
+  Get,
+  SetOptional,
+}
 // validate shapes: https://fettblog.eu/typescript-match-the-exact-object-shape/
 export type ValidateShape<T, Shape> = T extends Shape
   ? Exclude<keyof T, keyof Shape> extends never
@@ -47,27 +60,13 @@ export type ValidateShape<T, Shape> = T extends Shape
 
 export type { Post, Page, Author, Tag, Config }
 
-export type Result<T> =
-  | Ok<T, GspenstError>
-  | Ok<T, never>
-  | Err<T, GspenstError>
-  | Err<never, GspenstError>
-export type ResultAsync<T> = ResultAsyncInner<T, GspenstError>
-
 export type { TinaTemplate } from 'tinacms'
 
 export type ResourceItemMap = { [id: ID]: ResourceItem }
 export type Taxonomies = typeof taxonomyTypes[number]
-export type QueryType = typeof queryTypes[number]
 export type ResourceType = typeof resourceTypes[number]
 export type RoutingContextType = typeof routingContextTypes[number]
 export type ThemeContextType = typeof themeContextTypes[number]
-export type QueryFilterOptionsObject<T> = ValidateShape<
-  T,
-  {
-    [key in typeof queryFilterOptions[number]]: any
-  }
->
 export type DynamicVariablesObject<T> = ValidateShape<
   T,
   {
@@ -134,31 +133,7 @@ export type ResourceItem =
   | AuthorResourceItem
   | TagResourceItem
 
-export type QueryFilterOptions = QueryFilterOptionsObject<{
-  filter: Optional<string>
-  limit: Optional<number | 'all'>
-  order: Optional<string> // '{property} ASC|DSC'
-  // include: string
-  // visibility: string
-  // status: string
-  // page: string
-}>
-
-export type DataQuery =
-  | {
-      type: Extract<QueryType, 'read'>
-      resourceType: ResourceType
-      slug: Slug
-      redirect?: boolean | undefined
-    }
-  | ({
-      type: Extract<QueryType, 'browse'>
-      resourceType: ResourceType
-    } & QueryFilterOptions)
-
-export type DataForm = `${ResourceType}.${string}`
-
-export type Options = {
+export type LoaderOptions = {
   theme: string
   themeConfig?: string
   staticExport?: boolean
