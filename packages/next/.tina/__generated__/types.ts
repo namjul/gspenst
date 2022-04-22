@@ -256,14 +256,13 @@ export type PageTags = {
 
 export type Page = {
   __typename?: 'Page'
-  date?: Maybe<Scalars['String']>
-  slug?: Maybe<Scalars['String']>
-  title?: Maybe<Scalars['String']>
-  heroImg?: Maybe<Scalars['String']>
+  date: Scalars['String']
+  slug: Scalars['String']
+  title: Scalars['String']
   excerpt?: Maybe<Scalars['JSON']>
   authors?: Maybe<Array<Maybe<PageAuthors>>>
   tags?: Maybe<Array<Maybe<PageTags>>>
-  body?: Maybe<Scalars['JSON']>
+  content: Scalars['JSON']
 }
 
 export type PageDocument = Node &
@@ -306,14 +305,13 @@ export type PostTags = {
 
 export type Post = {
   __typename?: 'Post'
-  date?: Maybe<Scalars['String']>
-  slug?: Maybe<Scalars['String']>
-  title?: Maybe<Scalars['String']>
-  heroImg?: Maybe<Scalars['String']>
+  date: Scalars['String']
+  slug: Scalars['String']
+  title: Scalars['String']
   excerpt?: Maybe<Scalars['JSON']>
   authors?: Maybe<Array<Maybe<PostAuthors>>>
   tags?: Maybe<Array<Maybe<PostTags>>>
-  body?: Maybe<Scalars['JSON']>
+  content: Scalars['JSON']
 }
 
 export type PostDocument = Node &
@@ -342,9 +340,9 @@ export type PostConnection = Connection & {
 
 export type Author = {
   __typename?: 'Author'
-  name?: Maybe<Scalars['String']>
-  date?: Maybe<Scalars['String']>
-  slug?: Maybe<Scalars['String']>
+  name: Scalars['String']
+  date: Scalars['String']
+  slug: Scalars['String']
 }
 
 export type AuthorDocument = Node &
@@ -373,9 +371,9 @@ export type AuthorConnection = Connection & {
 
 export type Tag = {
   __typename?: 'Tag'
-  name?: Maybe<Scalars['String']>
-  date?: Maybe<Scalars['String']>
-  slug?: Maybe<Scalars['String']>
+  name: Scalars['String']
+  date: Scalars['String']
+  slug: Scalars['String']
 }
 
 export type TagDocument = Node &
@@ -511,11 +509,10 @@ export type PageMutation = {
   date?: InputMaybe<Scalars['String']>
   slug?: InputMaybe<Scalars['String']>
   title?: InputMaybe<Scalars['String']>
-  heroImg?: InputMaybe<Scalars['String']>
   excerpt?: InputMaybe<Scalars['JSON']>
   authors?: InputMaybe<Array<InputMaybe<PageAuthorsMutation>>>
   tags?: InputMaybe<Array<InputMaybe<PageTagsMutation>>>
-  body?: InputMaybe<Scalars['JSON']>
+  content?: InputMaybe<Scalars['JSON']>
 }
 
 export type PostAuthorsMutation = {
@@ -530,11 +527,10 @@ export type PostMutation = {
   date?: InputMaybe<Scalars['String']>
   slug?: InputMaybe<Scalars['String']>
   title?: InputMaybe<Scalars['String']>
-  heroImg?: InputMaybe<Scalars['String']>
   excerpt?: InputMaybe<Scalars['JSON']>
   authors?: InputMaybe<Array<InputMaybe<PostAuthorsMutation>>>
   tags?: InputMaybe<Array<InputMaybe<PostTagsMutation>>>
-  body?: InputMaybe<Scalars['JSON']>
+  content?: InputMaybe<Scalars['JSON']>
 }
 
 export type AuthorMutation = {
@@ -563,23 +559,17 @@ export type PostDocumentQueryFragmentFragment = {
   id: string
   data: {
     __typename?: 'Post'
-    date?: string | null
-    slug?: string | null
-    title?: string | null
-    heroImg?: string | null
+    date: string
+    slug: string
+    title: string
     excerpt?: any | null
-    body?: any | null
+    content: any
     tags?: Array<{
       __typename: 'PostTags'
       tag?: {
         __typename?: 'TagDocument'
         id: string
-        data: {
-          __typename?: 'Tag'
-          name?: string | null
-          date?: string | null
-          slug?: string | null
-        }
+        data: { __typename?: 'Tag'; name: string; date: string; slug: string }
       } | null
     } | null> | null
     authors?: Array<{
@@ -589,9 +579,9 @@ export type PostDocumentQueryFragmentFragment = {
         id: string
         data: {
           __typename?: 'Author'
-          name?: string | null
-          date?: string | null
-          slug?: string | null
+          name: string
+          date: string
+          slug: string
         }
       } | null
     } | null> | null
@@ -603,23 +593,17 @@ export type PageDocumentQueryFragmentFragment = {
   id: string
   data: {
     __typename?: 'Page'
-    date?: string | null
-    slug?: string | null
-    title?: string | null
-    heroImg?: string | null
+    date: string
+    slug: string
+    title: string
     excerpt?: any | null
-    body?: any | null
+    content: any
     tags?: Array<{
       __typename: 'PageTags'
       tag?: {
         __typename?: 'TagDocument'
         id: string
-        data: {
-          __typename?: 'Tag'
-          name?: string | null
-          date?: string | null
-          slug?: string | null
-        }
+        data: { __typename?: 'Tag'; name: string; date: string; slug: string }
       } | null
     } | null> | null
     authors?: Array<{
@@ -629,9 +613,9 @@ export type PageDocumentQueryFragmentFragment = {
         id: string
         data: {
           __typename?: 'Author'
-          name?: string | null
-          date?: string | null
-          slug?: string | null
+          name: string
+          date: string
+          slug: string
         }
       } | null
     } | null> | null
@@ -641,23 +625,13 @@ export type PageDocumentQueryFragmentFragment = {
 export type AuthorDocumentQueryFragmentFragment = {
   __typename: 'AuthorDocument'
   id: string
-  data: {
-    __typename?: 'Author'
-    name?: string | null
-    date?: string | null
-    slug?: string | null
-  }
+  data: { __typename?: 'Author'; name: string; date: string; slug: string }
 }
 
 export type TagDocumentQueryFragmentFragment = {
   __typename: 'TagDocument'
   id: string
-  data: {
-    __typename?: 'Tag'
-    name?: string | null
-    date?: string | null
-    slug?: string | null
-  }
+  data: { __typename?: 'Tag'; name: string; date: string; slug: string }
 }
 
 export type GetResourcesQueryVariables = Exact<{ [key: string]: never }>
@@ -703,8 +677,8 @@ export type GetResourcesQuery = {
               }
               data: {
                 __typename?: 'Page'
-                slug?: string | null
-                date?: string | null
+                slug: string
+                date: string
                 tags?: Array<{
                   __typename?: 'PageTags'
                   tag?: {
@@ -713,9 +687,9 @@ export type GetResourcesQuery = {
                     sys: { __typename?: 'SystemInfo'; filename: string }
                     data: {
                       __typename?: 'Tag'
-                      name?: string | null
-                      date?: string | null
-                      slug?: string | null
+                      name: string
+                      date: string
+                      slug: string
                     }
                   } | null
                 } | null> | null
@@ -727,9 +701,9 @@ export type GetResourcesQuery = {
                     sys: { __typename?: 'SystemInfo'; filename: string }
                     data: {
                       __typename?: 'Author'
-                      name?: string | null
-                      date?: string | null
-                      slug?: string | null
+                      name: string
+                      date: string
+                      slug: string
                     }
                   } | null
                 } | null> | null
@@ -749,8 +723,8 @@ export type GetResourcesQuery = {
               }
               data: {
                 __typename?: 'Post'
-                slug?: string | null
-                date?: string | null
+                slug: string
+                date: string
                 tags?: Array<{
                   __typename?: 'PostTags'
                   tag?: {
@@ -759,9 +733,9 @@ export type GetResourcesQuery = {
                     sys: { __typename?: 'SystemInfo'; filename: string }
                     data: {
                       __typename?: 'Tag'
-                      name?: string | null
-                      date?: string | null
-                      slug?: string | null
+                      name: string
+                      date: string
+                      slug: string
                     }
                   } | null
                 } | null> | null
@@ -773,9 +747,9 @@ export type GetResourcesQuery = {
                     sys: { __typename?: 'SystemInfo'; filename: string }
                     data: {
                       __typename?: 'Author'
-                      name?: string | null
-                      date?: string | null
-                      slug?: string | null
+                      name: string
+                      date: string
+                      slug: string
                     }
                   } | null
                 } | null> | null
@@ -795,9 +769,9 @@ export type GetResourcesQuery = {
               }
               data: {
                 __typename?: 'Author'
-                slug?: string | null
-                name?: string | null
-                date?: string | null
+                slug: string
+                name: string
+                date: string
               }
             }
           | {
@@ -814,9 +788,9 @@ export type GetResourcesQuery = {
               }
               data: {
                 __typename?: 'Tag'
-                slug?: string | null
-                name?: string | null
-                date?: string | null
+                slug: string
+                name: string
+                date: string
               }
             }
           | null
@@ -847,23 +821,17 @@ export type GetPostQuery = {
     id: string
     data: {
       __typename?: 'Post'
-      date?: string | null
-      slug?: string | null
-      title?: string | null
-      heroImg?: string | null
+      date: string
+      slug: string
+      title: string
       excerpt?: any | null
-      body?: any | null
+      content: any
       tags?: Array<{
         __typename: 'PostTags'
         tag?: {
           __typename?: 'TagDocument'
           id: string
-          data: {
-            __typename?: 'Tag'
-            name?: string | null
-            date?: string | null
-            slug?: string | null
-          }
+          data: { __typename?: 'Tag'; name: string; date: string; slug: string }
         } | null
       } | null> | null
       authors?: Array<{
@@ -873,9 +841,9 @@ export type GetPostQuery = {
           id: string
           data: {
             __typename?: 'Author'
-            name?: string | null
-            date?: string | null
-            slug?: string | null
+            name: string
+            date: string
+            slug: string
           }
         } | null
       } | null> | null
@@ -899,23 +867,17 @@ export type GetPageQuery = {
     id: string
     data: {
       __typename?: 'Page'
-      date?: string | null
-      slug?: string | null
-      title?: string | null
-      heroImg?: string | null
+      date: string
+      slug: string
+      title: string
       excerpt?: any | null
-      body?: any | null
+      content: any
       tags?: Array<{
         __typename: 'PageTags'
         tag?: {
           __typename?: 'TagDocument'
           id: string
-          data: {
-            __typename?: 'Tag'
-            name?: string | null
-            date?: string | null
-            slug?: string | null
-          }
+          data: { __typename?: 'Tag'; name: string; date: string; slug: string }
         } | null
       } | null> | null
       authors?: Array<{
@@ -925,9 +887,9 @@ export type GetPageQuery = {
           id: string
           data: {
             __typename?: 'Author'
-            name?: string | null
-            date?: string | null
-            slug?: string | null
+            name: string
+            date: string
+            slug: string
           }
         } | null
       } | null> | null
@@ -949,12 +911,7 @@ export type GetAuthorQuery = {
   getAuthorDocument: {
     __typename: 'AuthorDocument'
     id: string
-    data: {
-      __typename?: 'Author'
-      name?: string | null
-      date?: string | null
-      slug?: string | null
-    }
+    data: { __typename?: 'Author'; name: string; date: string; slug: string }
   }
   getConfigDocument: {
     __typename?: 'ConfigDocument'
@@ -972,12 +929,7 @@ export type GetTagQuery = {
   getTagDocument: {
     __typename: 'TagDocument'
     id: string
-    data: {
-      __typename?: 'Tag'
-      name?: string | null
-      date?: string | null
-      slug?: string | null
-    }
+    data: { __typename?: 'Tag'; name: string; date: string; slug: string }
   }
   getConfigDocument: {
     __typename?: 'ConfigDocument'
@@ -993,12 +945,11 @@ export type ConfigPartsFragment = {
 
 export type PagePartsFragment = {
   __typename?: 'Page'
-  date?: string | null
-  slug?: string | null
-  title?: string | null
-  heroImg?: string | null
+  date: string
+  slug: string
+  title: string
   excerpt?: any | null
-  body?: any | null
+  content: any
   authors?: Array<{
     __typename: 'PageAuthors'
     author?: { __typename?: 'AuthorDocument'; id: string } | null
@@ -1011,12 +962,11 @@ export type PagePartsFragment = {
 
 export type PostPartsFragment = {
   __typename?: 'Post'
-  date?: string | null
-  slug?: string | null
-  title?: string | null
-  heroImg?: string | null
+  date: string
+  slug: string
+  title: string
   excerpt?: any | null
-  body?: any | null
+  content: any
   authors?: Array<{
     __typename: 'PostAuthors'
     author?: { __typename?: 'AuthorDocument'; id: string } | null
@@ -1029,16 +979,16 @@ export type PostPartsFragment = {
 
 export type AuthorPartsFragment = {
   __typename?: 'Author'
-  name?: string | null
-  date?: string | null
-  slug?: string | null
+  name: string
+  date: string
+  slug: string
 }
 
 export type TagPartsFragment = {
   __typename?: 'Tag'
-  name?: string | null
-  date?: string | null
-  slug?: string | null
+  name: string
+  date: string
+  slug: string
 }
 
 export type GetConfigDocumentQueryVariables = Exact<{
@@ -1110,12 +1060,11 @@ export type GetPageDocumentQuery = {
     }
     data: {
       __typename?: 'Page'
-      date?: string | null
-      slug?: string | null
-      title?: string | null
-      heroImg?: string | null
+      date: string
+      slug: string
+      title: string
       excerpt?: any | null
-      body?: any | null
+      content: any
       authors?: Array<{
         __typename: 'PageAuthors'
         author?: { __typename?: 'AuthorDocument'; id: string } | null
@@ -1151,12 +1100,11 @@ export type GetPageListQuery = {
         }
         data: {
           __typename?: 'Page'
-          date?: string | null
-          slug?: string | null
-          title?: string | null
-          heroImg?: string | null
+          date: string
+          slug: string
+          title: string
           excerpt?: any | null
-          body?: any | null
+          content: any
           authors?: Array<{
             __typename: 'PageAuthors'
             author?: { __typename?: 'AuthorDocument'; id: string } | null
@@ -1191,12 +1139,11 @@ export type GetPostDocumentQuery = {
     }
     data: {
       __typename?: 'Post'
-      date?: string | null
-      slug?: string | null
-      title?: string | null
-      heroImg?: string | null
+      date: string
+      slug: string
+      title: string
       excerpt?: any | null
-      body?: any | null
+      content: any
       authors?: Array<{
         __typename: 'PostAuthors'
         author?: { __typename?: 'AuthorDocument'; id: string } | null
@@ -1232,12 +1179,11 @@ export type GetPostListQuery = {
         }
         data: {
           __typename?: 'Post'
-          date?: string | null
-          slug?: string | null
-          title?: string | null
-          heroImg?: string | null
+          date: string
+          slug: string
+          title: string
           excerpt?: any | null
-          body?: any | null
+          content: any
           authors?: Array<{
             __typename: 'PostAuthors'
             author?: { __typename?: 'AuthorDocument'; id: string } | null
@@ -1270,12 +1216,7 @@ export type GetAuthorDocumentQuery = {
       relativePath: string
       extension: string
     }
-    data: {
-      __typename?: 'Author'
-      name?: string | null
-      date?: string | null
-      slug?: string | null
-    }
+    data: { __typename?: 'Author'; name: string; date: string; slug: string }
   }
 }
 
@@ -1302,9 +1243,9 @@ export type GetAuthorListQuery = {
         }
         data: {
           __typename?: 'Author'
-          name?: string | null
-          date?: string | null
-          slug?: string | null
+          name: string
+          date: string
+          slug: string
         }
       } | null
     } | null> | null
@@ -1329,12 +1270,7 @@ export type GetTagDocumentQuery = {
       relativePath: string
       extension: string
     }
-    data: {
-      __typename?: 'Tag'
-      name?: string | null
-      date?: string | null
-      slug?: string | null
-    }
+    data: { __typename?: 'Tag'; name: string; date: string; slug: string }
   }
 }
 
@@ -1359,12 +1295,7 @@ export type GetTagListQuery = {
           relativePath: string
           extension: string
         }
-        data: {
-          __typename?: 'Tag'
-          name?: string | null
-          date?: string | null
-          slug?: string | null
-        }
+        data: { __typename?: 'Tag'; name: string; date: string; slug: string }
       } | null
     } | null> | null
   }
@@ -1391,7 +1322,6 @@ export const PostPartsFragmentDoc = gql`
     date
     slug
     title
-    heroImg
     excerpt
     authors {
       __typename
@@ -1409,7 +1339,7 @@ export const PostPartsFragmentDoc = gql`
         }
       }
     }
-    body
+    content
   }
 `
 export const TagPartsFragmentDoc = gql`
@@ -1461,7 +1391,6 @@ export const PagePartsFragmentDoc = gql`
     date
     slug
     title
-    heroImg
     excerpt
     authors {
       __typename
@@ -1479,7 +1408,7 @@ export const PagePartsFragmentDoc = gql`
         }
       }
     }
-    body
+    content
   }
 `
 export const PageDocumentQueryFragmentFragmentDoc = gql`

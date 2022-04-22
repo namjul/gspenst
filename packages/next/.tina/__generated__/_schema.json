@@ -32,6 +32,7 @@
           "type": "datetime",
           "label": "Posted Date",
           "name": "date",
+          "required": true,
           "ui": {
             "dateFormat": "MMMM DD YYYY",
             "timeFormat": "hh:mm A"
@@ -42,24 +43,21 @@
           "type": "string",
           "label": "Slug",
           "name": "slug",
+          "required": true,
           "namespace": ["page", "slug"]
         },
         {
           "type": "string",
           "label": "Title",
           "name": "title",
+          "required": true,
           "namespace": ["page", "title"]
-        },
-        {
-          "type": "image",
-          "name": "heroImg",
-          "label": "Hero Image",
-          "namespace": ["page", "heroImg"]
         },
         {
           "type": "rich-text",
           "label": "Excerpt",
           "name": "excerpt",
+          "templates": [],
           "namespace": ["page", "excerpt"]
         },
         {
@@ -96,11 +94,12 @@
         },
         {
           "type": "rich-text",
-          "label": "Body",
-          "name": "body",
+          "label": "Content",
+          "name": "content",
           "templates": [],
           "isBody": true,
-          "namespace": ["page", "body"]
+          "required": true,
+          "namespace": ["page", "content"]
         }
       ],
       "namespace": ["page"]
@@ -115,6 +114,7 @@
           "type": "datetime",
           "label": "Posted Date",
           "name": "date",
+          "required": true,
           "ui": {
             "dateFormat": "MMMM DD YYYY",
             "timeFormat": "hh:mm A"
@@ -125,24 +125,21 @@
           "type": "string",
           "label": "Slug",
           "name": "slug",
+          "required": true,
           "namespace": ["post", "slug"]
         },
         {
           "type": "string",
           "label": "Title",
           "name": "title",
+          "required": true,
           "namespace": ["post", "title"]
-        },
-        {
-          "type": "image",
-          "name": "heroImg",
-          "label": "Hero Image",
-          "namespace": ["post", "heroImg"]
         },
         {
           "type": "rich-text",
           "label": "Excerpt",
           "name": "excerpt",
+          "templates": [],
           "namespace": ["post", "excerpt"]
         },
         {
@@ -179,11 +176,12 @@
         },
         {
           "type": "rich-text",
-          "label": "Body",
-          "name": "body",
+          "label": "Content",
+          "name": "content",
           "templates": [],
           "isBody": true,
-          "namespace": ["post", "body"]
+          "required": true,
+          "namespace": ["post", "content"]
         }
       ],
       "namespace": ["post"]
@@ -197,12 +195,14 @@
           "type": "string",
           "label": "Name",
           "name": "name",
+          "required": true,
           "namespace": ["author", "name"]
         },
         {
           "type": "datetime",
           "label": "Posted Date",
           "name": "date",
+          "required": true,
           "ui": {
             "dateFormat": "MMMM DD YYYY",
             "timeFormat": "hh:mm A"
@@ -213,6 +213,7 @@
           "type": "string",
           "label": "Slug",
           "name": "slug",
+          "required": true,
           "namespace": ["author", "slug"]
         }
       ],
@@ -227,12 +228,14 @@
           "type": "string",
           "label": "Name",
           "name": "name",
+          "required": true,
           "namespace": ["tag", "name"]
         },
         {
           "type": "datetime",
           "label": "Posted Date",
           "name": "date",
+          "required": true,
           "ui": {
             "dateFormat": "MMMM DD YYYY",
             "timeFormat": "hh:mm A"
@@ -243,6 +246,7 @@
           "type": "string",
           "label": "Slug",
           "name": "slug",
+          "required": true,
           "namespace": ["tag", "slug"]
         }
       ],

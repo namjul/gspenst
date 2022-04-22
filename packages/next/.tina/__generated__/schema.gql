@@ -123,14 +123,13 @@ type PageTags {
 }
 
 type Page {
-  date: String
-  slug: String
-  title: String
-  heroImg: String
+  date: String!
+  slug: String!
+  title: String!
   excerpt: JSON
   authors: [PageAuthors]
   tags: [PageTags]
-  body: JSON
+  content: JSON!
 }
 
 type PageDocument implements Node & Document {
@@ -166,14 +165,13 @@ type PostTags {
 }
 
 type Post {
-  date: String
-  slug: String
-  title: String
-  heroImg: String
+  date: String!
+  slug: String!
+  title: String!
   excerpt: JSON
   authors: [PostAuthors]
   tags: [PostTags]
-  body: JSON
+  content: JSON!
 }
 
 type PostDocument implements Node & Document {
@@ -197,9 +195,9 @@ type PostConnection implements Connection {
 }
 
 type Author {
-  name: String
-  date: String
-  slug: String
+  name: String!
+  date: String!
+  slug: String!
 }
 
 type AuthorDocument implements Node & Document {
@@ -223,9 +221,9 @@ type AuthorConnection implements Connection {
 }
 
 type Tag {
-  name: String
-  date: String
-  slug: String
+  name: String!
+  date: String!
+  slug: String!
 }
 
 type TagDocument implements Node & Document {
@@ -288,11 +286,10 @@ input PageMutation {
   date: String
   slug: String
   title: String
-  heroImg: String
   excerpt: JSON
   authors: [PageAuthorsMutation]
   tags: [PageTagsMutation]
-  body: JSON
+  content: JSON
 }
 
 input PostAuthorsMutation {
@@ -307,11 +304,10 @@ input PostMutation {
   date: String
   slug: String
   title: String
-  heroImg: String
   excerpt: JSON
   authors: [PostAuthorsMutation]
   tags: [PostTagsMutation]
-  body: JSON
+  content: JSON
 }
 
 input AuthorMutation {

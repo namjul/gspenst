@@ -6,6 +6,7 @@ const commonFields: TinaField[] = [
     type: 'datetime',
     label: 'Posted Date',
     name: 'date',
+    required: true,
     ui: {
       dateFormat: 'MMMM DD YYYY',
       timeFormat: 'hh:mm A',
@@ -15,6 +16,7 @@ const commonFields: TinaField[] = [
     type: 'string',
     label: 'Slug',
     name: 'slug',
+    required: true,
   },
 ]
 
@@ -24,16 +26,13 @@ export function createSchema(templates: TinaTemplate[] = []) {
       type: 'string',
       label: 'Title',
       name: 'title',
-    },
-    {
-      type: 'image',
-      name: 'heroImg',
-      label: 'Hero Image',
+      required: true,
     },
     {
       type: 'rich-text',
       label: 'Excerpt',
       name: 'excerpt',
+      templates,
     },
     {
       label: 'Authors',
@@ -65,10 +64,11 @@ export function createSchema(templates: TinaTemplate[] = []) {
     },
     {
       type: 'rich-text',
-      label: 'Body',
-      name: 'body',
+      label: 'Content',
+      name: 'content',
       templates,
       isBody: true,
+      required: true,
     },
   ]
 
@@ -111,6 +111,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
         type: 'string',
         label: 'Name',
         name: 'name',
+        required: true,
       },
       ...commonFields,
     ],
@@ -125,6 +126,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
         type: 'string',
         label: 'Name',
         name: 'name',
+        required: true,
       },
       ...commonFields,
     ],

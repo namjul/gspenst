@@ -6,7 +6,6 @@ fragment PageParts on Page {
   date
   slug
   title
-  heroImg
   excerpt
   authors {
     __typename
@@ -24,14 +23,13 @@ fragment PageParts on Page {
       }
     }
   }
-  body
+  content
 }
 
 fragment PostParts on Post {
   date
   slug
   title
-  heroImg
   excerpt
   authors {
     __typename
@@ -49,7 +47,7 @@ fragment PostParts on Post {
       }
     }
   }
-  body
+  content
 }
 
 fragment AuthorParts on Author {
