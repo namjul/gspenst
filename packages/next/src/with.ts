@@ -2,7 +2,7 @@ import debug from 'debug'
 import withPreconstruct from '@preconstruct/next'
 import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
-import type { LoaderOptions } from './types'
+import type { LoaderOptions } from './loader'
 import { GspenstPlugin } from './plugin'
 import { staticExport } from './env'
 

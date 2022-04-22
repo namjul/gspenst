@@ -1,11 +1,16 @@
-import { ok } from 'neverthrow'
+import { ok } from './shared-kernel'
 import repository from './repository'
+import { format } from './errors'
+import type { ID } from './shared-kernel'
 
 jest.mock('../.tina/__generated__/types')
 jest.mock('./redis')
 
-beforeEach(async () => {
-  void (await repository.init())
+beforeAll(async () => {
+  const result = await repository.init()
+  if (result.isErr()) {
+    throw format(result.error)
+  }
 })
 
 describe('repository', () => {
@@ -15,8 +20,8 @@ describe('repository', () => {
   })
 
   test('set', async () => {
-    const resourceItem = {
-      id: 'content/posts/11th-post.mdx',
+    const resource = {
+      id: 123 as ID,
       filename: '11th-post',
       path: 'content/posts/11th-post.mdx',
       resourceType: 'post' as const,
@@ -28,13 +33,14 @@ describe('repository', () => {
       primary_tag: 'tag-1',
       primary_author: 'tag-2',
     }
-    const result = await repository.set(resourceItem)
+    const result = await repository.set(resource)
     expect(result.isOk()).toBe(true)
   })
 
   test('get single', async () => {
-    const resourceItem = {
-      id: 'content/posts/0th-post.mdx',
+    const id = 57892423 as ID
+    const resource = {
+      id,
       filename: '0th-post',
       path: 'content/posts/0th-post.mdx',
       resourceType: 'post' as const,
@@ -46,21 +52,18 @@ describe('repository', () => {
       primary_tag: 'all',
       primary_author: 'all',
     }
-    const result = await repository.get('content/posts/0th-post.mdx')
-    expect(result).toMatchObject(ok(resourceItem))
+    const result = await repository.get(id)
+    expect(result).toMatchObject(ok(resource))
   })
 
   test('get multiple', async () => {
-    const result = await repository.get([
-      'content/posts/0th-post.mdx',
-      'content/posts/1th-post.mdx',
-    ])
+    const result = await repository.get([3645825030 as ID, 57892423 as ID])
     expect(result._unsafeUnwrap()).toHaveLength(2)
   })
 
   test('getAll', async () => {
     const result = await repository.getAll()
-    expect(result._unsafeUnwrap()).toHaveLength(17)
+    expect(result._unsafeUnwrap()).toHaveLength(18)
   })
 
   test('find', async () => {
@@ -73,10 +76,10 @@ describe('repository', () => {
   test('findAll', async () => {
     const result1 = await repository.findAll()
     expect(result1._unsafeUnwrap()).toBeDefined()
-    expect(result1._unsafeUnwrap()).toHaveLength(17)
+    expect(result1._unsafeUnwrap()).toHaveLength(18)
 
     const result2 = await repository.findAll('post')
     expect(result2._unsafeUnwrap()).toBeDefined()
-    expect(result2._unsafeUnwrap()).toHaveLength(10)
+    expect(result2._unsafeUnwrap()).toHaveLength(11)
   })
 })

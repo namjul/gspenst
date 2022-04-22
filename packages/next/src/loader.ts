@@ -4,12 +4,17 @@ import path from 'path'
 import debug from 'debug'
 import yaml from 'js-yaml'
 import type { LoaderDefinition } from 'webpack'
-import type { LoaderOptions } from './types'
 import { parseRoutes } from './domain/routes'
 import { findContentDir } from './utils'
 import { isProductionBuild } from './helpers'
 import { format } from './errors'
 import defaultRoutes from './defaultRoutes'
+
+export type LoaderOptions = {
+  theme: string
+  themeConfig?: string
+  staticExport?: boolean
+}
 
 const log = debug('@gspenst/next:loader')
 

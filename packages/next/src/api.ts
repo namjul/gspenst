@@ -1,7 +1,7 @@
 import { ResultAsync as ResultAsyncInternal } from 'neverthrow'
 import { ExperimentalGetTinaClient } from '../.tina/__generated__/types'
 import * as Errors from './errors'
-import type { AsyncReturnType, ResultAsync } from './types'
+import type { AsyncReturnType, ResultAsync } from './shared-kernel'
 
 const client = ExperimentalGetTinaClient() // eslint-disable-line new-cap
 

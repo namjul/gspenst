@@ -1,6 +1,6 @@
-import { ok, err } from 'neverthrow'
 import { compile, pathToRegexp } from 'path-to-regexp'
-import type { Result } from './types'
+import { ok, err } from './shared-kernel'
+import type { Result } from './shared-kernel'
 import type { Resource } from './domain/resource'
 import * as Errors from './errors'
 import { nodeEnvironment } from './env'
@@ -11,11 +11,11 @@ export function absurd(_: never): never {
 
 export function compilePermalink(
   permalink: string,
-  resourceItem: Resource
+  resource: Resource
 ): Result<string> {
   try {
     // TODO use Result.fromThrowable https://github.com/supermacro/neverthrow#resultfromthrowable-static-class-method
-    return ok(compile(permalink)(resourceItem))
+    return ok(compile(permalink)(resource))
   } catch (error: unknown) {
     return err(
       Errors.other(

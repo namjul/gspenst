@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from '../shared-kernel'
 
 import { resourceType as resourceTypeTag } from './tag'
 import { resourceType as resourceTypeAuthor } from './author'

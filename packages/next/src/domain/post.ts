@@ -1,19 +1,18 @@
-import { z } from 'zod'
-import { ok, err } from 'neverthrow'
+import { idSchema, ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
-import type { Get, Result } from '../types'
+import type { Get, Result } from '../shared-kernel'
 import type { GetPost } from '../api'
 import type { Post as PostGenerated } from '../../.tina/__generated__/types'
-import { authorSchema, convert as convertAuthor } from './author'
-import { tagSchema, convert as convertTag } from './tag'
+import { authorSchema, createAuthor } from './author'
+import { tagSchema, createTag } from './tag'
 
-export const getPostSchema = z.custom<GetPost>(value => value)
+export const getPostSchema = z.custom<GetPost>((value) => value)
 
 export const resourceType = z.literal('post')
 
 export const postSchema = z
   .object({
-    id: z.string(), // TODO z.uuid()
+    id: idSchema,
     date: z.string(),
     slug: z.string(),
     title: z.string(),
@@ -28,7 +27,7 @@ type Post = z.infer<typeof postSchema>
 
 export type { Post, GetPost, PostGenerated }
 
-export function convert(
+export function createPost(
   getPostDocument: Get<GetPost, 'data.getPostDocument'>
 ): Result<Post> {
   const {
@@ -40,10 +39,10 @@ export function convert(
     id,
     ...restPostProps,
     tags: (tags ?? []).flatMap((tag) => {
-      return tag?.tag ? convertTag(tag.tag) : []
+      return tag?.tag ? createTag(tag.tag) : []
     }),
     authors: (authors ?? []).flatMap((author) => {
-      return author?.author ? convertAuthor(author.author) : []
+      return author?.author ? createAuthor(author.author) : []
     }),
   }
 

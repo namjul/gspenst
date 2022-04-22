@@ -1,8 +1,5 @@
-// https://github.com/ruizb/domain-modeling-ts/blob/master/method-2/implementation-and-types.ts
-
-import { z } from 'zod'
-import { ok, err, combineWithAllErrors } from 'neverthrow'
-import type { Split, Result } from '../types'
+import { z, ok, err, combineWithAllErrors } from '../shared-kernel'
+import type { Split, Result } from '../shared-kernel'
 import * as Errors from '../errors'
 import { resourceTypeSchema, resourceTypes } from './resource'
 import type { ResourceType } from './resource'

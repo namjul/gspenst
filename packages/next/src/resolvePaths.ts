@@ -1,7 +1,7 @@
 import path from 'path'
-import { ok, err, combine } from 'neverthrow'
+import { ok, err, combine } from './shared-kernel'
 import type { RoutingConfigResolved } from './domain/routes'
-import type { Entries, Result } from './types'
+import type { Entries, Result } from './shared-kernel'
 import type { Resource } from './domain/resource'
 import repository from './repository'
 import { compilePermalink } from './helpers'
@@ -27,15 +27,15 @@ async function resolveCollectionsPaths(routingConfig: RoutingConfigResolved) {
 
         const collectionPosts: Resource[] = []
         for (let len = postStack.length - 1; len >= 0; len -= 1) {
-          const resourceItem = postStack[len]
-          if (resourceItem) {
-            collectionPosts.push(resourceItem)
+          const resource = postStack[len]
+          if (resource) {
+            collectionPosts.push(resource)
             const isOwned = true // TODO filter using filter option `const isOwned = this.nql.queryJSON(resource)`
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (isOwned) {
-              paths.push(compilePermalink(config.permalink, resourceItem))
+              paths.push(compilePermalink(config.permalink, resource))
 
-              // Remove owned resourceItem
+              // Remove owned resource
               postStack.splice(len, 1)
             }
           }
@@ -92,8 +92,8 @@ export async function resolveTaxonomiesPaths(
 export async function resolvePagesPaths() {
   const pages = await repository.findAll('page')
   if (pages.isOk()) {
-    return pages.value.map((resourceItem) => {
-      return ok(`/${resourceItem.slug}`)
+    return pages.value.map((resource) => {
+      return ok(`/${resource.slug}`)
     })
   }
   return [err(pages.error)]

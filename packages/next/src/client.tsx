@@ -7,7 +7,8 @@ import { isValidElementType } from 'react-is'
 import DynamicTinaProvider from './TinaDynamicProvider'
 import getComponent from './componentRegistry'
 // import getHeaders from './getHeaders'
-import type { PageProps, /*Root,*/ Simplify } from './types'
+import type { PageProps } from './types'
+import type { /*Root,*/ Simplify } from './shared-kernel'
 import type { PageProps as InternalPageProps } from './controller'
 
 type ThemeComponent = React.ComponentType<PageProps>

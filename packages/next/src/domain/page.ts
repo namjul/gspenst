@@ -1,14 +1,13 @@
-import { z } from 'zod'
-import { ok, err } from 'neverthrow'
+import { ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { GetPage } from '../api'
 import type { Page as PageGenerated } from '../../.tina/__generated__/types'
-import type { Get, Result } from '../types'
-import { convert as convertAuthor } from './author'
-import { convert as convertTag } from './tag'
+import type { Get, Result } from '../shared-kernel'
+import { createAuthor } from './author'
+import { createTag } from './tag'
 import { postSchema } from './post'
 
-export const getPageSchema = z.custom<GetPage>(value => value)
+export const getPageSchema = z.custom<GetPage>((value) => value)
 
 export const resourceType = z.literal('page')
 
@@ -30,10 +29,10 @@ export function convert(
     id,
     ...restPageProps,
     tags: (tags ?? []).flatMap((tag) => {
-      return tag?.tag ? convertTag(tag.tag) : []
+      return tag?.tag ? createTag(tag.tag) : []
     }),
     authors: (authors ?? []).flatMap((author) => {
-      return author?.author ? convertAuthor(author.author) : []
+      return author?.author ? createAuthor(author.author) : []
     }),
   }
 

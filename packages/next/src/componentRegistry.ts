@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { ComponentType } from 'react'
-import type { LiteralUnion } from './types'
+import type { LiteralUnion } from './shared-kernel'
 
 // Inspiration:
 // https://docs.stackbit.com/conceptual-guides/components/registering/

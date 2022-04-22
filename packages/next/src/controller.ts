@@ -1,17 +1,13 @@
-import { ok, err, combine } from 'neverthrow'
 import type { Redirect } from 'next'
 import nql from '@tryghost/nql'
+import { ok, err, combine } from './shared-kernel'
 import type { RoutingContext } from './router'
 import type { DataQuery } from './domain/routes'
 import { absurd } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
-import type {
-  ThemeContextType,
-  Result,
-  Simplify,
-  AsyncReturnType,
-} from './types'
+import type { ThemeContextType } from './types'
+import type { Result, Simplify, AsyncReturnType } from './shared-kernel'
 import * as Errors from './errors'
 
 type Pagination = {
@@ -135,10 +131,8 @@ async function processQuery(query: DataQuery) {
     case 'browse':
       return (await repository.findAll(query.resourceType)).map((resources) => {
         return resources
-          .filter((resourceItem) => {
-            return query.filter
-              ? nql(query.filter).queryJSON(resourceItem)
-              : true
+          .filter((resource) => {
+            return query.filter ? nql(query.filter).queryJSON(resource) : true
           })
           .map(({ dataResult }) => dataResult)
       })

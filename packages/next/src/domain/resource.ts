@@ -1,7 +1,8 @@
-import { z } from 'zod'
 import { slugify } from '@tryghost/string'
-import type { Get } from '../types'
+import type { Get, Split, Result } from '../shared-kernel'
+import { idSchema, ok, err, z } from '../shared-kernel'
 import type { GetResourcesQuery } from '../../.tina/__generated__/types'
+import * as Errors from '../errors'
 import { getPostSchema, resourceType as resourceTypePost } from './post'
 import { getPageSchema, resourceType as resourceTypePage } from './page'
 import { getTagSchema, resourceType as resourceTypeTag } from './tag'
@@ -33,7 +34,7 @@ export const dynamicVariablesSchema = z
   .strict()
 
 const resourceBaseSchema = z.object({
-  id: z.string(), // TODO z.uuid()
+  id: idSchema,
   filename: z.string(),
   path: z.string(),
   relativePath: z.string(),
@@ -82,6 +83,35 @@ type ResourcesNode = Exclude<
   Get<GetResourcesQuery, 'getCollections[0].documents.edges[0].node'>,
   { __typename: 'ConfigDocument' }
 >
+
+export function createResource(
+  node: NonNullable<ResourcesNode>
+): Result<Resource> {
+  const {
+    sys: { filename, path: filepath, relativePath },
+  } = node
+
+  const dynamicVariables = generateDynamicVariables(node)
+
+  const [resourceType] = node.__typename
+    .toLowerCase()
+    .split('document') as Split<Lowercase<typeof node.__typename>, 'document'>
+
+  const idResult = idSchema.safeParse(node.id)
+
+  if (idResult.success) {
+    return ok({
+      id: idResult.data,
+      filename,
+      path: filepath,
+      resourceType,
+      relativePath,
+      ...dynamicVariables,
+    })
+  }
+
+  return err(Errors.other('createResource', idResult.error))
+}
 
 export function generateDynamicVariables(
   node: NonNullable<ResourcesNode>

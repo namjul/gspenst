@@ -2,12 +2,16 @@ import resolvePaths from './resolvePaths'
 import repository from './repository'
 import defaultRoutes from './defaultRoutes'
 import { parseRoutes } from './domain/routes'
+import { format } from './errors'
 
 jest.mock('../.tina/__generated__/types')
 jest.mock('./redis')
 
 beforeAll(async () => {
-  void (await repository.init())
+  const result = await repository.init()
+  if (result.isErr()) {
+    throw format(result.error)
+  }
 })
 
 describe('resolvePaths', () => {

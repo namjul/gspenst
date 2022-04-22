@@ -4,13 +4,10 @@ import debug from 'debug'
 import { pathToRegexp } from 'path-to-regexp'
 // import { permalinkToRegexp } from './helpers'; // TODO use this instead
 import type { Key } from 'path-to-regexp'
-import type {
-  RoutingContextType,
-  Entries,
-  Simplify,
-} from './types'
+import type { RoutingContextType } from './types'
+import type { Entries, Simplify } from './shared-kernel'
 import type { ResourceType, DynamicVariables } from './domain/resource'
-import type { Taxonomies } from './domain/taxonomy';
+import type { Taxonomies } from './domain/taxonomy'
 import type {
   RoutingConfigResolved,
   Collection,

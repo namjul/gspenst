@@ -1,24 +1,23 @@
-import { z } from 'zod'
-import { ok, err } from 'neverthrow'
+import { idSchema, ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { GetTag } from '../api'
-import type { Get, SetOptional, Result } from '../types'
+import type { Get, SetOptional, Result } from '../shared-kernel'
 import type { Tag as TagGenerated } from '../../.tina/__generated__/types'
 
-export const getTagSchema = z.custom<GetTag>(value => value)
+export const getTagSchema = z.custom<GetTag>((value) => value)
 
 export const resourceType = z.literal('tag')
 
 export const tagSchema = z
   .object({
-    id: z.string(), // TODO z.uuid()
+    id: idSchema,
     name: z.string(),
     date: z.string(),
     slug: z.string(),
   })
   .strict()
 
-export function convert(
+export function createTag(
   getTagDocument: SetOptional<Get<GetTag, 'data.getTagDocument'>, '__typename'>
 ): Result<Tag> {
   const {

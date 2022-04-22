@@ -1,10 +1,10 @@
-import { okAsync, errAsync, combine } from 'neverthrow'
+import { okAsync, errAsync, combine } from './shared-kernel'
 import * as api from './api'
 import db from './db'
 import { absurd } from './helpers'
 import type { ResourceType, Resource } from './domain/resource'
-import { generateDynamicVariables } from './domain/resource'
-import type { ResultAsync, WithRequired } from './types'
+import { createResource } from './domain/resource'
+import type { ID, WithRequired, ResultAsync } from './shared-kernel'
 import * as Errors from './errors'
 
 type RepoResultAsync<T> = ResultAsync<T>
@@ -21,70 +21,59 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
 >
 
 const repository = {
-  init() {
-    const result = combine([db.clear(), api.getResources()]).map((results) => {
-      return results.map((r) => {
-        if (r === 'OK') {
-          return r
-        }
+  async init() {
+    const clearResult = await db.clear()
 
-        const { getCollections: resources } = r.data
+    if (clearResult.isErr()) {
+      return clearResult
+    }
 
-        return resources.flatMap((resource) => {
-          return (resource.documents.edges ?? []).flatMap((connectionEdge) => {
-            if (connectionEdge?.node) {
-              const { node } = connectionEdge
-              const {
-                __typename,
-                id,
-                sys: { filename, path: filepath, relativePath },
-              } = node
+    const resourcesResult = await api.getResources()
 
-              if (__typename === 'ConfigDocument') {
-                return []
-              } else {
-                const dynamicVariables = generateDynamicVariables(node)
+    if (resourcesResult.isErr()) {
+      return resourcesResult
+    }
 
-                return this.set({
-                  id,
-                  filename,
-                  path: filepath,
-                  resourceType: resource.name as Exclude<
-                    ResourceType,
-                    'config'
-                  >,
-                  relativePath,
-                  ...dynamicVariables,
-                })
+    const result = resourcesResult.value.data.getCollections.flatMap(
+      (collection) => {
+        return (collection.documents.edges ?? []).flatMap((connectionEdge) => {
+          if (connectionEdge?.node) {
+            const { node } = connectionEdge
+            if (node.__typename === 'ConfigDocument') {
+              return []
+            } else {
+              const resourceResult = createResource(node)
+              if (resourceResult.isOk()) {
+                return this.set(resourceResult.value)
               }
+              return errAsync(resourceResult.error)
             }
-            return errAsync(Errors.other('Should not happen'))
-          })
+          }
+          return errAsync(Errors.other('Should not happen'))
         })
-      })
-    })
-
+      }
+    )
     // void (await this.getAll()) // TODO describe why doing this here
 
-    return result
+    return combine(result)
   },
-  set(resourceItem: Resource) {
-    return db.set<Resource>('resources', resourceItem.id, resourceItem)
+  set(resource: Resource) {
+    return db.set<Resource>('resources', String(resource.id), resource)
   },
 
   async get<T extends ID | ID[]>(id: T): Promise<GetValue<T>> {
     const ids = [id].flat()
 
-    const result = await db.get<Resource>('resources', ...ids)
+    const result = await db.get<Resource>('resources', ...ids.map(String))
 
     if (result.isOk()) {
       const resources = await Promise.all(
-        result.value.map(async (resourceItem) => {
-          if (resourceItem.dataResult) {
-            return okAsync(resourceItem as ResourceItemLoaded)
+        result.value.map(async (resource) => {
+          if (resource.dataResult) {
+            return okAsync(resource as ResourceItemLoaded)
           } else {
             const dataResult = await (async () => {
-              const { resourceType, relativePath } = resourceItem
+              const { resourceType, relativePath } = resource
               switch (resourceType) {
                 case 'page':
                   return api.getPage({ relativePath })
@@ -100,12 +89,11 @@ const repository = {
             })() // Immediately invoke the function
 
             if (dataResult.isErr()) {
-              const x = errAsync(dataResult.error)
-              return x
+              return errAsync(dataResult.error)
             }
-            resourceItem.dataResult = dataResult.value
+            resource.dataResult = dataResult.value
 
-            return okAsync(resourceItem as ResourceItemLoaded)
+            return okAsync(resource as ResourceItemLoaded)
           }
         })
       )
@@ -117,7 +105,7 @@ const repository = {
       const x = combine(resources)
       return x
 
-      // TODO save resourceItem with dataResult now set
+      // TODO save resource with dataResult now set
     } else {
       const x = errAsync(result.error)
       return x
@@ -129,7 +117,7 @@ const repository = {
     if (idsResult.isErr()) {
       return errAsync(idsResult.error)
     }
-    return this.get(idsResult.value)
+    return this.get(idsResult.value as unknown as ID[])
   },
 
   async find(
@@ -166,14 +154,14 @@ const repository = {
   },
 
   match<T extends Resource>(partialResourceItem: Partial<T>) {
-    return (resourceItem: T) =>
+    return (resource: T) =>
       (partialResourceItem.resourceType
-        ? partialResourceItem.resourceType === resourceItem.resourceType
+        ? partialResourceItem.resourceType === resource.resourceType
         : true) &&
       Object.entries(partialResourceItem)
         .map(([key, value]) => {
           return (
-            String(resourceItem[key as keyof typeof partialResourceItem]) ===
+            String(resource[key as keyof typeof partialResourceItem]) ===
             String(value)
           )
         })

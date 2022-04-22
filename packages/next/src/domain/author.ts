@@ -1,24 +1,23 @@
-import { z } from 'zod'
-import { ok, err } from 'neverthrow'
+import { idSchema, ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { GetAuthor } from '../api'
-import type { Get, SetOptional, Result } from '../types'
+import type { Get, SetOptional, Result } from '../shared-kernel'
 import type { Author as AuthorGenerated } from '../../.tina/__generated__/types'
 
-export const getAuthorSchema = z.custom<GetAuthor>(value => value)
+export const getAuthorSchema = z.custom<GetAuthor>((value) => value)
 
 export const resourceType = z.literal('author')
 
 export const authorSchema = z
   .object({
-    id: z.string(), // TODO z.uuid()
+    id: idSchema,
     name: z.string(),
     date: z.string(),
     slug: z.string(),
   })
   .strict()
 
-export function convert(
+export function createAuthor(
   getAuthorDocument: SetOptional<
     Get<GetAuthor, 'data.getAuthorDocument'>,
     '__typename'

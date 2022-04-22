@@ -1,7 +1,7 @@
 import { ResultAsync as ResultAsyncInternal } from 'neverthrow'
 import redis from './redis'
 
-import type { ResultAsync } from './types'
+import type { ResultAsync } from './shared-kernel'
 import * as Errors from './errors'
 
 type DBResultAsync<T> = ResultAsync<T>
