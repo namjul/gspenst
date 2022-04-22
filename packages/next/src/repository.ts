@@ -92,6 +92,7 @@ const repository = {
               return errAsync(dataResult.error)
             }
             resource.dataResult = dataResult.value
+            await this.set(resource)
 
             return okAsync(resource as ResourceItemLoaded)
           }
@@ -102,10 +103,7 @@ const repository = {
         return resources[0]!
       }
 
-      const x = combine(resources)
-      return x
-
-      // TODO save resource with dataResult now set
+      return combine(resources)
     } else {
       const x = errAsync(result.error)
       return x
