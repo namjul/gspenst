@@ -1,3 +1,9 @@
+---
+title: 'Home'
+slug: home
+date: '2021-07-03T20:30:00.000Z'
+---
+
 # Heading 1
 
 ## Heading 2

@@ -1,4 +1,5 @@
 ---
 name: Tag 2
-_template: tag
+slug: tag-2
+date: '2021-07-03T20:30:00.000Z'
 ---
