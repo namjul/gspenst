@@ -37,7 +37,7 @@ export function createAuthor(
   if (result.success) {
     return ok(result.data)
   } else {
-    return err(Errors.other('Convert Author', result.error))
+    return err(Errors.other('Create Author', result.error))
   }
 }
 

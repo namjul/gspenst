@@ -57,7 +57,7 @@ describe('repository', () => {
   })
 
   test('get multiple', async () => {
-    const result = await repository.get([3645825030 as ID, 57892423 as ID])
+    const result = await repository.get([1071642883 as ID, 2502649434 as ID])
     expect(result._unsafeUnwrap()).toHaveLength(2)
   })
 

@@ -16,10 +16,12 @@ export const postSchema = z
     date: z.string(),
     slug: z.string(),
     title: z.string(),
-    excerpt: z.string().optional(),
-    content: z.string(),
+    excerpt: z.custom().optional(),
+    content: z.custom(),
     tags: z.array(tagSchema),
+    primary_tag: z.string().optional(),
     authors: z.array(authorSchema),
+    primary_author: z.string().optional(),
   })
   .strict()
 
@@ -32,24 +34,42 @@ export function createPost(
 ): Result<Post> {
   const {
     id,
-    data: { __typename, tags, authors, ...restPostProps },
+    data: { __typename, tags: rawTags, authors: rawAuthors, ...restPostProps },
   } = getPostDocument
+
+  const tags = (rawTags ?? []).flatMap((tag) => {
+    if (tag?.tag) {
+      const tagResult = createTag(tag.tag)
+      if (tagResult.isOk()) {
+        return tagResult.value
+      }
+    }
+    return []
+  })
+
+  const authors = (rawAuthors ?? []).flatMap((author) => {
+    if (author?.author) {
+      const authorResult = createAuthor(author.author)
+      if (authorResult.isOk()) {
+        return authorResult.value
+      }
+    }
+    return []
+  })
 
   const post = {
     id,
     ...restPostProps,
-    tags: (tags ?? []).flatMap((tag) => {
-      return tag?.tag ? createTag(tag.tag) : []
-    }),
-    authors: (authors ?? []).flatMap((author) => {
-      return author?.author ? createAuthor(author.author) : []
-    }),
+    tags,
+    authors,
+    primary_tag: tags[0],
+    primary_author: authors[0],
   }
 
   const parsedPostResult = postSchema.safeParse(post)
   if (parsedPostResult.success) {
     return ok(parsedPostResult.data)
   } else {
-    return err(Errors.other('Convert Post', parsedPostResult.error))
+    return err(Errors.other('Create Post', parsedPostResult.error))
   }
 }

@@ -7,3 +7,4 @@ out
 
 # Ignore Tinacms artifacts
 __generated__/
+!__generated__/__mocks__

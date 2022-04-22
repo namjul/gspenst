@@ -3,6 +3,7 @@ import { ok, err, combine } from './shared-kernel'
 import type { RoutingConfigResolved } from './domain/routes'
 import type { Entries, Result } from './shared-kernel'
 import type { Resource } from './domain/resource'
+import type { Taxonomies } from './domain/taxonomy'
 import repository from './repository'
 import { compilePermalink } from './helpers'
 
@@ -68,23 +69,25 @@ export async function resolveTaxonomiesPaths(
 
   return (
     await Promise.all(
-      taxonomies.map(async ([key, permalink]) => {
-        const taxonomiesResult = await repository.findAll(key)
-        if (taxonomiesResult.isOk()) {
-          return taxonomiesResult.value.flatMap((taxonomy) => {
-            return [
-              compilePermalink(permalink!, taxonomy),
-              ...Array.from(
-                { length: taxonomiesResult.value.length / POST_PER_PAGE },
-                (_, i) => {
-                  return ok(path.join(permalink!, 'page', String(i + 1)))
-                }
-              ),
-            ]
-          })
+      taxonomies.map(
+        async ([key, permalink]: [Taxonomies, string | undefined]) => {
+          const taxonomiesResult = await repository.findAll(key)
+          if (taxonomiesResult.isOk()) {
+            return taxonomiesResult.value.flatMap((taxonomy) => {
+              return [
+                compilePermalink(permalink!, taxonomy),
+                ...Array.from(
+                  { length: taxonomiesResult.value.length / POST_PER_PAGE },
+                  (_, i) => {
+                    return ok(path.join(permalink!, 'page', String(i + 1)))
+                  }
+                ),
+              ]
+            })
+          }
+          return [err(taxonomiesResult.error)]
         }
-        return [err(taxonomiesResult.error)]
-      })
+      )
     )
   ).flat()
 }

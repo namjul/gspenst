@@ -17,7 +17,7 @@ type Page = z.infer<typeof pageSchema>
 
 export type { Page, GetPage, PageGenerated }
 
-export function convert(
+export function createPage(
   getPageDocument: Get<GetPage, 'data.getPageDocument'>
 ): Result<Page> {
   const {
@@ -40,6 +40,6 @@ export function convert(
   if (parsedPageResult.success) {
     return ok(parsedPageResult.data)
   } else {
-    return err(Errors.other('Convert Page', parsedPageResult.error))
+    return err(Errors.other('Create Page', parsedPageResult.error))
   }
 }

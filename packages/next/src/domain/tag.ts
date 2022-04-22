@@ -34,7 +34,7 @@ export function createTag(
   if (result.success) {
     return ok(result.data)
   } else {
-    return err(Errors.other('Convert Tag', result.error))
+    return err(Errors.other('Create Tag', result.error))
   }
 }
 

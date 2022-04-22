@@ -27,7 +27,11 @@ export {
 export { z }
 
 export type ID = Opaque<number, 'ID'>
-export const idSchema = z.string().transform((value) => stringHash(value) as ID)
+export const idSchema = z
+  .union([z.string(), z.number()])
+  .transform(
+    (value) => (typeof value === 'string' ? stringHash(value) : value) as ID
+  )
 
 export type Result<T> =
   | Ok<T, GspenstError>

@@ -1,6 +1,5 @@
 import path from 'path'
 import { slugify } from '@tryghost/string'
-import debug from 'debug'
 import { pathToRegexp } from 'path-to-regexp'
 // import { permalinkToRegexp } from './helpers'; // TODO use this instead
 import type { Key } from 'path-to-regexp'
@@ -16,8 +15,6 @@ import type {
   DataQuery,
   QueryFilterOptions,
 } from './domain/routes'
-
-const log = debug('@gspenst/next:routing')
 
 export type Redirect =
   | {
@@ -451,8 +448,6 @@ export class RouterManager {
 
     // mount routers into a chain of responsibilities
     this.routers.reduce((acc, router) => acc.mount(router))
-
-    log('Routers instantiated')
   }
 
   async handle(params: string[] | string = []): Promise<RoutingContext[]> {

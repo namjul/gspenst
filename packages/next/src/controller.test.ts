@@ -82,7 +82,23 @@ describe('controller', () => {
         }),
       })
     })
-    test.todo('filter')
+    test('filter', async () => {
+      const result = await controller([
+        {
+          type,
+          name: 'index',
+          request: {
+            path: '/',
+          },
+          data: {},
+          templates: [],
+          filter: 'slug:8th-post',
+          limit: undefined,
+          order: undefined,
+        },
+      ])
+      expect(result).toHaveProperty('props.value.data.posts.length', 1)
+    })
     test.todo('a post is only in a single collection')
     test('with data', async () => {
       const result = await controller([
@@ -109,7 +125,7 @@ describe('controller', () => {
         props: ok({
           context: 'index',
           data: {
-            page: { data: {}, variables: { relativePath: 'home.md' } },
+            page: { data: {} },
           },
         }),
       })
@@ -118,7 +134,23 @@ describe('controller', () => {
   describe('channel', () => {
     const type = 'channel'
     test.todo('simple')
-    test.todo('filter')
+    test('filter', async () => {
+      const result = await controller([
+        {
+          type,
+          name: 'index',
+          request: {
+            path: '/',
+          },
+          data: {},
+          templates: [],
+          filter: 'slug:8th-post',
+          limit: undefined,
+          order: undefined,
+        },
+      ])
+      expect(result).toHaveProperty('props.value.data.posts.length', 1)
+    })
     test.todo('posts can be in multiple channels')
     test('with data', async () => {
       const result = await controller([
@@ -145,7 +177,7 @@ describe('controller', () => {
         props: ok({
           context: 'index',
           data: {
-            page: { data: {}, variables: { relativePath: 'home.md' } },
+            page: { data: {} },
           },
         }),
       })

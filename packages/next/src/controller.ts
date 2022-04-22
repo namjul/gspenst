@@ -3,6 +3,10 @@ import nql from '@tryghost/nql'
 import { ok, err, combine } from './shared-kernel'
 import type { RoutingContext } from './router'
 import type { DataQuery } from './domain/routes'
+import { createPost } from './domain/post'
+import { createPage } from './domain/page'
+import { createAuthor } from './domain/author'
+import { createTag } from './domain/tag'
 import { absurd } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
@@ -116,29 +120,96 @@ type ProcessQueryReturnType = ExtractGeneric<
   AsyncReturnType<typeof processQuery>
 >
 
+const EXPANSIONS = [
+  {
+    key: 'author',
+    replacement: 'authors.slug',
+  },
+  {
+    key: 'tags',
+    replacement: 'tags.slug',
+  },
+  {
+    key: 'tag',
+    replacement: 'tags.slug',
+  },
+  {
+    key: 'authors',
+    replacement: 'authors.slug',
+  },
+  {
+    key: 'primary_tag',
+    replacement: 'primary_tag.slug',
+  },
+  {
+    key: 'primary_author',
+    replacement: 'primary_author.slug',
+  },
+]
+
 async function processQuery(query: DataQuery) {
   const { type } = query
 
-  switch (type) {
-    case 'read':
-      return (
-        await repository.find({
+  const result = await (async () => {
+    switch (type) {
+      case 'read':
+        return repository.find({
           slug: query.slug,
         })
-      ).map(({ dataResult }) => {
-        return dataResult
-      })
-    case 'browse':
-      return (await repository.findAll(query.resourceType)).map((resources) => {
-        return resources
-          .filter((resource) => {
-            return query.filter ? nql(query.filter).queryJSON(resource) : true
-          })
-          .map(({ dataResult }) => dataResult)
-      })
-    default:
-      return absurd(type)
-  }
+      case 'browse':
+        return (await repository.findAll(query.resourceType)).map(
+          (resources) => {
+            if (!query.filter) {
+              return resources
+            }
+            const filter = nql(query.filter, {
+              expansions: EXPANSIONS,
+            }).queryJSON
+
+            return resources.filter(({ dataResult }) => {
+              if (dataResult?.data) {
+                if ('getPostDocument' in dataResult.data) {
+                  const postResult = createPost(dataResult.data.getPostDocument)
+                  if (postResult.isOk()) {
+                    return filter(postResult.value)
+                  }
+                }
+                if ('getPageDocument' in dataResult.data) {
+                  const pageResult = createPage(dataResult.data.getPageDocument)
+                  if (pageResult.isOk()) {
+                    return filter(pageResult)
+                  }
+                }
+                if ('getAuthorDocument' in dataResult.data) {
+                  const authorResult = createAuthor(
+                    dataResult.data.getAuthorDocument
+                  )
+                  if (authorResult.isOk()) {
+                    return filter(authorResult)
+                  }
+                }
+                if ('getTagDocument' in dataResult.data) {
+                  const tagResult = createTag(dataResult.data.getTagDocument)
+                  if (tagResult.isOk()) {
+                    return filter(tagResult)
+                  }
+                }
+              }
+
+              return true
+            })
+          }
+        )
+      default:
+        return absurd(type)
+    }
+  })() // Immediately invoke the function
+
+  return result.map((queryResult) =>
+    Array.isArray(queryResult)
+      ? queryResult.map(({ dataResult }) => dataResult)
+      : queryResult.dataResult
+  )
 }
 
 async function entryController(
