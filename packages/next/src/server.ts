@@ -2,7 +2,7 @@ import debug from 'debug'
 import { deserializeError, isErrorLike } from 'serialize-error'
 import type { ErrorLike } from 'serialize-error'
 import type { GetStaticProps, GetStaticPaths } from 'next'
-import { RouterManager } from './router'
+import { routerManager } from './router'
 import type { RoutingConfigResolved } from './domain/routes'
 import type { PageProps } from './controller'
 import { controller } from './controller'
@@ -49,7 +49,7 @@ export const getStaticProps =
 
       log('Page [...slug].js getStaticProps')
 
-      const router = new RouterManager(routingConfig)
+      const router = routerManager(routingConfig)
 
       const controllerResult = controller(
         router.handle(params?.[routingParameter])

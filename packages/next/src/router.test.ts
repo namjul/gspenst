@@ -1,9 +1,9 @@
 import { ok } from './shared-kernel'
-import { RouterManager } from './router'
+import { routerManager } from './router'
 
 describe('routing mapping', () => {
   test('empty config', () => {
-    const router = new RouterManager({})
+    const router = routerManager({})
     expect(router.handle('about')).toEqual(
       ok([
         undefined,
@@ -23,7 +23,7 @@ describe('routing mapping', () => {
   })
 
   test('taxonomies', () => {
-    const router = new RouterManager({
+    const router = routerManager({
       taxonomies: {
         tag: '/category-1/:slug',
         author: '/category-2/:slug',
@@ -54,7 +54,7 @@ describe('routing mapping', () => {
   })
 
   test('paging', () => {
-    const router = new RouterManager({
+    const router = routerManager({
       collections: {
         '/': {
           permalink: '/:slug',
@@ -114,7 +114,7 @@ describe('routing mapping', () => {
     )
   })
   test('redirect route', () => {
-    const router = new RouterManager({
+    const router = routerManager({
       routes: {
         '/about/team': {
           template: 'team',

@@ -428,73 +428,72 @@ class StaticPagesRouter extends ParentRouter {
   }
 }
 
-export class RouterManager {
-  config: RoutingConfigResolved
-  router: ParentRouter
-  routers: ParentRouter[] = []
-  constructor(routingConfig: RoutingConfigResolved) {
-    this.config = routingConfig
-    this.router = new ParentRouter('SiteRouter')
-    this.routers.push(this.router)
+export const routerManager = (routingConfig: RoutingConfigResolved) => {
+  const config: RoutingConfigResolved = routingConfig
+  const router: ParentRouter = new ParentRouter('SiteRouter')
+  const routers: ParentRouter[] = []
 
-    /**
-     * 1. Admin: Strongest inbuilt features, which you can never override.
-     * 2. Static Routes: Very strong, because you can override any urls and redirect to a static route.
-     * 3. Taxonomies: Stronger than collections, because it's an inbuilt feature.
-     * 4. Collections
-     * 5. Static Pages: Weaker than collections, because we first try to find a post slug and fallback to lookup a static page.
-     */
+  routers.push(router)
 
-    // 1.
-    const adminRouter = new AdminRouter()
-    this.routers.push(adminRouter)
+  /**
+   * 1. Admin: Strongest inbuilt features, which you can never override.
+   * 2. Static Routes: Very strong, because you can override any urls and redirect to a static route.
+   * 3. Taxonomies: Stronger than collections, because it's an inbuilt feature.
+   * 4. Collections
+   * 5. Static Pages: Weaker than collections, because we first try to find a post slug and fallback to lookup a static page.
+   */
 
-    // 2.
-    const routes = Object.entries(this.config.routes ?? {}) as Entries<
-      typeof this.config.routes
-    >
-    routes.forEach(([key, value]) => {
-      const staticRoutesRouter = new StaticRoutesRouter(key, value)
-      this.routers.push(staticRoutesRouter)
-    })
+  // 1.
+  const adminRouter = new AdminRouter()
+  routers.push(adminRouter)
 
-    // 3.
-    const collections = Object.entries(
-      this.config.collections ?? {}
-    ) as Entries<typeof this.config.collections>
-    collections.forEach(([key, value]) => {
-      const collectionRouter = new CollectionRouter(key, value)
-      this.routers.push(collectionRouter)
-    })
+  // 2.
+  const routes = Object.entries(config.routes ?? {}) as Entries<
+    typeof config.routes
+  >
+  routes.forEach(([key, value]) => {
+    const staticRoutesRouter = new StaticRoutesRouter(key, value)
+    routers.push(staticRoutesRouter)
+  })
 
-    // 4.
-    const taxonomies = Object.entries(this.config.taxonomies ?? {}) as Entries<
-      typeof this.config.taxonomies
-    >
-    taxonomies.forEach(([key, permalink]) => {
-      const taxonomyRouter = new TaxonomyRouter(key, permalink as string)
-      this.routers.push(taxonomyRouter)
-    })
+  // 3.
+  const collections = Object.entries(config.collections ?? {}) as Entries<
+    typeof config.collections
+  >
+  collections.forEach(([key, value]) => {
+    const collectionRouter = new CollectionRouter(key, value)
+    routers.push(collectionRouter)
+  })
 
-    // 5.
-    const staticPagesRouter = new StaticPagesRouter()
-    this.routers.push(staticPagesRouter)
+  // 4.
+  const taxonomies = Object.entries(config.taxonomies ?? {}) as Entries<
+    typeof config.taxonomies
+  >
+  taxonomies.forEach(([key, permalink]) => {
+    const taxonomyRouter = new TaxonomyRouter(key, permalink as string)
+    routers.push(taxonomyRouter)
+  })
 
-    // mount routers into a chain of responsibilities
-    this.routers.reduce((acc, router) => acc.mount(router))
-  }
+  // 5.
+  const staticPagesRouter = new StaticPagesRouter()
+  routers.push(staticPagesRouter)
 
-  handle(
-    params: string[] | string = []
-  ): Result<Option<RoutingContext>> | Result<Option<RoutingContext>[]> {
-    if (params) {
-      const request = `/${[params].flat().join('/')}/`
-      const requestSlugified = `/${[params].flat().map(slugify).join('/')}/`
-      if (request !== requestSlugified) {
-        return ok(this.router.createRedirectContext(requestSlugified))
+  // mount routers into a chain of responsibilities
+  routers.reduce((acc, _router) => acc.mount(_router))
+
+  return {
+    handle(
+      params: string[] | string = []
+    ): Result<Option<RoutingContext>> | Result<Option<RoutingContext>[]> {
+      if (params) {
+        const request = `/${[params].flat().join('/')}/`
+        const requestSlugified = `/${[params].flat().map(slugify).join('/')}/`
+        if (request !== requestSlugified) {
+          return ok(router.createRedirectContext(requestSlugified))
+        }
+        return combine(router.handle(request, [], routers))
       }
-      return combine(this.router.handle(request, [], this.routers))
-    }
-    return ok(undefined)
+      return ok(undefined)
+    },
   }
 }
