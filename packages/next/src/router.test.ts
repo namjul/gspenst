@@ -1,9 +1,9 @@
 import { RouterManager } from './router'
 
 describe('routing mapping', () => {
-  test('empty config', async () => {
+  test('empty config', () => {
     const router = new RouterManager({})
-    expect(await router.handle('about')).toEqual([
+    expect(router.handle('about')).toEqual([
       {
         type: 'entry',
         resourceType: 'page',
@@ -18,20 +18,20 @@ describe('routing mapping', () => {
     ])
   })
 
-  test('taxonomies', async () => {
+  test('taxonomies', () => {
     const router = new RouterManager({
       taxonomies: {
         tag: '/category-1/:slug',
         author: '/category-2/:slug',
       },
     })
-    expect(await router.handle(['category-2', 'pedro'])).toEqual([
+    expect(router.handle(['category-2', 'pedro'])).toEqual([
       {
         type: 'channel',
         name: 'author',
         templates: [],
         data: undefined,
-        filter: "tags:'pedro'+tags.visibility:public",
+        filter: "tags:'pedro'",
         limit: undefined,
         order: undefined,
         request: {
@@ -44,7 +44,7 @@ describe('routing mapping', () => {
     ])
   })
 
-  test('paging', async () => {
+  test('paging', () => {
     const router = new RouterManager({
       collections: {
         '/': {
@@ -59,7 +59,7 @@ describe('routing mapping', () => {
         author: '/author/:slug',
       },
     })
-    expect(await router.handle(['page', '1'])).toEqual([
+    expect(router.handle(['page', '1'])).toEqual([
       {
         type: 'collection',
         name: 'index',
@@ -73,13 +73,13 @@ describe('routing mapping', () => {
         },
       },
     ])
-    expect(await router.handle(['author', 'pedro', 'page', '1'])).toEqual([
+    expect(router.handle(['author', 'pedro', 'page', '1'])).toEqual([
       {
         type: 'channel',
         name: 'author',
         data: undefined,
         templates: [],
-        filter: "tags:'pedro'+tags.visibility:public",
+        filter: "tags:'pedro'",
         limit: undefined,
         order: undefined,
         request: {
@@ -92,7 +92,7 @@ describe('routing mapping', () => {
       },
     ])
   })
-  test('redirect route', async () => {
+  test('redirect route', () => {
     const router = new RouterManager({
       routes: {
         '/about/team': {
@@ -146,7 +146,7 @@ describe('routing mapping', () => {
         author: '/author/:slug',
       },
     })
-    expect(await router.handle(['about', 'team'])).toMatchObject([
+    expect(router.handle(['about', 'team'])).toMatchObject([
       {
         type: 'custom',
         request: {
@@ -155,7 +155,7 @@ describe('routing mapping', () => {
         templates: ['team'],
       },
     ])
-    expect(await router.handle(['about'])).toEqual([
+    expect(router.handle(['about'])).toEqual([
       {
         request: {
           path: '/about/',
@@ -173,7 +173,7 @@ describe('routing mapping', () => {
         statusCode: 301,
       },
     ])
-    expect(await router.handle(['4th-post'])).toEqual([
+    expect(router.handle(['4th-post'])).toEqual([
       {
         type: 'redirect',
         destination: '/about/team',
@@ -191,7 +191,7 @@ describe('routing mapping', () => {
         type: 'entry',
       },
     ])
-    expect(await router.handle(['home'])).toEqual([
+    expect(router.handle(['home'])).toEqual([
       {
         request: {
           path: '/home/',
@@ -209,14 +209,14 @@ describe('routing mapping', () => {
         statusCode: 301,
       },
     ])
-    expect(await router.handle(['author', 'pedro'])).toEqual([
+    expect(router.handle(['author', 'pedro'])).toEqual([
       {
         type: 'redirect',
         destination: '/about/team',
         statusCode: 301,
       },
     ])
-    expect(await router.handle(['5th-post'])).toEqual([
+    expect(router.handle(['5th-post'])).toEqual([
       {
         request: {
           path: '/5th-post/',

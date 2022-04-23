@@ -51,7 +51,7 @@ export const getStaticProps =
 
       const router = new RouterManager(routingConfig)
 
-      const routingProperties = await router.handle(params?.[routingParameter])
+      const routingProperties = router.handle(params?.[routingParameter])
 
       const result = await controller(routingProperties)
 

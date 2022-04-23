@@ -92,11 +92,11 @@ class ParentRouter {
     return router
   }
 
-  async handle(
+  handle(
     request: string,
     contexts: RoutingContext[],
     routers: ParentRouter[]
-  ): Promise<RoutingContext[]> {
+  ): RoutingContext[] {
     if (this.nextRouter) {
       return this.nextRouter.handle(request, contexts, routers)
     }
@@ -174,11 +174,7 @@ class AdminRouter extends ParentRouter {
     super('AdminRouter')
     this.routeRegExp = pathToRegexp('/admin')
   }
-  async handle(
-    request: string,
-    context: RoutingContext[],
-    routers: ParentRouter[]
-  ) {
+  handle(request: string, context: RoutingContext[], routers: ParentRouter[]) {
     const [match] = this.routeRegExp.exec(request) ?? []
 
     if (match) {
@@ -199,11 +195,7 @@ class StaticRoutesRouter extends ParentRouter {
     this.config = config
     this.routeRegExp = pathToRegexp(this.route)
   }
-  async handle(
-    request: string,
-    contexts: RoutingContext[],
-    routers: ParentRouter[]
-  ) {
+  handle(request: string, contexts: RoutingContext[], routers: ParentRouter[]) {
     const [match] = this.routeRegExp.exec(request) ?? []
 
     if (match) {
@@ -235,11 +227,7 @@ class TaxonomyRouter extends ParentRouter {
       this.keys
     )
   }
-  async handle(
-    request: string,
-    contexts: RoutingContext[],
-    routers: ParentRouter[]
-  ) {
+  handle(request: string, contexts: RoutingContext[], routers: ParentRouter[]) {
     const [permalinkMatch, ...paramKeys] =
       this.permalinkRegExp.exec(request) ?? []
 
@@ -270,7 +258,7 @@ class TaxonomyRouter extends ParentRouter {
       },
       templates: [],
       data: this.data?.query,
-      filter: `tags:'${params?.slug ?? '%s'}'+tags.visibility:public`,
+      filter: `tags:'${params?.slug ?? '%s'}'`,
       limit: undefined,
       order: undefined,
     }
@@ -297,11 +285,7 @@ class CollectionRouter extends ParentRouter {
       path.join(this.route, 'page', ':page(\\d+)')
     )
   }
-  async handle(
-    request: string,
-    contexts: RoutingContext[],
-    routers: ParentRouter[]
-  ) {
+  handle(request: string, contexts: RoutingContext[], routers: ParentRouter[]) {
     const [routeMatch] = this.routeRegExp.exec(request) ?? []
 
     if (routeMatch) {
@@ -361,11 +345,7 @@ class StaticPagesRouter extends ParentRouter {
     super('StaticPagesRouter')
     this.routeRegExp = pathToRegexp('/:slug/')
   }
-  async handle(
-    request: string,
-    contexts: RoutingContext[],
-    routers: ParentRouter[]
-  ) {
+  handle(request: string, contexts: RoutingContext[], routers: ParentRouter[]) {
     const [match, slug] = this.routeRegExp.exec(request) ?? []
 
     if (match && slug) {
@@ -450,7 +430,7 @@ export class RouterManager {
     this.routers.reduce((acc, router) => acc.mount(router))
   }
 
-  async handle(params: string[] | string = []): Promise<RoutingContext[]> {
+  handle(params: string[] | string = []): RoutingContext[] {
     if (params) {
       const request = `/${[params].flat().join('/')}/`
       const requestSlugified = `/${[params].flat().map(slugify).join('/')}/`

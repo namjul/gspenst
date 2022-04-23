@@ -15,8 +15,7 @@ beforeAll(async () => {
 
 describe('repository', () => {
   test('init', async () => {
-    const result = await repository.init()
-    expect(result.isOk()).toBe(true)
+    expect((await repository.init())._unsafeUnwrap()).toHaveLength(17)
   })
 
   test('set', async () => {
@@ -53,12 +52,13 @@ describe('repository', () => {
       primary_author: 'all',
     }
     const result = await repository.get(id)
-    expect(result).toMatchObject(ok(resource))
+    expect(result._unsafeUnwrap()).toMatchObject(ok(resource))
   })
 
   test('get multiple', async () => {
     const result = await repository.get([1071642883 as ID, 2502649434 as ID])
     expect(result._unsafeUnwrap()).toHaveLength(2)
+    expect(result._unsafeUnwrap()[0]).toMatchObject({ id: 1071642883 })
   })
 
   test('getAll', async () => {

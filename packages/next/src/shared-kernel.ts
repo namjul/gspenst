@@ -33,15 +33,10 @@ export const idSchema = z
     (value) => (typeof value === 'string' ? stringHash(value) : value) as ID
   )
 
-export type Result<T> =
-  | Ok<T, GspenstError>
-  | Ok<T, never>
-  | Err<T, GspenstError>
-  | Err<never, GspenstError>
+export type Result<T> = Ok<T, GspenstError> | Err<never, GspenstError>
 export type ResultAsync<T> = ResultAsyncInner<T, GspenstError>
 export type Dict<T = any> = Record<string, T>
 export type Unpacked<T> = T extends Array<infer U> ? U : T
-export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
 export type {
   Ok,
   Err,

@@ -11,7 +11,7 @@ export const getPageSchema = z.custom<GetPage>((value) => value)
 
 export const resourceType = z.literal('page')
 
-const pageSchema = z.object({}).merge(postSchema).strict()
+const pageSchema = z.object({}).strict().merge(postSchema)
 
 type Page = z.infer<typeof pageSchema>
 

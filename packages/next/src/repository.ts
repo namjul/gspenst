@@ -4,75 +4,74 @@ import db from './db'
 import { absurd } from './helpers'
 import type { ResourceType, Resource } from './domain/resource'
 import { createResource } from './domain/resource'
-import type { ID, WithRequired, ResultAsync } from './shared-kernel'
+import type { ID, ResultAsync } from './shared-kernel'
 import * as Errors from './errors'
 
 type RepoResultAsync<T> = ResultAsync<T>
 
-type ResourceItemLoaded = WithRequired<Resource, 'dataResult'>
 type GetValue<T extends ID | ID[]> = T extends ID[]
-  ? RepoResultAsync<ResourceItemLoaded[]>
-  : RepoResultAsync<ResourceItemLoaded>
+  ? RepoResultAsync<Resource[]>
+  : RepoResultAsync<Resource>
 
 type FindAllValue<T extends ResourceType> = RepoResultAsync<
   (T extends null | undefined
-    ? ResourceItemLoaded
-    : Extract<ResourceItemLoaded, { resourceType: T }>)[]
+    ? Resource
+    : Extract<Resource, { resourceType: T }>)[]
 >
 
 const repository = {
-  async init() {
-    const clearResult = await db.clear()
-
-    if (clearResult.isErr()) {
-      return clearResult
-    }
-
-    const resourcesResult = await api.getResources()
-
-    if (resourcesResult.isErr()) {
-      return resourcesResult
-    }
-
-    const result = resourcesResult.value.data.getCollections.flatMap(
-      (collection) => {
-        return (collection.documents.edges ?? []).flatMap((connectionEdge) => {
-          if (connectionEdge?.node) {
-            const { node } = connectionEdge
-            if (node.__typename === 'ConfigDocument') {
-              return []
-            } else {
-              const resourceResult = createResource(node)
-              if (resourceResult.isOk()) {
-                return this.set(resourceResult.value)
-              }
-              return errAsync(resourceResult.error)
-            }
-          }
-          return errAsync(Errors.other('Should not happen'))
-        })
-      }
-    )
+  init() {
     // void (await this.getAll()) // TODO describe why doing this here
+    return combine([db.clear(), api.getResources()]).andThen((results) => {
+      const result = combine(
+        results.flatMap((r) => {
+          if (r === 'OK') {
+            return []
+          } else {
+            const e = r.data.getCollections.flatMap((collection) => {
+              return (collection.documents.edges ?? []).flatMap(
+                (connectionEdge) => {
+                  if (connectionEdge?.node) {
+                    const { node } = connectionEdge
+                    if (node.__typename === 'ConfigDocument') {
+                      return []
+                    } else {
+                      const resourceResult = createResource(node)
+                      if (resourceResult.isOk()) {
+                        return this.set(resourceResult.value).map(
+                          () => resourceResult
+                        )
+                      }
+                      return errAsync(resourceResult.error)
+                    }
+                  }
+                  return errAsync(Errors.other('Should not happen'))
+                }
+              )
+            })
+            return e
+          }
+        })
+      )
 
-    return combine(result)
+      return result
+    })
   },
   set(resource: Resource) {
     return db.set<Resource>('resources', String(resource.id), resource)
   },
 
-  async get<T extends ID | ID[]>(id: T): Promise<GetValue<T>> {
+  get<T extends ID | ID[]>(id: T): GetValue<T> {
     const ids = [id].flat()
 
-    const result = await db.get<Resource>('resources', ...ids.map(String))
-
-    if (result.isOk()) {
-      const resources = await Promise.all(
-        result.value.map(async (resource) => {
+    const result = db
+      .get<Resource>('resources', ...ids.map(String))
+      .andThen((resources) => {
+        const x = resources.map((resource) => {
           if (resource.dataResult) {
-            return okAsync(resource as ResourceItemLoaded)
+            return okAsync(resource)
           } else {
-            const dataResult = await (async () => {
+            const dataResultResult = (() => {
               const { resourceType, relativePath } = resource
               switch (resourceType) {
                 case 'page':
@@ -88,42 +87,37 @@ const repository = {
               }
             })() // Immediately invoke the function
 
-            if (dataResult.isErr()) {
-              return errAsync(dataResult.error)
-            }
-            resource.dataResult = dataResult.value
-            await this.set(resource)
-
-            return okAsync(resource as ResourceItemLoaded)
+            // TODO rename `dataResult` field into `data`
+            return dataResultResult
+              .map((dataResult) => {
+                resource.dataResult = dataResult
+                return this.set(resource).andThen(() => okAsync(resource))
+              })
+              .andThen((resourceResult) => resourceResult)
           }
         })
-      )
 
-      if (ids.length === 1) {
-        return resources[0]!
-      }
+        return combine(x)
+      })
+      .map((e) => {
+        if (ids.length === 1) {
+          return okAsync(e[0])
+        }
+        return e
+      })
 
-      return combine(resources)
-    } else {
-      const x = errAsync(result.error)
-      return x
-    }
+    return result as GetValue<T>
   },
 
-  async getAll() {
-    const idsResult = await db.keys('resources')
-    if (idsResult.isErr()) {
-      return errAsync(idsResult.error)
-    }
-    return this.get(idsResult.value as unknown as ID[])
+  getAll() {
+    return db.keys('resources').andThen((idsResult) => {
+      return this.get(idsResult as unknown as ID[])
+    })
   },
 
-  async find(
-    partialResourceItem: Partial<Resource>
-  ): Promise<RepoResultAsync<ResourceItemLoaded>> {
-    const resources = await this.getAll()
-    if (resources.isOk()) {
-      const found = resources.value.find(this.match(partialResourceItem))
+  find(partialResourceItem: Partial<Resource>) {
+    return this.getAll().andThen((resources) => {
+      const found = resources.find(this.match(partialResourceItem))
       return found
         ? okAsync(found)
         : errAsync(
@@ -131,24 +125,19 @@ const repository = {
               `Repo: ${JSON.stringify(partialResourceItem, null, 2)}`
             )
           )
-    }
-    return errAsync(resources.error)
+    })
   },
 
-  async findAll<T extends ResourceType>(
-    resourceType?: T
-  ): Promise<FindAllValue<T>> {
-    const resources = await this.getAll()
-    if (resources.isOk()) {
+  findAll<T extends ResourceType>(resourceType?: T): FindAllValue<T> {
+    return this.getAll().andThen((resources) => {
       if (resourceType) {
-        const found = Object.values(resources.value).filter(
+        const found = Object.values(resources).filter(
           this.match({ resourceType })
         )
         return okAsync(found) as FindAllValue<T>
       }
-      return okAsync(resources.value) as FindAllValue<T>
-    }
-    return errAsync(resources.error) as FindAllValue<T>
+      return okAsync(resources) as FindAllValue<T>
+    })
   },
 
   match<T extends Resource>(partialResourceItem: Partial<T>) {

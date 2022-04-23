@@ -42,3 +42,5 @@ export function ensureString(value: unknown): asserts value is string {
     throw new Error("Value isn't a string type")
   }
 }
+
+export const do_ = <T>(f: () => T): T => f()

@@ -19,9 +19,9 @@ export const postSchema = z
     excerpt: z.custom().optional(),
     content: z.custom(),
     tags: z.array(tagSchema),
-    primary_tag: z.string().optional(),
+    primary_tag: tagSchema.optional(),
     authors: z.array(authorSchema),
-    primary_author: z.string().optional(),
+    primary_author: authorSchema.optional(),
   })
   .strict()
 

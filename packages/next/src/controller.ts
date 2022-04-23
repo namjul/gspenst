@@ -1,6 +1,6 @@
 import type { Redirect } from 'next'
 import nql from '@tryghost/nql'
-import { ok, err, combine } from './shared-kernel'
+import { ok, err, combine, okAsync } from './shared-kernel'
 import type { RoutingContext } from './router'
 import type { DataQuery } from './domain/routes'
 import { createPost } from './domain/post'
@@ -11,8 +11,9 @@ import { absurd } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
 import type { ThemeContextType } from './types'
-import type { Result, Simplify, AsyncReturnType } from './shared-kernel'
+import type { Result, ResultAsync, Simplify } from './shared-kernel'
 import * as Errors from './errors'
+import { do_ } from './utils'
 
 type Pagination = {
   page: number // the current page number
@@ -114,11 +115,7 @@ export type PageProps =
   | InternalPageProps
 
 type ControllerResult<T> = Result<T>
-
-type ExtractGeneric<Type> = Type extends Result<infer X> ? X : never
-type ProcessQueryReturnType = ExtractGeneric<
-  AsyncReturnType<typeof processQuery>
->
+type ControllerResultAsync<T> = ResultAsync<T>
 
 const EXPANSIONS = [
   {
@@ -147,74 +144,112 @@ const EXPANSIONS = [
   },
 ]
 
-async function processQuery(query: DataQuery) {
+function processQuery(query: DataQuery) {
   const { type } = query
 
-  const result = await (async () => {
+  const result = do_(() => {
     switch (type) {
       case 'read':
-        return repository.find({
-          slug: query.slug,
-        })
+        return repository
+          .find({
+            slug: query.slug,
+          })
+          .map(({ dataResult }) => dataResult)
       case 'browse':
-        return (await repository.findAll(query.resourceType)).map(
-          (resources) => {
-            if (!query.filter) {
-              return resources
-            }
-            const filter = nql(query.filter, {
-              expansions: EXPANSIONS,
-            }).queryJSON
-
-            return resources.filter(({ dataResult }) => {
-              if (dataResult?.data) {
-                if ('getPostDocument' in dataResult.data) {
-                  const postResult = createPost(dataResult.data.getPostDocument)
-                  if (postResult.isOk()) {
-                    return filter(postResult.value)
-                  }
-                }
-                if ('getPageDocument' in dataResult.data) {
-                  const pageResult = createPage(dataResult.data.getPageDocument)
-                  if (pageResult.isOk()) {
-                    return filter(pageResult)
-                  }
-                }
-                if ('getAuthorDocument' in dataResult.data) {
-                  const authorResult = createAuthor(
-                    dataResult.data.getAuthorDocument
-                  )
-                  if (authorResult.isOk()) {
-                    return filter(authorResult)
-                  }
-                }
-                if ('getTagDocument' in dataResult.data) {
-                  const tagResult = createTag(dataResult.data.getTagDocument)
-                  if (tagResult.isOk()) {
-                    return filter(tagResult)
-                  }
-                }
-              }
-
-              return true
-            })
+        return repository.findAll(query.resourceType).andThen((resources) => {
+          if (!query.filter) {
+            return okAsync(resources.map(({ dataResult }) => dataResult))
           }
-        )
+
+          const filter = nql(query.filter, {
+            expansions: EXPANSIONS,
+          }).queryJSON
+
+          const v = resources.map((resource) => {
+            const { resourceType } = resource
+
+            switch (resourceType) {
+              case 'post':
+                return resource.dataResult
+                  ? do_(() => {
+                      const postResult = createPost(
+                        resource.dataResult!.data.getPostDocument
+                      ).map((post) => {
+                        return {
+                          resource: resource.dataResult,
+                          included: filter(post),
+                        }
+                      })
+                      return postResult
+                    })
+                  : err(Errors.notFound('processQuery'))
+              case 'page':
+                return resource.dataResult
+                  ? do_(() => {
+                      const pageResult = createPage(
+                        resource.dataResult!.data.getPageDocument
+                      ).map((page) => {
+                        return {
+                          resource: resource.dataResult,
+                          included: filter(page),
+                        }
+                      })
+                      return pageResult
+                    })
+                  : err(Errors.notFound('processQuery'))
+              case 'author':
+                return resource.dataResult
+                  ? do_(() => {
+                      const authorResult = createAuthor(
+                        resource.dataResult!.data.getAuthorDocument
+                      ).map((author) => {
+                        return {
+                          resource: resource.dataResult,
+                          included: filter(author),
+                        }
+                      })
+                      return authorResult
+                    })
+                  : err(Errors.notFound('processQuery'))
+              case 'tag':
+                return resource.dataResult
+                  ? do_(() => {
+                      const tagResult = createTag(
+                        resource.dataResult!.data.getTagDocument
+                      ).map((tag) => {
+                        return {
+                          resource: resource.dataResult,
+                          included: filter(tag),
+                        }
+                      })
+                      return tagResult
+                    })
+                  : err(Errors.notFound('processQuery'))
+              default:
+                return absurd(resourceType)
+            }
+          })
+
+          const matchResources = combine(v)
+
+          return matchResources.map((x) => {
+            return x.flatMap(({ resource, included }) => {
+              return included ? [resource] : []
+            })
+          })
+        })
+
       default:
         return absurd(type)
     }
-  })() // Immediately invoke the function
+  })
 
-  return result.map((queryResult) =>
-    Array.isArray(queryResult)
-      ? queryResult.map(({ dataResult }) => dataResult)
-      : queryResult.dataResult
-  )
+  return result
 }
 
-async function entryController(
+function entryController(
   routingProperties: Extract<RoutingContext, { type: 'entry' }>
-): Promise<ControllerResult<PageProps>> {
+): ControllerResultAsync<PageProps> {
   const { resourceType, request } = routingProperties
   const query: DataQuery = {
     resourceType,
@@ -224,21 +259,25 @@ async function entryController(
     redirect: false,
   }
 
-  return (await processQuery(query)).map((entry) => {
-    return {
-      context: resourceType,
-      data: {
-        entry,
-      },
-      templates: getTemplateHierarchy(routingProperties),
-      route: routingProperties.request.path,
-    }
-  })
+  return processQuery(query)
+    .map((entry) => {
+      return {
+        context: resourceType,
+        data: {
+          entry,
+        },
+        templates: getTemplateHierarchy(routingProperties),
+        route: routingProperties.request.path,
+      }
+    })
+    .mapErr((y) => {
+      return y
+    })
 }
 
-async function channelController(
+function channelController(
   routingProperties: Extract<RoutingContext, { type: 'channel' }>
-): Promise<ControllerResult<PageProps>> {
+): ControllerResultAsync<PageProps> {
   // const posts = (await repository.findAll('post'))
 
   // const configResourceID = 'content/config/index.json'
@@ -270,29 +309,25 @@ async function channelController(
   }
 
   const keys = Object.keys(data)
-  const dataResults = await Promise.all(
-    keys.map(async (key) => {
-      return processQuery(data[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
+  const result = combine(
+    keys.map((key) => {
+      return processQuery(data[key]!)
     })
   )
 
-  return combine(dataResults).map((y) => {
-    const dataEntries = keys.reduce<{
-      [key: string]: ProcessQueryReturnType
-    }>((acc, current, index) => {
-      const dataResult = y[index]!
+  return result.andThen((resource) => {
+    const dataEntries = keys.reduce((acc, current, index) => {
+      const dataResult = resource[index]
       return {
         ...acc,
         [current]: dataResult,
       }
     }, {})
 
-    return {
-      context: 'index',
+    return okAsync({
+      context: 'index' as const,
       templates: getTemplateHierarchy(routingProperties),
       data: {
-        // entry: entry.value,
-        // posts,
         ...dataEntries,
       },
       pagination: {
@@ -304,13 +339,13 @@ async function channelController(
         limit: 10,
       },
       route: routingProperties.request.path,
-    }
+    })
   })
 }
 
-async function collectionController(
+function collectionController(
   routingProperties: Extract<RoutingContext, { type: 'collection' }>
-): Promise<ControllerResult<PageProps>> {
+): ControllerResultAsync<PageProps> {
   // const posts = await repository.findAll('post')
   //
   // if (posts.isErr()) {
@@ -349,29 +384,26 @@ async function collectionController(
   }
 
   const keys = Object.keys(data)
-  const dataResults = await Promise.all(
-    keys.map(async (key) => {
-      return processQuery(data[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
+  const result = combine(
+    keys.map((key) => {
+      // TODO processQuery but mark already processed resources for collection
+      return processQuery(data[key]!)
     })
   )
 
-  return combine(dataResults).map((dataEntry) => {
-    const dataEntries = keys.reduce<{
-      [key: string]: ProcessQueryReturnType
-    }>((acc, current, index) => {
-      const dataResult = dataEntry[index]!
+  return result.andThen((resource) => {
+    const dataEntries = keys.reduce((acc, current, index) => {
+      const dataResult = resource[index]
       return {
         ...acc,
         [current]: dataResult,
       }
     }, {})
 
-    return {
-      context: 'index',
+    return okAsync({
+      context: 'index' as const,
       templates: getTemplateHierarchy(routingProperties),
       data: {
-        // entry: entry.value,
-        // posts,
         ...dataEntries,
       },
       pagination: {
@@ -383,13 +415,13 @@ async function collectionController(
         limit: 10,
       },
       route: routingProperties.request.path,
-    }
+    })
   })
 }
 
-async function customController(
+function customController(
   routingProperties: Extract<RoutingContext, { type: 'custom' }>
-): Promise<ControllerResult<PageProps>> {
+): ControllerResultAsync<PageProps> {
   // const resources = await repository.getAll()
 
   // const configResourceID = 'content/config/index.json'
@@ -407,25 +439,27 @@ async function customController(
   //   return entry
   // }
 
-  const keys = Object.keys(routingProperties.data ?? {})
-  const dataResults = await Promise.all(
-    keys.map(
-      async (key) => processQuery(routingProperties.data?.[key]!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
-    )
+  const data: { [name: string]: DataQuery } = {
+    ...routingProperties.data,
+  }
+
+  const keys = Object.keys(data)
+  const result = combine(
+    keys.map((key) => {
+      return processQuery(data[key]!)
+    })
   )
 
-  return combine(dataResults).map((y) => {
-    const dataEntries = keys.reduce<{
-      [key: string]: ProcessQueryReturnType
-    }>((acc, current, index) => {
-      const dataResult = y[index]!
+  return result.andThen((resource) => {
+    const dataEntries = keys.reduce((acc, current, index) => {
+      const dataResult = resource[index]
       return {
         ...acc,
         [current]: dataResult,
       }
     }, {})
 
-    return {
+    return okAsync({
       context: null,
       templates: getTemplateHierarchy(routingProperties),
       data: {
@@ -433,7 +467,7 @@ async function customController(
         ...dataEntries,
       },
       route: routingProperties.request.path,
-    }
+    })
   })
 }
 
@@ -444,42 +478,51 @@ type ControllerReturnType =
 export async function controller(
   routingContexts: RoutingContext[] = []
 ): Promise<ControllerReturnType> {
+  // type X = Result<RoutingContext>
+  // const v: X[] = []
+  // const x = combine(v)
+  //
+  //
+  // x.andThen((y) => {
+  //
+  // })
+
   for (const context of routingContexts) {
     // eslint-disable-next-line no-await-in-loop
-    const result: ControllerReturnType = await (async () => {
+    const result = await (async () => {
       const { type } = context
 
       switch (type) {
         case 'collection':
           return {
-            type: 'props',
+            type: 'props' as const,
             props: await collectionController(context),
           }
         case 'channel':
           return {
-            type: 'props',
+            type: 'props' as const,
             props: await channelController(context),
           }
         case 'entry':
           return {
-            type: 'props',
+            type: 'props' as const,
             props: await entryController(context),
           }
         case 'custom':
           return {
-            type: 'props',
+            type: 'props' as const,
             props: await customController(context),
           }
         case 'internal':
           return {
-            type: 'props',
+            type: 'props' as const,
             props: ok({
-              context: 'internal',
+              context: 'internal' as const,
             }),
           }
         case 'redirect':
           return {
-            type: 'redirect',
+            type: 'redirect' as const,
             redirect: context,
           }
         default:
@@ -489,9 +532,15 @@ export async function controller(
 
     if (result.type === 'props') {
       if (result.props.isOk()) {
-        return result
+        return {
+          ...result,
+          props: ok(result.props.value),
+        }
       } else if (result.props.error.type !== 'NotFound') {
-        return result
+        return {
+          ...result,
+          props: err(result.props.error),
+        }
       }
     }
     if (result.type === 'redirect') {
