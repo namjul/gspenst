@@ -11,7 +11,7 @@ import { absurd } from './helpers'
 import { getTemplateHierarchy } from './dataUtils'
 import repository from './repository'
 import type { ThemeContextType } from './types'
-import type { Result, ResultAsync, Simplify } from './shared-kernel'
+import type { Result, ResultAsync, Simplify, Option } from './shared-kernel'
 import * as Errors from './errors'
 import { do_ } from './utils'
 
@@ -475,78 +475,80 @@ type ControllerReturnType =
   | { type: 'props'; props: ControllerResult<PageProps> }
   | { type: 'redirect'; redirect: Redirect }
 
-export async function controller(
-  routingContexts: RoutingContext[] = []
-): Promise<ControllerReturnType> {
-  // type X = Result<RoutingContext>
-  // const v: X[] = []
-  // const x = combine(v)
-  //
-  //
-  // x.andThen((y) => {
-  //
-  // })
-
-  for (const context of routingContexts) {
-    // eslint-disable-next-line no-await-in-loop
-    const result = await (async () => {
-      const { type } = context
-
-      switch (type) {
-        case 'collection':
-          return {
-            type: 'props' as const,
-            props: await collectionController(context),
-          }
-        case 'channel':
-          return {
-            type: 'props' as const,
-            props: await channelController(context),
-          }
-        case 'entry':
-          return {
-            type: 'props' as const,
-            props: await entryController(context),
-          }
-        case 'custom':
-          return {
-            type: 'props' as const,
-            props: await customController(context),
-          }
-        case 'internal':
-          return {
-            type: 'props' as const,
-            props: ok({
-              context: 'internal' as const,
-            }),
-          }
-        case 'redirect':
-          return {
-            type: 'redirect' as const,
-            redirect: context,
-          }
-        default:
-          return absurd(type)
+export function controller(
+  routingContextsResult:
+    | Result<Option<RoutingContext>>
+    | Result<Option<RoutingContext>[]>
+): Result<Promise<ControllerReturnType>> {
+  return routingContextsResult.map(async (y) => {
+    for (const context of [y].flat()) {
+      if (context === undefined) {
+        continue
       }
-    })() // Immediately invoke the function
 
-    if (result.type === 'props') {
-      if (result.props.isOk()) {
-        return {
-          ...result,
-          props: ok(result.props.value),
+      // eslint-disable-next-line no-await-in-loop
+      const result = await do_(async () => {
+        const { type } = context
+
+        switch (type) {
+          case 'collection':
+            return {
+              type: 'props' as const,
+              props: await collectionController(context),
+            }
+          case 'channel':
+            return {
+              type: 'props' as const,
+              props: await channelController(context),
+            }
+          case 'entry':
+            return {
+              type: 'props' as const,
+              props: await entryController(context),
+            }
+          case 'custom':
+            return {
+              type: 'props' as const,
+              props: await customController(context),
+            }
+          case 'internal':
+            return {
+              type: 'props' as const,
+              props: ok({
+                context: 'internal' as const,
+              }),
+            }
+          case 'redirect':
+            return {
+              type: 'redirect' as const,
+              redirect: context,
+            }
+          default:
+            return absurd(type)
         }
-      } else if (result.props.error.type !== 'NotFound') {
-        return {
-          ...result,
-          props: err(result.props.error),
+      })
+
+      if (result.type === 'props') {
+        if (result.props.isOk()) {
+          return {
+            ...result,
+            props: ok(result.props.value),
+          }
+        } else if (result.props.error.type !== 'NotFound') {
+          return {
+            ...result,
+            props: err(result.props.error),
+          }
         }
+      }
+      if (result.type === 'redirect') {
+        return result
       }
     }
-    if (result.type === 'redirect') {
-      return result
-    }
-  }
 
-  return { type: 'props', props: err(Errors.notFound('No controller found')) }
+    return {
+      type: 'props' as const,
+      props: err(Errors.notFound('No controller found')),
+    }
+  })
 }

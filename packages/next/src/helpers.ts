@@ -1,4 +1,5 @@
-import { compile, pathToRegexp } from 'path-to-regexp'
+import { compile, pathToRegexp as _pathToRegexp } from 'path-to-regexp'
+import { Result as NeverThrowResult } from 'neverthrow'
 import { ok, err } from './shared-kernel'
 import type { Result } from './shared-kernel'
 import type { Resource } from './domain/resource'
@@ -26,18 +27,14 @@ export function compilePermalink(
   }
 }
 
-export function permalinkToRegexp(permalink: string): Result<RegExp> {
-  try {
-    return ok(pathToRegexp(permalink))
-  } catch (error: unknown) {
-    return err(
-      Errors.other(
-        '`path-to-regexp`#pathToRegexp',
-        error instanceof Error ? error : undefined
-      )
+export const pathToRegexp = NeverThrowResult.fromThrowable(
+  _pathToRegexp,
+  (error) =>
+    Errors.other(
+      '`path-to-regexp`#compile',
+      error instanceof Error ? error : undefined
     )
-  }
-}
+)
 
 export const isProductionBuild = nodeEnvironment === 'production'
 

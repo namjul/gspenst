@@ -51,23 +51,27 @@ export const getStaticProps =
 
       const router = new RouterManager(routingConfig)
 
-      const routingProperties = router.handle(params?.[routingParameter])
+      const controllerResult = controller(
+        router.handle(params?.[routingParameter])
+      )
 
-      const result = await controller(routingProperties)
-
-      if ('redirect' in result) {
-        return { redirect: result.redirect }
-      }
-
-      if (result.props.isErr()) {
-        if (result.props.error.type === 'NotFound') {
-          return {
-            notFound: true,
-          }
+      if (controllerResult.isOk()) {
+        const result = await controllerResult.value
+        if ('redirect' in result) {
+          return { redirect: result.redirect }
         }
-        throw format(result.props.error)
-      }
 
-      return { props: result.props.value }
+        if (result.props.isErr()) {
+          if (result.props.error.type === 'NotFound') {
+            return {
+              notFound: true,
+            }
+          }
+          throw format(result.props.error)
+        }
+
+        return { props: result.props.value }
+      }
+      throw format(controllerResult.error)
     }
   }

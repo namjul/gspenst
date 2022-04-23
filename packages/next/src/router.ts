@@ -1,10 +1,10 @@
 import path from 'path'
 import { slugify } from '@tryghost/string'
-import { pathToRegexp } from 'path-to-regexp'
-// import { permalinkToRegexp } from './helpers'; // TODO use this instead
 import type { Key } from 'path-to-regexp'
+import { pathToRegexp } from './helpers' // TODO use this instead
+import { ok, combine } from './shared-kernel'
 import type { RoutingContextType } from './types'
-import type { Entries, Simplify } from './shared-kernel'
+import type { Entries, Simplify, Result, Option } from './shared-kernel'
 import type { ResourceType, DynamicVariables } from './domain/resource'
 import type { Taxonomies } from './domain/taxonomy'
 import type {
@@ -94,9 +94,9 @@ class ParentRouter {
 
   handle(
     request: string,
-    contexts: RoutingContext[],
+    contexts: Result<Option<RoutingContext>>[],
     routers: ParentRouter[]
-  ): RoutingContext[] {
+  ): Result<Option<RoutingContext>>[] {
     if (this.nextRouter) {
       return this.nextRouter.handle(request, contexts, routers)
     }
@@ -169,38 +169,57 @@ class ParentRouter {
 }
 
 class AdminRouter extends ParentRouter {
-  routeRegExp: RegExp
+  routeRegExpResult: Result<RegExp>
   constructor() {
     super('AdminRouter')
-    this.routeRegExp = pathToRegexp('/admin')
+    this.routeRegExpResult = pathToRegexp('/admin')
   }
-  handle(request: string, context: RoutingContext[], routers: ParentRouter[]) {
-    const [match] = this.routeRegExp.exec(request) ?? []
+  handle(
+    request: string,
+    contexts: Result<Option<RoutingContext>>[],
+    routers: ParentRouter[]
+  ) {
+    contexts.push(
+      this.routeRegExpResult.andThen((routeRegExp) => {
+        const [match] = routeRegExp.exec(request) ?? []
 
-    if (match) {
-      context.push({
-        type: 'internal' as const,
+        if (match) {
+          return ok({
+            type: 'internal' as const,
+          })
+        }
+        return ok(undefined)
       })
-    }
-    return super.handle(request, context, routers)
+    )
+    return super.handle(request, contexts, routers)
   }
 }
 
 class StaticRoutesRouter extends ParentRouter {
-  routeRegExp: RegExp
+  routeRegExpResult: Result<RegExp>
   config: Route
   constructor(mainRoute: string, config: Route) {
     super('StaticRoutesRouter', config.data)
     this.route = mainRoute
     this.config = config
-    this.routeRegExp = pathToRegexp(this.route)
+    this.routeRegExpResult = pathToRegexp(this.route)
   }
-  handle(request: string, contexts: RoutingContext[], routers: ParentRouter[]) {
-    const [match] = this.routeRegExp.exec(request) ?? []
+  handle(
+    request: string,
+    contexts: Result<Option<RoutingContext>>[],
+    routers: ParentRouter[]
+  ) {
+    contexts.push(
+      this.routeRegExpResult.andThen((regExp) => {
+        const [match] = regExp.exec(request) ?? []
 
-    if (match) {
-      contexts.push(this.#createContext(match))
-    }
+        if (match) {
+          return ok(this.#createContext(match))
+        }
+        return ok(undefined)
+      })
+    )
+
     return super.handle(request, contexts, routers)
   }
   #createContext(_path: string) {
@@ -216,35 +235,44 @@ class StaticRoutesRouter extends ParentRouter {
 class TaxonomyRouter extends ParentRouter {
   taxonomyKey: Taxonomies
   permalink: string
-  permalinkRegExp: RegExp
+  permalinkRegExpResult: Result<RegExp>
   keys: Key[] = []
   constructor(key: Taxonomies, permalink: string) {
     super('TaxonomyRouter')
     this.taxonomyKey = key
     this.permalink = permalink
-    this.permalinkRegExp = pathToRegexp(
+    this.permalinkRegExpResult = pathToRegexp(
       path.join(`/${this.permalink}`, '{page/:page(\\d+)}?'),
       this.keys
     )
   }
-  handle(request: string, contexts: RoutingContext[], routers: ParentRouter[]) {
-    const [permalinkMatch, ...paramKeys] =
-      this.permalinkRegExp.exec(request) ?? []
+  handle(
+    request: string,
+    contexts: Result<Option<RoutingContext>>[],
+    routers: ParentRouter[]
+  ) {
+    contexts.push(
+      this.permalinkRegExpResult.andThen((regExp) => {
+        const [permalinkMatch, ...paramKeys] = regExp.exec(request) ?? []
 
-    if (permalinkMatch && paramKeys.length) {
-      const params = this.extractParams(paramKeys, this.keys)
+        if (permalinkMatch && paramKeys.length) {
+          const params = this.extractParams(paramKeys, this.keys)
 
-      const router = this.respectDominantRouter(
-        routers,
-        this.taxonomyKey,
-        params.slug
-      )
-      if (router) {
-        contexts.push(this.createRedirectContext(router))
-      } else {
-        contexts.push(this.#createContext(permalinkMatch, params))
-      }
-    }
+          const router = this.respectDominantRouter(
+            routers,
+            this.taxonomyKey,
+            params.slug
+          )
+          if (router) {
+            return ok(this.createRedirectContext(router))
+          } else {
+            return ok(this.#createContext(permalinkMatch, params))
+          }
+        }
+        return ok(undefined)
+      })
+    )
+
     return super.handle(request, contexts, routers)
   }
 
@@ -268,50 +296,67 @@ class TaxonomyRouter extends ParentRouter {
 class CollectionRouter extends ParentRouter {
   routerName: string
   permalink: string
-  routeRegExp: RegExp
-  permalinkRegExp: RegExp
-  pagesRegExp: RegExp
+  routeRegExpResult: Result<RegExp>
+  permalinkRegExpResult: Result<RegExp>
   config: Collection
-  keys: Key[] = []
+  keysRoute: Key[] = []
+  keysPermalink: Key[] = []
   constructor(mainRoute: string, config: Collection) {
     super('CollectionRouter', config.data)
     this.route = mainRoute
     this.config = config
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
-    this.routeRegExp = pathToRegexp(this.route)
     this.permalink = this.config.permalink
-    this.permalinkRegExp = pathToRegexp(this.permalink, this.keys)
-    this.pagesRegExp = pathToRegexp(
-      path.join(this.route, 'page', ':page(\\d+)')
+    this.routeRegExpResult = pathToRegexp(
+      path.join(`/${this.route}`, '{page/:page(\\d+)}?'),
+      this.keysRoute
+    )
+    this.permalinkRegExpResult = pathToRegexp(
+      this.permalink,
+      this.keysPermalink
     )
   }
-  handle(request: string, contexts: RoutingContext[], routers: ParentRouter[]) {
-    const [routeMatch] = this.routeRegExp.exec(request) ?? []
+  handle(
+    request: string,
+    contexts: Result<Option<RoutingContext>>[],
+    routers: ParentRouter[]
+  ) {
+    contexts.push(
+      combine([this.routeRegExpResult, this.permalinkRegExpResult]).andThen(
+        ([routesRegExp, permalinkRegExp]) => {
+          if (routesRegExp) {
+            const [routeMatch, page] = routesRegExp.exec(request) ?? []
 
-    if (routeMatch) {
-      contexts.push(this.#createEntriesContext(routeMatch))
-    }
+            if (routeMatch && page) {
+              return ok(this.#createEntriesContext(routeMatch, Number(page)))
+            }
+          }
 
-    const [pageMatch, page] = this.pagesRegExp.exec(request) ?? []
+          if (permalinkRegExp) {
+            const [permalinkMatch, ...paramKeys] =
+              permalinkRegExp.exec(request) ?? []
 
-    if (pageMatch && page) {
-      contexts.push(this.#createEntriesContext(pageMatch, Number(page)))
-    }
+            if (permalinkMatch && paramKeys.length) {
+              const params = this.extractParams(paramKeys, this.keysPermalink)
 
-    const [permalinkMatch, ...paramKeys] =
-      this.permalinkRegExp.exec(request) ?? []
+              const router = this.respectDominantRouter(
+                routers,
+                'post',
+                params.slug
+              )
 
-    if (permalinkMatch && paramKeys.length) {
-      const params = this.extractParams(paramKeys, this.keys)
+              if (router) {
+                return ok(this.createRedirectContext(router))
+              } else {
+                return ok(this.#createEntryContext(permalinkMatch, params))
+              }
+            }
+          }
 
-      const router = this.respectDominantRouter(routers, 'post', params.slug)
-
-      if (router) {
-        contexts.push(this.createRedirectContext(router))
-      } else {
-        contexts.push(this.#createEntryContext(permalinkMatch, params))
-      }
-    }
+          return ok(undefined)
+        }
+      )
+    )
 
     return super.handle(request, contexts, routers)
   }
@@ -340,23 +385,33 @@ class CollectionRouter extends ParentRouter {
 }
 
 class StaticPagesRouter extends ParentRouter {
-  routeRegExp: RegExp
+  routeRegExpResult: Result<RegExp>
   constructor() {
     super('StaticPagesRouter')
-    this.routeRegExp = pathToRegexp('/:slug/')
+    this.routeRegExpResult = pathToRegexp('/:slug/')
   }
-  handle(request: string, contexts: RoutingContext[], routers: ParentRouter[]) {
-    const [match, slug] = this.routeRegExp.exec(request) ?? []
+  handle(
+    request: string,
+    contexts: Result<Option<RoutingContext>>[],
+    routers: ParentRouter[]
+  ) {
+    contexts.push(
+      this.routeRegExpResult.andThen((routeRegExp) => {
+        const [match, slug] = routeRegExp.exec(request) ?? []
 
-    if (match && slug) {
-      const router = this.respectDominantRouter(routers, 'page', slug)
+        if (match && slug) {
+          const router = this.respectDominantRouter(routers, 'page', slug)
 
-      if (router) {
-        contexts.push(this.createRedirectContext(router))
-      } else {
-        contexts.push(this.#createContext(match, { slug }))
-      }
-    }
+          if (router) {
+            return ok(this.createRedirectContext(router))
+          } else {
+            return ok(this.#createContext(match, { slug }))
+          }
+        }
+        return ok(undefined)
+      })
+    )
+
     return super.handle(request, contexts, routers)
   }
 
@@ -388,7 +443,6 @@ export class RouterManager {
      * 3. Taxonomies: Stronger than collections, because it's an inbuilt feature.
      * 4. Collections
      * 5. Static Pages: Weaker than collections, because we first try to find a post slug and fallback to lookup a static page.
-     * 6. Internal Apps: Weakest
      */
 
     // 1.
@@ -430,15 +484,17 @@ export class RouterManager {
     this.routers.reduce((acc, router) => acc.mount(router))
   }
 
-  handle(params: string[] | string = []): RoutingContext[] {
+  handle(
+    params: string[] | string = []
+  ): Result<Option<RoutingContext>> | Result<Option<RoutingContext>[]> {
     if (params) {
       const request = `/${[params].flat().join('/')}/`
       const requestSlugified = `/${[params].flat().map(slugify).join('/')}/`
       if (request !== requestSlugified) {
-        return [this.router.createRedirectContext(requestSlugified)]
+        return ok(this.router.createRedirectContext(requestSlugified))
       }
-      return this.router.handle(request, [], this.routers)
+      return combine(this.router.handle(request, [], this.routers))
     }
-    return []
+    return ok(undefined)
   }
 }

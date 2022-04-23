@@ -17,8 +17,8 @@ describe('controller', () => {
   describe('entry', () => {
     const type = 'entry'
     test('page', async () => {
-      const result = await controller([
-        {
+      const result = controller(
+        ok({
           type,
           resourceType: 'page',
           request: {
@@ -28,17 +28,17 @@ describe('controller', () => {
             },
           },
           templates: [],
-        },
-      ])
-      expect(result).toMatchObject({
+        })
+      )
+      expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
           context: 'page',
         }),
       })
     })
     test('post', async () => {
-      const result = await controller([
-        {
+      const result = controller(
+        ok({
           type,
           resourceType: 'post',
           request: {
@@ -48,9 +48,9 @@ describe('controller', () => {
             },
           },
           templates: [],
-        },
-      ])
-      expect(result).toMatchObject({
+        })
+      )
+      expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
           context: 'post',
         }),
@@ -62,8 +62,8 @@ describe('controller', () => {
   describe('collection', () => {
     const type = 'collection'
     test('simple', async () => {
-      const result = await controller([
-        {
+      const result = controller(
+        ok({
           type,
           name: 'index',
           request: {
@@ -74,17 +74,17 @@ describe('controller', () => {
           filter: undefined,
           limit: undefined,
           order: undefined,
-        },
-      ])
-      expect(result).toMatchObject({
+        })
+      )
+      expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
           context: 'index',
         }),
       })
     })
     test('filter', async () => {
-      const result = await controller([
-        {
+      const result = controller(
+        ok({
           type,
           name: 'index',
           request: {
@@ -95,14 +95,17 @@ describe('controller', () => {
           filter: 'slug:8th-post',
           limit: undefined,
           order: undefined,
-        },
-      ])
-      expect(result).toHaveProperty('props.value.data.posts.length', 1)
+        })
+      )
+      expect(await result._unsafeUnwrap()).toHaveProperty(
+        'props.value.data.posts.length',
+        1
+      )
     })
     test.todo('a post is only in a single collection')
     test('with data', async () => {
-      const result = await controller([
-        {
+      const result = controller(
+        ok({
           type,
           name: 'index',
           request: {
@@ -119,9 +122,9 @@ describe('controller', () => {
           filter: undefined,
           limit: undefined,
           order: undefined,
-        },
-      ])
-      expect(result).toMatchObject({
+        })
+      )
+      expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
           context: 'index',
           data: {
@@ -135,8 +138,8 @@ describe('controller', () => {
     const type = 'channel'
     test.todo('simple')
     test('filter', async () => {
-      const result = await controller([
-        {
+      const result = controller(
+        ok({
           type,
           name: 'index',
           request: {
@@ -147,14 +150,17 @@ describe('controller', () => {
           filter: 'slug:8th-post',
           limit: undefined,
           order: undefined,
-        },
-      ])
-      expect(result).toHaveProperty('props.value.data.posts.length', 1)
+        })
+      )
+      expect(await result._unsafeUnwrap()).toHaveProperty(
+        'props.value.data.posts.length',
+        1
+      )
     })
     test.todo('posts can be in multiple channels')
     test('with data', async () => {
-      const result = await controller([
-        {
+      const result = controller(
+        ok({
           type,
           name: 'index',
           request: {
@@ -171,9 +177,9 @@ describe('controller', () => {
           filter: undefined,
           limit: undefined,
           order: undefined,
-        },
-      ])
-      expect(result).toMatchObject({
+        })
+      )
+      expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
           context: 'index',
           data: {

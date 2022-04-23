@@ -3,7 +3,7 @@
 
 import { z } from 'zod'
 import stringHash from 'fnv1a'
-import type { Ok, Err, ResultAsync as ResultAsyncInner } from 'neverthrow'
+import type { Ok, Err, ResultAsync as NeverthrowResultAsync } from 'neverthrow'
 import {
   LiteralUnion,
   AsyncReturnType,
@@ -33,10 +33,11 @@ export const idSchema = z
     (value) => (typeof value === 'string' ? stringHash(value) : value) as ID
   )
 
-export type Result<T> = Ok<T, GspenstError> | Err<never, GspenstError>
-export type ResultAsync<T> = ResultAsyncInner<T, GspenstError>
+export type Result<T> = Ok<T, GspenstError> | Err<T, GspenstError>
+export type ResultAsync<T> = NeverthrowResultAsync<T, GspenstError>
 export type Dict<T = any> = Record<string, T>
 export type Unpacked<T> = T extends Array<infer U> ? U : T
+export type Option<T> = T | undefined
 export type {
   Ok,
   Err,

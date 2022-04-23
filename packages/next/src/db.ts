@@ -1,4 +1,4 @@
-import { ResultAsync as ResultAsyncInternal } from 'neverthrow'
+import { ResultAsync as NeverthrowResultAsync } from 'neverthrow'
 import redis from './redis'
 
 import type { ResultAsync } from './shared-kernel'
@@ -14,8 +14,10 @@ type AObject =
 
 const db = {
   clear(): DBResultAsync<'OK'> {
-    return ResultAsyncInternal.fromPromise(redis.flushall(), (error: unknown) =>
-      Errors.other('Db', error instanceof Error ? error : undefined)
+    return NeverthrowResultAsync.fromPromise(
+      redis.flushall(),
+      (error: unknown) =>
+        Errors.other('Db', error instanceof Error ? error : undefined)
     )
   },
   set<T extends AObject>(
@@ -23,14 +25,14 @@ const db = {
     field: string,
     value: T
   ): DBResultAsync<number> {
-    return ResultAsyncInternal.fromPromise(
+    return NeverthrowResultAsync.fromPromise(
       redis.hset(key, field, JSON.stringify(value)),
       (error: unknown) =>
         Errors.other('Db', error instanceof Error ? error : undefined)
     )
   },
   get<T extends AObject>(key: string, ...fields: string[]): DBResultAsync<T[]> {
-    return ResultAsyncInternal.fromPromise(
+    return NeverthrowResultAsync.fromPromise(
       (async () => {
         const result = await redis.hmget(key, ...fields)
         const foundIndex = result.findIndex((y) => y === null)
@@ -44,8 +46,10 @@ const db = {
     )
   },
   keys(key: string): DBResultAsync<string[]> {
-    return ResultAsyncInternal.fromPromise(redis.hkeys(key), (error: unknown) =>
-      Errors.other('Db', error instanceof Error ? error : undefined)
+    return NeverthrowResultAsync.fromPromise(
+      redis.hkeys(key),
+      (error: unknown) =>
+        Errors.other('Db', error instanceof Error ? error : undefined)
     )
   },
 }
