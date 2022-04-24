@@ -1,10 +1,12 @@
 import EventEmitter from 'events'
+import type { ChildProcess } from 'child_process'
 import path from 'path'
 import debug from 'debug'
 import { Compiler } from 'webpack'
 import pkg from '../package.json'
 import { startTinaServer } from './tinaServer'
 import repository from './repository'
+import { format } from './errors'
 
 // api lookup: https://webpack.js.org/api/plugins/
 // example: https://github.com/shellscape/webpack-plugin-serve/blob/master/lib/index.js
@@ -20,7 +22,7 @@ export class GspenstPlugin extends EventEmitter {
     require.resolve(`@gspenst/next/package.json`)
   )
   projectPath: string = process.cwd()
-  state: { starting?: Promise<void> }
+  state: { starting?: Promise<ChildProcess> }
 
   constructor(isServer: boolean) {
     super()
@@ -71,6 +73,15 @@ export class GspenstPlugin extends EventEmitter {
 
   async collect() {
     log('Collect Resources')
-    void (await repository.init())
+    const result = await repository.init()
+    if (result.isErr()) {
+      const error = format(result.error)
+      log(error)
+      const tinaServer = await this.state.starting
+      if (tinaServer) {
+        tinaServer.kill()
+        process.exit(1)
+      }
+    }
   }
 }

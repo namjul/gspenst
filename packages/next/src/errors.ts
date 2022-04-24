@@ -36,7 +36,7 @@ export function format(errors: GspenstError | GspenstError[]) {
     switch (type) {
       case 'Other':
         return `${error.type}: ${error.context} ${
-          error.error ? `: cause ${error.error.message}` : ''
+          error.error ? `: cause: ${error.error.message} ${ error.error.stack }` : ''
         }`
       case 'Validation':
         return `${error.type}: ${error.message}${

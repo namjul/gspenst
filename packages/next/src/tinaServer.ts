@@ -39,4 +39,6 @@ export async function startTinaServer(this: GspenstPlugin) {
       }
     }
   }
+
+  return ps
 }
