@@ -6,8 +6,6 @@ import type { Tag as TagGenerated } from '../../.tina/__generated__/types'
 
 export const getTagSchema = z.custom<GetTag>((value) => value)
 
-export const resourceType = z.literal('tag')
-
 export const tagSchema = z
   .object({
     id: idSchema,

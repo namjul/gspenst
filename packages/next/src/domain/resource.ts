@@ -2,11 +2,18 @@ import { slugify } from '@tryghost/string'
 import type { Get, Split, Result } from '../shared-kernel'
 import { idSchema, ok, err, z } from '../shared-kernel'
 import type { GetResourcesQuery } from '../../.tina/__generated__/types'
+import type { GetTag, GetAuthor, GetPage, GetPost } from '../api'
 import * as Errors from '../errors'
-import { getPostSchema, resourceType as resourceTypePost } from './post'
-import { getPageSchema, resourceType as resourceTypePage } from './page'
-import { getTagSchema, resourceType as resourceTypeTag } from './tag'
-import { getAuthorSchema, resourceType as resourceTypeAuthor } from './author'
+
+const getPostSchema = z.custom<GetPost>((value) => value)
+const getPageSchema = z.custom<GetPage>((value) => value)
+const getTagSchema = z.custom<GetTag>((value) => value)
+const getAuthorSchema = z.custom<GetAuthor>((value) => value)
+
+export const resourceTypePost = z.literal('post')
+export const resourceTypePage = z.literal('page')
+export const resourceTypeAuthor = z.literal('author')
+export const resourceTypeTag = z.literal('tag')
 
 export const resourceTypes = [
   resourceTypePost.value,
@@ -38,41 +45,57 @@ const resourceBaseSchema = z.object({
   filename: z.string(),
   path: z.string(),
   relativePath: z.string(),
+  // url: z.string().url(),
 })
 
-const postResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
-  z.object({
-    resourceType: resourceTypePost,
-    tinaData: getPostSchema.optional(),
-  })
-)
+const postResourceSchema = resourceBaseSchema
+  .merge(dynamicVariablesSchema)
+  .merge(
+    z.object({
+      resourceType: resourceTypePost,
+      tinaData: getPostSchema.optional(),
+    })
+  )
+export type PostResource = z.infer<typeof postResourceSchema>
 
-const pageResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
-  z.object({
-    resourceType: resourceTypePage,
-    tinaData: getPageSchema.optional(),
-  })
-)
+const pageResourceSchema = resourceBaseSchema
+  .merge(dynamicVariablesSchema)
+  .merge(
+    z.object({
+      resourceType: resourceTypePage,
+      tinaData: getPageSchema.optional(),
+    })
+  )
 
-const authorResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
-  z.object({
-    resourceType: resourceTypeAuthor,
-    tinaData: getAuthorSchema.optional(),
-  })
-)
+export type PageResource = z.infer<typeof pageResourceSchema>
 
-const tagResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
-  z.object({
-    resourceType: resourceTypeTag,
-    tinaData: getTagSchema.optional(),
-  })
-)
+const authorResourceSchema = resourceBaseSchema
+  .merge(dynamicVariablesSchema)
+  .merge(
+    z.object({
+      resourceType: resourceTypeAuthor,
+      tinaData: getAuthorSchema.optional(),
+    })
+  )
+
+export type AuthorResource = z.infer<typeof authorResourceSchema>
+
+const tagResourceSchema = resourceBaseSchema
+  .merge(dynamicVariablesSchema)
+  .merge(
+    z.object({
+      resourceType: resourceTypeTag,
+      tinaData: getTagSchema.optional(),
+    })
+  )
+
+export type TagResource = z.infer<typeof tagResourceSchema>
 
 const resourceSchema = z.discriminatedUnion('resourceType', [
-  postResource,
-  pageResource,
-  authorResource,
-  tagResource,
+  postResourceSchema,
+  pageResourceSchema,
+  authorResourceSchema,
+  tagResourceSchema,
 ])
 
 export type ResourceType = z.infer<typeof resourceTypeSchema>
@@ -97,20 +120,23 @@ export function createResource(
     .toLowerCase()
     .split('document') as Split<Lowercase<typeof node.__typename>, 'document'>
 
-  const idResult = idSchema.safeParse(node.id)
-
-  if (idResult.success) {
-    return ok({
-      id: idResult.data,
-      filename,
-      path: filepath,
-      resourceType,
-      relativePath,
-      ...dynamicVariables,
-    })
+  const resource = {
+    id: node.id,
+    filename,
+    path: filepath,
+    resourceType,
+    relativePath,
+    // url: 'http://jo',
+    ...dynamicVariables,
   }
 
-  return err(Errors.other('createResource', idResult.error))
+  const result = resourceSchema.safeParse(resource)
+
+  if (result.success) {
+    return ok(result.data)
+  } else {
+    return err(Errors.other('createResource', result.error))
+  }
 }
 
 export function generateDynamicVariables(

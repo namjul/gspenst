@@ -6,10 +6,6 @@ import type { Post as PostGenerated } from '../../.tina/__generated__/types'
 import { authorSchema, createAuthor } from './author'
 import { tagSchema, createTag } from './tag'
 
-export const getPostSchema = z.custom<GetPost>((value) => value)
-
-export const resourceType = z.literal('post')
-
 export const postSchema = z
   .object({
     id: idSchema,

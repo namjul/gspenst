@@ -7,10 +7,6 @@ import { createAuthor } from './author'
 import { createTag } from './tag'
 import { postSchema } from './post'
 
-export const getPageSchema = z.custom<GetPage>((value) => value)
-
-export const resourceType = z.literal('page')
-
 const pageSchema = postSchema.merge(z.object({}).strict())
 
 type Page = z.infer<typeof pageSchema>
