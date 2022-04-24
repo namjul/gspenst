@@ -1,19 +1,13 @@
 import sortOn from 'sort-on'
 import type { DataQuery } from '../domain/routes'
-import type { GetPost } from '../domain/post'
-import type { GetPage } from '../domain/page'
-import type { GetAuthor } from '../domain/author'
-import type { GetTag } from '../domain/tag'
+import type { Resource } from '../domain/resource'
 import { do_, absurd } from '../utils'
 import repository from '../repository'
-import { combine, ok, err } from '../shared-kernel'
+import { combine } from '../shared-kernel'
 import type { ResultAsync } from '../shared-kernel'
 import { filterResource } from '../helpers/filterResource'
-import * as Errors from '../errors'
 
 const POST_PER_PAGE = 5
-
-type GetResource = GetPost | GetPage | GetAuthor | GetTag
 
 type Pagination = {
   page: number // the current page number
@@ -27,12 +21,12 @@ type Pagination = {
 export type QueryOutcome =
   | {
       type: 'read'
-      tinaData: GetResource
+      resource: Resource
     }
   | {
       type: 'browse'
       pagination: Pagination
-      tinaData: GetResource[]
+      resources: Resource[]
     }
 
 type QueryOutcomeResult = ResultAsync<QueryOutcome>
@@ -47,11 +41,7 @@ export function processQuery(query: DataQuery): QueryOutcomeResult {
           .find({
             slug: query.slug,
           })
-          .andThen(({ tinaData }) =>
-            tinaData === undefined
-              ? err(Errors.notFound('processQuery'))
-              : ok({ type, tinaData })
-          )
+          .map((resource) => ({ type, resource }))
       case 'browse':
         return repository.findAll(query.resourceType).andThen((resources) => {
           return combine(
@@ -68,13 +58,7 @@ export function processQuery(query: DataQuery): QueryOutcomeResult {
 
             const sortedResources =
               // sort
-              (
-                property
-                  ? sortOn(filteredResources, property)
-                  : filteredResources
-              ).flatMap(({ resource }) => {
-                return resource.tinaData ? [resource.tinaData] : []
-              })
+              property ? sortOn(filteredResources, property) : filteredResources
 
             const limit = query.limit ?? POST_PER_PAGE
             const page = query.page ?? 1
@@ -103,7 +87,9 @@ export function processQuery(query: DataQuery): QueryOutcomeResult {
                 prev,
                 next,
               },
-              tinaData: sortedResources.slice(start, end),
+              resources: sortedResources
+                .slice(start, end)
+                .map(({ resource }) => resource),
             }
           })
         })

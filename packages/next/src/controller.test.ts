@@ -98,7 +98,7 @@ describe('controller', () => {
         })
       )
       expect(await result._unsafeUnwrap()).toHaveProperty(
-        'props.value.data.posts.tinaData.length',
+        'props.value.data.posts.resources.length',
         1
       )
     })
@@ -128,7 +128,7 @@ describe('controller', () => {
         props: ok({
           context: 'index',
           data: {
-            page: { tinaData: {} },
+            page: { resource: {} },
           },
         }),
       })
@@ -153,7 +153,7 @@ describe('controller', () => {
         })
       )
       expect(await result._unsafeUnwrap()).toHaveProperty(
-        'props.value.data.posts.tinaData.length',
+        'props.value.data.posts.resources.length',
         1
       )
     })
@@ -183,7 +183,7 @@ describe('controller', () => {
         props: ok({
           context: 'index',
           data: {
-            page: { tinaData: {} },
+            page: { resource: {} },
           },
         }),
       })

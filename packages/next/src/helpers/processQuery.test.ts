@@ -25,7 +25,7 @@ describe('processQuery', () => {
     }
 
     const result = await processQuery(query)
-    expect(result._unsafeUnwrap()).toHaveProperty('tinaData')
+    expect(result._unsafeUnwrap()).toHaveProperty('resource')
   })
 
   describe('browse', () => {
@@ -36,7 +36,7 @@ describe('processQuery', () => {
       }
 
       const result = await processQuery(query)
-      expect(result._unsafeUnwrap()).toHaveProperty('tinaData')
+      expect(result._unsafeUnwrap()).toHaveProperty('resources')
       expect(result._unsafeUnwrap()).toHaveProperty('pagination')
       expect(result._unsafeUnwrap()).toHaveProperty('pagination.total', 10)
     })
@@ -49,7 +49,7 @@ describe('processQuery', () => {
       }
 
       const result = await processQuery(query)
-      expect(result._unsafeUnwrap()).toHaveProperty('tinaData')
+      expect(result._unsafeUnwrap()).toHaveProperty('resources')
       expect(result._unsafeUnwrap()).toHaveProperty('pagination')
       expect(result._unsafeUnwrap()).toHaveProperty('pagination.total', 9)
     })
@@ -74,11 +74,9 @@ describe('processQuery', () => {
       }
 
       const result = (await processQuery(query))._unsafeUnwrap()
-      expect(result.tinaData).toHaveLength(3)
-      expect(result.tinaData).toHaveProperty(
-        '[0].data.getPostDocument.data.slug',
-        '9th-post'
-      )
+      // @ts-expect-error --- ok
+      expect(result.resources).toHaveLength(3)
+      expect(result).toHaveProperty('resources[0].slug', '9th-post')
     })
   })
 })
