@@ -43,8 +43,7 @@ const orderShema = z.preprocess(
 
 const queryFilterOptions = z.object({
   filter: z.string().optional(),
-  limit: z.number().optional(),
-  // limit: z.union([z.number(), z.literal('all')]).default(POST_PER_PAGE),
+  limit: z.union([z.number(), z.literal('all')]).optional(),
   order: orderShema.optional(),
   // include: z.string().optional(),
   // visibility: z.string().optional(),
@@ -181,17 +180,18 @@ const collection = z
 
 export type Collection = z.infer<typeof collection>
 
+const taxonomies = z
+  .object({
+    tag: permalink.optional(),
+    author: permalink.optional(),
+  })
+  .strict()
+
 const routingSchema = z
   .object({
     routes: z.record(z.union([templateTransform, route])).optional(),
     collections: z.record(collection).optional(),
-    taxonomies: z
-      .object({
-        tag: permalink.optional(),
-        author: permalink.optional(),
-      })
-      .strict()
-      .optional(),
+    taxonomies: taxonomies.optional(),
   })
   .strict()
 

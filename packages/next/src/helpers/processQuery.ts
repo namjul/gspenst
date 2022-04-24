@@ -17,11 +17,11 @@ type GetResource = GetPost | GetPage | GetAuthor | GetTag
 
 type Pagination = {
   page: number // the current page number
-  prev: number | undefined // the previous page number
-  next: number | undefined // the next page number
+  prev: number | null // the previous page number
+  next: number | null // the next page number
   pages: number // the number of pages available
   total: number // the number of posts available
-  limit: number // the number of posts per page
+  limit: number | 'all' // the number of posts per page
 }
 
 export type QueryOutcome =
@@ -76,12 +76,22 @@ export function processQuery(query: DataQuery): QueryOutcomeResult {
                 return resource.tinaData ? [resource.tinaData] : []
               })
 
-            const limit = query.limit ?? POST_PER_PAGE // the number of posts per page
-            const page = query.page ?? 1 // the current page number
-            const total = sortedResources.length // the number of posts available
-            const pages = Math.floor(total / limit) // the number of pages available
-            const start = limit * (page - 1)
-            const end = start + limit
+            const limit = query.limit ?? POST_PER_PAGE
+            const page = query.page ?? 1
+            const total = sortedResources.length
+            let pages = 1
+            let start = 0
+            let end
+            let prev = null
+            let next = null
+
+            if (limit !== 'all') {
+              pages = Math.floor(total / limit)
+              start = limit * (page - 1)
+              end = start + limit
+              prev = start > 0 ? page - 1 : null
+              next = start > 0 ? page - 1 : null
+            }
 
             return {
               type,
@@ -90,8 +100,8 @@ export function processQuery(query: DataQuery): QueryOutcomeResult {
                 limit,
                 pages,
                 page,
-                prev: start > 0 ? page - 1 : undefined,
-                next: end < total ? page + 1 : undefined,
+                prev,
+                next,
               },
               tinaData: sortedResources.slice(start, end),
             }
