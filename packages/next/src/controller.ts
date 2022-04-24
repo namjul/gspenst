@@ -162,7 +162,6 @@ function channelController(
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
-    isCollection: false,
     filter: routingProperties.filter,
     limit: routingProperties.limit,
     order: routingProperties.order,
@@ -238,7 +237,6 @@ function collectionController(
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
-    isCollection: true,
     filter: routingProperties.filter,
     limit: routingProperties.limit,
     order: routingProperties.order,

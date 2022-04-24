@@ -562,7 +562,7 @@ export const ExperimentalGetTinaClient = () => {
                   ],
                 },
                 slug: '1th-post',
-                date: '2021-07-03T20:30:00.000Z',
+                date: '2021-01-03T20:30:00.000Z',
                 content: {
                   type: 'root',
                   children: [],
@@ -599,7 +599,7 @@ export const ExperimentalGetTinaClient = () => {
                   ],
                 },
                 slug: '2th-post',
-                date: '2021-07-03T20:30:00.000Z',
+                date: '2021-02-03T20:30:00.000Z',
                 content: {
                   type: 'root',
                   children: [],
@@ -636,7 +636,7 @@ export const ExperimentalGetTinaClient = () => {
                   ],
                 },
                 slug: '3th-post',
-                date: '2021-07-03T20:30:00.000Z',
+                date: '2021-03-03T20:30:00.000Z',
                 content: {
                   type: 'root',
                   children: [],

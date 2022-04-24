@@ -21,10 +21,30 @@ const permalink = z
     return value
   })
 
+const orderShema = z.preprocess(
+  (value) => {
+    return String(value)
+      .split(',')
+      .map((singleOrder) => {
+        const [field, order] = singleOrder.trim().split(' ')
+        return {
+          field,
+          order,
+        }
+      })
+  },
+  z.array(
+    z.object({
+      field: z.string(),
+      order: z.union([z.literal('asc'), z.literal('desc')]),
+    })
+  )
+)
+
 const queryFilterOptions = z.object({
   filter: z.string().optional(),
   limit: z.number().optional(),
-  order: z.string().optional(),
+  order: orderShema.optional(),
   // include: z.string().optional(),
   // visibility: z.string().optional(),
   // status: z.string().optional(),
@@ -42,17 +62,16 @@ const dataQueryRead = z
   })
   .strict()
 
-type DataQueryRead = z.infer<typeof dataQueryRead>
+export type DataQueryRead = z.infer<typeof dataQueryRead>
 
 const dataQueryBrowse = z
   .object({
     type: queryTypeBrowse,
     resourceType: resourceTypeSchema,
-    isCollection: z.boolean(),
   })
   .merge(queryFilterOptions)
   .strict()
-// type DataQueryBrowse = z.infer<typeof dataQueryBrowse>
+export type DataQueryBrowse = z.infer<typeof dataQueryBrowse>
 
 const dataQuery = z.discriminatedUnion('type', [dataQueryRead, dataQueryBrowse])
 

@@ -33,7 +33,6 @@ describe('processQuery', () => {
       const query: DataQuery = {
         type: 'browse',
         resourceType: 'post',
-        isCollection: false,
       }
 
       const result = await processQuery(query)
@@ -44,7 +43,6 @@ describe('processQuery', () => {
       const query: DataQuery = {
         type: 'browse',
         resourceType: 'post',
-        isCollection: false,
         filter: 'slug:-8th-post',
       }
 
@@ -56,13 +54,27 @@ describe('processQuery', () => {
       const query: DataQuery = {
         type: 'browse',
         resourceType: 'post',
-        isCollection: false,
         limit: 3,
-        // order: routingProperties.order,
       }
 
       const result = await processQuery(query)
       expect(result._unsafeUnwrap()).toHaveLength(3)
+    })
+
+    test('order', async () => {
+      const query: DataQuery = {
+        type: 'browse',
+        resourceType: 'post',
+        limit: 3,
+        order: [{ field: 'date', order: 'desc' }],
+      }
+
+      const result = [(await processQuery(query))._unsafeUnwrap()].flat()
+      expect(result).toHaveLength(3)
+      expect(result[0]).toHaveProperty(
+        'data.getPostDocument.data.slug',
+        '9th-post'
+      )
     })
   })
 })

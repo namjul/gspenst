@@ -252,6 +252,7 @@ describe('routing object parsing', () => {
               data: 'page.home',
               filter: 'tags:[photo, video] + id:-5',
               limit: 4,
+              order: 'featured desc, published_at desc',
             },
             '/podcast/': {
               permalink: '/podcast/{slug}/',
@@ -343,6 +344,16 @@ describe('routing object parsing', () => {
                   permalink: '/:slug/',
                   filter: 'tags:[photo, video] + id:-5',
                   limit: 4,
+                  order: [
+                    {
+                      field: 'featured',
+                      order: 'desc',
+                    },
+                    {
+                      field: 'published_at',
+                      order: 'desc',
+                    },
+                  ],
                   data: {
                     query: {
                       page: {

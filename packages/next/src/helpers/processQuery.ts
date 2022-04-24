@@ -1,3 +1,4 @@
+import sortOn from 'sort-on'
 import type { DataQuery } from '../domain/routes'
 import { do_, absurd } from '../utils'
 import repository from '../repository'
@@ -19,12 +20,24 @@ export function processQuery(query: DataQuery) {
         return repository.findAll(query.resourceType).andThen((resources) => {
           return combine(
             resources.map((resource) => filterResource(resource, query.filter))
-          ).map((filteredResource) => {
-            return filteredResource
-              .flatMap(({ resource, owned }) => {
-                return owned ? [resource.dataResult] : []
-              })
-              .slice(0, query.limit)
+          ).map((x) => {
+            const property = query.order?.map((y) => {
+              return `${y.order === 'desc' ? '-' : ''}object.${y.field}`
+            })
+
+            // filter
+            const filteredResource = x.filter(({ owned }) => owned)
+
+            return (
+              // order
+              (property ? sortOn(filteredResource, property) : filteredResource)
+                // limit
+                .slice(0, query.limit)
+                // map
+                .flatMap(({ resource }) => {
+                  return resource.dataResult ? [resource.dataResult] : []
+                })
+            )
           })
         })
 

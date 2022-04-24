@@ -50,11 +50,7 @@ export function makeNqlFilter(filter: string) {
 }
 
 export function filterResource(resource: Resource, filter: string | undefined) {
-  if (!filter) {
-    return ok({ resource, owned: true })
-  }
-
-  const nqlFilter = makeNqlFilter(filter)
+  const nqlFilter = filter ? makeNqlFilter(filter) : () => ok(true)
 
   const { resourceType } = resource
 
@@ -64,12 +60,13 @@ export function filterResource(resource: Resource, filter: string | undefined) {
         ? do_(() => {
             const postResult = createPost(
               resource.dataResult!.data.getPostDocument
-            )
-              .andThen((post) => nqlFilter(post))
-              .map((owned) => ({
+            ).andThen((post) =>
+              nqlFilter(post).map((owned) => ({
+                object: post,
                 resource,
                 owned,
               }))
+            )
             return postResult
           })
         : err(Errors.notFound('filterResource'))
@@ -78,12 +75,13 @@ export function filterResource(resource: Resource, filter: string | undefined) {
         ? do_(() => {
             const pageResult = createPage(
               resource.dataResult!.data.getPageDocument
-            )
-              .andThen((page) => nqlFilter(page))
-              .map((owned) => ({
+            ).andThen((page) =>
+              nqlFilter(page).map((owned) => ({
+                object: page,
                 resource,
                 owned,
               }))
+            )
             return pageResult
           })
         : err(Errors.notFound('filterResource'))
@@ -92,12 +90,13 @@ export function filterResource(resource: Resource, filter: string | undefined) {
         ? do_(() => {
             const authorResult = createAuthor(
               resource.dataResult!.data.getAuthorDocument
-            )
-              .andThen((author) => nqlFilter(author))
-              .map((owned) => ({
+            ).andThen((author) =>
+              nqlFilter(author).map((owned) => ({
+                object: author,
                 resource,
                 owned,
               }))
+            )
             return authorResult
           })
         : err(Errors.notFound('filterResource'))
@@ -106,12 +105,13 @@ export function filterResource(resource: Resource, filter: string | undefined) {
         ? do_(() => {
             const tagResult = createTag(
               resource.dataResult!.data.getTagDocument
-            )
-              .andThen((tag) => nqlFilter(tag))
-              .map((owned) => ({
+            ).andThen((tag) =>
+              nqlFilter(tag).map((owned) => ({
+                object: tag,
                 resource,
                 owned,
               }))
+            )
             return tagResult
           })
         : err(Errors.notFound('filterResource'))
