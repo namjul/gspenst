@@ -22,13 +22,13 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
 const repository = {
   init() {
     // void (await this.getAll()) // TODO describe why doing this here
-    return combine([db.clear(), api.getResources()]).andThen((results) => {
+    return combine([db.clear(), api.getResources()]).andThen((values) => {
       const result = combine(
-        results.flatMap((r) => {
-          if (r === 'OK') {
+        values.flatMap((value) => {
+          if (value === 'OK') {
             return []
           } else {
-            const e = r.data.getCollections.flatMap((collection) => {
+            const e = value.data.getCollections.flatMap((collection) => {
               return (collection.documents.edges ?? []).flatMap(
                 (connectionEdge) => {
                   if (connectionEdge?.node) {
@@ -67,7 +67,7 @@ const repository = {
     const result = db
       .get<Resource>('resources', ...ids.map(String))
       .andThen((resources) => {
-        const x = resources.map((resource) => {
+        const resourcesResultList = resources.map((resource) => {
           if (resource.tinaData) {
             return okAsync(resource)
           } else {
@@ -96,13 +96,13 @@ const repository = {
           }
         })
 
-        return combine(x)
+        return combine(resourcesResultList)
       })
-      .map((e) => {
+      .map((resources) => {
         if (ids.length === 1) {
-          return e[0]
+          return resources[0]
         }
-        return e
+        return resources
       })
 
     return result as GetValue<T>
