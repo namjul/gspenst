@@ -22,7 +22,13 @@ export function createPage(
 ): Result<Page> {
   const {
     id,
-    data: { __typename, tags: rawTags, authors: rawAuthors, ...restPageProps },
+    data: {
+      __typename,
+      tags: rawTags,
+      authors: rawAuthors,
+      date,
+      ...restPageProps
+    },
   } = getPageDocument
 
   const tagsResult = combine(
@@ -47,6 +53,7 @@ export function createPage(
     const page = {
       id,
       ...restPageProps,
+      date: new Date(date),
       tags,
       authors,
       primary_tag: tags?.[0],

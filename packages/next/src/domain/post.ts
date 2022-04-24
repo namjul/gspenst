@@ -13,7 +13,7 @@ export const resourceType = z.literal('post')
 export const postSchema = z
   .object({
     id: idSchema,
-    date: z.string(),
+    date: z.date(),
     slug: z.string(),
     title: z.string(),
     excerpt: z.custom().optional(),
@@ -34,7 +34,13 @@ export function createPost(
 ): Result<Post> {
   const {
     id,
-    data: { __typename, tags: rawTags, authors: rawAuthors, ...restPostProps },
+    data: {
+      __typename,
+      tags: rawTags,
+      authors: rawAuthors,
+      date,
+      ...restPostProps
+    },
   } = getPostDocument
 
   const tagsResult = combine(
@@ -59,6 +65,7 @@ export function createPost(
     const post = {
       id,
       ...restPostProps,
+      date: new Date(date),
       tags,
       authors,
       primary_tag: tags?.[0],

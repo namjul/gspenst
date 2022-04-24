@@ -12,7 +12,7 @@ export const tagSchema = z
   .object({
     id: idSchema,
     name: z.string(),
-    date: z.string(),
+    date: z.date(),
     slug: z.string(),
   })
   .strict()
@@ -22,12 +22,13 @@ export function createTag(
 ): Result<Tag> {
   const {
     id,
-    data: { __typename, ...restPageTag },
+    data: { __typename, date, ...restPageTag },
   } = getTagDocument
 
   const tag = {
     id,
     ...restPageTag,
+    date: new Date(date),
   }
 
   const result = tagSchema.safeParse(tag)

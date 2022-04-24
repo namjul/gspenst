@@ -12,7 +12,7 @@ export const authorSchema = z
   .object({
     id: idSchema,
     name: z.string(),
-    date: z.string(),
+    date: z.date(),
     slug: z.string(),
   })
   .strict()
@@ -25,12 +25,13 @@ export function createAuthor(
 ): Result<Author> {
   const {
     id,
-    data: { __typename, ...restPageAuthor },
+    data: { __typename, date, ...restPageAuthor },
   } = getAuthorDocument
 
   const author = {
     id,
     ...restPageAuthor,
+    date: new Date(date),
   }
 
   const result = authorSchema.safeParse(author)
