@@ -146,13 +146,16 @@ function channelController(
   //   return entry
   // }
 
+  const { filter, limit, order, request } = routingProperties
+  const page = request.params?.page
+
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
-    filter: routingProperties.filter,
-    limit: routingProperties.limit,
-    order: routingProperties.order,
-    page: routingProperties.request.params?.page,
+    filter,
+    limit,
+    order,
+    page,
   }
 
   const data: { [name: string]: DataQuery } = {
@@ -171,6 +174,11 @@ function channelController(
         [current]: queryOutcome,
       }
     }, {})
+
+    // TODO
+    // if ((limit === 'all' && page > 1) || page > pages) {
+    //   //redirect
+    // }
 
     return okAsync({
       context: 'index' as const,
