@@ -45,6 +45,16 @@ const db = {
         Errors.other('Db', error instanceof Error ? error : undefined)
     )
   },
+  getAll<T extends AObject>(key: string): DBResultAsync<T[]> {
+    return NeverthrowResultAsync.fromPromise(
+      (async () => {
+        const result = await redis.hgetall(key)
+        return Object.values(result).map((value) => JSON.parse(value)) as T[]
+      })(),
+      (error: unknown) =>
+        Errors.other('Db', error instanceof Error ? error : undefined)
+    )
+  },
   keys(key: string): DBResultAsync<string[]> {
     return NeverthrowResultAsync.fromPromise(
       redis.hkeys(key),
