@@ -12,6 +12,7 @@ beforeAll(async () => {
   if (result.isErr()) {
     throw format(result.error)
   }
+  void (await repository.getAll())
 })
 
 describe('resolvePaths', () => {
@@ -79,7 +80,7 @@ describe('resolvePaths', () => {
           '/': {
             permalink: '/:slug/',
             template: 'index',
-            filter: undefined,
+            filter: 'primary_tag:tag-1',
             limit: undefined,
             order: undefined,
           },
@@ -95,19 +96,18 @@ describe('resolvePaths', () => {
       expect(paths._unsafeUnwrap()).toEqual([
         '/admin',
         '/',
-        '/9th-post/',
-        '/8th-post/',
         '/7th-post/',
-        '/6th-post/',
-        '/5th-post/',
-        '/4th-post/',
         '/3th-post/',
-        '/2th-post/',
-        '/1th-post/',
-        '/0th-post/',
-        '/page/1',
-        '/page/2',
         '/posts/',
+        '/posts/9th-post/',
+        '/posts/8th-post/',
+        '/posts/6th-post/',
+        '/posts/5th-post/',
+        '/posts/4th-post/',
+        '/posts/2th-post/',
+        '/posts/1th-post/',
+        '/posts/0th-post/',
+        '/posts/page/1',
         '/about',
         '/home',
         '/portfolio',

@@ -1,4 +1,4 @@
-import { idSchema, ok, err, z } from '../shared-kernel'
+import { idSchema, ok, err, z, combine } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { Get, Result } from '../shared-kernel'
 import type { GetPost } from '../api'
@@ -37,39 +37,39 @@ export function createPost(
     data: { __typename, tags: rawTags, authors: rawAuthors, ...restPostProps },
   } = getPostDocument
 
-  const tags = (rawTags ?? []).flatMap((tag) => {
-    if (tag?.tag) {
-      const tagResult = createTag(tag.tag)
-      if (tagResult.isOk()) {
-        return tagResult.value
+  const tagsResult = combine(
+    (rawTags ?? []).flatMap((tag) => {
+      if (tag?.tag) {
+        return createTag(tag.tag)
       }
-    }
-    return []
-  })
+      return []
+    })
+  )
 
-  const authors = (rawAuthors ?? []).flatMap((author) => {
-    if (author?.author) {
-      const authorResult = createAuthor(author.author)
-      if (authorResult.isOk()) {
-        return authorResult.value
+  const authorsResult = combine(
+    (rawAuthors ?? []).flatMap((author) => {
+      if (author?.author) {
+        return createAuthor(author.author)
       }
+      return []
+    })
+  )
+
+  return combine([tagsResult, authorsResult]).andThen(([tags, authors]) => {
+    const post = {
+      id,
+      ...restPostProps,
+      tags,
+      authors,
+      primary_tag: tags?.[0],
+      primary_author: authors?.[0],
     }
-    return []
+
+    const parsedPostResult = postSchema.safeParse(post)
+    if (parsedPostResult.success) {
+      return ok(parsedPostResult.data)
+    } else {
+      return err(Errors.other('Create Post', parsedPostResult.error))
+    }
   })
-
-  const post = {
-    id,
-    ...restPostProps,
-    tags,
-    authors,
-    primary_tag: tags[0],
-    primary_author: authors[0],
-  }
-
-  const parsedPostResult = postSchema.safeParse(post)
-  if (parsedPostResult.success) {
-    return ok(parsedPostResult.data)
-  } else {
-    return err(Errors.other('Create Post', parsedPostResult.error))
-  }
 }

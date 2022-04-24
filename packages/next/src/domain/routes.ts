@@ -48,6 +48,7 @@ const dataQueryBrowse = z
   .object({
     type: queryTypeBrowse,
     resourceType: resourceTypeSchema,
+    isCollection: z.boolean(),
   })
   .merge(queryFilterOptions)
   .strict()

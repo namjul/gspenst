@@ -327,8 +327,13 @@ class CollectionRouter extends ParentRouter {
           if (routesRegExp) {
             const [routeMatch, page] = routesRegExp.exec(request) ?? []
 
-            if (routeMatch && page) {
-              return ok(this.#createEntriesContext(routeMatch, Number(page)))
+            if (routeMatch) {
+              return ok(
+                this.#createEntriesContext(
+                  routeMatch,
+                  page ? Number(page) : undefined
+                )
+              )
             }
           }
 

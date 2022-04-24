@@ -76,7 +76,7 @@
       "^.+\\.[t|j]sx?$": "babel-jest"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!(dot-prop)/)"
+      "node_modules/(?!(fnv1a|dot-prop)/)"
     ],
     "watchPlugins": [
       "jest-watch-typeahead/filename",

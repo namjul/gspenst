@@ -1,4 +1,4 @@
-import { getTemplateHierarchy } from './dataUtils'
+import { getTemplateHierarchy } from './getTemplateHierarchy'
 
 describe('computing template hierarchy', () => {
   test('collection', () => {

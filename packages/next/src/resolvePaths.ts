@@ -5,6 +5,7 @@ import type { Entries, Result } from './shared-kernel'
 import type { Resource } from './domain/resource'
 import type { Taxonomies } from './domain/taxonomy'
 import repository from './repository'
+import { filterResource } from './helpers/filterResource'
 import { compilePermalink } from './helpers'
 
 const POST_PER_PAGE = 5
@@ -30,12 +31,18 @@ async function resolveCollectionsPaths(routingConfig: RoutingConfigResolved) {
         for (let len = postStack.length - 1; len >= 0; len -= 1) {
           const resource = postStack[len]
           if (resource) {
-            collectionPosts.push(resource)
-            const isOwned = true // TODO filter using filter option `const isOwned = this.nql.queryJSON(resource)`
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            if (isOwned) {
-              paths.push(compilePermalink(config.permalink, resource))
+            const filterResourceResult = filterResource(resource, config.filter)
 
+            if (filterResourceResult.isErr()) {
+              paths.push(err(filterResourceResult.error))
+            } else if (filterResourceResult.value.owned) {
+              collectionPosts.push(resource)
+              paths.push(
+                compilePermalink(
+                  config.permalink,
+                  filterResourceResult.value.resource
+                )
+              )
               // Remove owned resource
               postStack.splice(len, 1)
             }
@@ -43,7 +50,7 @@ async function resolveCollectionsPaths(routingConfig: RoutingConfigResolved) {
         }
 
         Array.from(
-          { length: collectionPosts.length / POST_PER_PAGE },
+          { length: Math.floor(collectionPosts.length / POST_PER_PAGE) },
           (_, i) => {
             return paths.push(
               ok(path.join(String(mainRoute), 'page', String(i + 1)))

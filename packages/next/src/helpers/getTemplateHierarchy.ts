@@ -1,5 +1,5 @@
-import type { RoutingContext } from './router'
-import { absurd } from './helpers'
+import type { RoutingContext } from '../router'
+import { absurd } from './index'
 
 export function getTemplateHierarchy(
   routingProperties: NonNullable<RoutingContext>

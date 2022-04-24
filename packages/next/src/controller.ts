@@ -1,14 +1,10 @@
 import type { Redirect } from 'next'
-import nql from '@tryghost/nql'
 import { ok, err, combine, okAsync } from './shared-kernel'
 import type { RoutingContext } from './router'
 import type { DataQuery } from './domain/routes'
-import { createPost } from './domain/post'
-import { createPage } from './domain/page'
-import { createAuthor } from './domain/author'
-import { createTag } from './domain/tag'
 import { absurd } from './helpers'
-import { getTemplateHierarchy } from './dataUtils'
+import { filterResource } from './helpers/filterResource'
+import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import repository from './repository'
 import type { ThemeContextType } from './types'
 import type { Result, ResultAsync, Simplify, Option } from './shared-kernel'
@@ -117,33 +113,6 @@ export type PageProps =
 type ControllerResult<T> = Result<T>
 type ControllerResultAsync<T> = ResultAsync<T>
 
-const EXPANSIONS = [
-  {
-    key: 'author',
-    replacement: 'authors.slug',
-  },
-  {
-    key: 'tags',
-    replacement: 'tags.slug',
-  },
-  {
-    key: 'tag',
-    replacement: 'tags.slug',
-  },
-  {
-    key: 'authors',
-    replacement: 'authors.slug',
-  },
-  {
-    key: 'primary_tag',
-    replacement: 'primary_tag.slug',
-  },
-  {
-    key: 'primary_author',
-    replacement: 'primary_author.slug',
-  },
-]
-
 function processQuery(query: DataQuery) {
   const { type } = query
 
@@ -157,84 +126,11 @@ function processQuery(query: DataQuery) {
           .map(({ dataResult }) => dataResult)
       case 'browse':
         return repository.findAll(query.resourceType).andThen((resources) => {
-          if (!query.filter) {
-            return okAsync(resources.map(({ dataResult }) => dataResult))
-          }
-
-          const filter = nql(query.filter, {
-            expansions: EXPANSIONS,
-          }).queryJSON
-
-          const v = resources.map((resource) => {
-            const { resourceType } = resource
-
-            switch (resourceType) {
-              case 'post':
-                return resource.dataResult
-                  ? do_(() => {
-                      const postResult = createPost(
-                        resource.dataResult!.data.getPostDocument
-                      ).map((post) => {
-                        return {
-                          resource: resource.dataResult,
-                          included: filter(post),
-                        }
-                      })
-                      return postResult
-                    })
-                  : err(Errors.notFound('processQuery'))
-              case 'page':
-                return resource.dataResult
-                  ? do_(() => {
-                      const pageResult = createPage(
-                        resource.dataResult!.data.getPageDocument
-                      ).map((page) => {
-                        return {
-                          resource: resource.dataResult,
-                          included: filter(page),
-                        }
-                      })
-                      return pageResult
-                    })
-                  : err(Errors.notFound('processQuery'))
-              case 'author':
-                return resource.dataResult
-                  ? do_(() => {
-                      const authorResult = createAuthor(
-                        resource.dataResult!.data.getAuthorDocument
-                      ).map((author) => {
-                        return {
-                          resource: resource.dataResult,
-                          included: filter(author),
-                        }
-                      })
-                      return authorResult
-                    })
-                  : err(Errors.notFound('processQuery'))
-              case 'tag':
-                return resource.dataResult
-                  ? do_(() => {
-                      const tagResult = createTag(
-                        resource.dataResult!.data.getTagDocument
-                      ).map((tag) => {
-                        return {
-                          resource: resource.dataResult,
-                          included: filter(tag),
-                        }
-                      })
-                      return tagResult
-                    })
-                  : err(Errors.notFound('processQuery'))
-              default:
-                return absurd(resourceType)
-            }
-          })
-
-          const matchResources = combine(v)
-
-          return matchResources.map((x) => {
-            return x.flatMap(({ resource, included }) => {
-              return included ? [resource] : []
+          return combine(
+            resources.map((resource) => filterResource(resource, query.filter))
+          ).map((filteredResource) => {
+            return filteredResource.flatMap(({ resource, owned }) => {
+              return owned ? [resource.dataResult] : []
             })
           })
         })
@@ -298,6 +194,7 @@ function channelController(
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
+    isCollection: false,
     filter: routingProperties.filter,
     limit: routingProperties.limit,
     order: routingProperties.order,
@@ -373,6 +270,7 @@ function collectionController(
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
+    isCollection: true,
     filter: routingProperties.filter,
     limit: routingProperties.limit,
     order: routingProperties.order,
@@ -386,7 +284,6 @@ function collectionController(
   const keys = Object.keys(data)
   const result = combine(
     keys.map((key) => {
-      // TODO processQuery but mark already processed resources for collection
       return processQuery(data[key]!)
     })
   )
@@ -480,8 +377,8 @@ export function controller(
     | Result<Option<RoutingContext>>
     | Result<Option<RoutingContext>[]>
 ): Result<Promise<ControllerReturnType>> {
-  return routingContextsResult.map(async (y) => {
-    for (const context of [y].flat()) {
+  return routingContextsResult.map(async (routingContext) => {
+    for (const context of [routingContext].flat()) {
       if (context === undefined) {
         continue
       }

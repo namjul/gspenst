@@ -68,6 +68,7 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
+  // TODO move into `with.ts` to error sooner
   const routingConfigResult = parseRoutes({
     ...defaultRoutes,
     ...(yaml.load(source) as object),

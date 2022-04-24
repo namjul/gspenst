@@ -63,7 +63,7 @@ export const ExperimentalGetTinaClient = () => {
                       },
                       data: {
                         slug: null,
-                        date: null,
+                        date: '2021-07-03T20:30:00.000Z',
                         tags: null,
                         authors: null,
                       },
@@ -83,7 +83,7 @@ export const ExperimentalGetTinaClient = () => {
                       },
                       data: {
                         slug: null,
-                        date: null,
+                        date: '2021-07-03T20:30:00.000Z',
                         tags: null,
                         authors: null,
                       },
@@ -103,7 +103,7 @@ export const ExperimentalGetTinaClient = () => {
                       },
                       data: {
                         slug: null,
-                        date: null,
+                        date: '2021-07-03T20:30:00.000Z',
                         tags: null,
                         authors: null,
                       },
@@ -201,7 +201,11 @@ export const ExperimentalGetTinaClient = () => {
                             tag: {
                               id: 'content/tags/tag-1.mdx',
                               sys: { filename: 'tag-1' },
-                              data: { name: 'Tag 1', date: null, slug: null },
+                              data: {
+                                name: 'Tag 1',
+                                date: '2021-07-03T20:30:00.000Z',
+                                slug: null,
+                              },
                             },
                           },
                         ],
@@ -210,7 +214,11 @@ export const ExperimentalGetTinaClient = () => {
                             author: {
                               id: 'content/authors/pedro.mdx',
                               sys: { filename: 'pedro' },
-                              data: { name: 'Pedro', date: null, slug: null },
+                              data: {
+                                name: 'Pedro',
+                                date: '2021-07-03T20:30:00.000Z',
+                                slug: null,
+                              },
                             },
                           },
                         ],
@@ -633,6 +641,35 @@ export const ExperimentalGetTinaClient = () => {
                   type: 'root',
                   children: [],
                 },
+
+                tags: [
+                  {
+                    __typename: 'PostTags' as const,
+                    tag: {
+                      __typename: 'TagDocument' as const,
+                      id: 'content/tags/tag-1.mdx',
+                      data: {
+                        name: 'Tag 1',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'tag-1',
+                      },
+                    },
+                  },
+                ],
+                authors: [
+                  {
+                    __typename: 'PostAuthors' as const,
+                    author: {
+                      __typename: 'AuthorDocument' as const,
+                      id: 'content/authors/pedro.mdx',
+                      data: {
+                        name: 'Pedro',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'pedro',
+                      },
+                    },
+                  },
+                ],
               },
             },
           },
@@ -760,6 +797,34 @@ export const ExperimentalGetTinaClient = () => {
               __typename: 'PostDocument' as const,
               id: `content/posts/${relativePath}`,
               data: {
+                tags: [
+                  {
+                    __typename: 'PostTags' as const,
+                    tag: {
+                      __typename: 'TagDocument' as const,
+                      id: 'content/tags/tag-1.mdx',
+                      data: {
+                        name: 'Tag 1',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'tag-1',
+                      },
+                    },
+                  },
+                ],
+                authors: [
+                  {
+                    __typename: 'PostAuthors' as const,
+                    author: {
+                      __typename: 'AuthorDocument' as const,
+                      id: 'content/authors/pedro.mdx',
+                      data: {
+                        name: 'Pedro',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'pedro',
+                      },
+                    },
+                  },
+                ],
                 title: '7th Post',
                 excerpt: {
                   type: 'root',
