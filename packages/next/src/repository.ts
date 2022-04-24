@@ -101,7 +101,7 @@ const repository = {
       })
       .map((e) => {
         if (ids.length === 1) {
-          return okAsync(e[0])
+          return e[0]
         }
         return e
       })

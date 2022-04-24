@@ -1,4 +1,3 @@
-import { ok } from './shared-kernel'
 import repository from './repository'
 import { format } from './errors'
 import type { ID } from './shared-kernel'
@@ -52,7 +51,7 @@ describe('repository', () => {
       primary_author: 'all',
     }
     const result = await repository.get(id)
-    expect(result._unsafeUnwrap()).toMatchObject(ok(resource))
+    expect(result._unsafeUnwrap()).toMatchObject(resource)
   })
 
   test('get multiple', async () => {
