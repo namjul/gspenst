@@ -2,9 +2,8 @@ import type { Redirect } from 'next'
 import { ok, err, combine, okAsync } from './shared-kernel'
 import type { RoutingContext } from './router'
 import type { DataQuery } from './domain/routes'
-import { filterResource } from './helpers/filterResource'
+import { processQuery } from './helpers/processQuery'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
-import repository from './repository'
 import type { ThemeContextType } from './types'
 import type { Result, ResultAsync, Simplify, Option } from './shared-kernel'
 import * as Errors from './errors'
@@ -111,36 +110,6 @@ export type PageProps =
 
 type ControllerResult<T> = Result<T>
 type ControllerResultAsync<T> = ResultAsync<T>
-
-function processQuery(query: DataQuery) {
-  const { type } = query
-
-  const result = do_(() => {
-    switch (type) {
-      case 'read':
-        return repository
-          .find({
-            slug: query.slug,
-          })
-          .map(({ dataResult }) => dataResult)
-      case 'browse':
-        return repository.findAll(query.resourceType).andThen((resources) => {
-          return combine(
-            resources.map((resource) => filterResource(resource, query.filter))
-          ).map((filteredResource) => {
-            return filteredResource.flatMap(({ resource, owned }) => {
-              return owned ? [resource.dataResult] : []
-            })
-          })
-        })
-
-      default:
-        return absurd(type)
-    }
-  })
-
-  return result
-}
 
 function entryController(
   routingProperties: Extract<RoutingContext, { type: 'entry' }>
