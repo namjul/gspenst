@@ -3,20 +3,12 @@ import { ok, err, combine, okAsync } from './shared-kernel'
 import type { RoutingContext } from './router'
 import type { DataQuery } from './domain/routes'
 import { processQuery } from './helpers/processQuery'
+import type { QueryOutcome } from './helpers/processQuery'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { ThemeContextType } from './types'
 import type { Result, ResultAsync, Simplify, Option } from './shared-kernel'
 import * as Errors from './errors'
 import { do_, absurd } from './utils'
-
-type Pagination = {
-  page: number // the current page number
-  prev: number | null // the previous page number
-  next: number | null // the next page number
-  pages: number // the number of pages available
-  total: number // the number of posts available
-  limit: number // the number of posts per page
-}
 
 // export type PageProps =
 //   | {
@@ -34,7 +26,7 @@ type Pagination = {
 type BasePageProps = {
   templates: string[]
   data: {
-    [name: string]: unknown
+    [name: string]: QueryOutcome
   }
   route: string
 }
@@ -82,7 +74,6 @@ type IndexPageProps = Simplify<
       // entry: GetConfig
       // posts: GetPost[]
     }
-    pagination: Pagination
   }
 >
 
@@ -123,20 +114,16 @@ function entryController(
     redirect: false,
   }
 
-  return processQuery(query)
-    .map((entry) => {
-      return {
-        context: resourceType,
-        data: {
-          entry,
-        },
-        templates: getTemplateHierarchy(routingProperties),
-        route: routingProperties.request.path,
-      }
-    })
-    .mapErr((y) => {
-      return y
-    })
+  return processQuery(query).map((entry) => {
+    return {
+      context: resourceType,
+      data: {
+        entry,
+      },
+      templates: getTemplateHierarchy(routingProperties),
+      route: routingProperties.request.path,
+    }
+  })
 }
 
 function channelController(
@@ -149,11 +136,11 @@ function channelController(
   //   | ConfigResourceItem
   //   | undefined
   //
-  // if (!configResourceItem || !configResourceItem.dataResult) {
+  // if (!configResourceItem || !configResourceItem.tinaData) {
   //   return err(Errors.notFound(routingProperties.request.path))
   // }
   //
-  // const entry = configResourceItem.dataResult
+  // const entry = configResourceItem.tinaData
   //
   // if (entry.isErr()) {
   //   return entry
@@ -165,6 +152,7 @@ function channelController(
     filter: routingProperties.filter,
     limit: routingProperties.limit,
     order: routingProperties.order,
+    page: routingProperties.request.params?.page,
   }
 
   const data: { [name: string]: DataQuery } = {
@@ -173,18 +161,14 @@ function channelController(
   }
 
   const keys = Object.keys(data)
-  const result = combine(
-    keys.map((key) => {
-      return processQuery(data[key]!)
-    })
-  )
+  const result = combine(keys.map((key) => processQuery(data[key]!)))
 
   return result.andThen((resource) => {
     const dataEntries = keys.reduce((acc, current, index) => {
-      const dataResult = resource[index]
+      const queryOutcome = resource[index]
       return {
         ...acc,
-        [current]: dataResult,
+        [current]: queryOutcome,
       }
     }, {})
 
@@ -193,14 +177,6 @@ function channelController(
       templates: getTemplateHierarchy(routingProperties),
       data: {
         ...dataEntries,
-      },
-      pagination: {
-        page: 1,
-        prev: null,
-        next: null,
-        pages: 1,
-        total: 10,
-        limit: 10,
       },
       route: routingProperties.request.path,
     })
@@ -223,7 +199,7 @@ function collectionController(
   //   return err(configResourceItem.error)
   // }
   //
-  // const entry = configResourceItem.value.dataResult
+  // const entry = configResourceItem.value.tinaData
   //
   // if (entry.isErr()) {
   //   return err(
@@ -240,6 +216,7 @@ function collectionController(
     filter: routingProperties.filter,
     limit: routingProperties.limit,
     order: routingProperties.order,
+    page: routingProperties.request.params?.page,
   }
 
   const data: { [name: string]: DataQuery } = {
@@ -256,10 +233,10 @@ function collectionController(
 
   return result.andThen((resource) => {
     const dataEntries = keys.reduce((acc, current, index) => {
-      const dataResult = resource[index]
+      const queryOutcome = resource[index]
       return {
         ...acc,
-        [current]: dataResult,
+        [current]: queryOutcome,
       }
     }, {})
 
@@ -268,14 +245,6 @@ function collectionController(
       templates: getTemplateHierarchy(routingProperties),
       data: {
         ...dataEntries,
-      },
-      pagination: {
-        page: 1,
-        prev: null,
-        next: null,
-        pages: 1,
-        total: 10,
-        limit: 10,
       },
       route: routingProperties.request.path,
     })
@@ -292,11 +261,11 @@ function customController(
   //   | ConfigResourceItem
   //   | undefined
   //
-  // if (!configResourceItem || !configResourceItem.dataResult) {
+  // if (!configResourceItem || !configResourceItem.tinaData) {
   //   return err(Errors.notFound(routingProperties.request.path))
   // }
   //
-  // const entry = configResourceItem.dataResult
+  // const entry = configResourceItem.tinaData
   //
   // if (entry.isErr()) {
   //   return entry
@@ -307,18 +276,14 @@ function customController(
   }
 
   const keys = Object.keys(data)
-  const result = combine(
-    keys.map((key) => {
-      return processQuery(data[key]!)
-    })
-  )
+  const result = combine(keys.map((key) => processQuery(data[key]!)))
 
   return result.andThen((resource) => {
     const dataEntries = keys.reduce((acc, current, index) => {
-      const dataResult = resource[index]
+      const queryOutcome = resource[index]
       return {
         ...acc,
-        [current]: dataResult,
+        [current]: queryOutcome,
       }
     }, {})
 

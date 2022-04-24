@@ -68,10 +68,10 @@ const repository = {
       .get<Resource>('resources', ...ids.map(String))
       .andThen((resources) => {
         const x = resources.map((resource) => {
-          if (resource.dataResult) {
+          if (resource.tinaData) {
             return okAsync(resource)
           } else {
-            const dataResultResult = (() => {
+            const tinaDataResult = (() => {
               const { resourceType, relativePath } = resource
               switch (resourceType) {
                 case 'page':
@@ -87,10 +87,9 @@ const repository = {
               }
             })() // Immediately invoke the function
 
-            // TODO rename `dataResult` field into `data`
-            return dataResultResult
-              .map((dataResult) => {
-                resource.dataResult = dataResult
+            return tinaDataResult
+              .map((tinaData) => {
+                resource.tinaData = tinaData
                 return this.set(resource).andThen(() => okAsync(resource))
               })
               .andThen((resourceResult) => resourceResult)

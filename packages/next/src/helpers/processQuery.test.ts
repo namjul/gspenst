@@ -25,7 +25,7 @@ describe('processQuery', () => {
     }
 
     const result = await processQuery(query)
-    expect(result._unsafeUnwrap()).toHaveProperty('data')
+    expect(result._unsafeUnwrap()).toHaveProperty('tinaData')
   })
 
   describe('browse', () => {
@@ -36,7 +36,9 @@ describe('processQuery', () => {
       }
 
       const result = await processQuery(query)
-      expect(result._unsafeUnwrap()).toHaveLength(10)
+      expect(result._unsafeUnwrap()).toHaveProperty('tinaData')
+      expect(result._unsafeUnwrap()).toHaveProperty('pagination')
+      expect(result._unsafeUnwrap()).toHaveProperty('pagination.total', 10)
     })
 
     test('filter', async () => {
@@ -47,7 +49,9 @@ describe('processQuery', () => {
       }
 
       const result = await processQuery(query)
-      expect(result._unsafeUnwrap()).toHaveLength(9)
+      expect(result._unsafeUnwrap()).toHaveProperty('tinaData')
+      expect(result._unsafeUnwrap()).toHaveProperty('pagination')
+      expect(result._unsafeUnwrap()).toHaveProperty('pagination.total', 9)
     })
 
     test('limit', async () => {
@@ -58,7 +62,7 @@ describe('processQuery', () => {
       }
 
       const result = await processQuery(query)
-      expect(result._unsafeUnwrap()).toHaveLength(3)
+      expect(result._unsafeUnwrap()).toHaveProperty('pagination.total', 10)
     })
 
     test('order', async () => {
@@ -69,10 +73,10 @@ describe('processQuery', () => {
         order: [{ field: 'date', order: 'desc' }],
       }
 
-      const result = [(await processQuery(query))._unsafeUnwrap()].flat()
-      expect(result).toHaveLength(3)
-      expect(result[0]).toHaveProperty(
-        'data.getPostDocument.data.slug',
+      const result = (await processQuery(query))._unsafeUnwrap()
+      expect(result.tinaData).toHaveLength(3)
+      expect(result.tinaData).toHaveProperty(
+        '[0].data.getPostDocument.data.slug',
         '9th-post'
       )
     })

@@ -56,10 +56,10 @@ export function filterResource(resource: Resource, filter: string | undefined) {
 
   switch (resourceType) {
     case 'post':
-      return resource.dataResult
+      return resource.tinaData
         ? do_(() => {
             const postResult = createPost(
-              resource.dataResult!.data.getPostDocument
+              resource.tinaData!.data.getPostDocument
             ).andThen((post) =>
               nqlFilter(post).map((owned) => ({
                 object: post,
@@ -71,10 +71,10 @@ export function filterResource(resource: Resource, filter: string | undefined) {
           })
         : err(Errors.notFound('filterResource'))
     case 'page':
-      return resource.dataResult
+      return resource.tinaData
         ? do_(() => {
             const pageResult = createPage(
-              resource.dataResult!.data.getPageDocument
+              resource.tinaData!.data.getPageDocument
             ).andThen((page) =>
               nqlFilter(page).map((owned) => ({
                 object: page,
@@ -86,10 +86,10 @@ export function filterResource(resource: Resource, filter: string | undefined) {
           })
         : err(Errors.notFound('filterResource'))
     case 'author':
-      return resource.dataResult
+      return resource.tinaData
         ? do_(() => {
             const authorResult = createAuthor(
-              resource.dataResult!.data.getAuthorDocument
+              resource.tinaData!.data.getAuthorDocument
             ).andThen((author) =>
               nqlFilter(author).map((owned) => ({
                 object: author,
@@ -101,10 +101,10 @@ export function filterResource(resource: Resource, filter: string | undefined) {
           })
         : err(Errors.notFound('filterResource'))
     case 'tag':
-      return resource.dataResult
+      return resource.tinaData
         ? do_(() => {
             const tagResult = createTag(
-              resource.dataResult!.data.getTagDocument
+              resource.tinaData!.data.getTagDocument
             ).andThen((tag) =>
               nqlFilter(tag).map((owned) => ({
                 object: tag,

@@ -44,6 +44,7 @@ const orderShema = z.preprocess(
 const queryFilterOptions = z.object({
   filter: z.string().optional(),
   limit: z.number().optional(),
+  // limit: z.union([z.number(), z.literal('all')]).default(POST_PER_PAGE),
   order: orderShema.optional(),
   // include: z.string().optional(),
   // visibility: z.string().optional(),
@@ -68,6 +69,7 @@ const dataQueryBrowse = z
   .object({
     type: queryTypeBrowse,
     resourceType: resourceTypeSchema,
+    page: z.number().optional(), // TODO make non optional
   })
   .merge(queryFilterOptions)
   .strict()
@@ -118,7 +120,11 @@ const dataShortForm = z
     )
   })
 
+export type DataShortForm = z.output<typeof dataShortForm>
+
 const dataLongForm = z.record(dataQuery)
+export type DataLongForm = z.output<typeof dataLongForm>
+
 const dataForm = z
   .union([dataShortForm, dataLongForm])
   .transform((dataValues) => {

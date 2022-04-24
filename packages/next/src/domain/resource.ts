@@ -43,28 +43,28 @@ const resourceBaseSchema = z.object({
 const postResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
     resourceType: resourceTypePost,
-    dataResult: getPostSchema.optional(),
+    tinaData: getPostSchema.optional(),
   })
 )
 
 const pageResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
     resourceType: resourceTypePage,
-    dataResult: getPageSchema.optional(),
+    tinaData: getPageSchema.optional(),
   })
 )
 
 const authorResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
     resourceType: resourceTypeAuthor,
-    dataResult: getAuthorSchema.optional(),
+    tinaData: getAuthorSchema.optional(),
   })
 )
 
 const tagResource = resourceBaseSchema.merge(dynamicVariablesSchema).merge(
   z.object({
     resourceType: resourceTypeTag,
-    dataResult: getTagSchema.optional(),
+    tinaData: getTagSchema.optional(),
   })
 )
 

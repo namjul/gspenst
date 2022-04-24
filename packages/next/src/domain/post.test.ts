@@ -20,7 +20,7 @@ describe('post model', () => {
     const resource = await repository.get(1824064168 as ID)
     const getPostDocument = getProperty(
       resource._unsafeUnwrap(),
-      'dataResult.data.getPostDocument'
+      'tinaData.data.getPostDocument'
     )
     expect(createPost(getPostDocument!).isOk()).toBe(true)
   })
