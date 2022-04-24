@@ -182,6 +182,16 @@ describe('routing object parsing', () => {
           },
         }).isErr()
       ).toBe(true)
+
+      expect(
+        parseRoutes({
+          routes: {
+            '/food/': {
+              controller: 'channel',
+            },
+          },
+        }).isErr()
+      ).toBe(true)
     })
   })
 

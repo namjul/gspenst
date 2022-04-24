@@ -74,6 +74,27 @@ describe('resolvePaths', () => {
         )._unsafeUnwrap()
       ).toContain('/features/')
     })
+    test('routes#channel', async () => {
+      expect(
+        (
+          await resolvePaths({
+            routes: {
+              '/features/': {
+                controller: 'channel',
+                filter: 'primary_tag:-tag-1',
+              },
+            },
+          })
+        )._unsafeUnwrap()
+      ).toEqual([
+        '/admin',
+        '/features/',
+        '/features/page/1',
+        '/about',
+        '/home',
+        '/portfolio',
+      ])
+    })
     test('collections', async () => {
       const paths = await resolvePaths({
         collections: {

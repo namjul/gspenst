@@ -149,8 +149,19 @@ const route = z
   .object({
     template: template.optional(),
     data: dataForm.optional(),
+    controller: z.literal('channel').optional(),
   })
+  .merge(queryFilterOptions)
   .strict()
+  .refine(
+    (value) => {
+      if ('controller' in value) {
+        return 'filter' in value
+      }
+      return true
+    },
+    () => ({ message: 'filter property required when using channel' })
+  )
 
 export type Route = z.infer<typeof route>
 
