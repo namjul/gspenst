@@ -9,10 +9,6 @@ import { nodeEnvironment } from '../env'
 
 export const isProductionBuild = nodeEnvironment === 'production'
 
-export function absurd(_: never): never {
-  throw new Error('absurd')
-}
-
 export const pathToRegexp = NeverThrowResult.fromThrowable(
   _pathToRegexp,
   (error) =>

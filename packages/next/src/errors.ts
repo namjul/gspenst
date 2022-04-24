@@ -1,4 +1,4 @@
-import { absurd } from './helpers'
+import { absurd } from './utils'
 
 export type GspenstError =
   | { type: 'Other'; error: Error | undefined; context?: string }

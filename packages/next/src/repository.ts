@@ -1,7 +1,7 @@
 import { okAsync, errAsync, combine } from './shared-kernel'
 import * as api from './api'
 import db from './db'
-import { absurd } from './helpers'
+import { absurd } from './utils'
 import type { ResourceType, Resource } from './domain/resource'
 import { createResource } from './domain/resource'
 import type { ID, ResultAsync } from './shared-kernel'

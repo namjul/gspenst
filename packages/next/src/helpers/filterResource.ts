@@ -5,10 +5,9 @@ import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
-import { do_ } from '../utils'
+import { do_, absurd } from '../utils'
 import * as Errors from '../errors'
 import type { Resource } from '../domain/resource'
-import { absurd } from './index'
 
 const EXPANSIONS = [
   {

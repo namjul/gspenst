@@ -2,14 +2,13 @@ import type { Redirect } from 'next'
 import { ok, err, combine, okAsync } from './shared-kernel'
 import type { RoutingContext } from './router'
 import type { DataQuery } from './domain/routes'
-import { absurd } from './helpers'
 import { filterResource } from './helpers/filterResource'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import repository from './repository'
 import type { ThemeContextType } from './types'
 import type { Result, ResultAsync, Simplify, Option } from './shared-kernel'
 import * as Errors from './errors'
-import { do_ } from './utils'
+import { do_, absurd } from './utils'
 
 type Pagination = {
   page: number // the current page number
