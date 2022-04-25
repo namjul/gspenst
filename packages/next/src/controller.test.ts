@@ -3,11 +3,11 @@ import { controller } from './controller'
 import repository from './repository'
 import { format } from './errors'
 
-jest.mock('../.tina/__generated__/types')
 jest.mock('./redis')
+jest.mock('./api')
 
 beforeAll(async () => {
-  const result = await repository.init()
+  const result = await repository.collect()
   if (result.isErr()) {
     throw format(result.error)
   }

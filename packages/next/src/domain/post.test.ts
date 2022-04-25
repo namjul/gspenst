@@ -5,8 +5,8 @@ import type { ID } from '../shared-kernel'
 import { format } from '../errors'
 import { createPost } from './post'
 
-jest.mock('../../.tina/__generated__/types')
 jest.mock('../redis')
+jest.mock('../api')
 
 beforeAll(async () => {
   const result = await combine([repository.collect(), repository.getAll()])

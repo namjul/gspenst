@@ -4,7 +4,7 @@ import type { DataQuery } from '../domain/routes'
 import { format } from '../errors'
 import { processQuery } from './processQuery'
 
-jest.mock('../../.tina/__generated__/types')
+jest.mock('../api')
 jest.mock('../redis')
 
 beforeAll(async () => {

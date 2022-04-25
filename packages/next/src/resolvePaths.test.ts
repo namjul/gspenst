@@ -4,7 +4,7 @@ import defaultRoutes from './defaultRoutes'
 import { parseRoutes } from './domain/routes'
 import { format } from './errors'
 
-jest.mock('../.tina/__generated__/types')
+jest.mock('./api')
 jest.mock('./redis')
 
 beforeAll(async () => {

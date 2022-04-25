@@ -4,7 +4,7 @@ import type { ID } from '../shared-kernel'
 import { format } from '../errors'
 import { filterResource } from './filterResource'
 
-jest.mock('../../.tina/__generated__/types')
+jest.mock('../api')
 jest.mock('../redis')
 
 beforeAll(async () => {

@@ -2,7 +2,7 @@ import repository from './repository'
 import { format } from './errors'
 import type { ID } from './shared-kernel'
 
-jest.mock('../.tina/__generated__/types')
+jest.mock('./api')
 jest.mock('./redis')
 
 beforeAll(async () => {
