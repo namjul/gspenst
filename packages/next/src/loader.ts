@@ -3,12 +3,13 @@
 import path from 'path'
 import debug from 'debug'
 import yaml from 'js-yaml'
-import type { LoaderDefinition } from 'webpack'
+import type { LoaderContext } from 'webpack'
 import { parseRoutes } from './domain/routes'
 import { findContentDir } from './utils'
 import { isProductionBuild } from './helpers'
 import { format } from './errors'
 import defaultRoutes from './defaultRoutes'
+import repository from './repository'
 
 export type LoaderOptions = {
   theme: string
@@ -20,22 +21,23 @@ const log = debug('@gspenst/next:loader')
 
 const contentDir = path.resolve(findContentDir())
 
-// api lookup: https://webpack.js.org/api/loaders/
-
 const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
 
-const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
-  const callback = this.async()
+// api lookup: https://webpack.js.org/api/loaders/
 
-  this.cacheable(true)
+async function loader(
+  context: LoaderContext<LoaderOptions>,
+  source: string
+): Promise<string | Buffer> {
+  context.cacheable(true)
 
-  const options = this.getOptions()
+  const options = context.getOptions()
   const { theme, themeConfig, staticExport } = options
 
   log('Run loader')
 
   if (!theme) {
-    throw new Error('No Gspenst Theme found.') // TODO use `this.emitError`
+    context.emitError(new Error('No Gspenst Theme found.'))
   }
 
   let themePath = theme
@@ -58,24 +60,30 @@ const loader: LoaderDefinition<LoaderOptions> = function loader(source) {
   if (!isProductionBuild) {
     // Add the entire directory `content` as the dependency
     // so we when manually editing the files pages are rebuild
-    this.addContextDependency(contentDir)
+    context.addContextDependency(contentDir)
     effectHotReload = Math.random()
   }
 
-  const { resourcePath } = this
+  const { resourcePath } = context
   const filename = resourcePath.slice(resourcePath.lastIndexOf('/') + 1)
   const routingParameter = (
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  // TODO move into `with.ts` to error sooner
   const routingConfigResult = parseRoutes({
     ...defaultRoutes,
     ...(yaml.load(source) as object),
   })
 
   if (routingConfigResult.isErr()) {
-    this.emitWarning(format(routingConfigResult.error))
+    context.emitError(format(routingConfigResult.error))
+  }
+
+  log('Collect Resources')
+  const repoCollectResult = await repository.init()
+
+  if (repoCollectResult.isErr()) {
+    context.emitError(format(repoCollectResult.error))
   }
 
   const routingConfig = routingConfigResult.isOk()
@@ -114,14 +122,18 @@ export const getStaticProps = async (context) => {
 }
 `
 
-  source = [imports, component, dataFetchingFunctions].join('\n')
-
-  callback(null, source)
-
-  return undefined
+  return [imports, component, dataFetchingFunctions].join('\n')
 }
 
-export default loader
+export default function syncLoader(
+  this: LoaderContext<LoaderOptions>,
+  source: string
+) {
+  const callback = this.async()
+  loader(this, source)
+    .then((result) => callback(null, result))
+    .catch((err: Error) => callback(err))
+}
 
 // TODO use `import { serializeError } from 'serialize-error'` when https://github.com/vercel/next.js/discussions/32239 is solved
 function serializeError(error: Error) {
