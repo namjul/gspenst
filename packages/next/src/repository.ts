@@ -20,7 +20,7 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
 >
 
 const repository = {
-  init() {
+  collect() {
     // void (await this.getAll()) // TODO describe why doing this here
     return combine([db.clear(), api.getResources()]).andThen((values) => {
       const result = combine(

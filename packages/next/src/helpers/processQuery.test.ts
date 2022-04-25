@@ -8,7 +8,7 @@ jest.mock('../../.tina/__generated__/types')
 jest.mock('../redis')
 
 beforeAll(async () => {
-  const result = await combine([repository.init(), repository.getAll()])
+  const result = await combine([repository.collect(), repository.getAll()])
   if (result.isErr()) {
     throw format(result.error)
   }

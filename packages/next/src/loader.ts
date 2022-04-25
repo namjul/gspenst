@@ -80,7 +80,7 @@ async function loader(
   }
 
   log('Collect Resources')
-  const repoCollectResult = await repository.init()
+  const repoCollectResult = await repository.collect()
 
   if (repoCollectResult.isErr()) {
     context.emitError(format(repoCollectResult.error))
