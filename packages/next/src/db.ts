@@ -34,7 +34,7 @@ const db = {
   get<T extends AObject>(key: string, ...fields: string[]): DBResultAsync<T[]> {
     return NeverthrowResultAsync.fromPromise(
       (async () => {
-        const result = await redis.hmget(key, ...fields)
+        const result = fields.length ? await redis.hmget(key, ...fields) : []
         const foundIndex = result.findIndex((y) => y === null)
         if (foundIndex >= 0) {
           throw new Error(`Db: ${fields[foundIndex]} is \`null\``)
@@ -42,7 +42,10 @@ const db = {
         return result.map((value) => JSON.parse(value!)) as T[]
       })(),
       (error: unknown) =>
-        Errors.other('Db', error instanceof Error ? error : undefined)
+        Errors.other(
+          `Db: ${key} ${fields}`,
+          error instanceof Error ? error : undefined
+        )
     )
   },
   getAll<T extends AObject>(key: string): DBResultAsync<T[]> {
