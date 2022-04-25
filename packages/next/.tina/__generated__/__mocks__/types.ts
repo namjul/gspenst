@@ -7,7 +7,7 @@ import type {
   GetConfigQuery,
 } from '../types'
 
-export const ExperimentalGetTinaClient = () => {
+export const getSdk = () => {
   return {
     getResources: async (): Promise<{ data: GetResourcesQuery }> => {
       return {
