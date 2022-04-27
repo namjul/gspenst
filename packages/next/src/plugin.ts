@@ -1,16 +1,15 @@
 import EventEmitter from 'events'
 import type { ChildProcess } from 'child_process'
 import path from 'path'
-import debug from 'debug'
 import { Compiler } from 'webpack'
 import pkg from '../package.json'
 import { startTinaServer } from './tinaServer'
+import db from './db'
 
 // api lookup: https://webpack.js.org/api/plugins/
 // example: https://github.com/shellscape/webpack-plugin-serve/blob/master/lib/index.js
 
 const key = `${pkg.name}:plugin`
-const log = debug(key)
 let instance: GspenstPlugin | null = null
 const state: { starting?: Promise<ChildProcess> } = {}
 
@@ -52,6 +51,7 @@ export class GspenstPlugin extends EventEmitter {
 
       beforeCompile.tapPromise(key, async () => {
         await this.start()
+        await db.clear()
       })
     }
   }
@@ -64,6 +64,5 @@ export class GspenstPlugin extends EventEmitter {
 
     // wait for the server to startup
     await state.starting
-    log('Server starterd')
   }
 }

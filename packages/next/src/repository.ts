@@ -1,7 +1,7 @@
 import { okAsync, errAsync, combine } from './shared-kernel'
 import * as api from './api'
 import db from './db'
-import { absurd } from './utils'
+import { absurd, do_ } from './utils'
 import type { ResourceType, Resource } from './domain/resource'
 import { createResource } from './domain/resource'
 import type { ID, ResultAsync } from './shared-kernel'
@@ -21,42 +21,33 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
 
 const repository = {
   collect() {
-    // void (await this.getAll()) // TODO describe why doing this here
-    return combine([db.clear(), api.getResources()]).andThen((values) => {
-      const result = combine(
-        values.flatMap((value) => {
-          if (value === 'OK') {
-            return []
-          } else {
-            const e = value.data.getCollections.flatMap((collection) => {
-              return (collection.documents.edges ?? []).flatMap(
-                (connectionEdge) => {
-                  if (connectionEdge?.node) {
-                    const { node } = connectionEdge
-                    if (node.__typename === 'ConfigDocument') {
-                      return []
-                    } else {
-                      const resourceResult = createResource(node)
-                      if (resourceResult.isOk()) {
-                        return this.set(resourceResult.value).map(
-                          () => resourceResult
-                        )
-                      }
-                      return errAsync(resourceResult.error)
-                    }
+    return api.getResources().andThen((resources) => {
+      return combine(
+        resources.data.getCollections.flatMap((collection) => {
+          return (collection.documents.edges ?? []).flatMap(
+            (connectionEdge) => {
+              if (connectionEdge?.node) {
+                const { node } = connectionEdge
+                if (node.__typename === 'ConfigDocument') {
+                  return []
+                } else {
+                  const resourceResult = createResource(node)
+                  if (resourceResult.isOk()) {
+                    return this.set(resourceResult.value).map(
+                      () => resourceResult
+                    )
                   }
-                  return errAsync(Errors.other('Should not happen'))
+                  return errAsync(resourceResult.error)
                 }
-              )
-            })
-            return e
-          }
+              }
+              return errAsync(Errors.other('Should not happen'))
+            }
+          )
         })
       )
-
-      return result
     })
   },
+
   set(resource: Resource) {
     return db.set<Resource>('resources', String(resource.id), resource)
   },
@@ -71,28 +62,31 @@ const repository = {
           if (resource.tinaData) {
             return okAsync(resource)
           } else {
-            const tinaDataResult = (() => {
+            return do_(() => {
               const { resourceType, relativePath } = resource
               switch (resourceType) {
                 case 'page':
-                  return api.getPage({ relativePath })
+                  return api
+                    .getPage({ relativePath })
+                    .map((tinaData) => ({ ...resource, tinaData }))
                 case 'post':
-                  return api.getPost({ relativePath })
+                  return api
+                    .getPost({ relativePath })
+                    .map((tinaData) => ({ ...resource, tinaData }))
                 case 'author':
-                  return api.getAuthor({ relativePath })
+                  return api
+                    .getAuthor({ relativePath })
+                    .map((tinaData) => ({ ...resource, tinaData }))
                 case 'tag':
-                  return api.getTag({ relativePath })
+                  return api
+                    .getTag({ relativePath })
+                    .map((tinaData) => ({ ...resource, tinaData }))
                 default:
                   return absurd(resourceType)
               }
-            })() // Immediately invoke the function
-
-            return tinaDataResult
-              .map((tinaData) => {
-                resource.tinaData = tinaData
-                return this.set(resource).andThen(() => okAsync(resource))
-              })
-              .andThen((resourceResult) => resourceResult)
+            })
+              .map((_resource) => this.set(_resource).map(() => _resource))
+              .andThen((y) => y)
           }
         })
 

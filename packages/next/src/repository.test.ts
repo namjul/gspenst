@@ -20,11 +20,11 @@ describe('repository', () => {
   test('set', async () => {
     const resource = {
       id: 123 as ID,
-      filename: '11th-post',
-      path: 'content/posts/11th-post.mdx',
+      filename: '1th-post',
+      path: 'content/posts/1th-post.mdx',
       resourceType: 'post' as const,
-      relativePath: '11th-post.mdx',
-      slug: '11th-post',
+      relativePath: '1th-post.mdx',
+      slug: '1th-post',
       year: 2022,
       month: 10,
       day: 12,

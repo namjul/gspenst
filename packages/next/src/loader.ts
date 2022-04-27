@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-invalid-this */
 
 import path from 'path'
-import debug from 'debug'
 import yaml from 'js-yaml'
 import type { LoaderContext } from 'webpack'
 import { parseRoutes } from './domain/routes'
@@ -17,8 +16,6 @@ export type LoaderOptions = {
   staticExport?: boolean
 }
 
-const log = debug('@gspenst/next:loader')
-
 const contentDir = path.resolve(findContentDir())
 
 const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
@@ -33,8 +30,6 @@ async function loader(
 
   const options = context.getOptions()
   const { theme, themeConfig, staticExport } = options
-
-  log('Run loader')
 
   if (!theme) {
     context.emitError(new Error('No Gspenst Theme found.'))
@@ -79,7 +74,6 @@ async function loader(
     context.emitError(format(routingConfigResult.error))
   }
 
-  log('Collect Resources')
   const repoCollectResult = await repository.collect()
 
   if (repoCollectResult.isErr()) {

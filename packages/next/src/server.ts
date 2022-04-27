@@ -24,8 +24,6 @@ export const getStaticPaths =
 
       const paths = await resolvePaths(routingConfig)
       if (paths.isOk()) {
-        console.log('PATHS: ', paths)
-
         return {
           paths: paths.value,
           fallback: staticExport ? false : 'blocking',
