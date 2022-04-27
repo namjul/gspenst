@@ -1,15 +1,13 @@
-import debug from 'debug'
 import { deserializeError, isErrorLike } from 'serialize-error'
 import type { ErrorLike } from 'serialize-error'
 import type { GetStaticProps, GetStaticPaths } from 'next'
+import { log } from './logger'
 import { routerManager } from './router'
 import type { RoutingConfigResolved } from './domain/routes'
 import type { PageProps } from './controller'
 import { controller } from './controller'
 import { format } from './errors'
 import resolvePaths from './resolvePaths'
-
-const log = debug('@gspenst/next:server')
 
 export const getStaticPaths =
   (

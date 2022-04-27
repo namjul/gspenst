@@ -2,10 +2,10 @@ import path from 'path'
 import { once } from 'events'
 import fse from 'fs-extra'
 import spawn from 'cross-spawn'
-import debug from 'debug'
+import { createLogger } from './logger'
 import type { GspenstPlugin } from './plugin'
 
-const log = debug('@gspenst/next:tinaServer')
+const log = createLogger('tinaServer')
 
 export async function startTinaServer(this: GspenstPlugin) {
   if (
