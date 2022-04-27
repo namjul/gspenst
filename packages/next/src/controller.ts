@@ -1,5 +1,5 @@
 import type { Redirect } from 'next'
-import { ok, err, combine, okAsync } from './shared-kernel'
+import { ok, err, combine } from './shared-kernel'
 import type { RoutingContext } from './router'
 import type { DataQuery } from './domain/routes'
 import { processQuery } from './helpers/processQuery'
@@ -102,9 +102,9 @@ export type PageProps =
 type ControllerResult<T> = Result<T>
 type ControllerResultAsync<T> = ResultAsync<T>
 
-function entryController(
+async function entryController(
   routingProperties: Extract<RoutingContext, { type: 'entry' }>
-): ControllerResultAsync<PageProps> {
+): Promise<ControllerResult<PageProps>> {
   const { resourceType, request } = routingProperties
   const query: DataQuery = {
     resourceType,
@@ -114,7 +114,7 @@ function entryController(
     redirect: false,
   }
 
-  return processQuery(query).map((entry) => {
+  return (await processQuery(query)).map((entry) => {
     return {
       context: resourceType,
       data: {
@@ -126,9 +126,9 @@ function entryController(
   })
 }
 
-function channelController(
+async function channelController(
   routingProperties: Extract<RoutingContext, { type: 'channel' }>
-): ControllerResultAsync<PageProps> {
+): Promise<ControllerResultAsync<PageProps>> {
   // const posts = (await repository.findAll('post'))
 
   // const configResourceID = 'content/config/index.json'
@@ -164,7 +164,13 @@ function channelController(
   }
 
   const keys = Object.keys(data)
-  const result = combine(keys.map((key) => processQuery(data[key]!)))
+  const result = combine(
+    await Promise.all(
+      keys.map(async (key) => {
+        return processQuery(data[key]!)
+      })
+    )
+  )
 
   return result.andThen((resource) => {
     const dataEntries = keys.reduce((acc, current, index) => {
@@ -180,7 +186,7 @@ function channelController(
     //   //redirect
     // }
 
-    return okAsync({
+    return ok({
       context: 'index' as const,
       templates: getTemplateHierarchy(routingProperties),
       data: {
@@ -191,9 +197,9 @@ function channelController(
   })
 }
 
-function collectionController(
+async function collectionController(
   routingProperties: Extract<RoutingContext, { type: 'collection' }>
-): ControllerResultAsync<PageProps> {
+): Promise<ControllerResultAsync<PageProps>> {
   // const posts = await repository.findAll('post')
   //
   // if (posts.isErr()) {
@@ -234,9 +240,11 @@ function collectionController(
 
   const keys = Object.keys(data)
   const result = combine(
-    keys.map((key) => {
-      return processQuery(data[key]!)
-    })
+    await Promise.all(
+      keys.map(async (key) => {
+        return processQuery(data[key]!)
+      })
+    )
   )
 
   return result.andThen((resource) => {
@@ -248,7 +256,7 @@ function collectionController(
       }
     }, {})
 
-    return okAsync({
+    return ok({
       context: 'index' as const,
       templates: getTemplateHierarchy(routingProperties),
       data: {
@@ -259,9 +267,9 @@ function collectionController(
   })
 }
 
-function customController(
+async function customController(
   routingProperties: Extract<RoutingContext, { type: 'custom' }>
-): ControllerResultAsync<PageProps> {
+): Promise<ControllerResultAsync<PageProps>> {
   // const resources = await repository.getAll()
 
   // const configResourceID = 'content/config/index.json'
@@ -284,7 +292,13 @@ function customController(
   }
 
   const keys = Object.keys(data)
-  const result = combine(keys.map((key) => processQuery(data[key]!)))
+  const result = combine(
+    await Promise.all(
+      keys.map(async (key) => {
+        return processQuery(data[key]!)
+      })
+    )
+  )
 
   return result.andThen((resource) => {
     const dataEntries = keys.reduce((acc, current, index) => {
@@ -295,7 +309,7 @@ function customController(
       }
     }, {})
 
-    return okAsync({
+    return ok({
       context: null,
       templates: getTemplateHierarchy(routingProperties),
       data: {

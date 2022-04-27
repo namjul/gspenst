@@ -31,7 +31,9 @@ export type QueryOutcome =
 
 type QueryOutcomeResult = ResultAsync<QueryOutcome>
 
-export function processQuery(query: DataQuery): QueryOutcomeResult {
+export async function processQuery(
+  query: DataQuery
+): Promise<QueryOutcomeResult> {
   const { type } = query
 
   const result = do_(() => {
