@@ -1,7 +1,6 @@
 import { getProperty } from 'dot-prop'
-import { combine } from '../shared-kernel'
 import repository from '../repository'
-import type { ID } from '../shared-kernel'
+import { processQuery } from '../helpers/processQuery'
 import { format } from '../errors'
 import { createPost } from './post'
 
@@ -9,7 +8,7 @@ jest.mock('../redis')
 jest.mock('../api')
 
 beforeAll(async () => {
-  const result = await combine([repository.collect(), repository.getAll()])
+  const result = await repository.collect()
   if (result.isErr()) {
     throw format(result.error)
   }
@@ -17,9 +16,18 @@ beforeAll(async () => {
 
 describe('post model', () => {
   test('createPost', async () => {
-    const resource = await repository.get(1824064168 as ID)
+    const query = {
+      resourceType: 'post',
+      type: 'read',
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain --- TODO: return ErrResult if `slug` is not defined
+      slug: '7th-post',
+      redirect: false,
+    } as const
+
+    const { resource } = (await processQuery(query))._unsafeUnwrap()
+
     const getPostDocument = getProperty(
-      resource._unsafeUnwrap(),
+      resource,
       'tinaData.data.getPostDocument'
     )
     expect(createPost(getPostDocument!).isOk()).toBe(true)

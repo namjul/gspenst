@@ -6,6 +6,7 @@ import repository from '../repository'
 import { combine } from '../shared-kernel'
 import type { ResultAsync } from '../shared-kernel'
 import { filterResource } from '../helpers/filterResource'
+import * as api from '../api'
 
 const POST_PER_PAGE = 5
 
@@ -18,22 +19,58 @@ type Pagination = {
   limit: number | 'all' // the number of posts per page
 }
 
-export type QueryOutcome =
-  | {
-      type: 'read'
-      resource: Resource
+const enrichResource = (resource: Resource) => {
+  return do_(() => {
+    const { resourceType, relativePath } = resource
+    switch (resourceType) {
+      case 'page':
+        return api
+          .getPage({ relativePath })
+          .map((tinaData) => ({ ...resource, tinaData }))
+      case 'post':
+        return api
+          .getPost({ relativePath })
+          .map((tinaData) => ({ ...resource, tinaData }))
+      case 'author':
+        return api
+          .getAuthor({ relativePath })
+          .map((tinaData) => ({ ...resource, tinaData }))
+      case 'tag':
+        return api
+          .getTag({ relativePath })
+          .map((tinaData) => ({ ...resource, tinaData }))
+      default:
+        return absurd(resourceType)
     }
-  | {
-      type: 'browse'
-      pagination: Pagination
-      resources: Resource[]
-    }
+  })
+    .map((enrichedResource) =>
+      repository.set(enrichedResource).map(() => enrichedResource)
+    )
+    .andThen((x) => x)
+}
 
-type QueryOutcomeResult = ResultAsync<QueryOutcome>
+type QueryOutcomeRead = {
+  type: 'read'
+  resource: Resource
+}
+type QueryOutcomeBrowse = {
+  type: 'browse'
+  pagination: Pagination
+  resources: Resource[]
+}
 
-export async function processQuery(
+export type QueryOutcome = QueryOutcomeRead | QueryOutcomeBrowse
+
+type ResultAsyncQueryOutcome<T> = T extends Extract<DataQuery, { type: 'read' }>
+  ? ResultAsync<QueryOutcomeRead>
+  : ResultAsync<QueryOutcomeBrowse>
+
+export function processQuery<T extends DataQuery>(
+  query: T
+): ResultAsyncQueryOutcome<T>
+export function processQuery(
   query: DataQuery
-): Promise<QueryOutcomeResult> {
+): ResultAsync<QueryOutcomeRead> | ResultAsync<QueryOutcomeBrowse> {
   const { type } = query
 
   const result = do_(() => {
@@ -43,40 +80,51 @@ export async function processQuery(
           .find({
             slug: query.slug,
           })
+          .andThen(enrichResource)
           .map((resource) => ({ type, resource }))
       case 'browse':
-        return repository.findAll(query.resourceType).andThen((resources) => {
-          return combine(
-            resources.map((resource) => filterResource(resource, query.filter))
-          ).map((flaggedResources) => {
+        return repository
+          .findAll(query.resourceType)
+          .andThen((resources) => {
+            return combine(resources.map(enrichResource))
+          })
+          .andThen((enrichedResources) => {
+            return combine(
+              enrichedResources.map((resource) =>
+                filterResource(resource, query.filter)
+              )
+            )
+          })
+          .map((flaggedResources) => {
             const property = query.order?.map((y) => {
               return `${y.order === 'desc' ? '-' : ''}object.${y.field}`
             })
 
-            // filter
             const filteredResources = flaggedResources.filter(
               ({ owned }) => owned
             )
 
-            const sortedResources =
-              // sort
-              property ? sortOn(filteredResources, property) : filteredResources
+            const sortedResources = property
+              ? sortOn(filteredResources, property)
+              : filteredResources
 
             const limit = query.limit ?? POST_PER_PAGE
-            const page = query.page ?? 1
             const total = sortedResources.length
+            let page = query.page ?? 1
             let pages = 1
             let start = 0
             let end
             let prev = null
             let next = null
 
-            if (limit !== 'all') {
+            if (limit === 'all') {
+              page = 1
+            } else {
               pages = Math.floor(total / limit)
-              start = limit * (page - 1)
+              start = (page - 1) * limit
               end = start + limit
               prev = start > 0 ? page - 1 : null
-              next = start > 0 ? page - 1 : null
+              next = end < sortedResources.length ? page + 1 : null
             }
 
             return {
@@ -94,7 +142,6 @@ export async function processQuery(
                 .map(({ resource }) => resource),
             }
           })
-        })
 
       default:
         return absurd(type)

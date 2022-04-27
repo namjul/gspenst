@@ -1,14 +1,13 @@
-import { combine } from '../shared-kernel'
 import repository from '../repository'
-import type { ID } from '../shared-kernel'
 import { format } from '../errors'
 import { filterResource } from './filterResource'
+import { processQuery } from './processQuery'
 
 jest.mock('../api')
 jest.mock('../redis')
 
 beforeAll(async () => {
-  const result = await combine([repository.collect(), repository.getAll()])
+  const result = await repository.collect()
   if (result.isErr()) {
     throw format(result.error)
   }
@@ -16,14 +15,28 @@ beforeAll(async () => {
 
 describe('filterResource', () => {
   test('primary_tag:tag-1', async () => {
-    const resource = await repository.get(1824064168 as ID)
-    const result = filterResource(resource._unsafeUnwrap(), 'primary_tag:tag-1')
+    const query = {
+      resourceType: 'post',
+      type: 'read',
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain --- TODO: return ErrResult if `slug` is not defined
+      slug: '7th-post',
+      redirect: false,
+    } as const
+    const { resource } = (await processQuery(query))._unsafeUnwrap()
+    const result = filterResource(resource, 'primary_tag:tag-1')
     expect(result._unsafeUnwrap().owned).toBe(true)
   })
 
   test('primary_tag:tag-2', async () => {
-    const resource = await repository.get(1824064168 as ID)
-    const result = filterResource(resource._unsafeUnwrap(), 'primary_tag:tag-2')
+    const query = {
+      resourceType: 'post',
+      type: 'read',
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain --- TODO: return ErrResult if `slug` is not defined
+      slug: '7th-post',
+      redirect: false,
+    } as const
+    const { resource } = (await processQuery(query))._unsafeUnwrap()
+    const result = filterResource(resource, 'primary_tag:tag-2')
     expect(result._unsafeUnwrap().owned).toBe(false)
   })
 })

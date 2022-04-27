@@ -1,103 +1,122 @@
 import path from 'path'
-import { ok, err, okAsync, combine } from './shared-kernel'
-import type { RoutingConfigResolved } from './domain/routes'
-import type { Entries, Result } from './shared-kernel'
+import { ok, err, combine } from './shared-kernel'
+import type { RoutingConfigResolved, DataQueryBrowse } from './domain/routes'
 import type { Resource } from './domain/resource'
+import type { Entries, Result } from './shared-kernel'
 import type { Taxonomies } from './domain/taxonomy'
 import repository from './repository'
-import { filterResource } from './helpers/filterResource'
 import { compilePermalink } from './helpers'
+import { processQuery } from './helpers/processQuery'
 
 const POST_PER_PAGE = 5
 
-function resolveRoutesPaths(routingConfig: RoutingConfigResolved) {
+export async function processQueryComplete(query: DataQueryBrowse) {
+  let stopped = false
+  let page = query.page
+
+  const resourcesResult: Result<Resource>[] = []
+
+  while (!stopped) {
+    // eslint-disable-next-line no-await-in-loop
+    const queryOutcomeBrowseResult = await processQuery({
+      ...query,
+      page,
+    })
+    if (queryOutcomeBrowseResult.isOk()) {
+      const {
+        value: { resources, pagination },
+      } = queryOutcomeBrowseResult
+
+      resourcesResult.push(...resources.map((resource) => ok(resource)))
+
+      page = pagination.next
+      if (!pagination.next) {
+        stopped = true
+      }
+    } else {
+      resourcesResult.push(err(queryOutcomeBrowseResult.error))
+      stopped = true
+    }
+  }
+
+  return combine(resourcesResult)
+}
+
+async function resolveRoutesPaths(routingConfig: RoutingConfigResolved) {
   const routes = Object.entries(routingConfig.routes ?? {}) as Entries<
     typeof routingConfig.routes
   >
 
-  const result = routes.map(([mainRoute, config]) => {
-    if ('controller' in config && config.controller === 'channel') {
-      return repository
-        .findAll('post')
-        .andThen((resources) => {
-          return combine(
-            resources.flatMap((resource) => {
-              const filterResourceResult = filterResource(
-                resource,
-                config.filter
-              )
-              if (
-                (filterResourceResult.isOk() &&
-                  filterResourceResult.value.owned) ||
-                filterResourceResult.isErr()
-              ) {
-                return filterResourceResult
-              }
-              return []
-            })
-          )
-        })
-        .map((filteredResources) => {
-          return [
-            mainRoute,
-            ...Array.from(
-              {
-                length: Math.floor(filteredResources.length / POST_PER_PAGE),
-              },
-              (_, i) => path.join(mainRoute, 'page', String(i + 1))
-            ),
-          ]
-        })
-    }
-    return okAsync(mainRoute)
-  })
+  const result = await Promise.all(
+    routes.map(async ([mainRoute, config]) => {
+      if ('controller' in config && config.controller === 'channel') {
+        const collectionPostsQuery = {
+          type: 'browse',
+          resourceType: 'post',
+          filter: config.filter,
+          limit: config.limit,
+          order: config.order,
+        } as const
+
+        const x = (await processQueryComplete(collectionPostsQuery)).map(
+          (resources) => {
+            return [
+              mainRoute,
+              ...Array.from(
+                {
+                  length: Math.floor(resources.length / POST_PER_PAGE),
+                },
+                (_, i) => path.join(mainRoute, 'page', String(i + 1))
+              ),
+            ]
+          }
+        )
+        return x
+      }
+      return ok([mainRoute])
+    })
+  )
 
   return combine(result)
 }
 
-function resolveCollectionsPaths(routingConfig: RoutingConfigResolved) {
-  const postStackResult = repository.findAll('post')
-
+async function resolveCollectionsPaths(routingConfig: RoutingConfigResolved) {
   const collections = Object.entries(
     routingConfig.collections ?? {}
   ) as Entries<typeof routingConfig.collections>
 
-  const result = collections.map(([mainRoute, config]) => {
-    return postStackResult.andThen((postStack) => {
-      const paths: Result<string>[] = [ok(mainRoute)]
+  const postSet = new Set()
 
-      const collectionPosts: Resource[] = []
-      for (let len = postStack.length - 1; len >= 0; len -= 1) {
-        const resource = postStack[len]
-        if (resource) {
-          const filterResourceResult = filterResource(resource, config.filter)
+  const result = await Promise.all(
+    collections.map(async ([mainRoute, config]) => {
+      const collectionPostsQuery = {
+        type: 'browse',
+        resourceType: 'post',
+        filter: config.filter,
+        limit: config.limit,
+        order: config.order,
+      } as const
 
-          if (filterResourceResult.isErr()) {
-            paths.push(err(filterResourceResult.error))
-          } else if (filterResourceResult.value.owned) {
-            collectionPosts.push(resource)
-            paths.push(
-              compilePermalink(
-                config.permalink,
-                filterResourceResult.value.resource
-              )
-            )
-            // Remove owned resource
-            postStack.splice(len, 1)
-          }
-        }
-      }
+      return (await processQueryComplete(collectionPostsQuery)).andThen(
+        (resources) => {
+          const paths: Result<string>[] = [ok(mainRoute)]
 
-      Array.from(
-        { length: Math.floor(collectionPosts.length / POST_PER_PAGE) },
-        (_, i) => {
-          return paths.push(ok(path.join(mainRoute, 'page', String(i + 1))))
+          resources.forEach((resource) => {
+            if (!postSet.has(resource.id)) {
+              postSet.add(resource.id)
+              paths.push(compilePermalink(config.permalink, resource))
+            }
+          })
+
+          Array.from({ length: resources.length / POST_PER_PAGE }, (_, i) => {
+            return paths.push(ok(path.join(mainRoute, 'page', String(i + 1))))
+          })
+
+          return combine(paths)
         }
       )
-
-      return combine(paths)
     })
-  })
+  )
 
   return combine(result)
 }
@@ -141,13 +160,15 @@ export function resolvePagesPaths() {
 export default async function resolvePaths(
   routingConfig: RoutingConfigResolved
 ) {
-  const paths = [
-    okAsync(['/admin']),
-    resolveRoutesPaths(routingConfig),
-    resolveCollectionsPaths(routingConfig),
-    resolvePagesPaths(),
-    resolveTaxonomiesPaths(routingConfig),
+  const pathsResultList = [
+    ok(['/admin']),
+    await resolveRoutesPaths(routingConfig),
+    await resolveCollectionsPaths(routingConfig),
+    await resolvePagesPaths(),
+    await resolveTaxonomiesPaths(routingConfig),
   ]
 
-  return combine(paths).map((x) => x.flat(2))
+  return combine(pathsResultList).map((paths) => {
+    return paths.flat(2)
+  })
 }

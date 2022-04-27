@@ -1,7 +1,6 @@
 import { okAsync, errAsync, combine } from './shared-kernel'
 import * as api from './api'
 import db from './db'
-import { absurd, do_ } from './utils'
 import type { ResourceType, Resource } from './domain/resource'
 import { createResource } from './domain/resource'
 import type { ID, ResultAsync } from './shared-kernel'
@@ -57,41 +56,6 @@ const repository = {
 
     const result = db
       .get<Resource>('resources', ...ids.map(String))
-      .andThen((resources) => {
-        const resourcesResultList = resources.map((resource) => {
-          if (resource.tinaData) {
-            return okAsync(resource)
-          } else {
-            return do_(() => {
-              const { resourceType, relativePath } = resource
-              switch (resourceType) {
-                case 'page':
-                  return api
-                    .getPage({ relativePath })
-                    .map((tinaData) => ({ ...resource, tinaData }))
-                case 'post':
-                  return api
-                    .getPost({ relativePath })
-                    .map((tinaData) => ({ ...resource, tinaData }))
-                case 'author':
-                  return api
-                    .getAuthor({ relativePath })
-                    .map((tinaData) => ({ ...resource, tinaData }))
-                case 'tag':
-                  return api
-                    .getTag({ relativePath })
-                    .map((tinaData) => ({ ...resource, tinaData }))
-                default:
-                  return absurd(resourceType)
-              }
-            })
-              .map((_resource) => this.set(_resource).map(() => _resource))
-              .andThen((y) => y)
-          }
-        })
-
-        return combine(resourcesResultList)
-      })
       .map((resources) => {
         if (ids.length === 1) {
           return resources[0]

@@ -68,7 +68,7 @@ const dataQueryBrowse = z
   .object({
     type: queryTypeBrowse,
     resourceType: resourceTypeSchema,
-    page: z.number().optional(), // TODO make non optional
+    page: z.number().nullish(), // TODO make non optional
   })
   .merge(queryFilterOptions)
   .strict()
