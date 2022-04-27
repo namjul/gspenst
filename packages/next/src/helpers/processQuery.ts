@@ -3,7 +3,7 @@ import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import { do_, absurd } from '../utils'
 import repository from '../repository'
-import { combine } from '../shared-kernel'
+import { combine, okAsync } from '../shared-kernel'
 import type { ResultAsync } from '../shared-kernel'
 import { filterResource } from '../helpers/filterResource'
 import * as api from '../api'
@@ -20,6 +20,9 @@ type Pagination = {
 }
 
 const enrichResource = (resource: Resource) => {
+  if (resource.tinaData) {
+    return okAsync(resource)
+  }
   return do_(() => {
     const { resourceType, relativePath } = resource
     switch (resourceType) {
