@@ -4,13 +4,11 @@ import path from 'path'
 import { Compiler } from 'webpack'
 import pkg from '../package.json'
 import { startTinaServer } from './tinaServer'
-import db from './db'
 
 // api lookup: https://webpack.js.org/api/plugins/
 // example: https://github.com/shellscape/webpack-plugin-serve/blob/master/lib/index.js
 
 const key = `${pkg.name}:plugin`
-let instance: GspenstPlugin | null = null
 const state: { starting?: Promise<ChildProcess> } = {}
 
 export class GspenstPlugin extends EventEmitter {
@@ -26,9 +24,6 @@ export class GspenstPlugin extends EventEmitter {
 
     this.isServer = isServer
 
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    instance = this
-
     process.on('exit', () => {
       this.emit('cleanup')
     })
@@ -36,11 +31,6 @@ export class GspenstPlugin extends EventEmitter {
 
   apply(compiler: Compiler) {
     this.compiler = compiler
-
-    // only allow once instance of the plugin to run for a build
-    if (instance !== this) {
-      return
-    }
 
     this.hook()
   }
@@ -51,7 +41,6 @@ export class GspenstPlugin extends EventEmitter {
 
       beforeCompile.tapPromise(key, async () => {
         await this.start()
-        await db.clear()
       })
     }
   }

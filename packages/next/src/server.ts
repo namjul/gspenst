@@ -1,5 +1,3 @@
-import { deserializeError, isErrorLike } from 'serialize-error'
-import type { ErrorLike } from 'serialize-error'
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import { log } from './logger'
 import { routerManager } from './router'
@@ -11,63 +9,54 @@ import resolvePaths from './resolvePaths'
 
 export const getStaticPaths =
   (
-    routingConfig: RoutingConfigResolved | ErrorLike,
+    routingConfig: RoutingConfigResolved,
     staticExport: boolean
   ): GetStaticPaths =>
   async () => {
-    if (isErrorLike(routingConfig)) {
-      throw deserializeError(routingConfig)
-    } else {
-      log('Page [...slug].js getStaticPaths')
+    log('Page [...slug].js getStaticPaths')
 
-      const paths = await resolvePaths(routingConfig)
-      if (paths.isOk()) {
-        return {
-          paths: paths.value,
-          fallback: staticExport ? false : 'blocking',
-        }
-      } else {
-        throw format(paths.error)
+    const paths = await resolvePaths(routingConfig)
+    if (paths.isOk()) {
+      return {
+        paths: paths.value,
+        fallback: staticExport ? false : 'blocking',
       }
     }
+    throw format(paths.error)
   }
 
 export const getStaticProps =
   (
-    routingConfig: RoutingConfigResolved | ErrorLike,
+    routingConfig: RoutingConfigResolved,
     routingParameter: string
   ): GetStaticProps<PageProps> =>
   async (context) => {
-    if (isErrorLike(routingConfig)) {
-      throw deserializeError(routingConfig)
-    } else {
-      const { params } = context
+    const { params } = context
 
-      log('Page [...slug].js getStaticProps')
+    log('Page [...slug].js getStaticProps')
 
-      const router = routerManager(routingConfig)
+    const router = routerManager(routingConfig)
 
-      const controllerResult = controller(
-        router.handle(params?.[routingParameter])
-      )
+    const controllerResult = controller(
+      router.handle(params?.[routingParameter])
+    )
 
-      if (controllerResult.isOk()) {
-        const result = await controllerResult.value
-        if ('redirect' in result) {
-          return { redirect: result.redirect }
-        }
-
-        if (result.props.isErr()) {
-          if (result.props.error.type === 'NotFound') {
-            return {
-              notFound: true,
-            }
-          }
-          throw format(result.props.error)
-        }
-
-        return { props: result.props.value }
+    if (controllerResult.isOk()) {
+      const result = await controllerResult.value
+      if ('redirect' in result) {
+        return { redirect: result.redirect }
       }
-      throw format(controllerResult.error)
+
+      if (result.props.isErr()) {
+        if (result.props.error.type === 'NotFound') {
+          return {
+            notFound: true,
+          }
+        }
+        throw format(result.props.error)
+      }
+
+      return { props: result.props.value }
     }
+    throw format(controllerResult.error)
   }

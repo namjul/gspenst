@@ -58,7 +58,7 @@ async function resolveRoutesPaths(routingConfig: RoutingConfigResolved) {
           order: config.order,
         } as const
 
-        const x = (await processQueryComplete(collectionPostsQuery)).map(
+        return (await processQueryComplete(collectionPostsQuery)).map(
           (resources) => {
             return [
               mainRoute,
@@ -71,7 +71,6 @@ async function resolveRoutesPaths(routingConfig: RoutingConfigResolved) {
             ]
           }
         )
-        return x
       }
       return ok([mainRoute])
     })

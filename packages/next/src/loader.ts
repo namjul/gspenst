@@ -49,12 +49,12 @@ async function loader(
 
   // lets nextjs know if any data changes to trigger `serverOnlyChanges` event
   // See: https://github.com/vercel/next.js/blob/2ecfa6aec3b2e4b8ebb4b4c8f55df7357b9d3000/packages/next/server/dev/hot-reloader.ts#L732
-  // TODO check if files actually changed using hashing
+  // TODO check if files actually changed using hashes
   let effectHotReload = -1
 
   if (!isProductionBuild) {
     // Add the entire directory `content` as the dependency
-    // so we when manually editing the files pages are rebuild
+    // so when manually editing the files pages are rebuild
     context.addContextDependency(contentDir)
     effectHotReload = Math.random()
   }
@@ -70,19 +70,19 @@ async function loader(
     ...(yaml.load(source) as object),
   })
 
-  if (routingConfigResult.isErr()) {
-    context.emitError(format(routingConfigResult.error))
-  }
-
   const repoCollectResult = await repository.collect()
 
   if (repoCollectResult.isErr()) {
     context.emitError(format(repoCollectResult.error))
   }
 
-  const routingConfig = routingConfigResult.isOk()
-    ? JSON.stringify(routingConfigResult.value[0])
-    : serializeError(format(routingConfigResult.error))
+  if (routingConfigResult.isErr()) {
+    context.emitError(format(routingConfigResult.error))
+  }
+
+  const routingConfig = JSON.stringify(
+    routingConfigResult.isOk() ? routingConfigResult.value[0] : defaultRoutes
+  )
 
   const imports = `
 import * as __gspenst_server__ from '@gspenst/next/server'
@@ -127,14 +127,4 @@ export default function syncLoader(
   loader(this, source)
     .then((result) => callback(null, result))
     .catch((err: Error) => callback(err))
-}
-
-// TODO use `import { serializeError } from 'serialize-error'` when https://github.com/vercel/next.js/discussions/32239 is solved
-function serializeError(error: Error) {
-  return JSON.stringify(
-    error,
-    Object.getOwnPropertyNames(error).concat(
-      Object.getOwnPropertyNames(Object.getPrototypeOf(error))
-    )
-  )
 }
