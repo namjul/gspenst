@@ -1,12 +1,12 @@
-import { ok } from './shared-kernel'
-import { routerManager } from './router'
-import repository from './repository'
-import { format } from './errors'
-import { parseRoutes } from './domain/routes'
-import defaultRoutes from './defaultRoutes'
+import { ok } from '../shared-kernel'
+import repository from '../repository'
+import { format } from '../errors'
+import { parseRoutes } from '../domain/routes'
+import defaultRoutes from '../defaultRoutes'
+import { routerManager } from './routerManager'
 
-jest.mock('./api')
-jest.mock('./redis')
+jest.mock('../api')
+jest.mock('../redis')
 
 describe('router resolvePaths', () => {
   beforeAll(async () => {

@@ -1,6 +1,6 @@
 import type { Redirect } from 'next'
 import { ok, err, combine } from './shared-kernel'
-import type { RoutingContext } from './router'
+import type { RoutingContext } from './domain/routing'
 import type { DataQuery } from './domain/routes'
 import { processQuery } from './helpers/processQuery'
 import type { QueryOutcome } from './helpers/processQuery'

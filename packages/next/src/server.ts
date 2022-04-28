@@ -1,6 +1,6 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import { log } from './logger'
-import { routerManager } from './router'
+import { routerManager } from './routing'
 import type { RoutingConfigResolved } from './domain/routes'
 import type { PageProps } from './controller'
 import { controller } from './controller'

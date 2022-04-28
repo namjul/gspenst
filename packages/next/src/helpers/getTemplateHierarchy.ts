@@ -1,4 +1,4 @@
-import type { RoutingContext } from '../router'
+import type { RoutingContext } from '../domain/routing'
 import { absurd } from '../utils'
 
 export function getTemplateHierarchy(
