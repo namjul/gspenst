@@ -21,7 +21,7 @@ describe('repository', () => {
     const resource = {
       id: 123 as ID,
       filename: '1th-post',
-      path: 'content/posts/1th-post.mdx',
+      filepath: 'content/posts/1th-post.mdx',
       resourceType: 'post' as const,
       relativePath: '1th-post.mdx',
       slug: '1th-post',
@@ -40,7 +40,7 @@ describe('repository', () => {
     const resource = {
       id,
       filename: '0th-post',
-      path: 'content/posts/0th-post.mdx',
+      filepath: 'content/posts/0th-post.mdx',
       resourceType: 'post' as const,
       relativePath: '0th-post.mdx',
       slug: '0th-post',

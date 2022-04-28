@@ -3,6 +3,8 @@ import type { Get, Split, Result } from '../shared-kernel'
 import { idSchema, ok, err, z } from '../shared-kernel'
 import type { GetResourcesQuery } from '../../.tina/__generated__/types'
 import type { GetTag, GetAuthor, GetPage, GetPost } from '../api'
+// import type { RoutesConfig } from './routes';
+// import { do_ } from '../utils';
 import * as Errors from '../errors'
 
 const getPostSchema = z.custom<GetPost>((value) => value)
@@ -43,9 +45,9 @@ export const dynamicVariablesSchema = z
 const resourceBaseSchema = z.object({
   id: idSchema,
   filename: z.string(),
-  path: z.string(),
+  filepath: z.string(),
   relativePath: z.string(),
-  // url: z.string().url(),
+  // url: z.string().url().optional(),
 })
 
 const postResourceSchema = resourceBaseSchema
@@ -102,13 +104,16 @@ export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
-type ResourcesNode = Exclude<
-  Get<GetResourcesQuery, 'getCollections[0].documents.edges[0].node'>,
-  { __typename: 'ConfigDocument' }
+type ResourcesNode = NonNullable<
+  Exclude<
+    Get<GetResourcesQuery, 'getCollections[0].documents.edges[0].node'>,
+    { __typename: 'ConfigDocument' }
+  >
 >
 
 export function createResource(
-  node: NonNullable<ResourcesNode>
+  node: ResourcesNode
+  // routesConfig?: RoutesConfig
 ): Result<Resource> {
   const {
     sys: { filename, path: filepath, relativePath },
@@ -120,13 +125,18 @@ export function createResource(
     .toLowerCase()
     .split('document') as Split<Lowercase<typeof node.__typename>, 'document'>
 
+  // const url = routesConfig && do_(() => {
+  //   if(resourceType === 'post') {
+  //     return `${}`
+  //   }
+  // })
+
   const resource = {
     id: node.id,
     filename,
-    path: filepath,
+    filepath,
     resourceType,
     relativePath,
-    // url: 'http://jo',
     ...dynamicVariables,
   }
 
