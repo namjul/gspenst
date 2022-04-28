@@ -72,7 +72,7 @@ describe('controller', () => {
           data: {},
           templates: [],
           filter: undefined,
-          limit: undefined,
+          limit: 5,
           order: undefined,
         })
       )
@@ -93,7 +93,7 @@ describe('controller', () => {
           data: {},
           templates: [],
           filter: 'slug:8th-post',
-          limit: undefined,
+          limit: 5,
           order: undefined,
         })
       )
@@ -120,7 +120,7 @@ describe('controller', () => {
           },
           templates: [],
           filter: undefined,
-          limit: undefined,
+          limit: 5,
           order: undefined,
         })
       )
@@ -148,7 +148,7 @@ describe('controller', () => {
           data: {},
           templates: [],
           filter: 'slug:8th-post',
-          limit: undefined,
+          limit: 5,
           order: undefined,
         })
       )
@@ -175,7 +175,7 @@ describe('controller', () => {
           },
           templates: [],
           filter: undefined,
-          limit: undefined,
+          limit: 5,
           order: undefined,
         })
       )

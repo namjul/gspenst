@@ -23,10 +23,7 @@ import type {
 } from './domain/routes'
 import { processQuery } from './helpers/processQuery'
 
-const POST_PER_PAGE = 5
-
-// TODO remove paths that are getting redirected
-
+// TODO check if this function is really necessary
 export async function processQueryComplete(query: DataQueryBrowse) {
   let stopped = false
   let page = query.page
@@ -324,9 +321,7 @@ class StaticRoutesRouter extends ParentRouter {
               {
                 length: Math.floor(
                   resources.length /
-                    (this.config.limit === 'all'
-                      ? 1
-                      : this.config.limit ?? POST_PER_PAGE)
+                    (this.config.limit === 'all' ? 1 : this.config.limit)
                 ),
               },
               (_, i) => path.join(mainRoute, 'page', String(i + 1))
@@ -394,6 +389,7 @@ class TaxonomyRouter extends ParentRouter {
       templates: [],
       data: this.data?.query,
       filter: `tags:'${params?.slug ?? '%s'}'`,
+      limit: this.config.limit,
     }
   }
 
@@ -401,6 +397,7 @@ class TaxonomyRouter extends ParentRouter {
     const taxonomyQuery = {
       type: 'browse',
       resourceType: this.taxonomyKey,
+      limit: this.config.limit,
     } as const
     return (await processQueryComplete(taxonomyQuery))
       .map((taxonomyResources) => {
@@ -421,9 +418,7 @@ class TaxonomyRouter extends ParentRouter {
                   {
                     length:
                       taxonomyResources.length /
-                      (this.config.limit === 'all'
-                        ? 1
-                        : this.config.limit ?? POST_PER_PAGE),
+                      (this.config.limit === 'all' ? 1 : this.config.limit),
                   },
                   (_, i) => {
                     return ok(
@@ -565,11 +560,18 @@ class CollectionRouter extends ParentRouter {
             }
           })
 
-        Array.from({ length: resources.length / POST_PER_PAGE }, (_, i) => {
-          return paths.push(
-            ok(path.join(this.getRoute(), 'page', String(i + 1)))
-          )
-        })
+        Array.from(
+          {
+            length:
+              resources.length /
+              (this.config.limit === 'all' ? 1 : this.config.limit),
+          },
+          (_, i) => {
+            return paths.push(
+              ok(path.join(this.getRoute(), 'page', String(i + 1)))
+            )
+          }
+        )
 
         return combine(paths)
       }
@@ -624,6 +626,7 @@ class StaticPagesRouter extends ParentRouter {
     const taxonomyQuery = {
       type: 'browse',
       resourceType: 'page',
+      limit: 'all',
     } as const
     return (await processQueryComplete(taxonomyQuery)).map((pages) => {
       return pages

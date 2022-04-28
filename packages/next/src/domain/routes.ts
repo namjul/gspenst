@@ -1,6 +1,7 @@
 import { z, ok, err, combineWithAllErrors } from '../shared-kernel'
 import type { Split, Result } from '../shared-kernel'
 import * as Errors from '../errors'
+import { isString } from '../utils'
 import { resourceTypeSchema, resourceTypes } from './resource'
 import type { ResourceType } from './resource'
 
@@ -49,7 +50,7 @@ const limitSchema = z
 
 const queryFilterOptions = z.object({
   filter: z.string().optional(),
-  limit: limitSchema.optional(),
+  limit: limitSchema,
   order: orderShema.optional(),
   // include: z.string().optional(),
   // visibility: z.string().optional(),
@@ -85,10 +86,6 @@ const dataQuery = z.discriminatedUnion('type', [dataQueryRead, dataQueryBrowse])
 export type DataQuery = z.infer<typeof dataQuery>
 
 const template = z.string()
-
-const templateTransform = template.transform((value) => ({
-  template: value,
-}))
 
 type DataForm = `${ResourceType}.${string}`
 
@@ -188,7 +185,7 @@ export type Collection = z.infer<typeof collection>
 
 const taxonomySchema = z.object({
   permalink: permalinkSchema,
-  limit: limitSchema.optional(),
+  limit: limitSchema,
 })
 
 const taxonomies = z
@@ -210,7 +207,19 @@ export type Taxonomy = z.infer<typeof taxonomySchema>
 
 const routingSchema = z
   .object({
-    routes: z.record(z.union([templateTransform, route])).optional(),
+    routes: z
+      .record(
+        z.preprocess(
+          (value) =>
+            isString(value)
+              ? {
+                  template: value,
+                }
+              : value,
+          route
+        )
+      )
+      .optional(),
     collections: z.record(collection).optional(),
     taxonomies: taxonomies.optional(),
   })

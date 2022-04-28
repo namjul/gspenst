@@ -34,6 +34,7 @@ describe('processQuery', () => {
       const query = {
         type: 'browse',
         resourceType: 'post',
+        limit: 5,
       } as const
 
       const result = (await processQuery(query))._unsafeUnwrap()
@@ -48,6 +49,7 @@ describe('processQuery', () => {
         type: 'browse',
         resourceType: 'post',
         filter: 'slug:-8th-post',
+        limit: 5,
       } as const
 
       const result = await processQuery(query)

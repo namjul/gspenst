@@ -61,6 +61,7 @@ describe('router resolvePaths', () => {
       routes: {
         '/features/': {
           template: 'Features',
+          limit: 5,
           data: {
             query: {
               firstpost: {
@@ -94,6 +95,7 @@ describe('router resolvePaths', () => {
       collections: {
         '/': {
           permalink: '/:slug',
+          limit: 5,
           data: {
             query: {
               thirdpost: {
@@ -119,9 +121,11 @@ describe('router resolvePaths', () => {
       taxonomies: {
         tag: {
           permalink: '/tag/:slug',
+          limit: 5,
         },
         author: {
           permalink: '/author/:slug',
+          limit: 5,
         },
       },
     })
@@ -153,6 +157,7 @@ describe('router resolvePaths', () => {
         '/features/': {
           controller: 'channel',
           filter: 'primary_tag:-tag-1',
+          limit: 5,
         },
       },
     })
@@ -173,14 +178,14 @@ describe('router resolvePaths', () => {
           permalink: '/:slug/',
           template: 'index',
           filter: 'primary_tag:tag-1',
-          limit: undefined,
+          limit: 5,
           order: undefined,
         },
         '/posts/': {
           permalink: '/posts/:slug/',
           template: 'index',
           filter: undefined,
-          limit: undefined,
+          limit: 5,
           order: undefined,
         },
       },
@@ -213,9 +218,11 @@ describe('router resolvePaths', () => {
       taxonomies: {
         tag: {
           permalink: '/category-1/:slug',
+          limit: 5,
         },
         author: {
           permalink: '/category-2/:slug',
+          limit: 5,
         },
       },
     })
@@ -251,9 +258,11 @@ describe('router contexts', () => {
       taxonomies: {
         tag: {
           permalink: '/category-1/:slug',
+          limit: 5,
         },
         author: {
           permalink: '/category-2/:slug',
+          limit: 5,
         },
       },
     })
@@ -267,7 +276,7 @@ describe('router contexts', () => {
           templates: [],
           data: undefined,
           filter: "tags:'pedro'",
-          limit: undefined,
+          limit: 5,
           order: undefined,
           request: {
             path: '/category-2/pedro/',
@@ -287,16 +296,18 @@ describe('router contexts', () => {
         '/': {
           permalink: '/:slug',
           filter: undefined,
-          limit: undefined,
+          limit: 5,
           order: undefined,
         },
       },
       taxonomies: {
         tag: {
           permalink: '/tag/:slug',
+          limit: 5,
         },
         author: {
           permalink: '/author/:slug',
+          limit: 5,
         },
       },
     })
@@ -306,6 +317,7 @@ describe('router contexts', () => {
         {
           type: 'collection',
           name: 'index',
+          limit: 5,
           data: undefined,
           templates: [],
           request: {
@@ -331,7 +343,7 @@ describe('router contexts', () => {
           data: undefined,
           templates: [],
           filter: "tags:'pedro'",
-          limit: undefined,
+          limit: 5,
           order: undefined,
           request: {
             path: '/author/pedro/page/1/',
@@ -350,6 +362,7 @@ describe('router contexts', () => {
       routes: {
         '/about/team': {
           template: 'team',
+          limit: 5,
           data: {
             query: {},
             router: {
@@ -390,16 +403,18 @@ describe('router contexts', () => {
             },
           },
           filter: undefined,
-          limit: undefined,
+          limit: 5,
           order: undefined,
         },
       },
       taxonomies: {
         tag: {
           permalink: '/tag/:slug',
+          limit: 5,
         },
         author: {
           permalink: '/author/:slug',
+          limit: 5,
         },
       },
     })

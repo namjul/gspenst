@@ -87,13 +87,12 @@ describe('routing object parsing', () => {
     })
 
     test('no validation error for routes', () => {
-      expect(
-        parseRoutes({
-          routes: {
-            '/home/': 'bar',
-          },
-        }).isOk()
-      ).toBe(true)
+      const result = parseRoutes({
+        routes: {
+          '/home/': 'bar',
+        },
+      })
+      expect(result.isOk()).toBe(true)
     })
 
     test('throws error when using wrong data', () => {
@@ -209,9 +208,11 @@ describe('routing object parsing', () => {
             taxonomies: {
               tag: {
                 permalink: '/tag/:slug',
+                limit: 5,
               },
               author: {
                 permalink: '/author/:slug',
+                limit: 5,
               },
             },
           },
@@ -241,15 +242,18 @@ describe('routing object parsing', () => {
               routes: {
                 '/about/': {
                   template: 'about',
+                  limit: 5,
                 },
                 '/me/': {
                   template: 'me',
+                  limit: 5,
                 },
               },
               collections: {
                 '/': {
                   permalink: '/:slug/',
                   template: 'test',
+                  limit: 5,
                 },
               },
             },
@@ -290,10 +294,12 @@ describe('routing object parsing', () => {
             '/podcast/': {
               permalink: '/podcast/{slug}/',
               data: 'tag.something',
+              limit: 5,
             },
             '/': {
               permalink: '/{slug}/',
               data: 'tag.sport',
+              limit: 5,
             },
           },
         })
@@ -315,9 +321,11 @@ describe('routing object parsing', () => {
                       page: [{ redirect: true, slug: 'food' }],
                     },
                   },
+                  limit: 5,
                   template: 'Page',
                 },
                 '/music/': {
+                  limit: 5,
                   data: {
                     query: {
                       tag: {
@@ -333,6 +341,7 @@ describe('routing object parsing', () => {
                   },
                 },
                 '/ghost/': {
+                  limit: 5,
                   data: {
                     query: {
                       author: {
@@ -348,6 +357,7 @@ describe('routing object parsing', () => {
                   },
                 },
                 '/lala/': {
+                  limit: 5,
                   data: {
                     query: {
                       carsten: {
@@ -403,6 +413,7 @@ describe('routing object parsing', () => {
                 },
                 '/podcast/': {
                   permalink: '/podcast/:slug/',
+                  limit: 5,
                   data: {
                     query: {
                       tag: {
@@ -419,6 +430,7 @@ describe('routing object parsing', () => {
                 },
                 '/': {
                   permalink: '/:slug/',
+                  limit: 5,
                   data: {
                     query: {
                       tag: {
@@ -462,6 +474,7 @@ describe('routing object parsing', () => {
               routes: {
                 '/food/': {
                   template: 'Page',
+                  limit: 5,
                   data: {
                     query: {
                       people: {

@@ -12,7 +12,7 @@ describe('computing template hierarchy', () => {
         templates: [],
         data: {},
         filter: undefined,
-        limit: undefined,
+        limit: 5,
         order: undefined,
       })
     ).toEqual(['index'])
@@ -26,7 +26,7 @@ describe('computing template hierarchy', () => {
         templates: ['index'],
         data: {},
         filter: undefined,
-        limit: undefined,
+        limit: 5,
         order: undefined,
       })
     ).toEqual(['index'])
@@ -40,7 +40,7 @@ describe('computing template hierarchy', () => {
         templates: ['my-custom-template'],
         data: {},
         filter: undefined,
-        limit: undefined,
+        limit: 5,
         order: undefined,
       })
     ).toEqual(['my-custom-template', 'posts', 'index'])
@@ -59,7 +59,7 @@ describe('computing template hierarchy', () => {
         templates: [],
         data: {},
         filter: undefined,
-        limit: undefined,
+        limit: 5,
         order: undefined,
       })
     ).toEqual(['tag-my-tag', 'tag', 'index'])
@@ -76,7 +76,7 @@ describe('computing template hierarchy', () => {
         templates: [],
         data: {},
         filter: undefined,
-        limit: undefined,
+        limit: 5,
         order: undefined,
       })
     ).toEqual(['author-napoleon', 'author', 'index'])

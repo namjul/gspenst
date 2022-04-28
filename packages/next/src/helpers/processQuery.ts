@@ -8,8 +8,6 @@ import type { ResultAsync } from '../shared-kernel'
 import { filterResource } from '../helpers/filterResource'
 import * as api from '../api'
 
-const POST_PER_PAGE = 5
-
 type Pagination = {
   page: number // the current page number
   prev: number | null // the previous page number
@@ -111,7 +109,7 @@ export function processQuery(
               ? sortOn(filteredResources, property)
               : filteredResources
 
-            const limit = query.limit ?? POST_PER_PAGE
+            const limit = query.limit
             const total = sortedResources.length
             let page = query.page ?? 1
             let pages = 1
