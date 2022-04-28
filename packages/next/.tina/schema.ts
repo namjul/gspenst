@@ -106,6 +106,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
     label: 'Authors',
     name: 'author',
     path: 'content/authors',
+    format: 'mdx',
     fields: [
       {
         type: 'string',
@@ -121,6 +122,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
     label: 'Tags',
     name: 'tag',
     path: 'content/tags',
+    format: 'mdx',
     fields: [
       {
         type: 'string',
