@@ -5,7 +5,6 @@ import type { RoutingConfigResolved } from './domain/routes'
 import type { PageProps } from './controller'
 import { controller } from './controller'
 import { format } from './errors'
-import resolvePaths from './resolvePaths'
 
 export const getStaticPaths =
   (
@@ -15,7 +14,8 @@ export const getStaticPaths =
   async () => {
     log('Page [...slug].js getStaticPaths')
 
-    const paths = await resolvePaths(routingConfig)
+    const router = routerManager(routingConfig)
+    const paths = await router.resolvePaths()
     if (paths.isOk()) {
       return {
         paths: paths.value,

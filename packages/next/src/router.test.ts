@@ -1,7 +1,161 @@
 import { ok } from './shared-kernel'
 import { routerManager } from './router'
+import repository from './repository'
+import { format } from './errors'
+import { parseRoutes } from './domain/routes'
+import defaultRoutes from './defaultRoutes'
 
-describe('routing mapping', () => {
+jest.mock('./api')
+jest.mock('./redis')
+
+describe('router resolvePaths', () => {
+  beforeAll(async () => {
+    const result = await repository.collect()
+    if (result.isErr()) {
+      throw format(result.error)
+    }
+    void (await repository.getAll())
+  })
+
+  describe('resolving paths', () => {
+    test('empty config', async () => {
+      const router = routerManager({})
+      const result = (await router.resolvePaths())._unsafeUnwrap()
+      expect(result).toEqual(['/admin', '/about', '/home', '/portfolio'])
+    })
+
+    test('default routing config', async () => {
+      const router = routerManager(
+        parseRoutes(defaultRoutes)._unsafeUnwrap()[0]!
+      )
+      const result = await router.resolvePaths()
+      console.log(result)
+      expect(result._unsafeUnwrap()).toEqual([
+        '/admin',
+        '/',
+        '/0th-post/',
+        '/1th-post/',
+        '/2th-post/',
+        '/3th-post/',
+        '/4th-post/',
+        '/5th-post/',
+        '/6th-post/',
+        '/7th-post/',
+        '/8th-post/',
+        '/9th-post/',
+        '/page/1',
+        '/page/2',
+        '/tag/tag-1',
+        '/tag/tag-2',
+        '/author/napolean',
+        '/author/pedro',
+        '/about',
+        '/home',
+        '/portfolio',
+      ])
+    })
+  })
+
+  test('routes', async () => {
+    const router = routerManager({
+      routes: {
+        '/features/': {
+          template: 'Features',
+          data: {
+            query: {
+              page: {
+                type: 'read',
+                resourceType: 'page',
+                slug: 'home',
+              },
+            },
+            router: {
+              page: [{ redirect: true, slug: 'home' }],
+            },
+          },
+        },
+      },
+    })
+    expect((await router.resolvePaths())._unsafeUnwrap()).toContain(
+      '/features/'
+    )
+  })
+
+  test('routes#channel', async () => {
+    const router = routerManager({
+      routes: {
+        '/features/': {
+          controller: 'channel',
+          filter: 'primary_tag:-tag-1',
+        },
+      },
+    })
+    expect((await router.resolvePaths())._unsafeUnwrap()).toEqual([
+      '/admin',
+      '/features/',
+      '/features/page/1',
+      '/about',
+      '/home',
+      '/portfolio',
+    ])
+  })
+
+  test('collections', async () => {
+    const router = routerManager({
+      collections: {
+        '/': {
+          permalink: '/:slug/',
+          template: 'index',
+          filter: 'primary_tag:tag-1',
+          limit: undefined,
+          order: undefined,
+        },
+        '/posts/': {
+          permalink: '/posts/:slug/',
+          template: 'index',
+          filter: undefined,
+          limit: undefined,
+          order: undefined,
+        },
+      },
+    })
+    const paths = await router.resolvePaths()
+    expect(paths._unsafeUnwrap()).toEqual([
+      '/admin',
+      '/',
+      '/3th-post/',
+      '/7th-post/',
+      '/posts/',
+      '/posts/0th-post/',
+      '/posts/1th-post/',
+      '/posts/2th-post/',
+      '/posts/4th-post/',
+      '/posts/5th-post/',
+      '/posts/6th-post/',
+      '/posts/8th-post/',
+      '/posts/9th-post/',
+      '/posts/page/1',
+      '/posts/page/2',
+      '/about',
+      '/home',
+      '/portfolio',
+    ])
+  })
+
+  test('taxonomies', async () => {
+    const router = routerManager({
+      taxonomies: {
+        tag: '/category-1/:slug',
+        author: '/category-2/:slug',
+      },
+    })
+    const paths = (await router.resolvePaths())._unsafeUnwrap()
+    expect(paths).toContain('/category-2/napolean')
+    expect(paths).toContain('/category-2/pedro')
+  })
+})
+
+describe('router contexts', () => {
   test('empty config', () => {
     const router = routerManager({})
     expect(router.handle('about')).toEqual(

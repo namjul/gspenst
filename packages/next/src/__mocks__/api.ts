@@ -1005,14 +1005,50 @@ export const getPage = (): ApiResultAsync<{ data: GetPageQuery }> => {
   })
 }
 
-export const getAuthor = (): ApiResultAsync<
-  { data: GetAuthorQuery } | undefined
-> => {
-  return okAsync(undefined)
+export const getAuthor = (): ApiResultAsync<{ data: GetAuthorQuery }> => {
+  return okAsync({
+    data: {
+      getAuthorDocument: {
+        __typename: 'AuthorDocument',
+        id: 'content/authors/pedro.mdx',
+        data: {
+          __typename: 'Author',
+          name: 'Pedro',
+          date: '2021-07-03T20:30:00.000Z',
+          slug: 'pedro',
+        },
+      },
+      getConfigDocument: {
+        id: 'content/config/index.json',
+        data: {
+          darkMode: true,
+        },
+      },
+    },
+  })
 }
 
-export const getTag = (): ApiResultAsync<{ data: GetTagQuery } | undefined> => {
-  return okAsync(undefined)
+export const getTag = (): ApiResultAsync<{ data: GetTagQuery }> => {
+  return okAsync({
+    data: {
+      getTagDocument: {
+        __typename: 'TagDocument',
+        id: 'content/tags/tag-1.mdx',
+        data: {
+          __typename: 'Tag',
+          name: 'Tag -1',
+          date: '2021-07-03T20:30:00.000Z',
+          slug: 'tag-1',
+        },
+      },
+      getConfigDocument: {
+        id: 'content/config/index.json',
+        data: {
+          darkMode: true,
+        },
+      },
+    },
+  })
 }
 
 export const getConfig = (): ApiResultAsync<{ data: GetConfigQuery }> => {

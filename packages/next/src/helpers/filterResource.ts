@@ -54,6 +54,7 @@ export function filterResource(resource: Resource, filter: string | undefined) {
 
   const { resourceType } = resource
 
+  // TODO can be simpliefied because a resource will have the model ready
   switch (resourceType) {
     case 'post':
       return resource.tinaData
@@ -69,7 +70,7 @@ export function filterResource(resource: Resource, filter: string | undefined) {
             )
             return postResult
           })
-        : err(Errors.notFound('filterResource'))
+        : err(Errors.notFound(`filterResource: ${resource.slug}`))
     case 'page':
       return resource.tinaData
         ? do_(() => {
@@ -84,7 +85,7 @@ export function filterResource(resource: Resource, filter: string | undefined) {
             )
             return pageResult
           })
-        : err(Errors.notFound('filterResource'))
+        : err(Errors.notFound(`filterResource: ${resource.slug}`))
     case 'author':
       return resource.tinaData
         ? do_(() => {
@@ -99,7 +100,7 @@ export function filterResource(resource: Resource, filter: string | undefined) {
             )
             return authorResult
           })
-        : err(Errors.notFound('filterResource'))
+        : err(Errors.notFound(`filterResource: ${resource.slug}`))
     case 'tag':
       return resource.tinaData
         ? do_(() => {
@@ -114,7 +115,7 @@ export function filterResource(resource: Resource, filter: string | undefined) {
             )
             return tagResult
           })
-        : err(Errors.notFound('filterResource'))
+        : err(Errors.notFound(`filterResource: ${resource.slug}`))
     default:
       return absurd(resourceType)
   }

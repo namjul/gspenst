@@ -1,11 +1,15 @@
 import path from 'path'
 import { slugify } from '@tryghost/string'
 import type { Key } from 'path-to-regexp'
-import { pathToRegexp } from './helpers' // TODO use this instead
-import { ok, combine } from './shared-kernel'
+import { pathToRegexp, compilePermalink } from './helpers'
+import { ok, err, combine } from './shared-kernel'
 import type { RoutingContextType } from './types'
-import type { Entries, Simplify, Result, Option } from './shared-kernel'
-import type { ResourceType, DynamicVariables } from './domain/resource'
+import type { Entries, Simplify, Result, Option, ID } from './shared-kernel'
+import type {
+  Resource,
+  ResourceType,
+  DynamicVariables,
+} from './domain/resource'
 import type { Taxonomies } from './domain/taxonomy'
 import type {
   RoutingConfigResolved,
@@ -14,7 +18,45 @@ import type {
   Data,
   DataQuery,
   QueryFilterOptions,
+  DataQueryBrowse,
 } from './domain/routes'
+import { processQuery } from './helpers/processQuery'
+
+const POST_PER_PAGE = 5
+
+// TODO remove paths that are getting redirected
+
+export async function processQueryComplete(query: DataQueryBrowse) {
+  let stopped = false
+  let page = query.page
+
+  const resourcesResult: Result<Resource>[] = []
+
+  while (!stopped) {
+    // eslint-disable-next-line no-await-in-loop
+    const queryOutcomeBrowseResult = await processQuery({
+      ...query,
+      page,
+    })
+    if (queryOutcomeBrowseResult.isOk()) {
+      const {
+        value: { resources, pagination },
+      } = queryOutcomeBrowseResult
+
+      resourcesResult.push(...resources.map((resource) => ok(resource)))
+
+      page = pagination.next
+      if (!pagination.next) {
+        stopped = true
+      }
+    } else {
+      resourcesResult.push(err(queryOutcomeBrowseResult.error))
+      stopped = true
+    }
+  }
+
+  return combine(resourcesResult)
+}
 
 export type Redirect =
   | {
@@ -166,6 +208,10 @@ class ParentRouter {
     // return urlUtils.createUrl(this.route)
     return this.route ?? '/'
   }
+
+  async resolvePaths(): Promise<Result<string[]>> {
+    return ok([])
+  }
 }
 
 class AdminRouter extends ParentRouter {
@@ -192,6 +238,10 @@ class AdminRouter extends ParentRouter {
       })
     )
     return super.handle(request, contexts, routers)
+  }
+
+  async resolvePaths(): Promise<Result<string[]>> {
+    return ok(['/admin'])
   }
 }
 
@@ -252,6 +302,34 @@ class StaticRoutesRouter extends ParentRouter {
       request: { path: _path },
       data: this.data?.query,
     }
+  }
+
+  async resolvePaths() {
+    const mainRoute = this.getRoute()
+    if ('controller' in this.config && this.config.controller === 'channel') {
+      const collectionPostsQuery = {
+        type: 'browse',
+        resourceType: 'post',
+        filter: this.config.filter,
+        limit: this.config.limit,
+        order: this.config.order,
+      } as const
+
+      return (await processQueryComplete(collectionPostsQuery)).map(
+        (resources) => {
+          return [
+            mainRoute,
+            ...Array.from(
+              {
+                length: Math.floor(resources.length / POST_PER_PAGE),
+              },
+              (_, i) => path.join(mainRoute, 'page', String(i + 1))
+            ),
+          ]
+        }
+      )
+    }
+    return ok([mainRoute])
   }
 }
 
@@ -314,6 +392,33 @@ class TaxonomyRouter extends ParentRouter {
       order: undefined,
     }
   }
+
+  async resolvePaths() {
+    const taxonomyQuery = {
+      type: 'browse',
+      resourceType: this.taxonomyKey,
+      filter: undefined,
+      limit: undefined,
+      order: undefined,
+    } as const
+    return (await processQueryComplete(taxonomyQuery))
+      .map((taxonomyResources) => {
+        return combine(
+          taxonomyResources.flatMap((taxonomy) => {
+            return [
+              compilePermalink(this.permalink, taxonomy),
+              ...Array.from(
+                { length: taxonomyResources.length / POST_PER_PAGE },
+                (_, i) => {
+                  return ok(path.join(this.permalink, 'page', String(i + 1)))
+                }
+              ),
+            ]
+          })
+        )
+      })
+      .andThen((xy) => xy)
+  }
 }
 
 class CollectionRouter extends ParentRouter {
@@ -324,10 +429,12 @@ class CollectionRouter extends ParentRouter {
   config: Collection
   keysRoute: Key[] = []
   keysPermalink: Key[] = []
-  constructor(mainRoute: string, config: Collection) {
+  postSet: Set<ID>
+  constructor(mainRoute: string, config: Collection, postStack: Set<ID>) {
     super('CollectionRouter', config.data)
     this.route = mainRoute
     this.config = config
+    this.postSet = postStack
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
     this.permalink = this.config.permalink
     this.routeRegExpResult = pathToRegexp(
@@ -410,6 +517,37 @@ class CollectionRouter extends ParentRouter {
       templates: [this.config.template ?? []].flat(),
     }
   }
+
+  async resolvePaths() {
+    const collectionPostsQuery = {
+      type: 'browse',
+      resourceType: 'post',
+      filter: this.config.filter,
+      limit: this.config.limit,
+      order: this.config.order,
+    } as const
+
+    return (await processQueryComplete(collectionPostsQuery)).andThen(
+      (resources) => {
+        const paths: Result<string>[] = [ok(this.getRoute())]
+
+        resources.forEach((resource) => {
+          if (!this.postSet.has(resource.id)) {
+            this.postSet.add(resource.id)
+            paths.push(compilePermalink(this.config.permalink, resource))
+          }
+        })
+
+        Array.from({ length: resources.length / POST_PER_PAGE }, (_, i) => {
+          return paths.push(
+            ok(path.join(this.getRoute(), 'page', String(i + 1)))
+          )
+        })
+
+        return combine(paths)
+      }
+    )
+  }
 }
 
 class StaticPagesRouter extends ParentRouter {
@@ -454,6 +592,21 @@ class StaticPagesRouter extends ParentRouter {
       templates: [],
     }
   }
+
+  async resolvePaths() {
+    const taxonomyQuery = {
+      type: 'browse',
+      resourceType: 'page',
+      filter: undefined,
+      limit: undefined,
+      order: undefined,
+    } as const
+    return (await processQueryComplete(taxonomyQuery)).map((pages) => {
+      return pages.map((resource) => {
+        return `/${resource.slug}`
+      })
+    })
+  }
 }
 
 export const routerManager = (routingConfig: RoutingConfigResolved) => {
@@ -488,8 +641,10 @@ export const routerManager = (routingConfig: RoutingConfigResolved) => {
   const collections = Object.entries(config.collections ?? {}) as Entries<
     typeof config.collections
   >
+
+  const postSet = new Set<ID>()
   collections.forEach(([key, value]) => {
-    const collectionRouter = new CollectionRouter(key, value)
+    const collectionRouter = new CollectionRouter(key, value, postSet)
     routers.push(collectionRouter)
   })
 
@@ -522,6 +677,18 @@ export const routerManager = (routingConfig: RoutingConfigResolved) => {
         return combine(router.handle(request, [], routers))
       }
       return ok(undefined)
+    },
+    async resolvePaths() {
+      const pathsResultList = await Promise.all(
+        routers.map(async (_router) => {
+          return _router.resolvePaths()
+        })
+      )
+
+      return combine(pathsResultList).map((paths) => {
+        console.log('PATHS:', paths.flat(2))
+        return paths.flat(2)
+      })
     },
   }
 }
