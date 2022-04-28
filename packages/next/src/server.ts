@@ -1,20 +1,17 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import { log } from './logger'
 import { routerManager } from './routing'
-import type { RoutingConfigResolved } from './domain/routes'
+import type { RoutesConfig } from './domain/routes'
 import type { PageProps } from './controller'
 import { controller } from './controller'
 import { format } from './errors'
 
 export const getStaticPaths =
-  (
-    routingConfig: RoutingConfigResolved,
-    staticExport: boolean
-  ): GetStaticPaths =>
+  (routesConfig: RoutesConfig, staticExport: boolean): GetStaticPaths =>
   async () => {
     log('Page [...slug].js getStaticPaths')
 
-    const router = routerManager(routingConfig)
+    const router = routerManager(routesConfig)
     const paths = await router.resolvePaths()
     if (paths.isOk()) {
       return {
@@ -27,7 +24,7 @@ export const getStaticPaths =
 
 export const getStaticProps =
   (
-    routingConfig: RoutingConfigResolved,
+    routesConfig: RoutesConfig,
     routingParameter: string
   ): GetStaticProps<PageProps> =>
   async (context) => {
@@ -35,7 +32,7 @@ export const getStaticProps =
 
     log('Page [...slug].js getStaticProps')
 
-    const router = routerManager(routingConfig)
+    const router = routerManager(routesConfig)
 
     const controllerResult = controller(
       router.handle(params?.[routingParameter])

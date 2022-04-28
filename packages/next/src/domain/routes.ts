@@ -205,7 +205,7 @@ const taxonomies = z
 
 export type Taxonomy = z.infer<typeof taxonomySchema>
 
-const routingSchema = z
+const routesSchema = z
   .object({
     routes: z
       .record(
@@ -225,12 +225,12 @@ const routingSchema = z
   })
   .strict()
 
-export type RoutingConfigResolved = z.output<typeof routingSchema>
+export type RoutesConfig = z.output<typeof routesSchema>
 
 export const parseRoutes = (input: unknown) => {
-  const result = routingSchema.safeParse(input)
+  const result = routesSchema.safeParse(input)
 
-  const resultList: Result<RoutingConfigResolved>[] = []
+  const resultList: Result<RoutesConfig>[] = []
 
   const processIssue = (issue: z.ZodIssue): z.ZodIssue[] => {
     if (issue.code === z.ZodIssueCode.invalid_union) {

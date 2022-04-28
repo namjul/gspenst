@@ -1,7 +1,7 @@
 import { slugify } from '@tryghost/string'
 import { ok, combine } from '../shared-kernel'
 import type { Entries, Result, Option, ID } from '../shared-kernel'
-import type { RoutingConfigResolved } from '../domain/routes'
+import type { RoutesConfig } from '../domain/routes'
 import type { RoutingContext } from '../domain/routing'
 
 import AdminRouter from './AdminRouter'
@@ -11,8 +11,8 @@ import TaxonomyRouter from './TaxonomyRouter'
 import StaticRoutesRouter from './StaticRoutesRouter'
 import ParentRouter from './ParentRouter'
 
-export const routerManager = (routingConfig: RoutingConfigResolved) => {
-  const config: RoutingConfigResolved = routingConfig
+export const routerManager = (routesConfig: RoutesConfig) => {
+  const config: RoutesConfig = routesConfig
   const router: ParentRouter = new ParentRouter('SiteRouter')
   const routers: ParentRouter[] = []
 

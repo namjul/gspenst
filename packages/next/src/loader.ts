@@ -9,6 +9,7 @@ import { isProductionBuild } from './helpers'
 import { format } from './errors'
 import defaultRoutes from './defaultRoutes'
 import repository from './repository'
+import { log } from './logger'
 
 export type LoaderOptions = {
   theme: string
@@ -27,6 +28,8 @@ async function loader(
   source: string
 ): Promise<string | Buffer> {
   context.cacheable(true)
+
+  log('Run Loader')
 
   const options = context.getOptions()
   const { theme, themeConfig, staticExport } = options
@@ -65,7 +68,7 @@ async function loader(
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const routingConfigResult = parseRoutes({
+  const routesConfigResult = parseRoutes({
     ...defaultRoutes,
     ...(yaml.load(source) as object),
   })
@@ -76,12 +79,12 @@ async function loader(
     context.emitError(format(repoCollectResult.error))
   }
 
-  if (routingConfigResult.isErr()) {
-    context.emitError(format(routingConfigResult.error))
+  if (routesConfigResult.isErr()) {
+    context.emitError(format(routesConfigResult.error))
   }
 
-  const routingConfig = JSON.stringify(
-    routingConfigResult.isOk() ? routingConfigResult.value[0] : defaultRoutes
+  const routesConfig = JSON.stringify(
+    routesConfigResult.isOk() ? routesConfigResult.value[0] : defaultRoutes
   )
 
   const imports = `
@@ -108,11 +111,11 @@ export default function GspenstPage (props) {
 const effectHotReload = ${effectHotReload}
 
 export const getStaticPaths = async () => {
-  return __gspenst_server__.getStaticPaths(${routingConfig}, !!${staticExport})()
+  return __gspenst_server__.getStaticPaths(${routesConfig}, !!${staticExport})()
 }
 
 export const getStaticProps = async (context) => {
-  return __gspenst_server__.getStaticProps(${routingConfig},'${routingParameter}')(context)
+  return __gspenst_server__.getStaticProps(${routesConfig},'${routingParameter}')(context)
 }
 `
 
