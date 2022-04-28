@@ -63,22 +63,84 @@ describe('router resolvePaths', () => {
           template: 'Features',
           data: {
             query: {
-              page: {
+              firstpost: {
+                type: 'read',
+                resourceType: 'post',
+                slug: '1th-post',
+              },
+              secondpost: {
+                type: 'read',
+                resourceType: 'post',
+                slug: '2th-post',
+                redirect: false,
+              },
+              home: {
                 type: 'read',
                 resourceType: 'page',
                 slug: 'home',
+                redirect: true,
               },
             },
             router: {
+              post: [
+                { redirect: true, slug: '1th-post' },
+                { redirect: false, slug: '2th-post' },
+              ],
               page: [{ redirect: true, slug: 'home' }],
             },
           },
         },
       },
+      collections: {
+        '/': {
+          permalink: '/:slug',
+          data: {
+            query: {
+              thirdpost: {
+                type: 'read',
+                resourceType: 'post',
+                slug: '3th-post',
+                redirect: true,
+              },
+              tag1: {
+                type: 'read',
+                resourceType: 'tag',
+                slug: 'tag-1',
+                redirect: true,
+              },
+            },
+            router: {
+              post: [{ redirect: true, slug: '3th-post' }],
+              tag: [{ redirect: true, slug: 'tag-1' }],
+            },
+          },
+        },
+      },
+      taxonomies: {
+        tag: '/tag/:slug',
+        author: '/author/:slug',
+      },
     })
-    expect((await router.resolvePaths())._unsafeUnwrap()).toContain(
-      '/features/'
-    )
+    expect((await router.resolvePaths())._unsafeUnwrap()).toEqual([
+      '/admin',
+      '/features/',
+      '/',
+      '/0th-post',
+      '/2th-post',
+      '/4th-post',
+      '/5th-post',
+      '/6th-post',
+      '/7th-post',
+      '/8th-post',
+      '/9th-post',
+      '/page/1',
+      '/page/2',
+      '/tag/tag-2',
+      '/author/napolean',
+      '/author/pedro',
+      '/about',
+      '/portfolio',
+    ])
   })
 
   test('routes#channel', async () => {

@@ -209,7 +209,7 @@ class ParentRouter {
     return this.route ?? '/'
   }
 
-  async resolvePaths(): Promise<Result<string[]>> {
+  async resolvePaths(_routers: ParentRouter[]): Promise<Result<string[]>> {
     return ok([])
   }
 }
@@ -388,36 +388,40 @@ class TaxonomyRouter extends ParentRouter {
       templates: [],
       data: this.data?.query,
       filter: `tags:'${params?.slug ?? '%s'}'`,
-      limit: undefined,
-      order: undefined,
     }
   }
 
-  async resolvePaths() {
+  async resolvePaths(routers: ParentRouter[]) {
     const taxonomyQuery = {
       type: 'browse',
       resourceType: this.taxonomyKey,
-      filter: undefined,
-      limit: undefined,
-      order: undefined,
     } as const
     return (await processQueryComplete(taxonomyQuery))
       .map((taxonomyResources) => {
         return combine(
-          taxonomyResources.flatMap((taxonomy) => {
-            return [
-              compilePermalink(this.permalink, taxonomy),
-              ...Array.from(
-                { length: taxonomyResources.length / POST_PER_PAGE },
-                (_, i) => {
-                  return ok(path.join(this.permalink, 'page', String(i + 1)))
-                }
-              ),
-            ]
-          })
+          taxonomyResources
+            .filter(
+              (resource) =>
+                !this.respectDominantRouter(
+                  routers,
+                  resource.resourceType,
+                  resource.slug
+                )
+            )
+            .flatMap((taxonomy) => {
+              return [
+                compilePermalink(this.permalink, taxonomy),
+                ...Array.from(
+                  { length: taxonomyResources.length / POST_PER_PAGE },
+                  (_, i) => {
+                    return ok(path.join(this.permalink, 'page', String(i + 1)))
+                  }
+                ),
+              ]
+            })
         )
       })
-      .andThen((xy) => xy)
+      .andThen((x) => x)
   }
 }
 
@@ -518,7 +522,7 @@ class CollectionRouter extends ParentRouter {
     }
   }
 
-  async resolvePaths() {
+  async resolvePaths(routers: ParentRouter[]) {
     const collectionPostsQuery = {
       type: 'browse',
       resourceType: 'post',
@@ -531,12 +535,21 @@ class CollectionRouter extends ParentRouter {
       (resources) => {
         const paths: Result<string>[] = [ok(this.getRoute())]
 
-        resources.forEach((resource) => {
-          if (!this.postSet.has(resource.id)) {
-            this.postSet.add(resource.id)
-            paths.push(compilePermalink(this.config.permalink, resource))
-          }
-        })
+        resources
+          .filter(
+            (resource) =>
+              !this.respectDominantRouter(
+                routers,
+                resource.resourceType,
+                resource.slug
+              )
+          )
+          .forEach((resource) => {
+            if (!this.postSet.has(resource.id)) {
+              this.postSet.add(resource.id)
+              paths.push(compilePermalink(this.config.permalink, resource))
+            }
+          })
 
         Array.from({ length: resources.length / POST_PER_PAGE }, (_, i) => {
           return paths.push(
@@ -593,18 +606,24 @@ class StaticPagesRouter extends ParentRouter {
     }
   }
 
-  async resolvePaths() {
+  async resolvePaths(routers: ParentRouter[]) {
     const taxonomyQuery = {
       type: 'browse',
       resourceType: 'page',
-      filter: undefined,
-      limit: undefined,
-      order: undefined,
     } as const
     return (await processQueryComplete(taxonomyQuery)).map((pages) => {
-      return pages.map((resource) => {
-        return `/${resource.slug}`
-      })
+      return pages
+        .filter(
+          (pageResource) =>
+            !this.respectDominantRouter(
+              routers,
+              pageResource.resourceType,
+              pageResource.slug
+            )
+        )
+        .map((pageResource) => {
+          return `/${pageResource.slug}`
+        })
     })
   }
 }
@@ -681,7 +700,7 @@ export const routerManager = (routingConfig: RoutingConfigResolved) => {
     async resolvePaths() {
       const pathsResultList = await Promise.all(
         routers.map(async (_router) => {
-          return _router.resolvePaths()
+          return _router.resolvePaths(routers)
         })
       )
 
