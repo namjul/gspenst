@@ -117,8 +117,12 @@ describe('router resolvePaths', () => {
         },
       },
       taxonomies: {
-        tag: '/tag/:slug',
-        author: '/author/:slug',
+        tag: {
+          permalink: '/tag/:slug',
+        },
+        author: {
+          permalink: '/author/:slug',
+        },
       },
     })
     expect((await router.resolvePaths())._unsafeUnwrap()).toEqual([
@@ -207,8 +211,12 @@ describe('router resolvePaths', () => {
   test('taxonomies', async () => {
     const router = routerManager({
       taxonomies: {
-        tag: '/category-1/:slug',
-        author: '/category-2/:slug',
+        tag: {
+          permalink: '/category-1/:slug',
+        },
+        author: {
+          permalink: '/category-2/:slug',
+        },
       },
     })
     const paths = (await router.resolvePaths())._unsafeUnwrap()
@@ -241,8 +249,12 @@ describe('router contexts', () => {
   test('taxonomies', () => {
     const router = routerManager({
       taxonomies: {
-        tag: '/category-1/:slug',
-        author: '/category-2/:slug',
+        tag: {
+          permalink: '/category-1/:slug',
+        },
+        author: {
+          permalink: '/category-2/:slug',
+        },
       },
     })
     expect(router.handle(['category-2', 'pedro'])).toEqual(
@@ -280,8 +292,12 @@ describe('router contexts', () => {
         },
       },
       taxonomies: {
-        tag: '/tag/:slug',
-        author: '/author/:slug',
+        tag: {
+          permalink: '/tag/:slug',
+        },
+        author: {
+          permalink: '/author/:slug',
+        },
       },
     })
     expect(router.handle(['page', '1'])).toEqual(
@@ -379,8 +395,12 @@ describe('router contexts', () => {
         },
       },
       taxonomies: {
-        tag: '/tag/:slug',
-        author: '/author/:slug',
+        tag: {
+          permalink: '/tag/:slug',
+        },
+        author: {
+          permalink: '/author/:slug',
+        },
       },
     })
     expect(router.handle(['about', 'team'])).toMatchObject(

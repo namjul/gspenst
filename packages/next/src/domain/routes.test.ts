@@ -196,6 +196,29 @@ describe('routing object parsing', () => {
   })
 
   describe('transformation', () => {
+    test('taxonomies', () => {
+      const object = parseRoutes({
+        taxonomies: {
+          tag: '/tag/{slug}',
+          author: '/author/{slug}',
+        },
+      })
+      expect(object).toEqual(
+        ok([
+          {
+            taxonomies: {
+              tag: {
+                permalink: '/tag/:slug',
+              },
+              author: {
+                permalink: '/author/:slug',
+              },
+            },
+          },
+        ])
+      )
+    })
+
     describe('template property', () => {
       test('single value', () => {
         const object = parseRoutes({

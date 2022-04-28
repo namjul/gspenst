@@ -4,12 +4,14 @@ import * as Errors from '../errors'
 import { resourceTypeSchema, resourceTypes } from './resource'
 import type { ResourceType } from './resource'
 
+const POST_PER_PAGE = 5
+
 const queryTypeRead = z.literal('read')
 const queryTypeBrowse = z.literal('browse')
 
 const slugSchema = z.string()
 
-const permalink = z
+const permalinkSchema = z
   .string()
   .refine((value) => !/\/:\w+/.test(value), {
     message: 'Please use the following notation e.g. /{slug}/.',
@@ -41,9 +43,13 @@ const orderShema = z.preprocess(
   )
 )
 
+const limitSchema = z
+  .union([z.number(), z.literal('all')])
+  .default(POST_PER_PAGE)
+
 const queryFilterOptions = z.object({
   filter: z.string().optional(),
-  limit: z.union([z.number(), z.literal('all')]).optional(),
+  limit: limitSchema.optional(),
   order: orderShema.optional(),
   // include: z.string().optional(),
   // visibility: z.string().optional(),
@@ -172,7 +178,7 @@ export type Route = z.infer<typeof route>
 
 const collection = z
   .object({
-    permalink,
+    permalink: permalinkSchema,
     data: dataForm.optional(),
     template: template.optional(),
   })
@@ -180,12 +186,27 @@ const collection = z
 
 export type Collection = z.infer<typeof collection>
 
+const taxonomySchema = z.object({
+  permalink: permalinkSchema,
+  limit: limitSchema.optional(),
+})
+
 const taxonomies = z
   .object({
-    tag: permalink.optional(),
-    author: permalink.optional(),
+    tag: z.preprocess((value) => {
+      return {
+        permalink: value,
+      }
+    }, taxonomySchema),
+    author: z.preprocess((value) => {
+      return {
+        permalink: value,
+      }
+    }, taxonomySchema),
   })
   .strict()
+
+export type Taxonomy = z.infer<typeof taxonomySchema>
 
 const routingSchema = z
   .object({

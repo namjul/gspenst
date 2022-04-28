@@ -14,6 +14,7 @@ import type { Taxonomies } from './domain/taxonomy'
 import type {
   RoutingConfigResolved,
   Collection,
+  Taxonomy,
   Route,
   Data,
   DataQuery,
@@ -321,7 +322,12 @@ class StaticRoutesRouter extends ParentRouter {
             mainRoute,
             ...Array.from(
               {
-                length: Math.floor(resources.length / POST_PER_PAGE),
+                length: Math.floor(
+                  resources.length /
+                    (this.config.limit === 'all'
+                      ? 1
+                      : this.config.limit ?? POST_PER_PAGE)
+                ),
               },
               (_, i) => path.join(mainRoute, 'page', String(i + 1))
             ),
@@ -335,15 +341,15 @@ class StaticRoutesRouter extends ParentRouter {
 
 class TaxonomyRouter extends ParentRouter {
   taxonomyKey: Taxonomies
-  permalink: string
+  config: Taxonomy
   permalinkRegExpResult: Result<RegExp>
   keys: Key[] = []
-  constructor(key: Taxonomies, permalink: string) {
+  constructor(key: Taxonomies, config: Taxonomy) {
     super('TaxonomyRouter')
     this.taxonomyKey = key
-    this.permalink = permalink
+    this.config = config
     this.permalinkRegExpResult = pathToRegexp(
-      path.join(`/${this.permalink}`, '{page/:page(\\d+)}?'),
+      path.join(`/${this.config.permalink}`, '{page/:page(\\d+)}?'),
       this.keys
     )
   }
@@ -410,11 +416,19 @@ class TaxonomyRouter extends ParentRouter {
             )
             .flatMap((taxonomy) => {
               return [
-                compilePermalink(this.permalink, taxonomy),
+                compilePermalink(this.config.permalink, taxonomy),
                 ...Array.from(
-                  { length: taxonomyResources.length / POST_PER_PAGE },
+                  {
+                    length:
+                      taxonomyResources.length /
+                      (this.config.limit === 'all'
+                        ? 1
+                        : this.config.limit ?? POST_PER_PAGE),
+                  },
                   (_, i) => {
-                    return ok(path.join(this.permalink, 'page', String(i + 1)))
+                    return ok(
+                      path.join(this.config.permalink, 'page', String(i + 1))
+                    )
                   }
                 ),
               ]
@@ -671,8 +685,8 @@ export const routerManager = (routingConfig: RoutingConfigResolved) => {
   const taxonomies = Object.entries(config.taxonomies ?? {}) as Entries<
     typeof config.taxonomies
   >
-  taxonomies.forEach(([key, permalink]) => {
-    const taxonomyRouter = new TaxonomyRouter(key, permalink as string)
+  taxonomies.forEach(([key, value]) => {
+    const taxonomyRouter = new TaxonomyRouter(key, value)
     routers.push(taxonomyRouter)
   })
 
