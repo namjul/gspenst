@@ -1,7 +1,7 @@
 import EventEmitter from 'events'
 import type { ChildProcess } from 'child_process'
 import path from 'path'
-import { Compiler } from 'webpack'
+import type { Compiler } from 'webpack'
 import pkg from '../package.json'
 import { startTinaServer } from './tinaServer'
 
