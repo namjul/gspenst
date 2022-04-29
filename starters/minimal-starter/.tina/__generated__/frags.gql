@@ -3,13 +3,9 @@ fragment ConfigParts on Config {
 }
 
 fragment PageParts on Page {
+  date
+  slug
   title
-  body
-}
-
-fragment PostParts on Post {
-  title
-  heroImg
   excerpt
   authors {
     __typename
@@ -27,14 +23,41 @@ fragment PostParts on Post {
       }
     }
   }
+  content
+}
+
+fragment PostParts on Post {
   date
-  body
+  slug
+  title
+  excerpt
+  authors {
+    __typename
+    author {
+      ... on Document {
+        id
+      }
+    }
+  }
+  tags {
+    __typename
+    tag {
+      ... on Document {
+        id
+      }
+    }
+  }
+  content
 }
 
 fragment AuthorParts on Author {
   name
+  date
+  slug
 }
 
 fragment TagParts on Tag {
   name
+  date
+  slug
 }
