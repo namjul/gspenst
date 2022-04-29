@@ -45,8 +45,7 @@
         "parserOptions": {
           "project": [
             "./tsconfig.json",
-            "./packages/*/tsconfig.json",
-            "./starters/*/tsconfig.json"
+            "./packages/*/tsconfig.json"
           ]
         },
         "plugins": [

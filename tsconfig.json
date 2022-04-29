@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.options.json",
-  "include": ["./packages", "./starters"],
+  "include": ["./packages"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "typeRoots": ["./node_modules/@types", "./typings"],

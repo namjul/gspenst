@@ -4,6 +4,7 @@ public
 node_modules
 *.esm.js
 out
+starters
 
 # Ignore Tinacms artifacts
 __generated__/
