@@ -5,7 +5,7 @@ import { ok, combine } from '../shared-kernel'
 import type { Result, Option, ID } from '../shared-kernel'
 import type { RoutingContext, Request } from '../domain/routing'
 import type { Collection } from '../domain/routes'
-import { processQueryComplete } from '../helpers/processQuery'
+import { processQuery } from '../helpers/processQuery'
 import ParentRouter from './ParentRouter'
 
 class CollectionRouter extends ParentRouter {
@@ -110,12 +110,11 @@ class CollectionRouter extends ParentRouter {
       type: 'browse',
       resourceType: 'post',
       filter: this.config.filter,
-      limit: this.config.limit,
-      order: this.config.order,
+      limit: 'all',
     } as const
 
-    return (await processQueryComplete(collectionPostsQuery)).andThen(
-      (resources) => {
+    return (await processQuery(collectionPostsQuery)).andThen(
+      ({ resources }) => {
         const paths: Result<string>[] = [ok(this.getRoute())]
 
         resources

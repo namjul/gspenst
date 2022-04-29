@@ -1,10 +1,10 @@
 import sortOn from 'sort-on'
-import type { DataQuery, DataQueryBrowse } from '../domain/routes'
+import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import { do_, absurd } from '../utils'
 import repository from '../repository'
-import { combine, ok, err, okAsync } from '../shared-kernel'
-import type { ResultAsync, Result } from '../shared-kernel'
+import { combine, okAsync } from '../shared-kernel'
+import type { ResultAsync } from '../shared-kernel'
 import { filterResource } from '../helpers/filterResource'
 import * as api from '../api'
 
@@ -150,37 +150,4 @@ export function processQuery(
   })
 
   return result
-}
-
-// TODO check if this function is really necessary
-export async function processQueryComplete(query: DataQueryBrowse) {
-  let stopped = false
-  let page = query.page
-
-  const resourcesResult: Result<Resource>[] = []
-
-  while (!stopped) {
-    // eslint-disable-next-line no-await-in-loop
-    const queryOutcomeBrowseResult = await processQuery({
-      ...query,
-      page,
-    })
-    if (queryOutcomeBrowseResult.isOk()) {
-      const {
-        value: { resources, pagination },
-      } = queryOutcomeBrowseResult
-
-      resourcesResult.push(...resources.map((resource) => ok(resource)))
-
-      page = pagination.next
-      if (!pagination.next) {
-        stopped = true
-      }
-    } else {
-      resourcesResult.push(err(queryOutcomeBrowseResult.error))
-      stopped = true
-    }
-  }
-
-  return combine(resourcesResult)
 }

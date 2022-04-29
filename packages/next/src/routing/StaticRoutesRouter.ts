@@ -5,7 +5,7 @@ import type { Result, Option } from '../shared-kernel'
 import { pathToRegexp } from '../helpers'
 import type { RoutingContext } from '../domain/routing'
 import type { Route } from '../domain/routes'
-import { processQueryComplete } from '../helpers/processQuery'
+import { processQuery } from '../helpers/processQuery'
 import ParentRouter from './ParentRouter'
 
 class StaticRoutesRouter extends ParentRouter {
@@ -74,26 +74,23 @@ class StaticRoutesRouter extends ParentRouter {
         type: 'browse',
         resourceType: 'post',
         filter: this.config.filter,
-        limit: this.config.limit,
-        order: this.config.order,
+        limit: 'all',
       } as const
 
-      return (await processQueryComplete(collectionPostsQuery)).map(
-        (resources) => {
-          return [
-            mainRoute,
-            ...Array.from(
-              {
-                length: Math.floor(
-                  resources.length /
-                    (this.config.limit === 'all' ? 1 : this.config.limit)
-                ),
-              },
-              (_, i) => path.join(mainRoute, 'page', String(i + 1))
-            ),
-          ]
-        }
-      )
+      return (await processQuery(collectionPostsQuery)).map(({ resources }) => {
+        return [
+          mainRoute,
+          ...Array.from(
+            {
+              length: Math.floor(
+                resources.length /
+                  (this.config.limit === 'all' ? 1 : this.config.limit)
+              ),
+            },
+            (_, i) => path.join(mainRoute, 'page', String(i + 1))
+          ),
+        ]
+      })
     }
     return ok([mainRoute])
   }

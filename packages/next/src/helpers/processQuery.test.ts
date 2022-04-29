@@ -44,6 +44,17 @@ describe('processQuery', () => {
       expect(result).toHaveProperty('resources[0].tinaData')
     })
 
+    test('all', async () => {
+      const query = {
+        type: 'browse',
+        resourceType: 'post',
+        limit: 'all',
+      } as const
+
+      const result = (await processQuery(query))._unsafeUnwrap()
+      expect(result.resources).toHaveLength(10)
+    })
+
     test('filter', async () => {
       const query = {
         type: 'browse',

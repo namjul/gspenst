@@ -6,7 +6,7 @@ import type { Result, Option } from '../shared-kernel'
 import type { RoutingContext, Request } from '../domain/routing'
 import type { Taxonomy } from '../domain/routes'
 import type { Taxonomies } from '../domain/taxonomy'
-import { processQueryComplete } from '../helpers/processQuery'
+import { processQuery } from '../helpers/processQuery'
 import ParentRouter from './ParentRouter'
 
 class TaxonomyRouter extends ParentRouter {
@@ -72,10 +72,10 @@ class TaxonomyRouter extends ParentRouter {
     const taxonomyQuery = {
       type: 'browse',
       resourceType: this.taxonomyKey,
-      limit: this.config.limit,
+      limit: 'all',
     } as const
-    return (await processQueryComplete(taxonomyQuery))
-      .map((taxonomyResources) => {
+    return (await processQuery(taxonomyQuery))
+      .map(({ resources: taxonomyResources }) => {
         return combine(
           taxonomyResources
             .filter(

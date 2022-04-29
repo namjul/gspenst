@@ -2,7 +2,7 @@ import { ok } from '../shared-kernel'
 import type { Result, Option } from '../shared-kernel'
 import { pathToRegexp } from '../helpers'
 import type { RoutingContext, Request } from '../domain/routing'
-import { processQueryComplete } from '../helpers/processQuery'
+import { processQuery } from '../helpers/processQuery'
 import ParentRouter from './ParentRouter'
 
 class StaticPagesRouter extends ParentRouter {
@@ -54,7 +54,7 @@ class StaticPagesRouter extends ParentRouter {
       resourceType: 'page',
       limit: 'all',
     } as const
-    return (await processQueryComplete(taxonomyQuery)).map((pages) => {
+    return (await processQuery(taxonomyQuery)).map(({ resources: pages }) => {
       return pages
         .filter(
           (pageResource) =>
