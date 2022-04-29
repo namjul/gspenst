@@ -106,7 +106,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
     label: 'Authors',
     name: 'author',
     path: 'content/authors',
-    format: 'mdx',
+    format: 'md',
     fields: [
       {
         type: 'string',
@@ -122,7 +122,7 @@ export function createSchema(templates: TinaTemplate[] = []) {
     label: 'Tags',
     name: 'tag',
     path: 'content/tags',
-    format: 'mdx',
+    format: 'md',
     fields: [
       {
         type: 'string',
@@ -145,7 +145,9 @@ export function createSchema(templates: TinaTemplate[] = []) {
   })
 }
 
-export default createSchema()
+const schema = createSchema()
+
+export default schema
 
 const branch = 'main'
 const apiURL =
@@ -154,6 +156,7 @@ const apiURL =
     : `https://content.tinajs.io/content/${process.env.NEXT_PUBLIC_TINA_CLIENT_ID}/github/${branch}`
 export const tinaConfig = defineConfig({
   apiURL,
+  schema,
   cmsCallback: (cms) => {
     cms.flags.set('tina-admin', true)
     return cms

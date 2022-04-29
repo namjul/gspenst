@@ -184,7 +184,7 @@
       "label": "Authors",
       "name": "author",
       "path": "content/authors",
-      "format": "mdx",
+      "format": "md",
       "fields": [
         {
           "type": "string",
@@ -215,7 +215,7 @@
       "label": "Tags",
       "name": "tag",
       "path": "content/tags",
-      "format": "mdx",
+      "format": "md",
       "fields": [
         {
           "type": "string",

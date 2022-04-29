@@ -1212,7 +1212,6 @@ export const PostPartsFragmentDoc = gql`
     slug
     title
     excerpt
-
     authors {
       __typename
       author {
