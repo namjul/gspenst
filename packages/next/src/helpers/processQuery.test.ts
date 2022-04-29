@@ -13,20 +13,21 @@ beforeAll(async () => {
 })
 
 describe('processQuery', () => {
-  test('read', async () => {
-    const query = {
-      resourceType: 'post',
-      type: 'read',
-      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain --- TODO: return ErrResult if `slug` is not defined
-      slug: '7th-post',
-      redirect: false,
-    } as const
-
-    const result = (await processQuery(query))._unsafeUnwrap()
-    expect(result).toHaveProperty('resource')
-    expect(
-      (await repository.get(result.resource.id))._unsafeUnwrap()
-    ).toHaveProperty('tinaData')
+  describe('read', () => {
+    test('simple', async () => {
+      const query = {
+        resourceType: 'post',
+        type: 'read',
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain --- TODO: return ErrResult if `slug` is not defined
+        slug: '7th-post',
+        redirect: false,
+      } as const
+      const result = (await processQuery(query))._unsafeUnwrap()
+      expect(result).toHaveProperty('resource')
+      expect(
+        (await repository.get(result.resource.id))._unsafeUnwrap()
+      ).toHaveProperty('tinaData')
+    })
   })
 
   describe('browse', () => {
@@ -36,7 +37,6 @@ describe('processQuery', () => {
         resourceType: 'post',
         limit: 5,
       } as const
-
       const result = (await processQuery(query))._unsafeUnwrap()
       expect(result).toHaveProperty('resources')
       expect(result).toHaveProperty('pagination')
@@ -50,7 +50,6 @@ describe('processQuery', () => {
         resourceType: 'post',
         limit: 'all',
       } as const
-
       const result = (await processQuery(query))._unsafeUnwrap()
       expect(result.resources).toHaveLength(10)
     })
@@ -62,7 +61,6 @@ describe('processQuery', () => {
         filter: 'slug:-8th-post',
         limit: 5,
       } as const
-
       const result = await processQuery(query)
       expect(result._unsafeUnwrap()).toHaveProperty('resources')
       expect(result._unsafeUnwrap()).toHaveProperty('pagination')
@@ -75,7 +73,6 @@ describe('processQuery', () => {
         resourceType: 'post',
         limit: 3,
       } as const
-
       const result = await processQuery(query)
       expect(result._unsafeUnwrap()).toHaveProperty('pagination.total', 10)
     })

@@ -1,12 +1,18 @@
 import sortOn from 'sort-on'
+import { Result as NeverThrowResult } from 'neverthrow'
+import _nql from '@tryghost/nql'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import { do_, absurd } from '../utils'
 import repository from '../repository'
-import { combine, okAsync } from '../shared-kernel'
+import { combine, okAsync, ok, err } from '../shared-kernel'
 import type { ResultAsync } from '../shared-kernel'
-import { filterResource } from '../helpers/filterResource'
 import * as api from '../api'
+import * as Errors from '../errors'
+import { createPost } from '../domain/post'
+import { createPage } from '../domain/page'
+import { createAuthor } from '../domain/author'
+import { createTag } from '../domain/tag'
 
 type Pagination = {
   page: number // the current page number
@@ -18,28 +24,33 @@ type Pagination = {
 }
 
 const enrichResource = (resource: Resource) => {
-  if (resource.tinaData) {
-    return okAsync(resource)
-  }
   return do_(() => {
     const { resourceType, relativePath } = resource
     switch (resourceType) {
       case 'page':
-        return api
-          .getPage({ relativePath })
-          .map((tinaData) => ({ ...resource, tinaData }))
+        return resource.tinaData
+          ? okAsync({ ...resource, tinaData: resource.tinaData })
+          : api
+              .getPage({ relativePath })
+              .map((tinaData) => ({ ...resource, tinaData }))
       case 'post':
-        return api
-          .getPost({ relativePath })
-          .map((tinaData) => ({ ...resource, tinaData }))
+        return resource.tinaData
+          ? okAsync({ ...resource, tinaData: resource.tinaData })
+          : api
+              .getPost({ relativePath })
+              .map((tinaData) => ({ ...resource, tinaData }))
       case 'author':
-        return api
-          .getAuthor({ relativePath })
-          .map((tinaData) => ({ ...resource, tinaData }))
+        return resource.tinaData
+          ? okAsync({ ...resource, tinaData: resource.tinaData })
+          : api
+              .getAuthor({ relativePath })
+              .map((tinaData) => ({ ...resource, tinaData }))
       case 'tag':
-        return api
-          .getTag({ relativePath })
-          .map((tinaData) => ({ ...resource, tinaData }))
+        return resource.tinaData
+          ? okAsync({ ...resource, tinaData: resource.tinaData })
+          : api
+              .getTag({ relativePath })
+              .map((tinaData) => ({ ...resource, tinaData }))
       default:
         return absurd(resourceType)
     }
@@ -48,6 +59,46 @@ const enrichResource = (resource: Resource) => {
       repository.set(enrichedResource).map(() => enrichedResource)
     )
     .andThen((x) => x)
+}
+
+const EXPANSIONS = [
+  {
+    key: 'author',
+    replacement: 'authors.slug',
+  },
+  {
+    key: 'tags',
+    replacement: 'tags.slug',
+  },
+  {
+    key: 'tag',
+    replacement: 'tags.slug',
+  },
+  {
+    key: 'authors',
+    replacement: 'authors.slug',
+  },
+  {
+    key: 'primary_tag',
+    replacement: 'primary_tag.slug',
+  },
+  {
+    key: 'primary_author',
+    replacement: 'primary_author.slug',
+  },
+]
+
+function makeNqlFilter(filter: string) {
+  return NeverThrowResult.fromThrowable(
+    (obj: object) => {
+      return _nql(filter, { expansions: EXPANSIONS }).queryJSON(obj)
+    },
+    (error) =>
+      Errors.other(
+        '`nql`#queryJSON',
+        error instanceof Error ? error : undefined
+      )
+  )
 }
 
 type QueryOutcomeRead = {
@@ -90,20 +141,48 @@ export function processQuery(
             return combine(resources.map(enrichResource))
           })
           .andThen((enrichedResources) => {
+            const nqlFilter = query.filter
+              ? makeNqlFilter(query.filter)
+              : () => ok(true)
+
             return combine(
-              enrichedResources.map((resource) =>
-                filterResource(resource, query.filter)
-              )
+              enrichedResources.flatMap((resource) => {
+                const entity = do_(() => {
+                  const { resourceType } = resource
+                  switch (resourceType) {
+                    case 'post':
+                      return createPost(resource.tinaData.data.post)
+                    case 'page':
+                      return createPage(resource.tinaData.data.page)
+                    case 'author':
+                      return createAuthor(resource.tinaData.data.author)
+                    case 'tag':
+                      return createTag(resource.tinaData.data.tag)
+                    default:
+                      return absurd(resourceType)
+                  }
+                })
+
+                if (entity.isErr()) {
+                  return err(entity.error)
+                }
+
+                const filterResult = nqlFilter(entity.value)
+                if (filterResult.isErr()) {
+                  return err(filterResult.error)
+                }
+                return filterResult.isOk() && filterResult.value
+                  ? ok({ resource, entity: entity.value })
+                  : []
+              })
             )
           })
-          .map((flaggedResources) => {
-            const property = query.order?.map((y) => {
-              return `${y.order === 'desc' ? '-' : ''}object.${y.field}`
+          .map((filteredResources) => {
+            const property = query.order?.map((orderValue) => {
+              return `${orderValue.order === 'desc' ? '-' : ''}entity.${
+                orderValue.field
+              }`
             })
-
-            const filteredResources = flaggedResources.filter(
-              ({ owned }) => owned
-            )
 
             const sortedResources = property
               ? sortOn(filteredResources, property)
