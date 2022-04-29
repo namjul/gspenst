@@ -1,77 +1,58 @@
 fragment ConfigQueryFragment on Query {
-  getConfigDocument(relativePath: "index.json") {
+  config(relativePath: "index.json") {
     id
-    data {
-      ...ConfigParts
-    }
+    ...ConfigParts
   }
 }
 
-fragment PostDocumentQueryFragment on PostDocument {
+fragment PostQueryFragment on Post {
   __typename
   id
-  data {
-    ...PostParts
-    tags {
-      tag {
-        ... on TagDocument {
-          data {
-            ...TagParts
-          }
-        }
+  ...PostParts
+  tags {
+    tag {
+      ... on Tag {
+        ...TagParts
       }
     }
-    authors {
-      author {
-        ... on AuthorDocument {
-          data {
-            ...AuthorParts
-          }
-        }
+  }
+  authors {
+    author {
+      ... on Author {
+        ...AuthorParts
       }
     }
   }
 }
 
-fragment PageDocumentQueryFragment on PageDocument {
+fragment PageQueryFragment on Page {
   __typename
   id
-  data {
-    ...PageParts
-    tags {
-      tag {
-        ... on TagDocument {
-          data {
-            ...TagParts
-          }
-        }
-      }
-    }
-    authors {
-      author {
-        ... on AuthorDocument {
-          data {
-            ...AuthorParts
-          }
-        }
+  ...PageParts
+  tags {
+    tag {
+      ... on Tag {
+        ...TagParts
       }
     }
   }
-
-}
-
-fragment AuthorDocumentQueryFragment on AuthorDocument {
-  __typename
-  id
-  data {
-    ...AuthorParts
+  authors {
+    author {
+      ... on Author {
+        ...AuthorParts
+      }
+    }
   }
 }
 
-fragment TagDocumentQueryFragment on TagDocument {
+fragment AuthorQueryFragment on Author {
   __typename
   id
-  data {
-    ...TagParts
-  }
+  ...AuthorParts
+}
+
+fragment TagQueryFragment on Tag {
+  __typename
+  id
+  ...TagParts
 }

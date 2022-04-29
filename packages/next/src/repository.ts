@@ -22,12 +22,12 @@ const repository = {
   collect() {
     return api.getResources().andThen((resources) => {
       return combine(
-        resources.data.getCollections.flatMap((collection) => {
+        resources.data.collections.flatMap((collection) => {
           return (collection.documents.edges ?? []).flatMap(
             (connectionEdge) => {
               if (connectionEdge?.node) {
                 const { node } = connectionEdge
-                if (node.__typename === 'ConfigDocument') {
+                if (node.__typename === 'Config') {
                   return []
                 } else {
                   const resourceResult = createResource(node)

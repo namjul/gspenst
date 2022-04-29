@@ -59,14 +59,13 @@ export function filterResource(resource: Resource, filter: string | undefined) {
     case 'post':
       return resource.tinaData
         ? do_(() => {
-            const postResult = createPost(
-              resource.tinaData!.data.getPostDocument
-            ).andThen((post) =>
-              nqlFilter(post).map((owned) => ({
-                object: post,
-                resource,
-                owned,
-              }))
+            const postResult = createPost(resource.tinaData!.data.post).andThen(
+              (post) =>
+                nqlFilter(post).map((owned) => ({
+                  object: post,
+                  resource,
+                  owned,
+                }))
             )
             return postResult
           })
@@ -74,14 +73,13 @@ export function filterResource(resource: Resource, filter: string | undefined) {
     case 'page':
       return resource.tinaData
         ? do_(() => {
-            const pageResult = createPage(
-              resource.tinaData!.data.getPageDocument
-            ).andThen((page) =>
-              nqlFilter(page).map((owned) => ({
-                object: page,
-                resource,
-                owned,
-              }))
+            const pageResult = createPage(resource.tinaData!.data.page).andThen(
+              (page) =>
+                nqlFilter(page).map((owned) => ({
+                  object: page,
+                  resource,
+                  owned,
+                }))
             )
             return pageResult
           })
@@ -90,7 +88,7 @@ export function filterResource(resource: Resource, filter: string | undefined) {
       return resource.tinaData
         ? do_(() => {
             const authorResult = createAuthor(
-              resource.tinaData!.data.getAuthorDocument
+              resource.tinaData!.data.author
             ).andThen((author) =>
               nqlFilter(author).map((owned) => ({
                 object: author,
@@ -104,14 +102,13 @@ export function filterResource(resource: Resource, filter: string | undefined) {
     case 'tag':
       return resource.tinaData
         ? do_(() => {
-            const tagResult = createTag(
-              resource.tinaData!.data.getTagDocument
-            ).andThen((tag) =>
-              nqlFilter(tag).map((owned) => ({
-                object: tag,
-                resource,
-                owned,
-              }))
+            const tagResult = createTag(resource.tinaData!.data.tag).andThen(
+              (tag) =>
+                nqlFilter(tag).map((owned) => ({
+                  object: tag,
+                  resource,
+                  owned,
+                }))
             )
             return tagResult
           })

@@ -4,7 +4,7 @@ import { idSchema, ok, err, z } from '../shared-kernel'
 import type { GetResourcesQuery } from '../../.tina/__generated__/types'
 import type { GetTag, GetAuthor, GetPage, GetPost } from '../api'
 // import type { RoutesConfig } from './routes';
-// import { do_ } from '../utils';
+import { do_ } from '../utils'
 import * as Errors from '../errors'
 
 const getPostSchema = z.custom<GetPost>((value) => value)
@@ -106,8 +106,8 @@ export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
 type ResourcesNode = NonNullable<
   Exclude<
-    Get<GetResourcesQuery, 'getCollections[0].documents.edges[0].node'>,
-    { __typename: 'ConfigDocument' }
+    Get<GetResourcesQuery, 'collections[0].documents.edges[0].node'>,
+    { __typename: 'Config' }
   >
 >
 
@@ -116,7 +116,7 @@ export function createResource(
   // routesConfig?: RoutesConfig
 ): Result<Resource> {
   const {
-    sys: { filename, path: filepath, relativePath },
+    _sys: { filename, path: filepath, relativePath },
   } = node
 
   const dynamicVariables = generateDynamicVariables(node)
@@ -154,25 +154,29 @@ export function generateDynamicVariables(
 ): DynamicVariables {
   const {
     __typename,
-    data,
-    sys: { filename },
+    _sys: { filename },
+    ...data
   } = node
 
-  const [slug, primary_tag, primary_author] = (() => {
+  const { slug, primary_tag, primary_author } = do_(() => {
     /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
     const empty = 'all'
-    if (__typename === 'PageDocument' || __typename === 'PostDocument') {
-      const tag = data.tags?.[0]?.tag
-      const author = data.authors?.[0]?.author
-      return [
-        node.data.slug || filename,
-        tag?.data.slug || tag?.sys.filename || empty,
-        author?.data.slug || author?.sys.filename || empty,
-      ]
+    if (__typename === 'Page' || __typename === 'Post') {
+      const tag = node.tags?.[0]?.tag
+      const author = node.authors?.[0]?.author
+      return {
+        slug: node.slug || filename,
+        primary_tag: tag?.slug || tag?._sys.filename || empty,
+        primary_author: author?.slug || author?._sys.filename || empty,
+      }
     }
-    return [data.slug || node.data.name || filename, empty, empty]
+    return {
+      slug: node.slug || node.name || filename,
+      primary_tag: empty,
+      primary_author: empty,
+    }
     /* eslint-enable */
-  })() // IIFE
+  })
 
   const date = new Date(data.date)
   const [day, month, year] = date

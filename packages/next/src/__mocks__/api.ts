@@ -17,7 +17,7 @@ export const getResources = (): ApiResultAsync<{
   return okAsync({
     data: {
       __typename: 'Query',
-      getCollections: [
+      collections: [
         {
           __typename: 'Collection',
           name: 'config',
@@ -29,9 +29,9 @@ export const getResources = (): ApiResultAsync<{
             edges: [
               {
                 node: {
-                  __typename: 'ConfigDocument',
+                  __typename: 'Config',
                   id: 'content/config/index.json',
-                  sys: {
+                  _sys: {
                     filename: 'index',
                     basename: 'index.json',
                     breadcrumbs: ['index'],
@@ -55,9 +55,9 @@ export const getResources = (): ApiResultAsync<{
             edges: [
               {
                 node: {
-                  __typename: 'PageDocument',
+                  __typename: 'Page',
                   id: 'content/pages/about.mdx',
-                  sys: {
+                  _sys: {
                     filename: 'about',
                     basename: 'about.mdx',
                     breadcrumbs: ['about'],
@@ -65,19 +65,17 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: 'about.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: 'about',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: 'about',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
               {
                 node: {
-                  __typename: 'PageDocument',
+                  __typename: 'Page',
                   id: 'content/pages/home.mdx',
-                  sys: {
+                  _sys: {
                     filename: 'home',
                     basename: 'home.mdx',
                     breadcrumbs: ['home'],
@@ -85,19 +83,17 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: 'home.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: 'home',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: 'home',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
               {
                 node: {
-                  __typename: 'PageDocument',
+                  __typename: 'Page',
                   id: 'content/pages/portfolio.mdx',
-                  sys: {
+                  _sys: {
                     filename: 'portfolio',
                     basename: 'portfolio.mdx',
                     breadcrumbs: ['portfolio'],
@@ -105,12 +101,10 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: 'portfolio.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: 'portfolio',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: 'portfolio',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
             ],
@@ -127,9 +121,9 @@ export const getResources = (): ApiResultAsync<{
             edges: [
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/0th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '0th-post',
                     basename: '0th-post.mdx',
                     breadcrumbs: ['0th-post'],
@@ -137,19 +131,17 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '0th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '0th-post',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: '0th-post',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/1th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '1th-post',
                     basename: '1th-post.mdx',
                     breadcrumbs: ['1th-post'],
@@ -157,19 +149,17 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '1th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '1th-post',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: '1th-post',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/2th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '2th-post',
                     basename: '2th-post.mdx',
                     breadcrumbs: ['2th-post'],
@@ -177,19 +167,17 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '2th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '2th-post',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: '2th-post',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/3th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '3th-post',
                     basename: '3th-post.mdx',
                     breadcrumbs: ['3th-post'],
@@ -197,43 +185,37 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '3th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '3th-post',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: [
-                      {
-                        tag: {
-                          id: 'content/tags/tag-1.mdx',
-                          sys: { filename: 'tag-1' },
-                          data: {
-                            name: 'Tag 1',
-                            date: '2021-07-03T20:30:00.000Z',
-                            slug: 'tag-1',
-                          },
-                        },
+                  slug: '3th-post',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: [
+                    {
+                      tag: {
+                        id: 'content/tags/tag-1.mdx',
+                        _sys: { filename: 'tag-1' },
+                        name: 'Tag 1',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'tag-1',
                       },
-                    ],
-                    authors: [
-                      {
-                        author: {
-                          id: 'content/authors/pedro.mdx',
-                          sys: { filename: 'pedro' },
-                          data: {
-                            name: 'Pedro',
-                            date: '2021-07-03T20:30:00.000Z',
-                            slug: 'pedro',
-                          },
-                        },
+                    },
+                  ],
+                  authors: [
+                    {
+                      author: {
+                        id: 'content/authors/pedro.mdx',
+                        _sys: { filename: 'pedro' },
+                        name: 'Pedro',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'pedro',
                       },
-                    ],
-                  },
+                    },
+                  ],
                 },
               },
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/4th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '4th-post',
                     basename: '4th-post.mdx',
                     breadcrumbs: ['4th-post'],
@@ -241,43 +223,37 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '4th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '4th-post',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: [
-                      {
-                        tag: {
-                          id: 'content/tags/tag-2.mdx',
-                          sys: { filename: 'tag-2' },
-                          data: {
-                            name: 'Tag 2',
-                            date: '2021-07-03T20:30:00.000Z',
-                            slug: 'tag-2',
-                          },
-                        },
+                  slug: '4th-post',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: [
+                    {
+                      tag: {
+                        id: 'content/tags/tag-2.mdx',
+                        _sys: { filename: 'tag-2' },
+                        name: 'Tag 2',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'tag-2',
                       },
-                    ],
-                    authors: [
-                      {
-                        author: {
-                          id: 'content/authors/napolean.mdx',
-                          sys: { filename: 'napolean' },
-                          data: {
-                            name: 'Napolean',
-                            date: '2021-07-03T20:30:00.000Z',
-                            slug: 'napolean',
-                          },
-                        },
+                    },
+                  ],
+                  authors: [
+                    {
+                      author: {
+                        id: 'content/authors/napolean.mdx',
+                        _sys: { filename: 'napolean' },
+                        name: 'Napolean',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'napolean',
                       },
-                    ],
-                  },
+                    },
+                  ],
                 },
               },
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/5th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '5th-post',
                     basename: '5th-post.mdx',
                     breadcrumbs: ['5th-post'],
@@ -285,19 +261,17 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '5th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '5th-post',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: '5th-post',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/6th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '6th-post',
                     basename: '6th-post.mdx',
                     breadcrumbs: ['6th-post'],
@@ -305,19 +279,17 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '6th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '6th-post',
-                    date: '2021-07-12T07:00:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: '6th-post',
+                  date: '2021-07-12T07:00:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/7th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '7th-post',
                     basename: '7th-post.mdx',
                     breadcrumbs: ['7th-post'],
@@ -325,65 +297,55 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '7th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '7th-post',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: [
-                      {
-                        tag: {
-                          id: 'content/tags/tag-1.mdx',
-                          sys: { filename: 'tag-1' },
-                          data: {
-                            name: 'Tag 1',
-                            date: '2021-07-03T20:30:00.000Z',
-                            slug: 'tag-1',
-                          },
-                        },
+                  slug: '7th-post',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: [
+                    {
+                      tag: {
+                        id: 'content/tags/tag-1.mdx',
+                        _sys: { filename: 'tag-1' },
+                        name: 'Tag 1',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'tag-1',
                       },
-                      {
-                        tag: {
-                          id: 'content/tags/tag-2.mdx',
-                          sys: { filename: 'tag-2' },
-                          data: {
-                            name: 'Tag 2',
-                            date: '2021-07-03T20:30:00.000Z',
-                            slug: 'tag-2',
-                          },
-                        },
+                    },
+                    {
+                      tag: {
+                        id: 'content/tags/tag-2.mdx',
+                        _sys: { filename: 'tag-2' },
+                        name: 'Tag 2',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'tag-2',
                       },
-                    ],
-                    authors: [
-                      {
-                        author: {
-                          id: 'content/authors/napolean.mdx',
-                          sys: { filename: 'napolean' },
-                          data: {
-                            name: 'Napolean',
-                            date: '2021-07-03T20:30:00.000Z',
-                            slug: 'napolean',
-                          },
-                        },
+                    },
+                  ],
+                  authors: [
+                    {
+                      author: {
+                        id: 'content/authors/napolean.mdx',
+                        _sys: { filename: 'napolean' },
+                        name: 'Napolean',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'napolean',
                       },
-                      {
-                        author: {
-                          id: 'content/authors/pedro.mdx',
-                          sys: { filename: 'pedro' },
-                          data: {
-                            name: 'Pedro',
-                            date: '2021-07-03T20:30:00.000Z',
-                            slug: 'pedro',
-                          },
-                        },
+                    },
+                    {
+                      author: {
+                        id: 'content/authors/pedro.mdx',
+                        _sys: { filename: 'pedro' },
+                        name: 'Pedro',
+                        date: '2021-07-03T20:30:00.000Z',
+                        slug: 'pedro',
                       },
-                    ],
-                  },
+                    },
+                  ],
                 },
               },
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/8th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '8th-post',
                     basename: '8th-post.mdx',
                     breadcrumbs: ['8th-post'],
@@ -391,19 +353,17 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '8th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '8th-post',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: '8th-post',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
               {
                 node: {
-                  __typename: 'PostDocument',
+                  __typename: 'Post',
                   id: 'content/posts/9th-post.mdx',
-                  sys: {
+                  _sys: {
                     filename: '9th-post',
                     basename: '9th-post.mdx',
                     breadcrumbs: ['9th-post'],
@@ -411,12 +371,10 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: '9th-post.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '9th-post',
-                    date: '2021-07-03T20:30:00.000Z',
-                    tags: null,
-                    authors: null,
-                  },
+                  slug: '9th-post',
+                  date: '2021-07-03T20:30:00.000Z',
+                  tags: null,
+                  authors: null,
                 },
               },
             ],
@@ -433,9 +391,9 @@ export const getResources = (): ApiResultAsync<{
             edges: [
               {
                 node: {
-                  __typename: 'AuthorDocument',
+                  __typename: 'Author',
                   id: 'content/authors/napolean.mdx',
-                  sys: {
+                  _sys: {
                     filename: 'napolean',
                     basename: 'napolean.mdx',
                     breadcrumbs: ['napolean'],
@@ -443,18 +401,16 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: 'napolean.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: 'napolean',
-                    name: 'Napolean',
-                    date: '2021-07-03T20:30:00.000Z',
-                  },
+                  slug: 'napolean',
+                  name: 'Napolean',
+                  date: '2021-07-03T20:30:00.000Z',
                 },
               },
               {
                 node: {
-                  __typename: 'AuthorDocument',
+                  __typename: 'Author',
                   id: 'content/authors/pedro.mdx',
-                  sys: {
+                  _sys: {
                     filename: 'pedro',
                     basename: 'pedro.mdx',
                     breadcrumbs: ['pedro'],
@@ -462,11 +418,9 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: 'pedro.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: 'pedro',
-                    name: 'Pedro',
-                    date: '2021-07-03T20:30:00.000Z',
-                  },
+                  slug: 'pedro',
+                  name: 'Pedro',
+                  date: '2021-07-03T20:30:00.000Z',
                 },
               },
             ],
@@ -483,9 +437,9 @@ export const getResources = (): ApiResultAsync<{
             edges: [
               {
                 node: {
-                  __typename: 'TagDocument',
+                  __typename: 'Tag',
                   id: 'content/tags/tag-1.mdx',
-                  sys: {
+                  _sys: {
                     filename: 'tag-1',
                     basename: 'tag-1.mdx',
                     breadcrumbs: ['tag-1'],
@@ -493,18 +447,16 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: 'tag-1.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: 'tag-1',
-                    name: 'Tag 1',
-                    date: '2021-07-03T20:30:00.000Z',
-                  },
+                  slug: 'tag-1',
+                  name: 'Tag 1',
+                  date: '2021-07-03T20:30:00.000Z',
                 },
               },
               {
                 node: {
-                  __typename: 'TagDocument',
+                  __typename: 'Tag',
                   id: 'content/tags/tag-2.mdx',
-                  sys: {
+                  _sys: {
                     filename: 'tag-2',
                     basename: 'tag-2.mdx',
                     breadcrumbs: ['tag-2'],
@@ -512,11 +464,9 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: 'tag-2.mdx',
                     extension: '.mdx',
                   },
-                  data: {
-                    slug: '',
-                    name: 'Tag 2',
-                    date: '2021-07-03T20:30:00.000Z',
-                  },
+                  slug: '',
+                  name: 'Tag 2',
+                  date: '2021-07-03T20:30:00.000Z',
                 },
               },
             ],
@@ -536,427 +486,379 @@ export const getPost = ({
     {
       '0th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              title: '0th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '0th-post',
-              date: '2021-07-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
+            title: '0th Post',
+            excerpt: {
+              type: 'root',
+              children: [
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                    },
+                  ],
+                },
+              ],
+            },
+            slug: '0th-post',
+            date: '2021-07-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
             },
           },
         },
       },
       '1th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              title: '1th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '1th-post',
-              date: '2021-01-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
+            title: '1th Post',
+            excerpt: {
+              type: 'root',
+              children: [
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                    },
+                  ],
+                },
+              ],
+            },
+            slug: '1th-post',
+            date: '2021-01-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
             },
           },
         },
       },
       '2th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              title: '2th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '2th-post',
-              date: '2021-02-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
+            title: '2th Post',
+            excerpt: {
+              type: 'root',
+              children: [
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                    },
+                  ],
+                },
+              ],
+            },
+            slug: '2th-post',
+            date: '2021-02-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
             },
           },
         },
       },
       '3th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              title: '3th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '3th-post',
-              date: '2021-03-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
-
-              tags: [
+            title: '3th Post',
+            excerpt: {
+              type: 'root',
+              children: [
                 {
-                  __typename: 'PostTags' as const,
-                  tag: {
-                    __typename: 'TagDocument' as const,
-                    id: 'content/tags/tag-1.mdx',
-                    data: {
-                      name: 'Tag 1',
-                      date: '2021-07-03T20:30:00.000Z',
-                      slug: 'tag-1',
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
                     },
-                  },
-                },
-              ],
-              authors: [
-                {
-                  __typename: 'PostAuthors' as const,
-                  author: {
-                    __typename: 'AuthorDocument' as const,
-                    id: 'content/authors/pedro.mdx',
-                    data: {
-                      name: 'Pedro',
-                      date: '2021-07-03T20:30:00.000Z',
-                      slug: 'pedro',
-                    },
-                  },
+                  ],
                 },
               ],
             },
+            slug: '3th-post',
+            date: '2021-03-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
+            },
+
+            tags: [
+              {
+                __typename: 'PostTags' as const,
+                tag: {
+                  __typename: 'Tag' as const,
+                  id: 'content/tags/tag-1.mdx',
+                  name: 'Tag 1',
+                  date: '2021-07-03T20:30:00.000Z',
+                  slug: 'tag-1',
+                },
+              },
+            ],
+            authors: [
+              {
+                __typename: 'PostAuthors' as const,
+                author: {
+                  __typename: 'Author' as const,
+                  id: 'content/authors/pedro.mdx',
+                  name: 'Pedro',
+                  date: '2021-07-03T20:30:00.000Z',
+                  slug: 'pedro',
+                },
+              },
+            ],
           },
         },
       },
       '4th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              title: '4th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '4th-post',
-              date: '2021-07-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
+            title: '4th Post',
+            excerpt: {
+              type: 'root',
+              children: [
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                    },
+                  ],
+                },
+              ],
+            },
+            slug: '4th-post',
+            date: '2021-07-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
             },
           },
         },
       },
       '5th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              title: '5th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '5th-post',
-              date: '2021-07-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
+            title: '5th Post',
+            excerpt: {
+              type: 'root',
+              children: [
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                    },
+                  ],
+                },
+              ],
+            },
+            slug: '5th-post',
+            date: '2021-07-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
             },
           },
         },
       },
       '6th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              title: '6th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '6th-post',
-              date: '2021-07-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
+            title: '6th Post',
+            excerpt: {
+              type: 'root',
+              children: [
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                    },
+                  ],
+                },
+              ],
+            },
+            slug: '6th-post',
+            date: '2021-07-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
             },
           },
         },
       },
       '7th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              tags: [
+            tags: [
+              {
+                __typename: 'PostTags' as const,
+                tag: {
+                  __typename: 'Tag' as const,
+                  id: 'content/tags/tag-1.mdx',
+                  name: 'Tag 1',
+                  date: '2021-07-03T20:30:00.000Z',
+                  slug: 'tag-1',
+                },
+              },
+            ],
+            authors: [
+              {
+                __typename: 'PostAuthors' as const,
+                author: {
+                  __typename: 'Author' as const,
+                  id: 'content/authors/pedro.mdx',
+                  name: 'Pedro',
+                  date: '2021-07-03T20:30:00.000Z',
+                  slug: 'pedro',
+                },
+              },
+            ],
+            title: '7th Post',
+            excerpt: {
+              type: 'root',
+              children: [
                 {
-                  __typename: 'PostTags' as const,
-                  tag: {
-                    __typename: 'TagDocument' as const,
-                    id: 'content/tags/tag-1.mdx',
-                    data: {
-                      name: 'Tag 1',
-                      date: '2021-07-03T20:30:00.000Z',
-                      slug: 'tag-1',
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
                     },
-                  },
+                  ],
                 },
               ],
-              authors: [
-                {
-                  __typename: 'PostAuthors' as const,
-                  author: {
-                    __typename: 'AuthorDocument' as const,
-                    id: 'content/authors/pedro.mdx',
-                    data: {
-                      name: 'Pedro',
-                      date: '2021-07-03T20:30:00.000Z',
-                      slug: 'pedro',
-                    },
-                  },
-                },
-              ],
-              title: '7th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '7th-post',
-              date: '2021-07-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
+            },
+            slug: '7th-post',
+            date: '2021-07-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
             },
           },
         },
       },
       '8th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              title: '8th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '8th-post',
-              date: '2021-07-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
+            title: '8th Post',
+            excerpt: {
+              type: 'root',
+              children: [
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                    },
+                  ],
+                },
+              ],
+            },
+            slug: '8th-post',
+            date: '2021-07-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
             },
           },
         },
       },
       '9th-post.mdx': {
         data: {
-          getConfigDocument: {
+          config: {
             id: 'content/config/index.json',
-            data: {
-              darkMode: true,
-            },
+            darkMode: true,
           },
-          getPostDocument: {
-            __typename: 'PostDocument' as const,
+          post: {
+            __typename: 'Post' as const,
             id: `content/posts/${relativePath}`,
-            data: {
-              title: '9th Post',
-              excerpt: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'p',
-                    children: [
-                      {
-                        type: 'text',
-                        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                      },
-                    ],
-                  },
-                ],
-              },
-              slug: '9th-post',
-              date: '2021-07-03T20:30:00.000Z',
-              content: {
-                type: 'root',
-                children: [],
-              },
+            title: '9th Post',
+            excerpt: {
+              type: 'root',
+              children: [
+                {
+                  type: 'p',
+                  children: [
+                    {
+                      type: 'text',
+                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                    },
+                  ],
+                },
+              ],
+            },
+            slug: '9th-post',
+            date: '2021-07-03T20:30:00.000Z',
+            content: {
+              type: 'root',
+              children: [],
             },
           },
         },
@@ -968,37 +870,33 @@ export const getPost = ({
 export const getPage = (): ApiResultAsync<{ data: GetPageQuery }> => {
   return okAsync({
     data: {
-      getConfigDocument: {
+      config: {
         id: 'content/config/index.json',
-        data: {
-          darkMode: true,
-        },
+        darkMode: true,
       },
-      getPageDocument: {
-        __typename: 'PageDocument',
+      page: {
+        __typename: 'Page',
         id: 'content/pages/home.mdx',
-        data: {
-          title: 'Home',
-          excerpt: {
-            type: 'root',
-            children: [
-              {
-                type: 'p',
-                children: [
-                  {
-                    type: 'text',
-                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                  },
-                ],
-              },
-            ],
-          },
-          slug: 'home',
-          date: '2021-07-03T20:30:00.000Z',
-          content: {
-            type: 'root',
-            children: [],
-          },
+        title: 'Home',
+        excerpt: {
+          type: 'root',
+          children: [
+            {
+              type: 'p',
+              children: [
+                {
+                  type: 'text',
+                  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                },
+              ],
+            },
+          ],
+        },
+        slug: 'home',
+        date: '2021-07-03T20:30:00.000Z',
+        content: {
+          type: 'root',
+          children: [],
         },
       },
     },
@@ -1008,21 +906,16 @@ export const getPage = (): ApiResultAsync<{ data: GetPageQuery }> => {
 export const getAuthor = (): ApiResultAsync<{ data: GetAuthorQuery }> => {
   return okAsync({
     data: {
-      getAuthorDocument: {
-        __typename: 'AuthorDocument',
+      author: {
+        __typename: 'Author',
         id: 'content/authors/pedro.mdx',
-        data: {
-          __typename: 'Author',
-          name: 'Pedro',
-          date: '2021-07-03T20:30:00.000Z',
-          slug: 'pedro',
-        },
+        name: 'Pedro',
+        date: '2021-07-03T20:30:00.000Z',
+        slug: 'pedro',
       },
-      getConfigDocument: {
+      config: {
         id: 'content/config/index.json',
-        data: {
-          darkMode: true,
-        },
+        darkMode: true,
       },
     },
   })
@@ -1031,21 +924,16 @@ export const getAuthor = (): ApiResultAsync<{ data: GetAuthorQuery }> => {
 export const getTag = (): ApiResultAsync<{ data: GetTagQuery }> => {
   return okAsync({
     data: {
-      getTagDocument: {
-        __typename: 'TagDocument',
+      tag: {
+        __typename: 'Tag',
         id: 'content/tags/tag-1.mdx',
-        data: {
-          __typename: 'Tag',
-          name: 'Tag -1',
-          date: '2021-07-03T20:30:00.000Z',
-          slug: 'tag-1',
-        },
+        name: 'Tag -1',
+        date: '2021-07-03T20:30:00.000Z',
+        slug: 'tag-1',
       },
-      getConfigDocument: {
+      config: {
         id: 'content/config/index.json',
-        data: {
-          darkMode: true,
-        },
+        darkMode: true,
       },
     },
   })
@@ -1054,11 +942,9 @@ export const getTag = (): ApiResultAsync<{ data: GetTagQuery }> => {
 export const getConfig = (): ApiResultAsync<{ data: GetConfigQuery }> => {
   return okAsync({
     data: {
-      getConfigDocument: {
+      config: {
         id: 'content/config/index.json',
-        data: {
-          darkMode: true,
-        },
+        darkMode: true,
       },
     },
   })

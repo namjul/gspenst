@@ -1,6 +1,6 @@
 query getResources {
   __typename
-  getCollections {
+  collections {
     __typename
     name
     slug
@@ -11,9 +11,9 @@ query getResources {
       edges {
         node {
           __typename
-          ... on ConfigDocument {
+          ... on Config {
             id
-            sys {
+            _sys {
               filename
               basename
               breadcrumbs
@@ -22,9 +22,9 @@ query getResources {
               extension
             }
           }
-          ... on PostDocument {
+          ... on Post {
             id
-            sys {
+            _sys {
               filename
               basename
               breadcrumbs
@@ -32,40 +32,34 @@ query getResources {
               relativePath
               extension
             }
-            data {
-              slug
-              date
-              tags {
-                tag {
-                  ... on TagDocument {
-                    id
-                    sys {
-                      filename
-                    }
-                    data {
-                      ...TagParts
-                    }
+            slug
+            date
+            tags {
+              tag {
+                ... on Tag {
+                  id
+                  _sys {
+                    filename
                   }
+                  ...TagParts
                 }
               }
-              authors {
-                author {
-                  ... on AuthorDocument {
-                    id
-                    sys {
-                      filename
-                    }
-                    data {
-                      ...AuthorParts
-                    }
+            }
+            authors {
+              author {
+                ... on Author {
+                  id
+                  _sys {
+                    filename
                   }
+                  ...AuthorParts
                 }
               }
             }
           }
-          ... on PageDocument {
+          ... on Page {
             id
-            sys {
+            _sys {
               filename
               basename
               breadcrumbs
@@ -73,40 +67,34 @@ query getResources {
               relativePath
               extension
             }
-            data {
-              slug
-              date
-              tags {
-                tag {
-                  ... on TagDocument {
-                    id
-                    sys {
-                      filename
-                    }
-                    data {
-                      ...TagParts
-                    }
+            slug
+            date
+            tags {
+              tag {
+                ... on Tag {
+                  id
+                  _sys {
+                    filename
                   }
+                  ...TagParts
                 }
               }
-              authors {
-                author {
-                  ... on AuthorDocument {
-                    id
-                    sys {
-                      filename
-                    }
-                    data {
-                      ...AuthorParts
-                    }
+            }
+            authors {
+              author {
+                ... on Author {
+                  id
+                  _sys {
+                    filename
                   }
+                  ...AuthorParts
                 }
               }
             }
           }
-          ... on AuthorDocument {
+          ... on Author {
             id
-            sys {
+            _sys {
               filename
               basename
               breadcrumbs
@@ -114,15 +102,13 @@ query getResources {
               relativePath
               extension
             }
-            data {
-              slug
-              name
-              date
-            }
+            slug
+            name
+            date
           }
-          ... on TagDocument {
+          ... on Tag {
             id
-            sys {
+            _sys {
               filename
               basename
               breadcrumbs
@@ -130,11 +116,9 @@ query getResources {
               relativePath
               extension
             }
-            data {
-              slug
-              name
-              date
-            }
+            slug
+            name
+            date
           }
         }
       }
@@ -148,28 +132,28 @@ query getConfig {
 
 query getPost($relativePath: String!) {
   ...ConfigQueryFragment
-  getPostDocument(relativePath: $relativePath) {
-    ...PostDocumentQueryFragment
+  post(relativePath: $relativePath) {
+    ...PostQueryFragment
   }
 }
 
 query getPage($relativePath: String!) {
   ...ConfigQueryFragment
-  getPageDocument(relativePath: $relativePath) {
-    ...PageDocumentQueryFragment
+  page(relativePath: $relativePath) {
+    ...PageQueryFragment
   }
 }
 
 query getAuthor($relativePath: String!) {
   ...ConfigQueryFragment
-  getAuthorDocument(relativePath: $relativePath) {
-    ...AuthorDocumentQueryFragment
+  author(relativePath: $relativePath) {
+    ...AuthorQueryFragment
   }
 }
 
 query getTag($relativePath: String!) {
   ...ConfigQueryFragment
-  getTagDocument(relativePath: $relativePath) {
-    ...TagDocumentQueryFragment
+  tag(relativePath: $relativePath) {
+    ...TagQueryFragment
   }
 }

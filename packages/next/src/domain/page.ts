@@ -13,20 +13,14 @@ type Page = z.infer<typeof pageSchema>
 
 export type { Page, GetPage, PageGenerated }
 
-export function createPage(
-  getPageDocument: Get<GetPage, 'data.getPageDocument'>
-): Result<Page> {
-  const {
-    id,
-    data: {
-      __typename,
-      tags: rawTags,
-      authors: rawAuthors,
-      date,
-      ...restPageProps
-    },
-  } = getPageDocument
-
+export function createPage({
+  id,
+  __typename,
+  tags: rawTags,
+  authors: rawAuthors,
+  date,
+  ...restPageProps
+}: Get<GetPage, 'data.page'>): Result<Page> {
   const tagsResult = combine(
     (rawTags ?? []).flatMap((tag) => {
       if (tag?.tag) {

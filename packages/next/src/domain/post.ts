@@ -25,20 +25,14 @@ type Post = z.infer<typeof postSchema>
 
 export type { Post, GetPost, PostGenerated }
 
-export function createPost(
-  getPostDocument: Get<GetPost, 'data.getPostDocument'>
-): Result<Post> {
-  const {
-    id,
-    data: {
-      __typename,
-      tags: rawTags,
-      authors: rawAuthors,
-      date,
-      ...restPostProps
-    },
-  } = getPostDocument
-
+export function createPost({
+  id,
+  __typename,
+  tags: rawTags,
+  authors: rawAuthors,
+  date,
+  ...restPostProps
+}: Get<GetPost, 'data.post'>): Result<Post> {
   const tagsResult = combine(
     (rawTags ?? []).flatMap((tag) => {
       if (tag?.tag) {

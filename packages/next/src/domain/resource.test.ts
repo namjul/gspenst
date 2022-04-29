@@ -6,15 +6,13 @@ jest.mock('../api')
 describe('resource model', () => {
   test('createResource', async () => {
     const {
-      data: { getCollections },
+      data: { collections },
     } = (await api.getResources())._unsafeUnwrap()
 
-    const resourcesEdge = getCollections
+    const resourcesEdge = collections
       .filter(
         ({ documents }) =>
-          !documents.edges?.some(
-            (x) => x?.node?.__typename === 'ConfigDocument'
-          )
+          !documents.edges?.some((x) => x?.node?.__typename === 'Config')
       )
       .flatMap(({ documents }) => documents.edges)
 

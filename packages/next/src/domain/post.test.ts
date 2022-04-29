@@ -26,10 +26,7 @@ describe('post model', () => {
 
     const { resource } = (await processQuery(query))._unsafeUnwrap()
 
-    const getPostDocument = getProperty(
-      resource,
-      'tinaData.data.getPostDocument'
-    )
+    const getPostDocument = getProperty(resource, 'tinaData.data.post')
     expect(createPost(getPostDocument!).isOk()).toBe(true)
   })
 })

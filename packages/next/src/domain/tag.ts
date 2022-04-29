@@ -15,14 +15,12 @@ export const tagSchema = z
   })
   .strict()
 
-export function createTag(
-  getTagDocument: SetOptional<Get<GetTag, 'data.getTagDocument'>, '__typename'>
-): Result<Tag> {
-  const {
-    id,
-    data: { __typename, date, ...restPageTag },
-  } = getTagDocument
-
+export function createTag({
+  id,
+  __typename,
+  date,
+  ...restPageTag
+}: SetOptional<Get<GetTag, 'data.tag'>, '__typename'>): Result<Tag> {
   const tag = {
     id,
     ...restPageTag,

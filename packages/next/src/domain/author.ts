@@ -13,17 +13,12 @@ export const authorSchema = z
   })
   .strict()
 
-export function createAuthor(
-  getAuthorDocument: SetOptional<
-    Get<GetAuthor, 'data.getAuthorDocument'>,
-    '__typename'
-  >
-): Result<Author> {
-  const {
-    id,
-    data: { __typename, date, ...restPageAuthor },
-  } = getAuthorDocument
-
+export function createAuthor({
+  id,
+  __typename,
+  date,
+  ...restPageAuthor
+}: SetOptional<Get<GetAuthor, 'data.author'>, '__typename'>): Result<Author> {
   const author = {
     id,
     ...restPageAuthor,
