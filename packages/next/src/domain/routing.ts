@@ -1,64 +1,84 @@
-import type { Simplify } from '../shared-kernel'
-import type { ResourceType, DynamicVariables } from './resource'
-import type { DataQuery, QueryFilterOptions } from './routes'
+import { z } from '../shared-kernel'
+import { dynamicVariablesSchema, resourceTypeSchema } from './resource'
+import { queryFilterOptions, dataQuery } from './routes'
 
-export type Redirect =
-  | {
-      destination: string
-      statusCode: 301 | 302 | 303 | 307 | 308
-      basePath?: false
-    }
-  | {
-      destination: string
-      permanent: boolean
-      basePath?: false
-    }
+const redirectSchema = z.object({
+  destination: z.string(),
+  permanent: z.boolean(),
+})
 
-export type Request = {
-  path: string
-  params?:
-    | Simplify<Partial<DynamicVariables & { page: number | undefined }>>
-    | undefined
-}
+export type Redirect = z.infer<typeof redirectSchema>
 
-export type RoutingContext =
-  | ({
-      type: 'collection'
-      name: string
-      data:
-        | {
-            [key: string]: DataQuery
-          }
-        | undefined
-      templates: string[]
-      request: Request
-    } & QueryFilterOptions)
-  | ({
-      type: 'channel'
-      name: string
-      data:
-        | {
-            [key: string]: DataQuery
-          }
-        | undefined
-      templates: string[]
-      request: Request
-    } & QueryFilterOptions)
-  | {
-      type: 'entry'
-      resourceType: ResourceType
-      templates: string[]
-      request: Request
-    }
-  | {
-      type: 'custom'
-      data:
-        | {
-            [key: string]: DataQuery
-          }
-        | undefined
-      templates: string[]
-      request: Request
-    }
-  | ({ type: 'redirect' } & Redirect)
-  | { type: 'internal' }
+const requestSchema = z.object({
+  path: z.string(),
+  params: dynamicVariablesSchema
+    .merge(z.object({ page: z.number().optional() }))
+    .partial()
+    .optional(),
+})
+
+export type Request = z.infer<typeof requestSchema>
+
+const collectionRoutingContextSchema = z
+  .object({
+    type: z.literal('collection'),
+    name: z.string(),
+    data: z.record(dataQuery).optional(),
+    templates: z.array(z.string()),
+    request: requestSchema,
+  })
+  .merge(queryFilterOptions)
+
+export type CollectionRoutingContext = z.infer<
+  typeof collectionRoutingContextSchema
+>
+
+const channelRoutingContextSchema = z
+  .object({
+    type: z.literal('channel'),
+    name: z.string(),
+    data: z.record(dataQuery).optional(),
+    templates: z.array(z.string()),
+    request: requestSchema,
+  })
+  .merge(queryFilterOptions)
+
+export type ChannelRoutingContext = z.infer<typeof channelRoutingContextSchema>
+
+const entryRoutingContextSchema = z.object({
+  type: z.literal('entry'),
+  resourceType: resourceTypeSchema,
+  templates: z.array(z.string()),
+  request: requestSchema,
+})
+
+export type EntryRoutingContext = z.infer<typeof entryRoutingContextSchema>
+
+const customRoutingContextSchema = z.object({
+  type: z.literal('custom'),
+  data: z.record(dataQuery).optional(),
+  templates: z.array(z.string()),
+  request: requestSchema,
+})
+
+export type CustomRoutingContext = z.infer<typeof customRoutingContextSchema>
+
+const redirectRoutingContextSchema = z.object({
+  type: z.literal('redirect'),
+  redirect: redirectSchema,
+})
+
+export type RedirectRoutingContext = z.infer<
+  typeof redirectRoutingContextSchema
+>
+
+const routingContextSchema = z.discriminatedUnion('type', [
+  collectionRoutingContextSchema,
+  channelRoutingContextSchema,
+  entryRoutingContextSchema,
+  customRoutingContextSchema,
+  redirectRoutingContextSchema,
+  z.object({ type: z.literal('internal') }),
+])
+
+export type RoutingContext = z.infer<typeof routingContextSchema>

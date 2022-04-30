@@ -31,16 +31,14 @@ export const resourceTypeSchema = z.union([
   resourceTypeTag,
 ])
 
-export const dynamicVariablesSchema = z
-  .object({
-    slug: z.string(),
-    year: z.number(),
-    month: z.number(),
-    day: z.number(),
-    primary_tag: z.string(),
-    primary_author: z.string(),
-  })
-  .strict()
+export const dynamicVariablesSchema = z.object({
+  slug: z.string(),
+  year: z.number(),
+  month: z.number(),
+  day: z.number(),
+  primary_tag: z.string(),
+  primary_author: z.string(),
+})
 
 const resourceBaseSchema = z.object({
   id: idSchema,

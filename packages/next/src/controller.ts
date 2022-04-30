@@ -1,6 +1,12 @@
-import type { Redirect } from 'next'
 import { ok, err, combine } from './shared-kernel'
-import type { RoutingContext } from './domain/routing'
+import type {
+  RoutingContext,
+  CollectionRoutingContext,
+  ChannelRoutingContext,
+  EntryRoutingContext,
+  CustomRoutingContext,
+  Redirect,
+} from './domain/routing'
 import type { DataQuery } from './domain/routes'
 import { processQuery } from './helpers/processQuery'
 import type { QueryOutcome } from './helpers/processQuery'
@@ -39,7 +45,6 @@ type PostPageProps = Simplify<
     }
   }
 >
-
 type PagePageProps = Simplify<
   BasePageProps & {
     context: Extract<ThemeContextType, 'page'>
@@ -103,9 +108,9 @@ type ControllerResult<T> = Result<T>
 type ControllerResultAsync<T> = ResultAsync<T>
 
 async function entryController(
-  routingProperties: Extract<RoutingContext, { type: 'entry' }>
+  routingContext: EntryRoutingContext
 ): Promise<ControllerResult<PageProps>> {
-  const { resourceType, request } = routingProperties
+  const { resourceType, request } = routingContext
   const query: DataQuery = {
     resourceType,
     type: 'read',
@@ -120,14 +125,14 @@ async function entryController(
       data: {
         entry,
       },
-      templates: getTemplateHierarchy(routingProperties),
-      route: routingProperties.request.path,
+      templates: getTemplateHierarchy(routingContext),
+      route: routingContext.request.path,
     }
   })
 }
 
 async function channelController(
-  routingProperties: Extract<RoutingContext, { type: 'channel' }>
+  routingContext: ChannelRoutingContext
 ): Promise<ControllerResultAsync<PageProps>> {
   // const posts = (await repository.findAll('post'))
 
@@ -146,7 +151,7 @@ async function channelController(
   //   return entry
   // }
 
-  const { filter, limit, order, request } = routingProperties
+  const { filter, limit, order, request } = routingContext
   const page = request.params?.page
 
   const postsQuery: DataQuery = {
@@ -159,7 +164,7 @@ async function channelController(
   }
 
   const data: { [name: string]: DataQuery } = {
-    ...routingProperties.data,
+    ...routingContext.data,
     posts: postsQuery,
   }
 
@@ -188,17 +193,17 @@ async function channelController(
 
     return ok({
       context: 'index' as const,
-      templates: getTemplateHierarchy(routingProperties),
+      templates: getTemplateHierarchy(routingContext),
       data: {
         ...dataEntries,
       },
-      route: routingProperties.request.path,
+      route: routingContext.request.path,
     })
   })
 }
 
 async function collectionController(
-  routingProperties: Extract<RoutingContext, { type: 'collection' }>
+  routingProperties: CollectionRoutingContext
 ): Promise<ControllerResultAsync<PageProps>> {
   // const posts = await repository.findAll('post')
   //
@@ -268,7 +273,7 @@ async function collectionController(
 }
 
 async function customController(
-  routingProperties: Extract<RoutingContext, { type: 'custom' }>
+  routingProperties: CustomRoutingContext
 ): Promise<ControllerResultAsync<PageProps>> {
   // const resources = await repository.getAll()
 
@@ -371,7 +376,7 @@ export function controller(
           case 'redirect':
             return {
               type: 'redirect' as const,
-              redirect: context,
+              redirect: context.redirect,
             }
           default:
             return absurd(type)

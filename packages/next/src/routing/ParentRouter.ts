@@ -45,8 +45,10 @@ class ParentRouter {
   createRedirectContext(router: ParentRouter | string) {
     return {
       type: 'redirect' as const,
-      destination: typeof router === 'string' ? router : router.getRoute(),
-      statusCode: 301 as const,
+      redirect: {
+        destination: typeof router === 'string' ? router : router.getRoute(),
+        permanent: true,
+      },
     }
   }
 

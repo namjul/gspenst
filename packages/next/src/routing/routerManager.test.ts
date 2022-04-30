@@ -453,8 +453,10 @@ describe('router contexts', () => {
         undefined,
         {
           type: 'redirect',
-          destination: '/about/team',
-          statusCode: 301,
+          redirect: {
+            destination: '/about/team',
+            permanent: true,
+          },
         },
       ])
     )
@@ -464,8 +466,10 @@ describe('router contexts', () => {
         undefined,
         {
           type: 'redirect',
-          destination: '/about/team',
-          statusCode: 301,
+          redirect: {
+            destination: '/about/team',
+            permanent: true,
+          },
         },
         undefined,
         undefined,
@@ -501,8 +505,10 @@ describe('router contexts', () => {
         undefined,
         {
           type: 'redirect',
-          destination: '/',
-          statusCode: 301,
+          redirect: {
+            destination: '/',
+            permanent: true,
+          },
         },
       ])
     )
@@ -514,8 +520,10 @@ describe('router contexts', () => {
         undefined,
         {
           type: 'redirect',
-          destination: '/about/team',
-          statusCode: 301,
+          redirect: {
+            destination: '/about/team',
+            permanent: true,
+          },
         },
         undefined,
       ])

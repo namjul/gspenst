@@ -48,7 +48,7 @@ const limitSchema = z
   .union([z.number(), z.literal('all')])
   .default(POST_PER_PAGE)
 
-const queryFilterOptions = z.object({
+export const queryFilterOptions = z.object({
   filter: z.string().optional(),
   limit: limitSchema,
   order: orderShema.optional(),
@@ -81,7 +81,10 @@ const dataQueryBrowse = z
   .strict()
 export type DataQueryBrowse = z.infer<typeof dataQueryBrowse>
 
-const dataQuery = z.discriminatedUnion('type', [dataQueryRead, dataQueryBrowse])
+export const dataQuery = z.discriminatedUnion('type', [
+  dataQueryRead,
+  dataQueryBrowse,
+])
 
 export type DataQuery = z.infer<typeof dataQuery>
 

@@ -1,10 +1,8 @@
 import type { RoutingContext } from '../domain/routing'
 import { absurd } from '../utils'
 
-export function getTemplateHierarchy(
-  routingProperties: NonNullable<RoutingContext>
-) {
-  const { type } = routingProperties
+export function getTemplateHierarchy(routingContext: RoutingContext) {
+  const { type } = routingContext
   const templateList: string[] = []
 
   switch (type) {
@@ -14,18 +12,18 @@ export function getTemplateHierarchy(
       templateList.push('index')
 
       // CASE: author, tag, custom collection/channel name
-      if ('name' in routingProperties && routingProperties.name !== 'index') {
-        templateList.unshift(routingProperties.name)
+      if ('name' in routingContext && routingContext.name !== 'index') {
+        templateList.unshift(routingContext.name)
 
-        if (routingProperties.request.params?.slug) {
+        if (routingContext.request.params?.slug) {
           templateList.unshift(
-            `${routingProperties.name}-${routingProperties.request.params.slug}`
+            `${routingContext.name}-${routingContext.request.params.slug}`
           )
         }
       }
 
       // CASE: collections/channels can define a template list
-      routingProperties.templates.forEach((template) => {
+      routingContext.templates.forEach((template) => {
         if (!templateList.includes(template)) {
           templateList.unshift(template)
         }
@@ -35,13 +33,13 @@ export function getTemplateHierarchy(
     case 'entry':
       templateList.push('post')
 
-      if (routingProperties.resourceType === 'page') {
+      if (routingContext.resourceType === 'page') {
         templateList.unshift('page')
       }
 
       templateList.unshift(
-        `${routingProperties.resourceType === 'page' ? 'page' : 'post'}-${
-          routingProperties.request.params?.slug
+        `${routingContext.resourceType === 'page' ? 'page' : 'post'}-${
+          routingContext.request.params?.slug
         }`
       ) // slugTemplate
 
