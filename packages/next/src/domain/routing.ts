@@ -1,4 +1,3 @@
-import type { RoutingContextType } from '../types'
 import type { Simplify } from '../shared-kernel'
 import type { ResourceType, DynamicVariables } from './resource'
 import type { DataQuery, QueryFilterOptions } from './routes'
@@ -24,7 +23,7 @@ export type Request = {
 
 export type RoutingContext =
   | ({
-      type: Extract<RoutingContextType, 'collection'>
+      type: 'collection'
       name: string
       data:
         | {
@@ -35,7 +34,7 @@ export type RoutingContext =
       request: Request
     } & QueryFilterOptions)
   | ({
-      type: Extract<RoutingContextType, 'channel'>
+      type: 'channel'
       name: string
       data:
         | {
@@ -46,13 +45,13 @@ export type RoutingContext =
       request: Request
     } & QueryFilterOptions)
   | {
-      type: Extract<RoutingContextType, 'entry'>
+      type: 'entry'
       resourceType: ResourceType
       templates: string[]
       request: Request
     }
   | {
-      type: Extract<RoutingContextType, 'custom'>
+      type: 'custom'
       data:
         | {
             [key: string]: DataQuery
@@ -61,5 +60,5 @@ export type RoutingContext =
       templates: string[]
       request: Request
     }
-  | ({ type: Extract<RoutingContextType, 'redirect'> } & Redirect)
-  | { type: Extract<RoutingContextType, 'internal'> }
+  | ({ type: 'redirect' } & Redirect)
+  | { type: 'internal' }
