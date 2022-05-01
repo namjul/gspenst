@@ -9,12 +9,11 @@ import type {
 } from './domain/routing'
 import type { DataQuery } from './domain/routes'
 import { processQuery } from './helpers/processQuery'
-import type { QueryOutcome } from './helpers/processQuery'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
-import type { ThemeContextType } from './types'
-import type { Result, ResultAsync, Simplify, Option } from './shared-kernel'
+import type { Result, ResultAsync, Option } from './shared-kernel'
 import * as Errors from './errors'
 import { do_, absurd } from './utils'
+import type { ThemeContext } from './domain/theming';
 
 // export type PageProps =
 //   | {
@@ -29,80 +28,7 @@ import { do_, absurd } from './utils'
 //     }
 //   | { context: 'internal' }
 
-type BasePageProps = {
-  templates: string[]
-  data: {
-    [name: string]: QueryOutcome
-  }
-  route: string
-}
-
-type PostPageProps = Simplify<
-  BasePageProps & {
-    context: Extract<ThemeContextType, 'post'>
-    data: {
-      // entry: GetPost
-    }
-  }
->
-type PagePageProps = Simplify<
-  BasePageProps & {
-    context: Extract<ThemeContextType, 'page'>
-    data: {
-      // entry: GetPage
-    }
-  }
->
-
-type AuthorPageProps = Simplify<
-  BasePageProps & {
-    context: Extract<ThemeContextType, 'author'>
-    data: {
-      // entry: GetAuthor
-    }
-  }
->
-
-type TagPageProps = Simplify<
-  BasePageProps & {
-    context: Extract<ThemeContextType, 'tag'>
-    data: {
-      // entry: GetTag
-    }
-  }
->
-
-type IndexPageProps = Simplify<
-  BasePageProps & {
-    context: Extract<ThemeContextType, 'index' | 'home' | 'paged'>
-    data: {
-      // entry: GetConfig
-      // posts: GetPost[]
-    }
-  }
->
-
-type CustomPageProps = Simplify<
-  BasePageProps & {
-    context: null
-    data: {
-      // entry: GetConfig
-    }
-  }
->
-
-type InternalPageProps = {
-  context: 'internal'
-}
-
-export type PageProps =
-  | IndexPageProps
-  | TagPageProps
-  | AuthorPageProps
-  | PagePageProps
-  | PostPageProps
-  | CustomPageProps
-  | InternalPageProps
+export type PageProps = ThemeContext
 
 type ControllerResult<T> = Result<T>
 type ControllerResultAsync<T> = ResultAsync<T>

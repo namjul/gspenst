@@ -13,15 +13,7 @@ import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
-
-type Pagination = {
-  page: number // the current page number
-  prev: number | null // the previous page number
-  next: number | null // the next page number
-  pages: number // the number of pages available
-  total: number // the number of posts available
-  limit: number | 'all' // the number of posts per page
-}
+import type { QueryOutcomeRead, QueryOutcomeBrowse } from '../domain/theming';
 
 const enrichResource = (resource: Resource) => {
   return do_(() => {
@@ -100,18 +92,6 @@ function makeNqlFilter(filter: string) {
       )
   )
 }
-
-type QueryOutcomeRead = {
-  type: 'read'
-  resource: Resource
-}
-type QueryOutcomeBrowse = {
-  type: 'browse'
-  pagination: Pagination
-  resources: Resource[]
-}
-
-export type QueryOutcome = QueryOutcomeRead | QueryOutcomeBrowse
 
 type ResultAsyncQueryOutcome<T> = T extends Extract<DataQuery, { type: 'read' }>
   ? ResultAsync<QueryOutcomeRead>
