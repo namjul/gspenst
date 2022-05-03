@@ -63,7 +63,7 @@ class TaxonomyRouter extends ParentRouter {
       },
       templates: [],
       data: this.data?.query,
-      filter: `tags:'${params?.slug ?? '%s'}'`,
+      filter: `${this.taxonomyKey}:'${params?.slug ?? '%s'}'`,
       limit: this.config.limit,
     }
   }
