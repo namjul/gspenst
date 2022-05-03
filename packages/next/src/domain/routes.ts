@@ -1,7 +1,8 @@
+// import nql from '@tryghost/nql'
 import { z, ok, err, combineWithAllErrors } from '../shared-kernel'
-import type { Split, Result } from '../shared-kernel'
+import type { Split, Result, Entries } from '../shared-kernel'
 import * as Errors from '../errors'
-import { isString } from '../utils'
+import { isString /*, isObject*/ } from '../utils'
 import { resourceTypeSchema, resourceTypes } from './resource'
 import type { ResourceType } from './resource'
 
@@ -24,7 +25,7 @@ const permalinkSchema = z
     return value
   })
 
-const orderShema = z.preprocess(
+const orderSchema = z.preprocess(
   (value) => {
     return String(value)
       .split(',')
@@ -44,14 +45,24 @@ const orderShema = z.preprocess(
   )
 )
 
-const limitSchema = z
+// const filterSchema = z.preprocess((input) => {
+//   return {
+//     input,
+//     parsed: nql(String(input)).parse()
+//   }
+// }, z.object({
+//     input: z.string(),
+//     parsed: z.custom(isObject)
+//   }))
+
+export const limitSchema = z
   .union([z.number(), z.literal('all')])
   .default(POST_PER_PAGE)
 
 export const queryFilterOptions = z.object({
   filter: z.string().optional(),
   limit: limitSchema,
-  order: orderShema.optional(),
+  order: orderSchema.optional(),
   // include: z.string().optional(),
   // visibility: z.string().optional(),
   // status: z.string().optional(),
@@ -230,7 +241,7 @@ const routesSchema = z
 
 export type RoutesConfig = z.output<typeof routesSchema>
 
-export const parseRoutes = (input: unknown) => {
+export function parseRoutes(input: unknown) {
   const result = routesSchema.safeParse(input)
 
   const resultList: Result<RoutesConfig>[] = []
@@ -258,4 +269,22 @@ export const parseRoutes = (input: unknown) => {
     })
   }
   return combineWithAllErrors(resultList)
+}
+
+export function getRoutes(routesConfig: RoutesConfig) {
+  return Object.entries(routesConfig.routes ?? {}) as Entries<
+    typeof routesConfig.routes
+  >
+}
+
+export function getCollections(routesConfig: RoutesConfig) {
+  return Object.entries(routesConfig.collections ?? {}) as Entries<
+    typeof routesConfig.collections
+  >
+}
+
+export function getTaxonomies(routesConfig: RoutesConfig) {
+  return Object.entries(routesConfig.taxonomies ?? {}) as Entries<
+    typeof routesConfig.taxonomies
+  >
 }

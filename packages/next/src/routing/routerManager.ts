@@ -1,8 +1,9 @@
 import { slugify } from '@tryghost/string'
 import { ok, combine } from '../shared-kernel'
-import type { Entries, Result, Option, ID } from '../shared-kernel'
+import type { Result, Option, ID } from '../shared-kernel'
 import type { RoutesConfig } from '../domain/routes'
 import type { RoutingContext } from '../domain/routing'
+import { getRoutes, getCollections, getTaxonomies } from '../domain/routes'
 
 import AdminRouter from './AdminRouter'
 import StaticPagesRouter from './StaticPagesRouter'
@@ -31,30 +32,21 @@ export const routerManager = (routesConfig: RoutesConfig) => {
   routers.push(adminRouter)
 
   // 2.
-  const routes = Object.entries(config.routes ?? {}) as Entries<
-    typeof config.routes
-  >
-  routes.forEach(([key, value]) => {
+  getRoutes(config).forEach(([key, value]) => {
     const staticRoutesRouter = new StaticRoutesRouter(key, value)
     routers.push(staticRoutesRouter)
   })
 
   // 3.
-  const collections = Object.entries(config.collections ?? {}) as Entries<
-    typeof config.collections
-  >
 
   const postSet = new Set<ID>()
-  collections.forEach(([key, value]) => {
+  getCollections(config).forEach(([key, value]) => {
     const collectionRouter = new CollectionRouter(key, value, postSet)
     routers.push(collectionRouter)
   })
 
   // 4.
-  const taxonomies = Object.entries(config.taxonomies ?? {}) as Entries<
-    typeof config.taxonomies
-  >
-  taxonomies.forEach(([key, value]) => {
+  getTaxonomies(config).forEach(([key, value]) => {
     const taxonomyRouter = new TaxonomyRouter(key, value)
     routers.push(taxonomyRouter)
   })
