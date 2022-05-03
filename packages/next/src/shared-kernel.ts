@@ -3,6 +3,7 @@
 
 import { z } from 'zod'
 import stringHash from 'fnv1a'
+import { slugify } from '@tryghost/string'
 import type { Ok, Err, ResultAsync as NeverthrowResultAsync } from 'neverthrow'
 import {
   LiteralUnion,
@@ -32,6 +33,8 @@ export const idSchema = z
   .transform(
     (value) => (typeof value === 'string' ? stringHash(value) : value) as ID
   )
+
+export const slugSchema = z.string().transform((value) => slugify(value))
 
 export type Result<T> = Ok<T, GspenstError> | Err<T, GspenstError>
 export type ResultAsync<T> = NeverthrowResultAsync<T, GspenstError>
