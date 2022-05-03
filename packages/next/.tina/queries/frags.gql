@@ -1,3 +1,17 @@
+
+fragment ConfigFragment on Config {
+  id
+  ...ConfigParts
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
+}
+
 fragment ConfigQueryFragment on Query {
   config(relativePath: "index.json") {
     id
@@ -5,54 +19,86 @@ fragment ConfigQueryFragment on Query {
   }
 }
 
-fragment PostQueryFragment on Post {
+fragment PostFragment on Post {
   __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
   id
   ...PostParts
   tags {
     tag {
       ... on Tag {
-        ...TagParts
+        ...TagFragment
       }
     }
   }
   authors {
     author {
       ... on Author {
-        ...AuthorParts
+        ...AuthorFragment
       }
     }
   }
 }
 
-fragment PageQueryFragment on Page {
+fragment PageFragment on Page {
   __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
   id
   ...PageParts
   tags {
     tag {
       ... on Tag {
-        ...TagParts
+        ...TagFragment
       }
     }
   }
   authors {
     author {
       ... on Author {
-        ...AuthorParts
+        ...AuthorFragment
       }
     }
   }
 }
 
-fragment AuthorQueryFragment on Author {
+fragment AuthorFragment on Author {
   __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
   id
   ...AuthorParts
 }
 
-fragment TagQueryFragment on Tag {
+fragment TagFragment on Tag {
   __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
   id
   ...TagParts
 }

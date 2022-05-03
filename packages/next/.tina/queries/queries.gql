@@ -12,113 +12,19 @@ query getResources {
         node {
           __typename
           ... on Config {
-            id
-            _sys {
-              filename
-              basename
-              breadcrumbs
-              path
-              relativePath
-              extension
-            }
+            ...ConfigFragment
           }
           ... on Post {
-            id
-            _sys {
-              filename
-              basename
-              breadcrumbs
-              path
-              relativePath
-              extension
-            }
-            slug
-            date
-            tags {
-              tag {
-                ... on Tag {
-                  id
-                  _sys {
-                    filename
-                  }
-                  ...TagParts
-                }
-              }
-            }
-            authors {
-              author {
-                ... on Author {
-                  id
-                  _sys {
-                    filename
-                  }
-                  ...AuthorParts
-                }
-              }
-            }
+            ...PostFragment
           }
           ... on Page {
-            id
-            _sys {
-              filename
-              basename
-              breadcrumbs
-              path
-              relativePath
-              extension
-            }
-            slug
-            date
-            tags {
-              tag {
-                ... on Tag {
-                  id
-                  _sys {
-                    filename
-                  }
-                  ...TagParts
-                }
-              }
-            }
-            authors {
-              author {
-                ... on Author {
-                  id
-                  _sys {
-                    filename
-                  }
-                  ...AuthorParts
-                }
-              }
-            }
+            ...PageFragment
           }
           ... on Author {
-            id
-            _sys {
-              filename
-              basename
-              breadcrumbs
-              path
-              relativePath
-              extension
-            }
-            slug
-            name
-            date
+            ...AuthorFragment
           }
           ... on Tag {
-            id
-            _sys {
-              filename
-              basename
-              breadcrumbs
-              path
-              relativePath
-              extension
-            }
-            slug
-            name
-            date
+            ...TagFragment
           }
         }
       }
@@ -133,27 +39,75 @@ query getConfig {
 query getPost($relativePath: String!) {
   ...ConfigQueryFragment
   post(relativePath: $relativePath) {
-    ...PostQueryFragment
+    ...PostFragment
+  }
+}
+
+query getPosts {
+  ...ConfigQueryFragment
+  postConnection {
+    totalCount
+    edges {
+      node {
+        ...PostFragment
+      }
+    }
   }
 }
 
 query getPage($relativePath: String!) {
   ...ConfigQueryFragment
   page(relativePath: $relativePath) {
-    ...PageQueryFragment
+    ...PageFragment
+  }
+}
+
+query getPages {
+  ...ConfigQueryFragment
+  pageConnection {
+    totalCount
+    edges {
+      node {
+        ...PageFragment
+      }
+    }
   }
 }
 
 query getAuthor($relativePath: String!) {
   ...ConfigQueryFragment
   author(relativePath: $relativePath) {
-    ...AuthorQueryFragment
+    ...AuthorFragment
+  }
+}
+
+query getAuthors {
+  ...ConfigQueryFragment
+  authorConnection {
+    totalCount
+    edges {
+      node {
+        ...AuthorFragment
+      }
+    }
   }
 }
 
 query getTag($relativePath: String!) {
   ...ConfigQueryFragment
   tag(relativePath: $relativePath) {
-    ...TagQueryFragment
+    ...TagFragment
+  }
+}
+
+query getTags {
+  ...ConfigQueryFragment
+  tagConnection {
+    totalCount
+    edges {
+      node {
+        ...TagFragment
+      }
+    }
   }
 }
