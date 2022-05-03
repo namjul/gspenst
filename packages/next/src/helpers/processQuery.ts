@@ -1,6 +1,4 @@
 import sortOn from 'sort-on'
-import { Result as NeverThrowResult } from 'neverthrow'
-import _nql from '@tryghost/nql'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import { do_, absurd } from '../utils'
@@ -8,12 +6,12 @@ import repository from '../repository'
 import { combine, okAsync, ok, err } from '../shared-kernel'
 import type { ResultAsync } from '../shared-kernel'
 import * as api from '../api'
-import * as Errors from '../errors'
 import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
 import type { QueryOutcomeRead, QueryOutcomeBrowse } from '../domain/theming';
+import { makeNqlFilter } from './index';
 
 const enrichResource = (resource: Resource) => {
   return do_(() => {
@@ -53,46 +51,6 @@ const enrichResource = (resource: Resource) => {
     .andThen((x) => x)
 }
 
-const EXPANSIONS = [
-  {
-    key: 'author',
-    replacement: 'authors.slug',
-  },
-  {
-    key: 'tags',
-    replacement: 'tags.slug',
-  },
-  {
-    key: 'tag',
-    replacement: 'tags.slug',
-  },
-  {
-    key: 'authors',
-    replacement: 'authors.slug',
-  },
-  {
-    key: 'primary_tag',
-    replacement: 'primary_tag.slug',
-  },
-  {
-    key: 'primary_author',
-    replacement: 'primary_author.slug',
-  },
-]
-
-function makeNqlFilter(filter: string) {
-  return NeverThrowResult.fromThrowable(
-    (obj: object) => {
-      return _nql(filter, { expansions: EXPANSIONS }).queryJSON(obj)
-    },
-    (error) =>
-      Errors.other(
-        '`nql`#queryJSON',
-        error instanceof Error ? error : undefined
-      )
-  )
-}
-
 type ResultAsyncQueryOutcome<T> = T extends Extract<DataQuery, { type: 'read' }>
   ? ResultAsync<QueryOutcomeRead>
   : ResultAsync<QueryOutcomeBrowse>
@@ -126,6 +84,7 @@ export function processQuery(
               : () => ok(true)
 
             return combine(
+              // TODO move into repo#collect
               enrichedResources.flatMap((resource) => {
                 const entity = do_(() => {
                   const { resourceType } = resource
