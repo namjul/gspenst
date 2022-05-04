@@ -67,6 +67,7 @@ export default (...args: [string | LoaderOptions, string]) =>
 
         return config
       },
+      trailingSlash: true,
       reactStrictMode: true,
       // experimental: {
       //   externalDir: true, // seems to replace @preconstruc/next https://github.com/preconstruct/preconstruct/issues/444#issuecomment-1029218560
