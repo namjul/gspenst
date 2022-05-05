@@ -12,19 +12,19 @@ query getResources {
         node {
           __typename
           ... on Config {
-            ...ConfigFragment
+            ...DocumentResourceFragment
           }
           ... on Post {
-            ...PostFragment
+            ...PostResourceFragment
           }
           ... on Page {
-            ...PageFragment
+            ...PageResourceFragment
           }
           ... on Author {
-            ...AuthorFragment
+            ...AuthorResourceFragment
           }
           ... on Tag {
-            ...TagFragment
+            ...TagResourceFragment
           }
         }
       }
