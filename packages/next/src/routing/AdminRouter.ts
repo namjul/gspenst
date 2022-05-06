@@ -30,8 +30,8 @@ class AdminRouter extends ParentRouter {
     return super.handle(request, contexts, routers)
   }
 
-  async resolvePaths(): Promise<Result<string[]>> {
-    return ok(['/admin'])
+  resolvePaths() {
+    return ['/admin']
   }
 }
 

@@ -6,7 +6,7 @@ import type { Result, Option } from '../shared-kernel'
 import type { RoutingContext, Request } from '../domain/routing'
 import type { Taxonomy } from '../domain/routes'
 import type { Taxonomies } from '../domain/taxonomy'
-import { processQuery } from '../helpers/processQuery'
+import type { ResourceMinimal } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class TaxonomyRouter extends ParentRouter {
@@ -68,44 +68,41 @@ class TaxonomyRouter extends ParentRouter {
     }
   }
 
-  async resolvePaths(routers: ParentRouter[]) {
-    const taxonomyQuery = {
-      type: 'browse',
-      resourceType: this.taxonomyKey,
-      limit: 'all',
-    } as const
-    return (await processQuery(taxonomyQuery))
-      .map(({ resources: taxonomyResources }) => {
-        return combine(
-          taxonomyResources
-            .filter(
-              (resource) =>
-                !this.respectDominantRouter(
-                  routers,
-                  resource.resourceType,
-                  resource.slug
-                )
-            )
-            .flatMap((taxonomy) => {
-              return [
-                compilePermalink(this.config.permalink, taxonomy),
-                ...Array.from(
-                  {
-                    length:
-                      taxonomyResources.length /
-                      (this.config.limit === 'all' ? 1 : this.config.limit),
-                  },
-                  (_, i) => {
-                    return ok(
-                      path.join(this.config.permalink, 'page', String(i + 1))
-                    )
-                  }
-                ),
-              ]
-            })
-        )
+  resolvePaths(routers: ParentRouter[], resources: ResourceMinimal[]) {
+    const postResource = resources.filter(
+      (resource) => resource.resourceType === 'post'
+    )
+    const paths = postResource
+      .flatMap((resource) => {
+        if (resource.resourceType !== this.taxonomyKey) {
+          return []
+        }
+
+        if (
+          this.respectDominantRouter(
+            routers,
+            resource.resourceType,
+            resource.slug
+          )
+        ) {
+          return []
+        }
+        return resource.urlPathname
       })
-      .andThen((x) => x)
+      .concat(
+        ...Array.from(
+          {
+            length:
+              postResource.length /
+              (this.config.limit === 'all' ? 1 : this.config.limit),
+          },
+          (_, i) => {
+            return path.join(this.config.permalink, 'page', String(i + 1))
+          }
+        )
+      )
+
+    return paths
   }
 }
 

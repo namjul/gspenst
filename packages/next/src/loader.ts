@@ -85,6 +85,8 @@ async function loader(
     context.emitError(format(collectResult.error))
   }
 
+  const resources = collectResult.isOk() ? collectResult.value : []
+
   const routesConfigStringified = JSON.stringify(routesConfig)
 
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
@@ -114,7 +116,7 @@ export default function GspenstPage (props) {
 const effectHotReload = ${effectHotReload}
 
 export const getStaticPaths = async () => {
-  return __gspenst_server__.getStaticPaths(${routesConfigStringified}, !!${staticExport})()
+  return __gspenst_server__.getStaticPaths(${routesConfigStringified}, ${JSON.stringify(resources)}, !!${staticExport})()
 }
 
 export const getStaticProps = async (context) => {

@@ -1,6 +1,6 @@
 import { ok, err, okAsync, errAsync, combine } from './shared-kernel'
 import db from './db'
-import type { ResourceType, Resource } from './domain/resource'
+import type { ResourceType, Resource, ResourceMinimal } from './domain/resource'
 import type { RoutesConfig } from './domain/routes'
 import { getCollections } from './domain/routes'
 import { createResource, createDynamicVariables } from './domain/resource'
@@ -24,7 +24,7 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
 >
 
 const repository = {
-  collect(routingConfig: RoutesConfig = {}) {
+  collect(routingConfig: RoutesConfig = {}): RepoResultAsync<ResourceMinimal[]> {
 
     const collections = getCollections(routingConfig)
 
@@ -116,12 +116,13 @@ const repository = {
       })
       .map((resources) => {
         return resources.flatMap(
-          ({ id, urlPathname, resourceType, filename, filepath }) => ({
+          ({ id, urlPathname, resourceType, filename, filepath, slug }) => ({
             id,
             urlPathname,
             resourceType,
             filename,
             filepath,
+            slug
           })
         )
       })

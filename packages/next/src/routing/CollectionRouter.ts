@@ -1,11 +1,11 @@
 import path from 'path'
 import type { Key } from 'path-to-regexp'
-import { compilePermalink, pathToRegexp } from '../helpers'
+import { pathToRegexp } from '../helpers'
 import { ok, combine } from '../shared-kernel'
 import type { Result, Option, ID } from '../shared-kernel'
 import type { RoutingContext, Request } from '../domain/routing'
 import type { Collection } from '../domain/routes'
-import { processQuery } from '../helpers/processQuery'
+import type { ResourceMinimal } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class CollectionRouter extends ParentRouter {
@@ -105,50 +105,41 @@ class CollectionRouter extends ParentRouter {
     }
   }
 
-  async resolvePaths(routers: ParentRouter[]) {
-    const collectionPostsQuery = {
-      type: 'browse',
-      resourceType: 'post',
-      filter: this.config.filter,
-      limit: 'all',
-    } as const
-
-    return (await processQuery(collectionPostsQuery)).andThen(
-      ({ resources }) => {
-        const paths: Result<string>[] = [ok(this.getRoute())]
-
-        resources
-          .filter(
-            (resource) =>
-              !this.respectDominantRouter(
-                routers,
-                resource.resourceType,
-                resource.slug
-              )
-          )
-          .forEach((resource) => {
-            if (!this.postSet.has(resource.id)) {
-              this.postSet.add(resource.id)
-              paths.push(compilePermalink(this.config.permalink, resource))
-            }
-          })
-
-        Array.from(
-          {
-            length:
-              resources.length /
-              (this.config.limit === 'all' ? 1 : this.config.limit),
-          },
-          (_, i) => {
-            return paths.push(
-              ok(path.join(this.getRoute(), 'page', String(i + 1)))
-            )
-          }
+  resolvePaths(routers: ParentRouter[], resources: ResourceMinimal[]) {
+    const postResource = resources.filter(
+      (resource) => resource.resourceType === 'post'
+    )
+    const paths = postResource.flatMap((resource) => {
+      if (
+        this.respectDominantRouter(
+          routers,
+          resource.resourceType,
+          resource.slug
         )
+      ) {
+        return []
+      }
 
-        return combine(paths)
+      if (!this.postSet.has(resource.id)) {
+        this.postSet.add(resource.id)
+        return resource.urlPathname
+      }
+      return []
+    }).concat(this.getRoute())
+    .concat(
+      ...Array.from(
+      {
+        length:
+          postResource.length /
+          (this.config.limit === 'all' ? 1 : this.config.limit),
+      },
+      (_, i) => {
+        return (path.join(this.getRoute(), 'page', String(i + 1)))
       }
     )
+    )
+
+    return paths
   }
 }
 

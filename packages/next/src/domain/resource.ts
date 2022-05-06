@@ -99,8 +99,24 @@ export const resourceSchema = z.discriminatedUnion('resourceType', [
   tagResourceSchema,
 ])
 
+const resourceMinimalSchema = resourceBaseSchema
+  .merge(
+    z.object({
+      resourceType: resourceTypeSchema,
+    })
+  )
+  .pick({
+    id: true,
+    urlPathname: true,
+    resourceType: true,
+    filename: true,
+    filepath: true,
+    slug: true,
+  })
+
 export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>
+export type ResourceMinimal = z.infer<typeof resourceMinimalSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
 type ResourcesNode = NonNullable<

@@ -1,9 +1,12 @@
 import type { Key } from 'path-to-regexp'
-import { ok } from '../shared-kernel'
 import type { Result, Option } from '../shared-kernel'
 import type { RoutingContext } from '../domain/routing'
 import type { Data } from '../domain/routes'
-import type { ResourceType, DynamicVariables } from '../domain/resource'
+import type {
+  ResourceType,
+  DynamicVariables,
+  ResourceMinimal,
+} from '../domain/resource'
 
 class ParentRouter {
   name: string
@@ -97,8 +100,11 @@ class ParentRouter {
     return this.route ?? '/'
   }
 
-  async resolvePaths(_routers: ParentRouter[]): Promise<Result<string[]>> {
-    return ok([])
+  resolvePaths(
+    _routers: ParentRouter[],
+    _resources: ResourceMinimal[]
+  ): string[] {
+    return []
   }
 }
 

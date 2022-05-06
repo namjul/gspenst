@@ -2,7 +2,7 @@ import { ok } from '../shared-kernel'
 import type { Result, Option } from '../shared-kernel'
 import { pathToRegexp } from '../helpers'
 import type { RoutingContext, Request } from '../domain/routing'
-import { processQuery } from '../helpers/processQuery'
+import type { ResourceMinimal } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class StaticPagesRouter extends ParentRouter {
@@ -48,25 +48,21 @@ class StaticPagesRouter extends ParentRouter {
     }
   }
 
-  async resolvePaths(routers: ParentRouter[]) {
-    const taxonomyQuery = {
-      type: 'browse',
-      resourceType: 'page',
-      limit: 'all',
-    } as const
-    return (await processQuery(taxonomyQuery)).map(({ resources: pages }) => {
-      return pages
-        .filter(
-          (pageResource) =>
-            !this.respectDominantRouter(
-              routers,
-              pageResource.resourceType,
-              pageResource.slug
-            )
+  resolvePaths(routers: ParentRouter[], resources: ResourceMinimal[]) {
+    return resources.flatMap((resource) => {
+      if (resource.resourceType !== 'page') {
+        return []
+      }
+      if (
+        this.respectDominantRouter(
+          routers,
+          resource.resourceType,
+          resource.slug
         )
-        .map((pageResource) => {
-          return `/${pageResource.slug}`
-        })
+      ) {
+        return []
+      }
+      return resource.urlPathname
     })
   }
 }

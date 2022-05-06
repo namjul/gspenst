@@ -5,7 +5,7 @@ import type { Result, Option } from '../shared-kernel'
 import { pathToRegexp } from '../helpers'
 import type { RoutingContext } from '../domain/routing'
 import type { Route } from '../domain/routes'
-import { processQuery } from '../helpers/processQuery'
+import type { ResourceMinimal } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class StaticRoutesRouter extends ParentRouter {
@@ -67,32 +67,27 @@ class StaticRoutesRouter extends ParentRouter {
     }
   }
 
-  async resolvePaths() {
+  resolvePaths(_routers: ParentRouter[], resources: ResourceMinimal[]) {
     const mainRoute = this.getRoute()
     if ('controller' in this.config && this.config.controller === 'channel') {
-      const collectionPostsQuery = {
-        type: 'browse',
-        resourceType: 'post',
-        filter: this.config.filter,
-        limit: 'all',
-      } as const
+      const postResources = resources.filter(
+        (resource) => resource.resourceType !== 'post'
+      )
 
-      return (await processQuery(collectionPostsQuery)).map(({ resources }) => {
-        return [
-          mainRoute,
-          ...Array.from(
-            {
-              length: Math.floor(
-                resources.length /
-                  (this.config.limit === 'all' ? 1 : this.config.limit)
-              ),
-            },
-            (_, i) => path.join(mainRoute, 'page', String(i + 1))
-          ),
-        ]
-      })
+      return [
+        mainRoute,
+        ...Array.from(
+          {
+            length: Math.floor(
+              postResources.length /
+                (this.config.limit === 'all' ? 1 : this.config.limit)
+            ),
+          },
+          (_, i) => path.join(mainRoute, 'page', String(i + 1))
+        ),
+      ]
     }
-    return ok([mainRoute])
+    return [mainRoute]
   }
 }
 

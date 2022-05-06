@@ -2,24 +2,26 @@ import type { GetStaticProps, GetStaticPaths } from 'next'
 import { log } from './logger'
 import { routerManager } from './routing'
 import type { RoutesConfig } from './domain/routes'
+import type { ResourceMinimal } from './domain/resource'
 import type { PageProps } from './controller'
 import { controller } from './controller'
 import { format } from './errors'
 
 export const getStaticPaths =
-  (routesConfig: RoutesConfig, staticExport: boolean): GetStaticPaths =>
+  (
+    routesConfig: RoutesConfig,
+    resources: ResourceMinimal[],
+    staticExport: boolean
+  ): GetStaticPaths =>
   async () => {
     log('Page [...slug].js getStaticPaths')
 
     const router = routerManager(routesConfig)
-    const paths = await router.resolvePaths()
-    if (paths.isOk()) {
-      return {
-        paths: paths.value,
-        fallback: staticExport ? false : 'blocking',
-      }
+    const paths = router.resolvePaths(resources)
+    return {
+      paths,
+      fallback: staticExport ? false : 'blocking',
     }
-    throw format(paths.error)
   }
 
 export const getStaticProps =
