@@ -1,10 +1,15 @@
-import { okAsync, errAsync, combine } from './shared-kernel'
-import * as api from './api'
+import { ok, err, okAsync, errAsync, combine } from './shared-kernel'
 import db from './db'
 import type { ResourceType, Resource } from './domain/resource'
-import { createResource } from './domain/resource'
+import type { RoutesConfig } from './domain/routes'
+import { getCollections } from './domain/routes'
+import { createResource, createDynamicVariables } from './domain/resource'
+import { createPost } from './domain/post'
 import type { ID, ResultAsync } from './shared-kernel'
 import * as Errors from './errors'
+import * as api from './api'
+import { do_ } from './utils'
+import { makeNqlFilter, compilePermalink } from './helpers'
 
 type RepoResultAsync<T> = ResultAsync<T>
 
@@ -19,32 +24,107 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
 >
 
 const repository = {
-  collect() {
-    return api.getResources().andThen((resources) => {
-      return combine(
-        resources.data.collections.flatMap((collection) => {
+  collect(routingConfig: RoutesConfig = {}) {
+
+    const collections = getCollections(routingConfig)
+
+    return combine([db.clear(), api
+      .getResources()])
+      .map((results) => {
+        return results.flatMap(collectionResources => {
+        if (collectionResources === 'OK') {
+          return []
+        }
+        return collectionResources.data.collections.flatMap((collection) => {
           return (collection.documents.edges ?? []).flatMap(
-            (connectionEdge) => {
-              if (connectionEdge?.node) {
-                const { node } = connectionEdge
-                if (node.__typename === 'Config') {
-                  return []
-                } else {
-                  const resourceResult = createResource(node)
-                  if (resourceResult.isOk()) {
-                    return this.set(resourceResult.value).map(
-                      () => resourceResult
-                    )
-                  }
-                  return errAsync(resourceResult.error)
-                }
-              }
-              return errAsync(Errors.other('Should not happen'))
+            (collectionEdge) => {
+              return collectionEdge?.node ?? []
             }
           )
         })
-      )
-    })
+
+        })
+      })
+      .andThen((nodes) => {
+        return combine(
+          nodes.flatMap((node) => {
+            if (node.__typename === 'Config') {
+              return []
+            } else {
+              const resourceUrlPathnameResult = do_(() => {
+                const dynamicVariablesResult = createDynamicVariables(node)
+                if (node.__typename === 'Post') {
+                  const collectionEntry = collections.find(
+                    ([_, collection]) => {
+                      const filter = collection.filter
+                        ? makeNqlFilter(collection.filter)
+                        : () => true
+                      const post = createPost(node)
+                      return filter(post)
+                    }
+                  )
+                  if (collectionEntry) {
+                    const [ignored, { permalink }] = collectionEntry
+                    if (dynamicVariablesResult.isErr()) {
+                      return err(dynamicVariablesResult.error)
+                    }
+                    return compilePermalink(
+                      permalink,
+                      dynamicVariablesResult.value
+                    )
+                  }
+                } else if (node.__typename === 'Page') {
+                  if (dynamicVariablesResult.isErr()) {
+                    return err(dynamicVariablesResult.error)
+                  }
+                  return ok(`/${dynamicVariablesResult.value.slug}`)
+                } else {
+                  const taxonomyEntry =
+                    node.__typename === 'Author'
+                      ? routingConfig.taxonomies?.author
+                      : routingConfig.taxonomies?.tag
+                  if (taxonomyEntry) {
+                    if (dynamicVariablesResult.isErr()) {
+                      return err(dynamicVariablesResult.error)
+                    }
+                    return compilePermalink(
+                      taxonomyEntry.permalink,
+                      dynamicVariablesResult.value
+                    )
+                  }
+                }
+                return ok(undefined)
+              })
+
+              if (resourceUrlPathnameResult.isErr()) {
+                return errAsync(resourceUrlPathnameResult.error)
+              }
+
+              const resourceResult = createResource(
+                node,
+                resourceUrlPathnameResult.value
+              )
+              if (resourceResult.isOk()) {
+                return this.set(resourceResult.value).map(
+                  () => resourceResult.value
+                )
+              }
+              return errAsync(resourceResult.error)
+            }
+          })
+        )
+      })
+      .map((resources) => {
+        return resources.flatMap(
+          ({ id, urlPathname, resourceType, filename, filepath }) => ({
+            id,
+            urlPathname,
+            resourceType,
+            filename,
+            filepath,
+          })
+        )
+      })
   },
 
   set(resource: Resource) {

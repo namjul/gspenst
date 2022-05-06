@@ -1,10 +1,9 @@
 import { idSchema, ok, err, z, combine } from '../shared-kernel'
 import * as Errors from '../errors'
-import type { Get, Result } from '../shared-kernel'
-import type { GetPost } from '../api'
-import type { Post as PostGenerated } from '../../.tina/__generated__/types'
+import type { Result, Get } from '../shared-kernel'
 import { authorSchema, createAuthor } from './author'
 import { tagSchema, createTag } from './tag'
+import type { PostResource } from './resource'
 
 export const postSchema = z
   .object({
@@ -21,18 +20,19 @@ export const postSchema = z
   })
   .strict()
 
-type Post = z.infer<typeof postSchema>
+export type Post = z.infer<typeof postSchema>
 
-export type { Post, GetPost, PostGenerated }
+// TODO add Post type with special attributes https://ghost.org/docs/themes/contexts/post/
+//https://www.typescriptlang.org/play?exactOptionalPropertyTypes=true#code/KYDwDg9gTgLgBDAnmYcByBDAtqgvHAbzgDttgAuOAZxigEtiBzOAXwChRJYFlUBJACZx8ROgMrEArlgBGwKKw7ho8JCjgA1DABtJwADwAVOKBjBiAqnADyYGHQjF9NekwB8b4XGOnzluJIWwABmDMBCAPzoZHCUgmxKXKq8NnYOToae+MYAPgFBocThCYkqcMGBAMb2jnCVUMAYZkYmIGYWVrY1Ti4MjFn5AiFhAm4AFAJNGOS9TAA0cABuOnoRlIYAlJRaugaZhGxwR3B0wXBjasAQZ8u7wrj4AOSzjI8bcA0wklDEhCRklFuelYcAwVh2eiMbgSxzqjioEG0wAAdNoIIwxkDgBtDsdPt9fqJxHAAIwAJgAzCCwZoVntoew2JV4fAQF56o0zGNHpMYBhHgtngJgm8mSy4Ih2Q0msBubz+QtAkNCuEccziDQ4AAvKWc2U8qZvIA
+export function createPost(postData: NonNullable<Get<PostResource, 'tinaData.data.post'>>): Result<Post> {
+  const {
+    id,
+    tags: rawTags,
+    authors: rawAuthors,
+    date,
+    ...restPostProps
+  } = postData
 
-export function createPost({
-  id,
-  __typename,
-  tags: rawTags,
-  authors: rawAuthors,
-  date,
-  ...restPostProps
-}: Get<GetPost, 'data.post'>): Result<Post> {
   const tagsResult = combine(
     (rawTags ?? []).flatMap((tag) => {
       if (tag?.tag) {

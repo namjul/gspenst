@@ -1,10 +1,7 @@
 import { idSchema, ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
-import type { GetTag } from '../api'
-import type { Get, SetOptional, Result } from '../shared-kernel'
-import type { Tag as TagGenerated } from '../../.tina/__generated__/types'
-
-export const getTagSchema = z.custom<GetTag>((value) => value)
+import type { Result, Get } from '../shared-kernel'
+import type { TagResource } from './resource'
 
 export const tagSchema = z
   .object({
@@ -15,12 +12,8 @@ export const tagSchema = z
   })
   .strict()
 
-export function createTag({
-  id,
-  __typename,
-  date,
-  ...restPageTag
-}: SetOptional<Get<GetTag, 'data.tag'>, '__typename'>): Result<Tag> {
+export function createTag(tagData: NonNullable<Get<TagResource, 'tinaData.data.tag'>>): Result<Tag> {
+  const { id, __typename, date, ...restPageTag } = tagData
   const tag = {
     id,
     ...restPageTag,
@@ -35,6 +28,4 @@ export function createTag({
   }
 }
 
-type Tag = z.infer<typeof tagSchema>
-
-export type { Tag, GetTag, TagGenerated }
+export type Tag = z.infer<typeof tagSchema>

@@ -520,93 +520,73 @@ export type TagMutation = {
   slug?: InputMaybe<Scalars['String']>;
 };
 
-export type ConfigQueryFragmentFragment = { __typename?: 'Query', config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type ConfigQueryFragmentFragment = { __typename?: 'Query', config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
-export type PostFragmentFragment = { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null };
+export type PostFragmentFragment = { __typename?: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null };
 
-export type PageFragmentFragment = { __typename: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null };
+export type PageFragmentFragment = { __typename?: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null };
 
-export type AuthorFragmentFragment = { __typename: 'Author', id: string, name: string, date: string, slug: string };
+export type AuthorFragmentFragment = { __typename?: 'Author', id: string, name: string, date: string, slug: string };
 
-export type TagFragmentFragment = { __typename: 'Tag', id: string, name: string, date: string, slug: string };
-
-export type PostResourceFragmentFragment = { __typename: 'Post', slug: string, date: string, id: string, tags?: Array<{ __typename?: 'PostTags', tag?: { __typename: 'Tag', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename?: 'PostAuthors', author?: { __typename: 'Author', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
-
-export type PageResourceFragmentFragment = { __typename: 'Page', slug: string, date: string, id: string, tags?: Array<{ __typename?: 'PageTags', tag?: { __typename: 'Tag', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename?: 'PageAuthors', author?: { __typename: 'Author', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
-
-export type TagResourceFragmentFragment = { __typename: 'Tag', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
-
-export type AuthorResourceFragmentFragment = { __typename: 'Author', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
-
-type DocumentResourceFragment_Config_Fragment = { __typename: 'Config', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
-
-type DocumentResourceFragment_Page_Fragment = { __typename: 'Page', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
-
-type DocumentResourceFragment_Post_Fragment = { __typename: 'Post', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
-
-type DocumentResourceFragment_Author_Fragment = { __typename: 'Author', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
-
-type DocumentResourceFragment_Tag_Fragment = { __typename: 'Tag', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
-
-export type DocumentResourceFragmentFragment = DocumentResourceFragment_Config_Fragment | DocumentResourceFragment_Page_Fragment | DocumentResourceFragment_Post_Fragment | DocumentResourceFragment_Author_Fragment | DocumentResourceFragment_Tag_Fragment;
+export type TagFragmentFragment = { __typename?: 'Tag', id: string, name: string, date: string, slug: string };
 
 export type GetResourcesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetResourcesQuery = { __typename: 'Query', collections: Array<{ __typename: 'Collection', name: string, slug: string, path: string, matches?: string | null, documents: { __typename?: 'DocumentConnection', totalCount: number, edges?: Array<{ __typename?: 'DocumentConnectionEdges', node?: { __typename: 'Config', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'Page', slug: string, date: string, id: string, tags?: Array<{ __typename?: 'PageTags', tag?: { __typename: 'Tag', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename?: 'PageAuthors', author?: { __typename: 'Author', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'Post', slug: string, date: string, id: string, tags?: Array<{ __typename?: 'PostTags', tag?: { __typename: 'Tag', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename?: 'PostAuthors', author?: { __typename: 'Author', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'Author', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'Tag', slug: string, name: string, date: string, id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } }> };
+export type GetResourcesQuery = { __typename?: 'Query', collections: Array<{ __typename?: 'Collection', documents: { __typename?: 'DocumentConnection', edges?: Array<{ __typename?: 'DocumentConnectionEdges', node?: { __typename: 'Config', id: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'Page', id: string, slug: string, date: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename?: 'PageTags', tag?: { __typename?: 'Tag', slug: string, _sys: { __typename?: 'SystemInfo', filename: string } } | null } | null> | null, authors?: Array<{ __typename?: 'PageAuthors', author?: { __typename?: 'Author', slug: string, _sys: { __typename?: 'SystemInfo', filename: string } } | null } | null> | null } | { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string } } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string } } | null } | null> | null } | { __typename: 'Author', id: string, slug: string, date: string, name: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'Tag', id: string, slug: string, date: string, name: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } }> };
 
 export type GetConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type GetConfigQuery = { __typename?: 'Query', config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type GetPostQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
-export type GetPostQuery = { __typename?: 'Query', post: { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type GetPostQuery = { __typename?: 'Query', post: { __typename?: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, edges?: Array<{ __typename?: 'PostConnectionEdges', node?: { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type GetPostsQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, edges?: Array<{ __typename?: 'PostConnectionEdges', node?: { __typename?: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type GetPageQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
-export type GetPageQuery = { __typename?: 'Query', page: { __typename: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type GetPageQuery = { __typename?: 'Query', page: { __typename?: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type GetPagesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPagesQuery = { __typename?: 'Query', pageConnection: { __typename?: 'PageConnection', totalCount: number, edges?: Array<{ __typename?: 'PageConnectionEdges', node?: { __typename: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type GetPagesQuery = { __typename?: 'Query', pageConnection: { __typename?: 'PageConnection', totalCount: number, edges?: Array<{ __typename?: 'PageConnectionEdges', node?: { __typename?: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type GetAuthorQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
-export type GetAuthorQuery = { __typename?: 'Query', author: { __typename: 'Author', id: string, name: string, date: string, slug: string }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type GetAuthorQuery = { __typename?: 'Query', author: { __typename?: 'Author', id: string, name: string, date: string, slug: string }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type GetAuthorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAuthorsQuery = { __typename?: 'Query', authorConnection: { __typename?: 'AuthorConnection', totalCount: number, edges?: Array<{ __typename?: 'AuthorConnectionEdges', node?: { __typename: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type GetAuthorsQuery = { __typename?: 'Query', authorConnection: { __typename?: 'AuthorConnection', totalCount: number, edges?: Array<{ __typename?: 'AuthorConnectionEdges', node?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type GetTagQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
-export type GetTagQuery = { __typename?: 'Query', tag: { __typename: 'Tag', id: string, name: string, date: string, slug: string }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type GetTagQuery = { __typename?: 'Query', tag: { __typename?: 'Tag', id: string, name: string, date: string, slug: string }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTagsQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
+export type GetTagsQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type ConfigPartsFragment = { __typename?: 'Config', darkMode?: boolean | null };
 
@@ -686,7 +666,16 @@ export const ConfigPartsFragmentDoc = gql`
 export const ConfigQueryFragmentFragmentDoc = gql`
     fragment ConfigQueryFragment on Query {
   config(relativePath: "index.json") {
+    __typename
     id
+    _sys {
+      filename
+      basename
+      breadcrumbs
+      path
+      relativePath
+      extension
+    }
     ...ConfigParts
   }
 }
@@ -725,7 +714,6 @@ export const TagPartsFragmentDoc = gql`
     `;
 export const TagFragmentFragmentDoc = gql`
     fragment TagFragment on Tag {
-  __typename
   id
   ...TagParts
 }
@@ -739,14 +727,12 @@ export const AuthorPartsFragmentDoc = gql`
     `;
 export const AuthorFragmentFragmentDoc = gql`
     fragment AuthorFragment on Author {
-  __typename
   id
   ...AuthorParts
 }
     ${AuthorPartsFragmentDoc}`;
 export const PostFragmentFragmentDoc = gql`
     fragment PostFragment on Post {
-  __typename
   id
   ...PostParts
   tags {
@@ -794,7 +780,6 @@ export const PagePartsFragmentDoc = gql`
     `;
 export const PageFragmentFragmentDoc = gql`
     fragment PageFragment on Page {
-  __typename
   id
   ...PageParts
   tags {
@@ -815,121 +800,98 @@ export const PageFragmentFragmentDoc = gql`
     ${PagePartsFragmentDoc}
 ${TagFragmentFragmentDoc}
 ${AuthorFragmentFragmentDoc}`;
-export const DocumentResourceFragmentFragmentDoc = gql`
-    fragment DocumentResourceFragment on Document {
-  __typename
-  id
-  _sys {
-    filename
-    basename
-    breadcrumbs
-    path
-    relativePath
-    extension
-  }
-}
-    `;
-export const TagResourceFragmentFragmentDoc = gql`
-    fragment TagResourceFragment on Tag {
-  ...DocumentResourceFragment
-  slug
-  name
-  date
-}
-    ${DocumentResourceFragmentFragmentDoc}`;
-export const AuthorResourceFragmentFragmentDoc = gql`
-    fragment AuthorResourceFragment on Author {
-  ...DocumentResourceFragment
-  slug
-  name
-  date
-}
-    ${DocumentResourceFragmentFragmentDoc}`;
-export const PostResourceFragmentFragmentDoc = gql`
-    fragment PostResourceFragment on Post {
-  ...DocumentResourceFragment
-  slug
-  date
-  tags {
-    tag {
-      ... on Tag {
-        ...TagResourceFragment
-      }
-    }
-  }
-  authors {
-    author {
-      ... on Author {
-        ...AuthorResourceFragment
-      }
-    }
-  }
-}
-    ${DocumentResourceFragmentFragmentDoc}
-${TagResourceFragmentFragmentDoc}
-${AuthorResourceFragmentFragmentDoc}`;
-export const PageResourceFragmentFragmentDoc = gql`
-    fragment PageResourceFragment on Page {
-  ...DocumentResourceFragment
-  slug
-  date
-  tags {
-    tag {
-      ... on Tag {
-        ...TagResourceFragment
-      }
-    }
-  }
-  authors {
-    author {
-      ... on Author {
-        ...AuthorResourceFragment
-      }
-    }
-  }
-}
-    ${DocumentResourceFragmentFragmentDoc}
-${TagResourceFragmentFragmentDoc}
-${AuthorResourceFragmentFragmentDoc}`;
 export const GetResourcesDocument = gql`
     query getResources {
-  __typename
   collections {
-    __typename
-    name
-    slug
-    path
-    matches
     documents {
-      totalCount
       edges {
         node {
-          __typename
-          ... on Config {
-            ...DocumentResourceFragment
+          ... on Document {
+            __typename
+            _sys {
+              filename
+              basename
+              breadcrumbs
+              path
+              relativePath
+              extension
+            }
+            id
           }
           ... on Post {
-            ...PostResourceFragment
+            id
+            ...PostParts
+            tags {
+              tag {
+                ... on Document {
+                  _sys {
+                    filename
+                  }
+                }
+                ... on Tag {
+                  ...TagFragment
+                }
+              }
+            }
+            authors {
+              author {
+                ... on Document {
+                  _sys {
+                    filename
+                  }
+                }
+                ... on Author {
+                  ...AuthorFragment
+                }
+              }
+            }
           }
           ... on Page {
-            ...PageResourceFragment
+            slug
+            date
+            tags {
+              tag {
+                ... on Document {
+                  _sys {
+                    filename
+                  }
+                }
+                ... on Tag {
+                  slug
+                }
+              }
+            }
+            authors {
+              author {
+                ... on Document {
+                  _sys {
+                    filename
+                  }
+                }
+                ... on Author {
+                  slug
+                }
+              }
+            }
           }
           ... on Author {
-            ...AuthorResourceFragment
+            slug
+            date
+            name
           }
           ... on Tag {
-            ...TagResourceFragment
+            slug
+            date
+            name
           }
         }
       }
     }
   }
 }
-    ${DocumentResourceFragmentFragmentDoc}
-${PostResourceFragmentFragmentDoc}
-${PageResourceFragmentFragmentDoc}
-${AuthorResourceFragmentFragmentDoc}
-${TagResourceFragmentFragmentDoc}`;
+    ${PostPartsFragmentDoc}
+${TagFragmentFragmentDoc}
+${AuthorFragmentFragmentDoc}`;
 export const GetConfigDocument = gql`
     query getConfig {
   ...ConfigQueryFragment

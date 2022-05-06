@@ -1,8 +1,13 @@
 import type { Get, Split, Result } from '../shared-kernel'
 import { idSchema, slugSchema, ok, err, z } from '../shared-kernel'
 import type { GetTag, GetAuthor, GetPage, GetPost } from '../api'
+import type { GetResourcesQuery } from '../../.tina/__generated__/types'
 import { do_ } from '../utils'
 import * as Errors from '../errors'
+// import { postSchema } from './post';
+// import { pageSchema } from './page';
+// import { authorSchema } from './author';
+// import { tagSchema } from './tag';
 
 const getPostSchema = z.custom<GetPost>((value) => value)
 const getPageSchema = z.custom<GetPage>((value) => value)
@@ -43,24 +48,25 @@ const resourceBaseSchema = z
     filename: z.string(),
     filepath: z.string(),
     relativePath: z.string(),
-    urlPathname: z
-      .string()
-      .regex(/^\/([^?/]+)/)
+    urlPathname: z.string().regex(/^\/([^?/]+)/),
   })
   .merge(dynamicVariablesSchema)
 
 export const postResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypePost,
-    tinaData: getPostSchema,
+    tinaData: getPostSchema.optional(),
+    // entry: postSchema // TODO must be post with special attributes
   })
 )
+
 export type PostResource = z.infer<typeof postResourceSchema>
 
 export const pageResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypePage,
-    tinaData: getPageSchema,
+    tinaData: getPageSchema.optional(),
+    // entry: pageSchema
   })
 )
 
@@ -69,7 +75,8 @@ export type PageResource = z.infer<typeof pageResourceSchema>
 export const authorResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypeAuthor,
-    tinaData: getAuthorSchema,
+    tinaData: getAuthorSchema.optional(),
+    // entry: authorSchema
   })
 )
 
@@ -78,7 +85,8 @@ export type AuthorResource = z.infer<typeof authorResourceSchema>
 export const tagResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypeTag,
-    tinaData: getTagSchema,
+    tinaData: getTagSchema.optional(),
+    // entry: tagSchema
   })
 )
 
@@ -96,10 +104,10 @@ export type Resource = z.infer<typeof resourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
 type ResourcesNode = NonNullable<
-  | Get<GetPage, 'data.page'>
-  | Get<GetPost, 'data.post'>
-  | Get<GetAuthor, 'data.author'>
-  | Get<GetTag, 'data.tag'>
+  Exclude<
+    Get<GetResourcesQuery, 'collections[0].documents.edges[0].node'>,
+    { __typename: 'Config' }
+  >
 >
 
 export function createResource(
@@ -107,10 +115,46 @@ export function createResource(
   urlPathname?: string
 ): Result<Resource> {
   const {
-    __typename,
     _sys: { filename, path: filepath, relativePath },
+  } = node
+
+  const dynamicVariablesResult = createDynamicVariables(node)
+
+  if (dynamicVariablesResult.isErr()) {
+    return err(dynamicVariablesResult.error)
+  }
+
+  const dynamicVariables = dynamicVariablesResult.value
+
+  const [resourceType] = node.__typename
+    .toLowerCase()
+    .split('document') as Split<Lowercase<typeof node.__typename>, 'document'>
+
+  const resource = {
+    filename,
+    filepath,
+    resourceType,
+    relativePath,
+    urlPathname: urlPathname ?? `/${dynamicVariables.id}`,
+    ...dynamicVariables,
+  }
+
+  const resourceParsed = resourceSchema.safeParse(resource)
+
+  if (resourceParsed.success) {
+    return ok(resourceParsed.data)
+  } else {
+    return err(Errors.other('createResource', resourceParsed.error))
+  }
+}
+
+export function createDynamicVariables(
+  node: ResourcesNode
+): Result<DynamicVariables> {
+  const {
+    __typename,
+    _sys: { filename },
     date,
-    id,
   } = node
 
   const { slug, primary_tag, primary_author } = do_(() => {
@@ -142,8 +186,8 @@ export function createResource(
     .split('/')
     .map(Number) as [number, number, number]
 
-  const dynamicVariablesParsedResult = dynamicVariablesSchema.safeParse({
-    id,
+  const dynamicVariablesParsed = dynamicVariablesSchema.safeParse({
+    id: node.id,
     slug,
     year,
     month,
@@ -152,30 +196,9 @@ export function createResource(
     primary_author,
   })
 
-  if (!dynamicVariablesParsedResult.success) {
-    return err(Errors.other('createResource', dynamicVariablesParsedResult.error))
-  }
-
-  const dynamicVariables = dynamicVariablesParsedResult.data
-
-  const [resourceType] = node.__typename
-    .toLowerCase()
-    .split('document') as Split<Lowercase<typeof node.__typename>, 'document'>
-
-  const resource = {
-    filename,
-    filepath,
-    resourceType,
-    relativePath,
-    urlPathname: urlPathname ?? `/${dynamicVariables.id}`,
-    ...dynamicVariables,
-  }
-
-  const result = resourceSchema.safeParse(resource)
-
-  if (result.success) {
-    return ok(result.data)
+  if (dynamicVariablesParsed.success) {
+    return ok(dynamicVariablesParsed.data)
   } else {
-    return err(Errors.other('createResource', result.error))
+    return err(Errors.other('createResource', dynamicVariablesParsed.error))
   }
 }

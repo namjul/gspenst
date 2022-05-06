@@ -1,26 +1,25 @@
 import { ok, err, z, combine } from '../shared-kernel'
 import * as Errors from '../errors'
-import type { GetPage } from '../api'
-import type { Page as PageGenerated } from '../../.tina/__generated__/types'
-import type { Get, Result } from '../shared-kernel'
+import type { Result, Get } from '../shared-kernel'
 import { createAuthor } from './author'
 import { createTag } from './tag'
 import { postSchema } from './post'
+import type { PageResource } from './resource'
 
-const pageSchema = postSchema.merge(z.object({}).strict())
+export const pageSchema = postSchema.merge(z.object({}).strict())
 
-type Page = z.infer<typeof pageSchema>
+export type Page = z.infer<typeof pageSchema>
 
-export type { Page, GetPage, PageGenerated }
+export function createPage(pageData: NonNullable<Get<PageResource, 'tinaData.data.page'>>): Result<Page> {
+  const {
+    id,
+    __typename,
+    tags: rawTags,
+    authors: rawAuthors,
+    date,
+    ...restPageProps
+  } = pageData
 
-export function createPage({
-  id,
-  __typename,
-  tags: rawTags,
-  authors: rawAuthors,
-  date,
-  ...restPageProps
-}: Get<GetPage, 'data.page'>): Result<Page> {
   const tagsResult = combine(
     (rawTags ?? []).flatMap((tag) => {
       if (tag?.tag) {

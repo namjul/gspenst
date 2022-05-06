@@ -73,19 +73,19 @@ async function loader(
     ...(yaml.load(source) as object),
   })
 
-  const repoCollectResult = await repository.collect()
-
-  if (repoCollectResult.isErr()) {
-    context.emitError(format(repoCollectResult.error))
-  }
-
   if (routesConfigResult.isErr()) {
     context.emitError(format(routesConfigResult.error))
   }
 
-  const routesConfig = JSON.stringify(
-    routesConfigResult.isOk() ? routesConfigResult.value[0] : defaultRoutes
-  )
+  const routesConfig = routesConfigResult.isOk() ? routesConfigResult.value[0]! : {}
+
+  const collectResult = await repository.collect(routesConfig)
+
+  if (collectResult.isErr()) {
+    context.emitError(format(collectResult.error))
+  }
+
+  const routesConfigStringified = JSON.stringify(routesConfig)
 
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
@@ -114,11 +114,11 @@ export default function GspenstPage (props) {
 const effectHotReload = ${effectHotReload}
 
 export const getStaticPaths = async () => {
-  return __gspenst_server__.getStaticPaths(${routesConfig}, !!${staticExport})()
+  return __gspenst_server__.getStaticPaths(${routesConfigStringified}, !!${staticExport})()
 }
 
 export const getStaticProps = async (context) => {
-  return __gspenst_server__.getStaticProps(${routesConfig},'${routingParameter}')(context)
+  return __gspenst_server__.getStaticProps(${routesConfigStringified},'${routingParameter}')(context)
 }
 `
 

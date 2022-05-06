@@ -1,8 +1,7 @@
 import { idSchema, ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
-import type { GetAuthor } from '../api'
-import type { Get, SetOptional, Result } from '../shared-kernel'
-import type { Author as AuthorGenerated } from '../../.tina/__generated__/types'
+import type { Result, Get } from '../shared-kernel'
+import type { AuthorResource } from './resource'
 
 export const authorSchema = z
   .object({
@@ -13,12 +12,10 @@ export const authorSchema = z
   })
   .strict()
 
-export function createAuthor({
-  id,
-  __typename,
-  date,
-  ...restPageAuthor
-}: SetOptional<Get<GetAuthor, 'data.author'>, '__typename'>): Result<Author> {
+export function createAuthor(authorData: NonNullable<Get<AuthorResource, 'tinaData.data.author'>>): Result<Author> {
+  const { id, __typename, date, ...restPageAuthor } =
+    authorData
+
   const author = {
     id,
     ...restPageAuthor,
@@ -33,6 +30,5 @@ export function createAuthor({
   }
 }
 
-type Author = z.infer<typeof authorSchema>
+export type Author = z.infer<typeof authorSchema>
 
-export type { Author, GetAuthor, AuthorGenerated }
