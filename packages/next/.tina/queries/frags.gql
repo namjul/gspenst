@@ -1,16 +1,7 @@
 
 fragment ConfigQueryFragment on Query {
   config(relativePath: "index.json") {
-    __typename
     id
-    _sys {
-      filename
-      basename
-      breadcrumbs
-      path
-      relativePath
-      extension
-    }
     ...ConfigParts
   }
 }

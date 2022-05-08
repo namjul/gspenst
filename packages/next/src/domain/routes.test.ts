@@ -208,10 +208,12 @@ describe('routing object parsing', () => {
             taxonomies: {
               tag: {
                 permalink: '/tag/:slug',
+                filter: "tags:'%s'",
                 limit: 5,
               },
               author: {
                 permalink: '/author/:slug',
+                filter: "authors:'%s'",
                 limit: 5,
               },
             },

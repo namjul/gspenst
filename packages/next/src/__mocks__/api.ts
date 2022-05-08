@@ -132,6 +132,9 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '0th-post',
+                  title: '0th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
@@ -150,6 +153,9 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '1th-post',
+                  title: '1th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
@@ -168,6 +174,9 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '2th-post',
+                  title: '2th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
@@ -186,9 +195,13 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '3th-post',
+                  title: '3th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: [
                     {
+                      __typename: 'PostTags',
                       tag: {
                         id: 'content/tags/tag-1.mdx',
                         _sys: { filename: 'tag-1' },
@@ -200,6 +213,7 @@ export const getResources = (): ApiResultAsync<{
                   ],
                   authors: [
                     {
+                      __typename: 'PostAuthors',
                       author: {
                         id: 'content/authors/pedro.mdx',
                         _sys: { filename: 'pedro' },
@@ -224,9 +238,13 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '4th-post',
+                  title: '4th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: [
                     {
+                      __typename: 'PostTags',
                       tag: {
                         id: 'content/tags/tag-2.mdx',
                         _sys: { filename: 'tag-2' },
@@ -238,6 +256,7 @@ export const getResources = (): ApiResultAsync<{
                   ],
                   authors: [
                     {
+                      __typename: 'PostAuthors',
                       author: {
                         id: 'content/authors/napolean.mdx',
                         _sys: { filename: 'napolean' },
@@ -262,6 +281,9 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '5th-post',
+                  title: '5th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
@@ -280,6 +302,9 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '6th-post',
+                  title: '6th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-12T07:00:00.000Z',
                   tags: null,
                   authors: null,
@@ -298,9 +323,13 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '7th-post',
+                  title: '7th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: [
                     {
+                      __typename: 'PostTags',
                       tag: {
                         id: 'content/tags/tag-1.mdx',
                         _sys: { filename: 'tag-1' },
@@ -310,6 +339,7 @@ export const getResources = (): ApiResultAsync<{
                       },
                     },
                     {
+                      __typename: 'PostTags',
                       tag: {
                         id: 'content/tags/tag-2.mdx',
                         _sys: { filename: 'tag-2' },
@@ -321,6 +351,7 @@ export const getResources = (): ApiResultAsync<{
                   ],
                   authors: [
                     {
+                      __typename: 'PostAuthors',
                       author: {
                         id: 'content/authors/napolean.mdx',
                         _sys: { filename: 'napolean' },
@@ -330,6 +361,7 @@ export const getResources = (): ApiResultAsync<{
                       },
                     },
                     {
+                      __typename: 'PostAuthors',
                       author: {
                         id: 'content/authors/pedro.mdx',
                         _sys: { filename: 'pedro' },
@@ -354,6 +386,9 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '8th-post',
+                  title: '8th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
@@ -372,6 +407,9 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: '9th-post',
+                  title: '9th Post',
+                  excerpt: '',
+                  content: '',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: null,
                   authors: null,

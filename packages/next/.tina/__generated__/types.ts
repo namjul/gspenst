@@ -520,7 +520,7 @@ export type TagMutation = {
   slug?: InputMaybe<Scalars['String']>;
 };
 
-export type ConfigQueryFragmentFragment = { __typename?: 'Query', config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type ConfigQueryFragmentFragment = { __typename?: 'Query', config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type PostFragmentFragment = { __typename?: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null };
 
@@ -538,55 +538,55 @@ export type GetResourcesQuery = { __typename?: 'Query', collections: Array<{ __t
 export type GetConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetConfigQuery = { __typename?: 'Query', config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type GetPostQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
-export type GetPostQuery = { __typename?: 'Query', post: { __typename?: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type GetPostQuery = { __typename?: 'Query', post: { __typename?: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, edges?: Array<{ __typename?: 'PostConnectionEdges', node?: { __typename?: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type GetPostsQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, edges?: Array<{ __typename?: 'PostConnectionEdges', node?: { __typename?: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type GetPageQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
-export type GetPageQuery = { __typename?: 'Query', page: { __typename?: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type GetPageQuery = { __typename?: 'Query', page: { __typename?: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type GetPagesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPagesQuery = { __typename?: 'Query', pageConnection: { __typename?: 'PageConnection', totalCount: number, edges?: Array<{ __typename?: 'PageConnectionEdges', node?: { __typename?: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type GetPagesQuery = { __typename?: 'Query', pageConnection: { __typename?: 'PageConnection', totalCount: number, edges?: Array<{ __typename?: 'PageConnectionEdges', node?: { __typename?: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type GetAuthorQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
-export type GetAuthorQuery = { __typename?: 'Query', author: { __typename?: 'Author', id: string, name: string, date: string, slug: string }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type GetAuthorQuery = { __typename?: 'Query', author: { __typename?: 'Author', id: string, name: string, date: string, slug: string }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type GetAuthorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAuthorsQuery = { __typename?: 'Query', authorConnection: { __typename?: 'AuthorConnection', totalCount: number, edges?: Array<{ __typename?: 'AuthorConnectionEdges', node?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type GetAuthorsQuery = { __typename?: 'Query', authorConnection: { __typename?: 'AuthorConnection', totalCount: number, edges?: Array<{ __typename?: 'AuthorConnectionEdges', node?: { __typename?: 'Author', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type GetTagQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
-export type GetTagQuery = { __typename?: 'Query', tag: { __typename?: 'Tag', id: string, name: string, date: string, slug: string }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type GetTagQuery = { __typename?: 'Query', tag: { __typename?: 'Tag', id: string, name: string, date: string, slug: string }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTagsQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type GetTagsQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string } | null } | null> | null }, config: { __typename?: 'Config', id: string, darkMode?: boolean | null } };
 
 export type ConfigPartsFragment = { __typename?: 'Config', darkMode?: boolean | null };
 
@@ -666,16 +666,7 @@ export const ConfigPartsFragmentDoc = gql`
 export const ConfigQueryFragmentFragmentDoc = gql`
     fragment ConfigQueryFragment on Query {
   config(relativePath: "index.json") {
-    __typename
     id
-    _sys {
-      filename
-      basename
-      breadcrumbs
-      path
-      relativePath
-      extension
-    }
     ...ConfigParts
   }
 }

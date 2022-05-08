@@ -1,19 +1,20 @@
 import { ok, err, z, combine } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { Result, Get } from '../shared-kernel'
+import type { GetPageQuery } from '../../.tina/__generated__/types'
 import { createAuthor } from './author'
 import { createTag } from './tag'
 import { postSchema } from './post'
-import type { PageResource } from './resource'
 
 export const pageSchema = postSchema.merge(z.object({}).strict())
 
 export type Page = z.infer<typeof pageSchema>
 
-export function createPage(pageData: NonNullable<Get<PageResource, 'tinaData.data.page'>>): Result<Page> {
+export function createPage(pageData: Get<GetPageQuery, 'page'> & { _sys?: object }): Result<Page> {
   const {
     id,
     __typename,
+    _sys,
     tags: rawTags,
     authors: rawAuthors,
     date,

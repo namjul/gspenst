@@ -61,10 +61,10 @@ describe('processQuery', () => {
         filter: 'slug:-8th-post',
         limit: 5,
       } as const
-      const result = await processQuery(query)
-      expect(result._unsafeUnwrap()).toHaveProperty('resources')
-      expect(result._unsafeUnwrap()).toHaveProperty('pagination')
-      expect(result._unsafeUnwrap()).toHaveProperty('pagination.total', 9)
+      const result = (await processQuery(query))._unsafeUnwrap()
+      expect(result).toHaveProperty('resources')
+      expect(result).toHaveProperty('pagination')
+      expect(result).toHaveProperty('pagination.total', 9)
     })
 
     test('limit', async () => {

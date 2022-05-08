@@ -5,7 +5,7 @@ import type { Result, Option } from '../shared-kernel'
 import { pathToRegexp } from '../helpers'
 import type { RoutingContext } from '../domain/routing'
 import type { Route } from '../domain/routes'
-import type { ResourceMinimal } from '../domain/resource'
+import type { Resource } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class StaticRoutesRouter extends ParentRouter {
@@ -67,11 +67,15 @@ class StaticRoutesRouter extends ParentRouter {
     }
   }
 
-  resolvePaths(_routers: ParentRouter[], resources: ResourceMinimal[]) {
+  resolvePaths(_routers: ParentRouter[], resources: Resource[]) {
     const mainRoute = this.getRoute()
     if ('controller' in this.config && this.config.controller === 'channel') {
       const postResources = resources.filter(
-        (resource) => resource.resourceType !== 'post'
+        (resource) =>
+          resource.resourceType === 'post' &&
+          (this.config.filter
+            ? resource.filters?.includes(this.config.filter)
+            : true)
       )
 
       return [

@@ -48,7 +48,8 @@ const resourceBaseSchema = z
     filename: z.string(),
     filepath: z.string(),
     relativePath: z.string(),
-    urlPathname: z.string().regex(/^\/([^?/]+)/),
+    urlPathname: z.string().regex(/^\/([^?/]+)/).optional(),
+    filters: z.array(z.string()).nullable()
   })
   .merge(dynamicVariablesSchema)
 
@@ -99,27 +100,11 @@ export const resourceSchema = z.discriminatedUnion('resourceType', [
   tagResourceSchema,
 ])
 
-const resourceMinimalSchema = resourceBaseSchema
-  .merge(
-    z.object({
-      resourceType: resourceTypeSchema,
-    })
-  )
-  .pick({
-    id: true,
-    urlPathname: true,
-    resourceType: true,
-    filename: true,
-    filepath: true,
-    slug: true,
-  })
-
 export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>
-export type ResourceMinimal = z.infer<typeof resourceMinimalSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
-type ResourcesNode = NonNullable<
+export type ResourcesNode = NonNullable<
   Exclude<
     Get<GetResourcesQuery, 'collections[0].documents.edges[0].node'>,
     { __typename: 'Config' }
@@ -128,7 +113,8 @@ type ResourcesNode = NonNullable<
 
 export function createResource(
   node: ResourcesNode,
-  urlPathname?: string
+  urlPathname: string | undefined,
+  filters: string[] = []
 ): Result<Resource> {
   const {
     _sys: { filename, path: filepath, relativePath },
@@ -151,7 +137,8 @@ export function createResource(
     filepath,
     resourceType,
     relativePath,
-    urlPathname: urlPathname ?? `/${dynamicVariables.id}`,
+    urlPathname,
+    filters,
     ...dynamicVariables,
   }
 

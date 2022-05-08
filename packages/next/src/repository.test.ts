@@ -14,7 +14,8 @@ beforeAll(async () => {
 
 describe('repository', () => {
   test('init', async () => {
-    expect((await repository.collect())._unsafeUnwrap()).toHaveLength(17)
+    const result = (await repository.collect())._unsafeUnwrap();
+    expect(result).toHaveLength(17)
   })
 
   test('set', async () => {
@@ -30,6 +31,8 @@ describe('repository', () => {
       day: 12,
       primary_tag: 'tag-1',
       primary_author: 'tag-2',
+      urlPathname: '/1th-post',
+      filters: []
     }
     const result = await repository.set(resource)
     expect(result.isOk()).toBe(true)

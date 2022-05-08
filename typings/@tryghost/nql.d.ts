@@ -4,6 +4,7 @@ declare module '@tryghost/nql' {
     options?: { expansions?: { key: string; replacement: string }[] }
   ): {
     queryJSON: (obj: object) => boolean
+    parse: () => object
   }
 
   export default tpl

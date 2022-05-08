@@ -1,7 +1,7 @@
 import { idSchema, ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
+import type { GetTagQuery } from '../../.tina/__generated__/types'
 import type { Result, Get } from '../shared-kernel'
-import type { TagResource } from './resource'
 
 export const tagSchema = z
   .object({
@@ -12,8 +12,10 @@ export const tagSchema = z
   })
   .strict()
 
-export function createTag(tagData: NonNullable<Get<TagResource, 'tinaData.data.tag'>>): Result<Tag> {
-  const { id, __typename, date, ...restPageTag } = tagData
+export function createTag(
+  tagData: Get<GetTagQuery, 'tag'> & { _sys?: object }
+): Result<Tag> {
+  const { id, __typename, _sys, date, ...restPageTag } = tagData
   const tag = {
     id,
     ...restPageTag,

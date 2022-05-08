@@ -1,6 +1,5 @@
 import { ok } from '../shared-kernel'
 import repository from '../repository'
-import { format } from '../errors'
 import { parseRoutes } from '../domain/routes'
 import defaultRoutes from '../defaultRoutes'
 import { routerManager } from './routerManager'
@@ -9,28 +8,21 @@ jest.mock('../api')
 jest.mock('../redis')
 
 describe('router resolvePaths', () => {
-  beforeAll(async () => {
-    const result = await repository.collect()
-    if (result.isErr()) {
-      throw format(result.error)
-    }
-    void (await repository.getAll())
-  })
-
   describe('resolving paths', () => {
     test('empty config', async () => {
-      const router = routerManager({})
-      const result = (await router.resolvePaths())._unsafeUnwrap()
+      const routesConfig = {}
+      const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+      const router = routerManager(routesConfig)
+      const result = router.resolvePaths(resources)
       expect(result).toEqual(['/admin', '/about', '/home', '/portfolio'])
     })
 
     test('default routing config', async () => {
-      const router = routerManager(
-        parseRoutes(defaultRoutes)._unsafeUnwrap()[0]!
-      )
-      const result = await router.resolvePaths()
-      console.log(result)
-      expect(result._unsafeUnwrap()).toEqual([
+      const routesConfig = parseRoutes(defaultRoutes)._unsafeUnwrap()[0]!
+      const router = routerManager(routesConfig)
+      const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+      const result = router.resolvePaths(resources)
+      expect(result).toEqual([
         '/admin',
         '/',
         '/0th-post/',
@@ -57,7 +49,7 @@ describe('router resolvePaths', () => {
   })
 
   test('routes', async () => {
-    const router = routerManager({
+    const routesConfig = {
       routes: {
         '/features/': {
           template: 'Features',
@@ -65,19 +57,19 @@ describe('router resolvePaths', () => {
           data: {
             query: {
               firstpost: {
-                type: 'read',
-                resourceType: 'post',
+                type: 'read' as const,
+                resourceType: 'post' as const,
                 slug: '1th-post',
               },
               secondpost: {
-                type: 'read',
-                resourceType: 'post',
+                type: 'read' as const,
+                resourceType: 'post' as const,
                 slug: '2th-post',
                 redirect: false,
               },
               home: {
-                type: 'read',
-                resourceType: 'page',
+                type: 'read' as const,
+                resourceType: 'page' as const,
                 slug: 'home',
                 redirect: true,
               },
@@ -99,14 +91,14 @@ describe('router resolvePaths', () => {
           data: {
             query: {
               thirdpost: {
-                type: 'read',
-                resourceType: 'post',
+                type: 'read' as const,
+                resourceType: 'post' as const,
                 slug: '3th-post',
                 redirect: true,
               },
               tag1: {
-                type: 'read',
-                resourceType: 'tag',
+                type: 'read' as const,
+                resourceType: 'tag' as const,
                 slug: 'tag-1',
                 redirect: true,
               },
@@ -121,15 +113,20 @@ describe('router resolvePaths', () => {
       taxonomies: {
         tag: {
           permalink: '/tag/:slug',
+          filter: "tags:'%s'" as const,
           limit: 5,
         },
         author: {
           permalink: '/author/:slug',
+          filter: "authors:'%s'" as const,
           limit: 5,
         },
       },
-    })
-    expect((await router.resolvePaths())._unsafeUnwrap()).toEqual([
+    }
+    const router = routerManager(routesConfig)
+    const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+    const result = router.resolvePaths(resources)
+    expect(result).toEqual([
       '/admin',
       '/features/',
       '/',
@@ -152,16 +149,19 @@ describe('router resolvePaths', () => {
   })
 
   test('routes#channel', async () => {
-    const router = routerManager({
+    const routesConfig = {
       routes: {
         '/features/': {
-          controller: 'channel',
+          controller: 'channel' as const,
           filter: 'primary_tag:-tag-1',
           limit: 5,
         },
       },
-    })
-    expect((await router.resolvePaths())._unsafeUnwrap()).toEqual([
+    }
+    const router = routerManager(routesConfig)
+    const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+    const result = router.resolvePaths(resources)
+    expect(result).toEqual([
       '/admin',
       '/features/',
       '/features/page/1',
@@ -172,7 +172,7 @@ describe('router resolvePaths', () => {
   })
 
   test('collections', async () => {
-    const router = routerManager({
+    const routesConfig = {
       collections: {
         '/': {
           permalink: '/:slug/',
@@ -189,9 +189,11 @@ describe('router resolvePaths', () => {
           order: undefined,
         },
       },
-    })
-    const paths = await router.resolvePaths()
-    expect(paths._unsafeUnwrap()).toEqual([
+    }
+    const router = routerManager(routesConfig)
+    const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+    const result = router.resolvePaths(resources)
+    expect(result).toEqual([
       '/admin',
       '/',
       '/3th-post/',
@@ -214,21 +216,25 @@ describe('router resolvePaths', () => {
   })
 
   test('taxonomies', async () => {
-    const router = routerManager({
+    const routesConfig = {
       taxonomies: {
         tag: {
           permalink: '/category-1/:slug',
+          filter: "tags:'%s'" as const,
           limit: 5,
         },
         author: {
           permalink: '/category-2/:slug',
+          filter: "authors:'%s'" as const,
           limit: 5,
         },
       },
-    })
-    const paths = (await router.resolvePaths())._unsafeUnwrap()
-    expect(paths).toContain('/category-2/napolean')
-    expect(paths).toContain('/category-2/pedro')
+    }
+    const router = routerManager(routesConfig)
+    const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+    const result = router.resolvePaths(resources)
+    expect(result).toContain('/category-2/napolean')
+    expect(result).toContain('/category-2/pedro')
   })
 })
 
@@ -258,10 +264,12 @@ describe('router contexts', () => {
       taxonomies: {
         tag: {
           permalink: '/category-1/:slug',
+          filter: "tags:'%s'" as const,
           limit: 5,
         },
         author: {
           permalink: '/category-2/:slug',
+          filter: "authors:'%s'" as const,
           limit: 5,
         },
       },
@@ -275,7 +283,7 @@ describe('router contexts', () => {
           name: 'author',
           templates: [],
           data: undefined,
-          filter: "tags:'pedro'",
+          filter: "authors:'pedro'",
           limit: 5,
           order: undefined,
           request: {
@@ -303,10 +311,12 @@ describe('router contexts', () => {
       taxonomies: {
         tag: {
           permalink: '/tag/:slug',
+          filter: "tags:'%s'" as const,
           limit: 5,
         },
         author: {
           permalink: '/author/:slug',
+          filter: "authors:'%s'" as const,
           limit: 5,
         },
       },
@@ -342,7 +352,7 @@ describe('router contexts', () => {
           name: 'author',
           data: undefined,
           templates: [],
-          filter: "tags:'pedro'",
+          filter: "authors:'pedro'",
           limit: 5,
           order: undefined,
           request: {
@@ -410,10 +420,12 @@ describe('router contexts', () => {
       taxonomies: {
         tag: {
           permalink: '/tag/:slug',
+          filter: "tags:'%s'" as const,
           limit: 5,
         },
         author: {
           permalink: '/author/:slug',
+          filter: "authors:'%s'" as const,
           limit: 5,
         },
       },

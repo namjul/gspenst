@@ -197,27 +197,40 @@ const collection = z
 
 export type Collection = z.infer<typeof collection>
 
-const taxonomySchema = z.object({
+const tagFilterSchema = z.literal("tags:'%s'")
+const tagSchema = z.object({
   permalink: permalinkSchema,
   limit: limitSchema,
+  filter: tagFilterSchema,
+})
+const authorFilterSchema = z.literal("authors:'%s'")
+const authorSchema = z.object({
+  permalink: permalinkSchema,
+  limit: limitSchema,
+  filter: authorFilterSchema,
 })
 
+const taxonomySchema = z.union([tagSchema, authorSchema])
+
+export type Taxonomy = z.infer<typeof taxonomySchema>
+
+// TODO allow only strings
 const taxonomies = z
   .object({
     tag: z.preprocess((value) => {
       return {
         permalink: value,
+        filter: tagFilterSchema.value,
       }
-    }, taxonomySchema),
+    }, tagSchema),
     author: z.preprocess((value) => {
       return {
         permalink: value,
+        filter: authorFilterSchema.value,
       }
-    }, taxonomySchema),
+    }, authorSchema),
   })
   .strict()
-
-export type Taxonomy = z.infer<typeof taxonomySchema>
 
 const routesSchema = z
   .object({

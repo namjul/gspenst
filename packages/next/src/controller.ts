@@ -13,7 +13,7 @@ import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared-kernel'
 import * as Errors from './errors'
 import { do_, absurd } from './utils'
-import type { ThemeContext } from './domain/theming';
+import type { ThemeContext } from './domain/theming'
 
 // export type PageProps =
 //   | {

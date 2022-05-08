@@ -2,7 +2,7 @@ import { ok } from '../shared-kernel'
 import type { Result, Option } from '../shared-kernel'
 import { pathToRegexp } from '../helpers'
 import type { RoutingContext, Request } from '../domain/routing'
-import type { ResourceMinimal } from '../domain/resource'
+import type { Resource } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class StaticPagesRouter extends ParentRouter {
@@ -48,7 +48,7 @@ class StaticPagesRouter extends ParentRouter {
     }
   }
 
-  resolvePaths(routers: ParentRouter[], resources: ResourceMinimal[]) {
+  resolvePaths(routers: ParentRouter[], resources: Resource[]) {
     return resources.flatMap((resource) => {
       if (resource.resourceType !== 'page') {
         return []
@@ -62,7 +62,7 @@ class StaticPagesRouter extends ParentRouter {
       ) {
         return []
       }
-      return resource.urlPathname
+      return resource.urlPathname ?? []
     })
   }
 }

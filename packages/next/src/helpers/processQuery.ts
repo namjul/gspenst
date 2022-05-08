@@ -10,8 +10,7 @@ import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
-import type { QueryOutcomeRead, QueryOutcomeBrowse } from '../domain/theming';
-import { makeNqlFilter } from './index';
+import type { QueryOutcomeRead, QueryOutcomeBrowse } from '../domain/theming'
 
 const enrichResource = (resource: Resource) => {
   return do_(() => {
@@ -76,13 +75,20 @@ export function processQuery(
         return repository
           .findAll(query.resourceType)
           .andThen((resources) => {
-            return combine(resources.map(enrichResource))
+            return combine(
+              resources.flatMap((resource) => {
+                if (query.filter) {
+                  console.log(resource.filters);
+                  if (resource.filters?.includes(query.filter)) {
+                    return enrichResource(resource)
+                  }
+                  return []
+                }
+                return enrichResource(resource)
+              })
+            )
           })
           .andThen((enrichedResources) => {
-            const nqlFilter = query.filter
-              ? makeNqlFilter(query.filter)
-              : () => ok(true)
-
             return combine(
               // TODO move into repo#collect
               enrichedResources.flatMap((resource) => {
@@ -106,13 +112,7 @@ export function processQuery(
                   return err(entity.error)
                 }
 
-                const filterResult = nqlFilter(entity.value)
-                if (filterResult.isErr()) {
-                  return err(filterResult.error)
-                }
-                return filterResult.isOk() && filterResult.value
-                  ? ok({ resource, entity: entity.value })
-                  : []
+                return ok({ resource, entity: entity.value })
               })
             )
           })

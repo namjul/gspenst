@@ -2,6 +2,8 @@ import { z } from '../shared-kernel'
 import { dynamicVariablesSchema, resourceTypeSchema } from './resource'
 import { queryFilterOptions, dataQuery } from './routes'
 
+// TODO rename to routerContext?
+
 const redirectSchema = z.object({
   destination: z.string(),
   permanent: z.boolean(),

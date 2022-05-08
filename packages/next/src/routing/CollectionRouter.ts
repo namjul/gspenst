@@ -5,7 +5,7 @@ import { ok, combine } from '../shared-kernel'
 import type { Result, Option, ID } from '../shared-kernel'
 import type { RoutingContext, Request } from '../domain/routing'
 import type { Collection } from '../domain/routes'
-import type { ResourceMinimal } from '../domain/resource'
+import type { Resource } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class CollectionRouter extends ParentRouter {
@@ -105,39 +105,46 @@ class CollectionRouter extends ParentRouter {
     }
   }
 
-  resolvePaths(routers: ParentRouter[], resources: ResourceMinimal[]) {
-    const postResource = resources.filter(
-      (resource) => resource.resourceType === 'post'
+  resolvePaths(routers: ParentRouter[], resources: Resource[]) {
+    const postResources = resources.filter(
+      (resource) =>
+        resource.resourceType === 'post' &&
+        (this.config.filter
+          ? resource.filters?.includes(this.config.filter)
+          : true)
     )
-    const paths = postResource.flatMap((resource) => {
-      if (
-        this.respectDominantRouter(
-          routers,
-          resource.resourceType,
-          resource.slug
-        )
-      ) {
-        return []
-      }
+    const paths = [this.getRoute()]
+      .concat(
+        postResources.flatMap((resource) => {
+          if (
+            this.respectDominantRouter(
+              routers,
+              resource.resourceType,
+              resource.slug
+            )
+          ) {
+            return []
+          }
 
-      if (!this.postSet.has(resource.id)) {
-        this.postSet.add(resource.id)
-        return resource.urlPathname
-      }
-      return []
-    }).concat(this.getRoute())
-    .concat(
-      ...Array.from(
-      {
-        length:
-          postResource.length /
-          (this.config.limit === 'all' ? 1 : this.config.limit),
-      },
-      (_, i) => {
-        return (path.join(this.getRoute(), 'page', String(i + 1)))
-      }
-    )
-    )
+          if (!this.postSet.has(resource.id)) {
+            this.postSet.add(resource.id)
+            return resource.urlPathname ?? []
+          }
+          return []
+        })
+      )
+      .concat(
+        ...Array.from(
+          {
+            length:
+              postResources.length /
+              (this.config.limit === 'all' ? 1 : this.config.limit),
+          },
+          (_, i) => {
+            return path.join(this.getRoute(), 'page', String(i + 1))
+          }
+        )
+      )
 
     return paths
   }

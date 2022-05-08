@@ -5,7 +5,7 @@ import type { Data } from '../domain/routes'
 import type {
   ResourceType,
   DynamicVariables,
-  ResourceMinimal,
+  Resource,
 } from '../domain/resource'
 
 class ParentRouter {
@@ -102,7 +102,7 @@ class ParentRouter {
 
   resolvePaths(
     _routers: ParentRouter[],
-    _resources: ResourceMinimal[]
+    _resources: Resource[]
   ): string[] {
     return []
   }

@@ -1,12 +1,12 @@
 import path from 'path'
 import type { Key } from 'path-to-regexp'
-import { compilePermalink, pathToRegexp } from '../helpers'
-import { ok, combine } from '../shared-kernel'
+import { pathToRegexp } from '../helpers'
+import { ok } from '../shared-kernel'
 import type { Result, Option } from '../shared-kernel'
 import type { RoutingContext, Request } from '../domain/routing'
 import type { Taxonomy } from '../domain/routes'
 import type { Taxonomies } from '../domain/taxonomy'
-import type { ResourceMinimal } from '../domain/resource'
+import type { Resource } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class TaxonomyRouter extends ParentRouter {
@@ -63,16 +63,17 @@ class TaxonomyRouter extends ParentRouter {
       },
       templates: [],
       data: this.data?.query,
-      filter: `${this.taxonomyKey}:'${params?.slug ?? '%s'}'`,
+      filter: params?.slug ? this.#replaceFilter(params.slug) : undefined,
       limit: this.config.limit,
     }
   }
 
-  resolvePaths(routers: ParentRouter[], resources: ResourceMinimal[]) {
-    const postResource = resources.filter(
-      (resource) => resource.resourceType === 'post'
-    )
-    const paths = postResource
+  #replaceFilter(slug: string) {
+    return this.config.filter.replace(/%s/g, slug)
+  }
+
+  resolvePaths(routers: ParentRouter[], resources: Resource[]) {
+    const paths = resources
       .flatMap((resource) => {
         if (resource.resourceType !== this.taxonomyKey) {
           return []
@@ -87,20 +88,31 @@ class TaxonomyRouter extends ParentRouter {
         ) {
           return []
         }
-        return resource.urlPathname
-      })
-      .concat(
-        ...Array.from(
-          {
-            length:
-              postResource.length /
-              (this.config.limit === 'all' ? 1 : this.config.limit),
-          },
-          (_, i) => {
-            return path.join(this.config.permalink, 'page', String(i + 1))
-          }
+
+        const postResources = resources.filter(
+          (_resource) =>
+            _resource.resourceType === 'post' &&
+            _resource.filters?.includes(this.#replaceFilter(resource.slug))
         )
-      )
+
+        const { urlPathname } = resource
+
+        if (urlPathname) {
+          const pagesPathnames = Array.from(
+            {
+              length:
+                postResources.length /
+                (this.config.limit === 'all' ? 1 : this.config.limit),
+            },
+            (_, i) => {
+              return path.join(urlPathname, 'page', String(i + 1))
+            }
+          )
+          return [urlPathname, ...pagesPathnames]
+        }
+
+        return []
+      })
 
     return paths
   }
