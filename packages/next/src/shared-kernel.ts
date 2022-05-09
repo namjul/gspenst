@@ -33,6 +33,14 @@ export const idSchema = z
   .transform(
     (value) => (typeof value === 'string' ? stringHash(value) : value) as ID
   )
+export const dateSchema = z.string().refine(
+  (value) => {
+    return !isNaN(Date.parse(value))
+  },
+  {
+    message: 'Invalid date format',
+  }
+)
 
 export const slugSchema = z.string().transform((value) => slugify(value))
 
@@ -52,6 +60,11 @@ export type {
   Get,
   SetOptional,
 }
+export type ValidateShape<T, Shape> = T extends Shape
+  ? Exclude<keyof T, keyof Shape> extends never
+    ? T
+    : never
+  : never
 
 /* --- MDX --- */
 

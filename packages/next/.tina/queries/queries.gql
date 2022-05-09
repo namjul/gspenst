@@ -44,9 +44,11 @@ query getResources {
             }
           }
           ... on Page {
+            title
             slug
             date
             tags {
+              __typename
               tag {
                 ... on Document {
                   _sys {
@@ -54,11 +56,12 @@ query getResources {
                   }
                 }
                 ... on Tag {
-                  slug
+                  ...TagFragment
                 }
               }
             }
             authors {
+              __typename
               author {
                 ... on Document {
                   _sys {
@@ -66,7 +69,7 @@ query getResources {
                   }
                 }
                 ... on Author {
-                  slug
+                  ...AuthorFragment
                 }
               }
             }

@@ -1,5 +1,11 @@
 import { z } from '../shared-kernel'
-import { resourceSchema } from './resource'
+import {
+  resourceSchema,
+  postResourceSchema,
+  pageResourceSchema,
+  authorResourceSchema,
+  tagResourceSchema,
+} from './resource'
 import { limitSchema } from './routes'
 
 const paginationSchema = z.object({
@@ -44,55 +50,68 @@ const themeContextBaseSchema = z.object({
 const postThemeContext = themeContextBaseSchema.merge(
   z.object({
     context: z.literal('post'),
+    // resource: postResourceSchema,
   })
 )
 
 const pageThemeContext = themeContextBaseSchema.merge(
   z.object({
     context: z.literal('page'),
+    // resource: pageResourceSchema,
   })
 )
 
 const authorThemeContext = themeContextBaseSchema.merge(
   z.object({
     context: z.literal('author'),
+    // resource: authorResourceSchema,
   })
 )
 
 const tagThemeContext = themeContextBaseSchema.merge(
   z.object({
     context: z.literal('tag'),
+    // resource: tagResourceSchema,
   })
 )
 
 const indexThemeContext = themeContextBaseSchema.merge(
   z.object({
     context: z.literal('index'),
+    // resource: configResourceSchema,
+    // resources: z.array(resourceSchema),
+    // pagination: paginationSchema,
   })
 )
 
 const homeThemeContext = themeContextBaseSchema.merge(
   z.object({
     context: z.literal('home'),
+    // resource: configResourceSchema,
+    // resources: z.array(resourceSchema),
+    // pagination: paginationSchema,
   })
 )
 
 const pagesThemeContext = themeContextBaseSchema.merge(
   z.object({
     context: z.literal('pages'),
+    // resource: configResourceSchema,
+    // resources: z.array(resourceSchema),
+    // pagination: paginationSchema,
   })
 )
 
 const customThemeContext = themeContextBaseSchema.merge(
   z.object({
     context: z.literal(null),
+    // resource: configResourceSchema,
   })
 )
 
 const internalThemeContext = z.object({
   context: z.literal('internal'),
 })
-
 
 // TODO rename file to themeContext?
 export const themeContext = z.discriminatedUnion('context', [
@@ -106,6 +125,5 @@ export const themeContext = z.discriminatedUnion('context', [
   customThemeContext,
   internalThemeContext,
 ])
-
 
 export type ThemeContext = z.infer<typeof themeContext>

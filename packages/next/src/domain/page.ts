@@ -12,12 +12,10 @@ export type Page = z.infer<typeof pageSchema>
 
 export function createPage(pageData: Get<GetPageQuery, 'page'> & { _sys?: object }): Result<Page> {
   const {
-    id,
     __typename,
     _sys,
     tags: rawTags,
     authors: rawAuthors,
-    date,
     ...restPageProps
   } = pageData
 
@@ -41,9 +39,7 @@ export function createPage(pageData: Get<GetPageQuery, 'page'> & { _sys?: object
 
   return combine([tagsResult, authorsResult]).andThen(([tags, authors]) => {
     const page = {
-      id,
       ...restPageProps,
-      date: new Date(date),
       tags,
       authors,
       primary_tag: tags?.[0],

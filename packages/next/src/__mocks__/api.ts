@@ -9,6 +9,389 @@ import type {
   GetConfigQuery,
 } from '../../.tina/__generated__/types'
 
+const mapPost = (relativePath: string) =>
+  ({
+    '0th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          title: '0th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '0th-post',
+          date: '2021-07-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+        },
+      },
+    },
+    '1th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          title: '1th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '1th-post',
+          date: '2021-01-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+        },
+      },
+    },
+    '2th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          title: '2th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '2th-post',
+          date: '2021-02-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+        },
+      },
+    },
+    '3th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          title: '3th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '3th-post',
+          date: '2021-03-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+
+          tags: [
+            {
+              __typename: 'PostTags' as const,
+              tag: {
+                __typename: 'Tag' as const,
+                id: 'content/tags/tag-1.mdx',
+                name: 'Tag 1',
+                date: '2021-07-03T20:30:00.000Z',
+                slug: 'tag-1',
+              },
+            },
+          ],
+          authors: [
+            {
+              __typename: 'PostAuthors' as const,
+              author: {
+                __typename: 'Author' as const,
+                id: 'content/authors/pedro.mdx',
+                name: 'Pedro',
+                date: '2021-07-03T20:30:00.000Z',
+                slug: 'pedro',
+              },
+            },
+          ],
+        },
+      },
+    },
+    '4th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          title: '4th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '4th-post',
+          date: '2021-07-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+        },
+      },
+    },
+    '5th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          title: '5th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '5th-post',
+          date: '2021-07-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+        },
+      },
+    },
+    '6th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          title: '6th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '6th-post',
+          date: '2021-07-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+        },
+      },
+    },
+    '7th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          tags: [
+            {
+              __typename: 'PostTags' as const,
+              tag: {
+                __typename: 'Tag' as const,
+                id: 'content/tags/tag-1.mdx',
+                name: 'Tag 1',
+                date: '2021-07-03T20:30:00.000Z',
+                slug: 'tag-1',
+              },
+            },
+          ],
+          authors: [
+            {
+              __typename: 'PostAuthors' as const,
+              author: {
+                __typename: 'Author' as const,
+                id: 'content/authors/pedro.mdx',
+                name: 'Pedro',
+                date: '2021-07-03T20:30:00.000Z',
+                slug: 'pedro',
+              },
+            },
+          ],
+          title: '7th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '7th-post',
+          date: '2021-07-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+        },
+      },
+    },
+    '8th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          title: '8th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '8th-post',
+          date: '2021-07-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+        },
+      },
+    },
+    '9th-post.mdx': {
+      data: {
+        config: {
+          id: 'content/config/index.json',
+          darkMode: true,
+        },
+        post: {
+          __typename: 'Post' as const,
+          id: `content/posts/${relativePath}`,
+          title: '9th Post',
+          excerpt: {
+            type: 'root',
+            children: [
+              {
+                type: 'p',
+                children: [
+                  {
+                    type: 'text',
+                    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
+                  },
+                ],
+              },
+            ],
+          },
+          slug: '9th-post',
+          date: '2021-07-03T20:30:00.000Z',
+          content: {
+            type: 'root',
+            children: [],
+          },
+        },
+      },
+    },
+  }[relativePath]!)
+
 type ApiResultAsync<T> = ResultAsync<T>
 
 export const getResources = (): ApiResultAsync<{
@@ -65,6 +448,7 @@ export const getResources = (): ApiResultAsync<{
                     relativePath: 'about.mdx',
                     extension: '.mdx',
                   },
+                  title: 'about',
                   slug: 'about',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: null,
@@ -84,6 +468,7 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: 'home',
+                  title: 'Home',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
@@ -102,6 +487,7 @@ export const getResources = (): ApiResultAsync<{
                     extension: '.mdx',
                   },
                   slug: 'portfolio',
+                  title: 'Portfolio',
                   date: '2021-07-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
@@ -156,7 +542,7 @@ export const getResources = (): ApiResultAsync<{
                   title: '1th Post',
                   excerpt: '',
                   content: '',
-                  date: '2021-07-03T20:30:00.000Z',
+                  date: '2021-01-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
                 },
@@ -177,7 +563,7 @@ export const getResources = (): ApiResultAsync<{
                   title: '2th Post',
                   excerpt: '',
                   content: '',
-                  date: '2021-07-03T20:30:00.000Z',
+                  date: '2021-02-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
                 },
@@ -198,7 +584,7 @@ export const getResources = (): ApiResultAsync<{
                   title: '3th Post',
                   excerpt: '',
                   content: '',
-                  date: '2021-07-03T20:30:00.000Z',
+                  date: '2021-03-03T20:30:00.000Z',
                   tags: [
                     {
                       __typename: 'PostTags',
@@ -305,7 +691,7 @@ export const getResources = (): ApiResultAsync<{
                   title: '6th Post',
                   excerpt: '',
                   content: '',
-                  date: '2021-07-12T07:00:00.000Z',
+                  date: '2021-07-03T20:30:00.000Z',
                   tags: null,
                   authors: null,
                 },
@@ -520,389 +906,7 @@ export const getPost = ({
 }: {
   relativePath: string
 }): ApiResultAsync<{ data: GetPostQuery }> => {
-  return okAsync(
-    {
-      '0th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            title: '0th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '0th-post',
-            date: '2021-07-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-          },
-        },
-      },
-      '1th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            title: '1th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '1th-post',
-            date: '2021-01-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-          },
-        },
-      },
-      '2th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            title: '2th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '2th-post',
-            date: '2021-02-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-          },
-        },
-      },
-      '3th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            title: '3th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '3th-post',
-            date: '2021-03-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-
-            tags: [
-              {
-                __typename: 'PostTags' as const,
-                tag: {
-                  __typename: 'Tag' as const,
-                  id: 'content/tags/tag-1.mdx',
-                  name: 'Tag 1',
-                  date: '2021-07-03T20:30:00.000Z',
-                  slug: 'tag-1',
-                },
-              },
-            ],
-            authors: [
-              {
-                __typename: 'PostAuthors' as const,
-                author: {
-                  __typename: 'Author' as const,
-                  id: 'content/authors/pedro.mdx',
-                  name: 'Pedro',
-                  date: '2021-07-03T20:30:00.000Z',
-                  slug: 'pedro',
-                },
-              },
-            ],
-          },
-        },
-      },
-      '4th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            title: '4th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '4th-post',
-            date: '2021-07-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-          },
-        },
-      },
-      '5th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            title: '5th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '5th-post',
-            date: '2021-07-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-          },
-        },
-      },
-      '6th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            title: '6th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '6th-post',
-            date: '2021-07-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-          },
-        },
-      },
-      '7th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            tags: [
-              {
-                __typename: 'PostTags' as const,
-                tag: {
-                  __typename: 'Tag' as const,
-                  id: 'content/tags/tag-1.mdx',
-                  name: 'Tag 1',
-                  date: '2021-07-03T20:30:00.000Z',
-                  slug: 'tag-1',
-                },
-              },
-            ],
-            authors: [
-              {
-                __typename: 'PostAuthors' as const,
-                author: {
-                  __typename: 'Author' as const,
-                  id: 'content/authors/pedro.mdx',
-                  name: 'Pedro',
-                  date: '2021-07-03T20:30:00.000Z',
-                  slug: 'pedro',
-                },
-              },
-            ],
-            title: '7th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '7th-post',
-            date: '2021-07-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-          },
-        },
-      },
-      '8th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            title: '8th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '8th-post',
-            date: '2021-07-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-          },
-        },
-      },
-      '9th-post.mdx': {
-        data: {
-          config: {
-            id: 'content/config/index.json',
-            darkMode: true,
-          },
-          post: {
-            __typename: 'Post' as const,
-            id: `content/posts/${relativePath}`,
-            title: '9th Post',
-            excerpt: {
-              type: 'root',
-              children: [
-                {
-                  type: 'p',
-                  children: [
-                    {
-                      type: 'text',
-                      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.',
-                    },
-                  ],
-                },
-              ],
-            },
-            slug: '9th-post',
-            date: '2021-07-03T20:30:00.000Z',
-            content: {
-              type: 'root',
-              children: [],
-            },
-          },
-        },
-      },
-    }[relativePath]!
-  )
+  return okAsync(mapPost(relativePath))
 }
 
 export const getPage = (): ApiResultAsync<{ data: GetPageQuery }> => {

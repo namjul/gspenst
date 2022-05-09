@@ -6,7 +6,15 @@ jest.mock('../api')
 jest.mock('../redis')
 
 beforeAll(async () => {
-  const result = await repository.collect()
+  const result = await repository.collect({
+    collections: {
+      '/': {
+        permalink: '/:slug',
+        filter: 'slug:-8th-post',
+        limit: 5,
+      },
+    },
+  })
   if (result.isErr()) {
     throw format(result.error)
   }
@@ -82,12 +90,12 @@ describe('processQuery', () => {
         type: 'browse' as const,
         resourceType: 'post' as const,
         limit: 3,
-        order: [{ field: 'date', order: 'desc' as const }],
+        order: [{ field: 'date', order: 'asc' as const }],
       }
 
       const result = (await processQuery(query))._unsafeUnwrap()
       expect(result.resources).toHaveLength(3)
-      expect(result).toHaveProperty('resources[0].slug', '9th-post')
+      expect(result).toHaveProperty('resources[0].slug', '1th-post')
     })
   })
 })

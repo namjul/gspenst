@@ -1,4 +1,4 @@
-import { idSchema, ok, err, z, combine } from '../shared-kernel'
+import { idSchema, dateSchema, ok, err, z, combine } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { Result, Get } from '../shared-kernel'
 import type { GetPostQuery } from '../../.tina/__generated__/types'
@@ -8,7 +8,7 @@ import { tagSchema, createTag } from './tag'
 export const postSchema = z
   .object({
     id: idSchema,
-    date: z.date(),
+    date: dateSchema,
     slug: z.string(),
     title: z.string(),
     excerpt: z.custom().optional(),
@@ -30,10 +30,8 @@ export function createPost(
   const {
     __typename,
     _sys,
-    id,
     tags: rawTags,
     authors: rawAuthors,
-    date,
     ...restPostProps
   } = postData
 
@@ -57,9 +55,7 @@ export function createPost(
 
   return combine([tagsResult, authorsResult]).andThen(([tags, authors]) => {
     const post = {
-      id,
       ...restPostProps,
-      date: new Date(date),
       tags,
       authors,
       primary_tag: tags?.[0],

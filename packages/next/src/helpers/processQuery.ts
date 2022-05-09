@@ -78,7 +78,6 @@ export function processQuery(
             return combine(
               resources.flatMap((resource) => {
                 if (query.filter) {
-                  console.log(resource.filters);
                   if (resource.filters?.includes(query.filter)) {
                     return enrichResource(resource)
                   }

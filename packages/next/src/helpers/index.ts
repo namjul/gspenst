@@ -24,6 +24,7 @@ export function compilePermalink(
     // TODO use Result.fromThrowable https://github.com/supermacro/neverthrow#resultfromthrowable-static-class-method
     return ok(compile(permalink)(dynamicVariables))
   } catch (error: unknown) {
+    console.log(permalink, dynamicVariables, error);
     return err(
       Errors.other(
         '`path-to-regexp`#compile',

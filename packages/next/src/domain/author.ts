@@ -1,4 +1,4 @@
-import { idSchema, ok, err, z } from '../shared-kernel'
+import { idSchema, dateSchema, ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { GetAuthorQuery } from '../../.tina/__generated__/types'
 import type { Result, Get } from '../shared-kernel'
@@ -7,7 +7,7 @@ export const authorSchema = z
   .object({
     id: idSchema,
     name: z.string(),
-    date: z.date(),
+    date: dateSchema,
     slug: z.string(),
   })
   .strict()
@@ -15,12 +15,10 @@ export const authorSchema = z
 export function createAuthor(
   authorData: Get<GetAuthorQuery, 'author'> & { _sys?: object }
 ): Result<Author> {
-  const { id, __typename, _sys, date, ...restPageAuthor } = authorData
+  const { __typename, _sys, ...restPageAuthor } = authorData
 
   const author = {
-    id,
     ...restPageAuthor,
-    date: new Date(date),
   }
 
   const result = authorSchema.safeParse(author)

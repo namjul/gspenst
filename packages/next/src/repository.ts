@@ -1,21 +1,10 @@
-import { ok, err, okAsync, errAsync, combine } from './shared-kernel'
+import { okAsync, errAsync, combine } from './shared-kernel'
 import db from './db'
-import type {
-  ResourceType,
-  Resource,
-  ResourcesNode,
-  DynamicVariables,
-} from './domain/resource'
+import type { ResourceType, Resource } from './domain/resource'
 import type { RoutesConfig } from './domain/routes'
-import type { Post } from './domain/post'
-import { getCollections, getRoutes } from './domain/routes'
-import { createResource, createDynamicVariables } from './domain/resource'
-import { createPost } from './domain/post'
-import type { ID, Result, ResultAsync } from './shared-kernel'
+import type { ID, ResultAsync } from './shared-kernel'
 import * as Errors from './errors'
-import * as api from './api'
-import { makeNqlFilter, compilePermalink } from './helpers'
-import { do_ } from './utils'
+import { collect } from './collect'
 
 type RepoResultAsync<T> = ResultAsync<T>
 
@@ -31,169 +20,14 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
 
 const repository = {
   collect(routesConfig: RoutesConfig = {}): RepoResultAsync<Resource[]> {
-    return combine([db.clear(), api.getResources()])
-      .map((results) => {
-        return results.flatMap((collectionResources) => {
-          if (collectionResources === 'OK') {
-            return []
-          }
-          return collectionResources.data.collections.flatMap((collection) => {
-            return (collection.documents.edges ?? []).flatMap(
-              (collectionEdge) => {
-                if (collectionEdge?.node) {
-                  return collectionEdge.node.__typename === 'Config'
-                    ? []
-                    : collectionEdge.node
-                }
-                return []
-              }
-            )
-          })
+    return collect(routesConfig).andThen((resources) => {
+      const p = resources.map((resource) => {
+        return this.set(resource).map(() => {
+          return resource
         })
       })
-      .andThen((nodes) => {
-        return combine(
-          nodes.reduce<
-            Result<
-              | Resource
-              | {
-                  dynamicVariables: DynamicVariables
-                  post: Post
-                  node: ResourcesNode
-                }
-            >[]
-          >((acc, current) => {
-            const dynamicVariablesResult = createDynamicVariables(current)
-            if (dynamicVariablesResult.isErr()) {
-              acc.push(err(dynamicVariablesResult.error))
-              return acc
-            }
-            if (current.__typename === 'Post') {
-              const postResult = createPost(current)
-              if (postResult.isErr()) {
-                acc.push(err(postResult.error))
-                return acc
-              }
-              acc.push(
-                ok({
-                  dynamicVariables: dynamicVariablesResult.value,
-                  node: current,
-                  post: postResult.value,
-                })
-              )
-            } else {
-              const urlPathname = do_(() => {
-                if (current.__typename === 'Page') {
-                  return `/${dynamicVariablesResult.value.slug}`
-                } else {
-                  const taxonomyEntry =
-                    current.__typename === 'Author'
-                      ? routesConfig.taxonomies?.author
-                      : routesConfig.taxonomies?.tag
-                  if (taxonomyEntry) {
-                    const permalinkResult = compilePermalink(
-                      taxonomyEntry.permalink,
-                      dynamicVariablesResult.value
-                    )
-                    if (permalinkResult.isErr()) {
-                      acc.push(err(permalinkResult.error))
-                    } else {
-                      return permalinkResult.value
-                    }
-                  } else {
-                    return undefined
-                  }
-                }
-              })
-              acc.push(createResource(current, urlPathname))
-            }
-            return acc
-          }, [])
-        ).andThen((maybeResources) => {
-          const routesFilters = [
-            ...getRoutes(routesConfig).flatMap(
-              ([_, route]) => route.filter ?? []
-            ),
-            ...maybeResources.flatMap((maybeResource) => {
-              if (
-                'resourceType' in maybeResource &&
-                (maybeResource.resourceType === 'tag' ||
-                  maybeResource.resourceType === 'author')
-              ) {
-                const taxonomyRoute =
-                  routesConfig.taxonomies?.[maybeResource.resourceType]
-                return taxonomyRoute
-                  ? taxonomyRoute.filter.replace(/%s/g, maybeResource.slug)
-                  : []
-              }
-              return []
-            }),
-          ]
-
-          return combine(
-            maybeResources.flatMap((maybeResource) => {
-              if ('post' in maybeResource) {
-                const collectionEntry = getCollections(routesConfig).find(
-                  ([_, collection]) => {
-                    const nqlFilter = collection.filter
-                      ? makeNqlFilter(collection.filter)
-                      : () => ok(true)
-
-                    const nqlFilterResult = nqlFilter(maybeResource.post)
-                    if (nqlFilterResult.isErr()) {
-                      return false
-                    }
-                    return nqlFilterResult.value
-                  }
-                )
-                const matchingFilter = routesFilters.filter((routeFilter) => {
-                  const nqlFilter = makeNqlFilter(routeFilter)
-                  const nqlFilterResult = nqlFilter(maybeResource.post)
-                  if (nqlFilterResult.isErr()) {
-                    return false
-                  }
-                  return nqlFilterResult.value
-                })
-
-                // if post is part of a collection
-                if (collectionEntry) {
-                  const [ignored, { permalink, filter }] = collectionEntry
-                  const permalinkResult = compilePermalink(
-                    permalink,
-                    maybeResource.dynamicVariables
-                  )
-                  if (permalinkResult.isErr()) {
-                    return err(permalinkResult.error)
-                  }
-                  return createResource(
-                    maybeResource.node,
-                    permalinkResult.value,
-                    matchingFilter.concat(filter ? filter : [])
-                  )
-                }
-
-                // post is not part of a collection
-                const urlPathname = undefined
-                return createResource(
-                  maybeResource.node,
-                  urlPathname,
-                  matchingFilter
-                )
-              }
-
-              return ok(maybeResource)
-            })
-          )
-        })
-      })
-      .andThen((resources) => {
-        const p = resources.map((resource) => {
-          return this.set(resource).map(() => {
-            return resource
-          })
-        })
-        return combine(p)
-      })
+      return combine(p)
+    })
   },
 
   set(resource: Resource) {
