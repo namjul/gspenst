@@ -16,11 +16,15 @@ import type { Result, ResultAsync } from './shared-kernel'
 import * as api from './api'
 import { makeNqlFilter, compilePermalink } from './helpers'
 import { do_ } from './utils'
+import { createLogger } from './logger'
+
+const log = createLogger('collect')
 
 export function collect(
   routesConfig: RoutesConfig = {}
 ): ResultAsync<Resource[]> {
-  const x = combine([db.clear(), api.getResources()])
+  log('start')
+  const result = combine([db.clear(), api.getResources()])
     .map((results) => {
       return results.flatMap((collectionResources) => {
         if (collectionResources === 'OK') {
@@ -162,6 +166,7 @@ export function collect(
 
         return acc
       }, [])
+
       return combine(resourceResultList).andThen((resources) => {
         const collectionFilters = [
           ...resources.flatMap(({ resource }) => {
@@ -258,6 +263,7 @@ export function collect(
                 urlPathname = permalinkResult.value
               }
             }
+
             return ok({
               ...resource,
               urlPathname,
@@ -267,6 +273,10 @@ export function collect(
         )
       })
     })
+    .map((x) => {
+      log('end')
+      return x
+    })
 
-  return x
+  return result
 }
