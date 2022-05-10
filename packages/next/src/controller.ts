@@ -8,7 +8,8 @@ import type {
   Redirect,
 } from './domain/routing'
 import type { DataQuery } from './domain/routes'
-import { processQuery } from './helpers/processQuery'
+import { createLoaders, processQuery } from './helpers/processQuery'
+import type { DataLoaders } from './helpers/processQuery'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared-kernel'
 import * as Errors from './errors'
@@ -34,7 +35,8 @@ type ControllerResult<T> = Result<T>
 type ControllerResultAsync<T> = ResultAsync<T>
 
 async function entryController(
-  routingContext: EntryRoutingContext
+  routingContext: EntryRoutingContext,
+  dataLoaders: DataLoaders
 ): Promise<ControllerResult<PageProps>> {
   const { resourceType, request } = routingContext
   const query: DataQuery = {
@@ -45,7 +47,7 @@ async function entryController(
     redirect: false,
   }
 
-  return (await processQuery(query)).map((entry) => {
+  return (await processQuery(query, dataLoaders)).map((entry) => {
     return {
       context: resourceType,
       data: {
@@ -58,7 +60,8 @@ async function entryController(
 }
 
 async function channelController(
-  routingContext: ChannelRoutingContext
+  routingContext: ChannelRoutingContext,
+  dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
   // const posts = (await repository.findAll('post'))
 
@@ -98,7 +101,7 @@ async function channelController(
   const result = combine(
     await Promise.all(
       keys.map(async (key) => {
-        return processQuery(data[key]!)
+        return processQuery(data[key]!, dataLoaders)
       })
     )
   )
@@ -129,7 +132,8 @@ async function channelController(
 }
 
 async function collectionController(
-  routingProperties: CollectionRoutingContext
+  routingProperties: CollectionRoutingContext,
+  dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
   // const posts = await repository.findAll('post')
   //
@@ -173,7 +177,7 @@ async function collectionController(
   const result = combine(
     await Promise.all(
       keys.map(async (key) => {
-        return processQuery(data[key]!)
+        return processQuery(data[key]!, dataLoaders)
       })
     )
   )
@@ -199,7 +203,8 @@ async function collectionController(
 }
 
 async function customController(
-  routingProperties: CustomRoutingContext
+  routingProperties: CustomRoutingContext,
+  dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
   // const resources = await repository.getAll()
 
@@ -226,7 +231,7 @@ async function customController(
   const result = combine(
     await Promise.all(
       keys.map(async (key) => {
-        return processQuery(data[key]!)
+        return processQuery(data[key]!, dataLoaders)
       })
     )
   )
@@ -261,6 +266,8 @@ export function controller(
     | Result<Option<RoutingContext>>
     | Result<Option<RoutingContext>[]>
 ): Result<Promise<ControllerReturnType>> {
+  const dataLoaders = createLoaders()
+
   return routingContextsResult.map(async (routingContext) => {
     for (const context of [routingContext].flat()) {
       if (context === undefined) {
@@ -275,22 +282,22 @@ export function controller(
           case 'collection':
             return {
               type: 'props' as const,
-              props: await collectionController(context),
+              props: await collectionController(context, dataLoaders),
             }
           case 'channel':
             return {
               type: 'props' as const,
-              props: await channelController(context),
+              props: await channelController(context, dataLoaders),
             }
           case 'entry':
             return {
               type: 'props' as const,
-              props: await entryController(context),
+              props: await entryController(context, dataLoaders),
             }
           case 'custom':
             return {
               type: 'props' as const,
-              props: await customController(context),
+              props: await customController(context, dataLoaders),
             }
           case 'internal':
             return {

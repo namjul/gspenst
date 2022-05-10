@@ -1,12 +1,17 @@
 import { z } from '../shared-kernel'
+import type { GetTag, GetAuthor, GetPage, GetPost } from '../api'
 import {
-  resourceSchema,
   postResourceSchema,
   pageResourceSchema,
   authorResourceSchema,
   tagResourceSchema,
 } from './resource'
 import { limitSchema } from './routes'
+
+const getPostSchema = z.custom<GetPost>((value) => value)
+const getPageSchema = z.custom<GetPage>((value) => value)
+const getTagSchema = z.custom<GetTag>((value) => value)
+const getAuthorSchema = z.custom<GetAuthor>((value) => value)
 
 const paginationSchema = z.object({
   page: z.number(), // the current page number
@@ -19,27 +24,50 @@ const paginationSchema = z.object({
 
 export type Pagination = z.infer<typeof paginationSchema>
 
-const queryOutcomeRead = z.object({
-  type: z.literal('read'),
-  resource: resourceSchema,
-})
+export const resourceDataSchema = z.discriminatedUnion('resourceType', [
+  postResourceSchema.merge(z.object({ tinaData: getPostSchema })),
+  pageResourceSchema.merge(z.object({ tinaData: getPageSchema })),
+  authorResourceSchema.merge(z.object({ tinaData: getAuthorSchema })),
+  tagResourceSchema.merge(z.object({ tinaData: getTagSchema })),
+])
 
-export type QueryOutcomeRead = z.infer<typeof queryOutcomeRead>
-
-const queryOutcomeBrowse = z.object({
-  type: z.literal('browse'),
-  pagination: paginationSchema,
-  resources: z.array(resourceSchema),
-})
-
-export type QueryOutcomeBrowse = z.infer<typeof queryOutcomeBrowse>
+export type ResourceData = z.infer<typeof resourceDataSchema>
 
 export const queryOutcomeSchema = z.discriminatedUnion('type', [
-  queryOutcomeRead,
-  queryOutcomeBrowse,
+  z.object({
+    type: z.literal('read'),
+    resource: resourceDataSchema,
+  }),
+  z.object({
+    type: z.literal('browse'),
+    resources: z.array(resourceDataSchema),
+    pagination: paginationSchema,
+  }),
 ])
 
 export type QueryOutcome = z.infer<typeof queryOutcomeSchema>
+
+// const queryOutcomeRead = z.object({
+//   type: z.literal('read'),
+//   resource: resourceSchema,
+// })
+//
+// export type QueryOutcomeRead = z.infer<typeof queryOutcomeRead>
+//
+// const queryOutcomeBrowse = z.object({
+//   type: z.literal('browse'),
+//   pagination: paginationSchema,
+//   resources: z.array(resourceSchema),
+// })
+//
+// export type QueryOutcomeBrowse = z.infer<typeof queryOutcomeBrowse>
+//
+// export const queryOutcomeSchema = z.discriminatedUnion('type', [
+//   queryOutcomeRead,
+//   queryOutcomeBrowse,
+// ])
+//
+// export type QueryOutcome = z.infer<typeof queryOutcomeSchema>
 
 const themeContextBaseSchema = z.object({
   templates: z.array(z.string()),

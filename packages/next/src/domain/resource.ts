@@ -1,18 +1,8 @@
 import type { Get, Split, Result } from '../shared-kernel'
 import { idSchema, slugSchema, ok, err, z } from '../shared-kernel'
-import type { GetTag, GetAuthor, GetPage, GetPost } from '../api'
 import type { GetResourcesQuery } from '../../.tina/__generated__/types'
 import { do_ } from '../utils'
 import * as Errors from '../errors'
-// import { postSchema } from './post';
-// import { pageSchema } from './page';
-// import { authorSchema } from './author';
-// import { tagSchema } from './tag';
-
-const getPostSchema = z.custom<GetPost>((value) => value)
-const getPageSchema = z.custom<GetPage>((value) => value)
-const getTagSchema = z.custom<GetTag>((value) => value)
-const getAuthorSchema = z.custom<GetAuthor>((value) => value)
 
 export const resourceTypePost = z.literal('post')
 export const resourceTypePage = z.literal('page')
@@ -48,16 +38,17 @@ const resourceBaseSchema = z
     filename: z.string(),
     filepath: z.string(),
     relativePath: z.string(),
-    urlPathname: z.string().regex(/^\/([^?/]+)/).optional(),
-    filters: z.array(z.string()).nullable()
+    urlPathname: z
+      .string()
+      .regex(/^\/([^?/]+)/)
+      .optional(),
+    filters: z.array(z.string()).nullable(),
   })
   .merge(dynamicVariablesSchema)
 
 export const postResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypePost,
-    tinaData: getPostSchema.optional(),
-    // entry: postSchema // TODO must be post with special attributes
   })
 )
 
@@ -66,8 +57,6 @@ export type PostResource = z.infer<typeof postResourceSchema>
 export const pageResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypePage,
-    tinaData: getPageSchema.optional(),
-    // entry: pageSchema
   })
 )
 
@@ -76,8 +65,6 @@ export type PageResource = z.infer<typeof pageResourceSchema>
 export const authorResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypeAuthor,
-    tinaData: getAuthorSchema.optional(),
-    // entry: authorSchema
   })
 )
 
@@ -86,8 +73,6 @@ export type AuthorResource = z.infer<typeof authorResourceSchema>
 export const tagResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypeTag,
-    tinaData: getTagSchema.optional(),
-    // entry: tagSchema
   })
 )
 

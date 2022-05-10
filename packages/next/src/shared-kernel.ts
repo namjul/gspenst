@@ -24,6 +24,8 @@ export {
   errAsync,
   combine,
   combineWithAllErrors,
+  fromPromise,
+  fromThrowable,
 } from 'neverthrow'
 export { z }
 

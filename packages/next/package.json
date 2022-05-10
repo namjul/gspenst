@@ -17,6 +17,7 @@
     "@tryghost/string": "^0.1.23",
     "@tryghost/tpl": "^0.1.14",
     "cross-spawn": "^7.0.3",
+    "dataloader": "^2.1.0",
     "debug": "^4.3.3",
     "dot-prop": "^7.2.0",
     "find-cache-dir": "^3.3.2",

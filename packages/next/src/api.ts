@@ -1,4 +1,4 @@
-import { ResultAsync as NeverthrowResultAsync } from 'neverthrow'
+import { fromPromise } from './shared-kernel'
 import { LocalClient } from 'tinacms'
 import { getSdk } from '../.tina/__generated__/types'
 import * as Errors from './errors'
@@ -17,10 +17,8 @@ type ApiResultAsync<T> = ResultAsync<T>
 
 export type GetResources = AsyncReturnType<typeof sdk.getResources>
 export function getResources(): ApiResultAsync<GetResources> {
-  return NeverthrowResultAsync.fromPromise(
-    sdk.getResources(),
-    (error: unknown) =>
-      Errors.other('Api', error instanceof Error ? error : undefined)
+  return fromPromise(sdk.getResources(), (error: unknown) =>
+    Errors.other('Api', error instanceof Error ? error : undefined)
   )
 }
 
@@ -28,10 +26,8 @@ export type GetPage = AsyncReturnType<typeof sdk.getPage>
 export function getPage(variables: {
   relativePath: string
 }): ApiResultAsync<GetPage> {
-  return NeverthrowResultAsync.fromPromise(
-    sdk.getPage(variables),
-    (error: unknown) =>
-      Errors.other('Api', error instanceof Error ? error : undefined)
+  return fromPromise(sdk.getPage(variables), (error: unknown) =>
+    Errors.other('Api', error instanceof Error ? error : undefined)
   )
 }
 
@@ -39,10 +35,8 @@ export type GetPost = AsyncReturnType<typeof sdk.getPost>
 export function getPost(variables: {
   relativePath: string
 }): ApiResultAsync<GetPost> {
-  return NeverthrowResultAsync.fromPromise(
-    sdk.getPost(variables),
-    (error: unknown) =>
-      Errors.other('Api', error instanceof Error ? error : undefined)
+  return fromPromise(sdk.getPost(variables), (error: unknown) =>
+    Errors.other('Api', error instanceof Error ? error : undefined)
   )
 }
 
@@ -50,10 +44,8 @@ export type GetAuthor = AsyncReturnType<typeof sdk.getAuthor>
 export function getAuthor(variables: {
   relativePath: string
 }): ApiResultAsync<GetAuthor> {
-  return NeverthrowResultAsync.fromPromise(
-    sdk.getAuthor(variables),
-    (error: unknown) =>
-      Errors.other('Api', error instanceof Error ? error : undefined)
+  return fromPromise(sdk.getAuthor(variables), (error: unknown) =>
+    Errors.other('Api', error instanceof Error ? error : undefined)
   )
 }
 
@@ -61,16 +53,14 @@ export type GetTag = AsyncReturnType<typeof sdk.getTag>
 export function getTag(variables: {
   relativePath: string
 }): ApiResultAsync<GetTag> {
-  return NeverthrowResultAsync.fromPromise(
-    sdk.getTag(variables),
-    (error: unknown) =>
-      Errors.other('Api', error instanceof Error ? error : undefined)
+  return fromPromise(sdk.getTag(variables), (error: unknown) =>
+    Errors.other('Api', error instanceof Error ? error : undefined)
   )
 }
 
 export type GetConfig = AsyncReturnType<typeof sdk.getConfig>
 export function getConfig(): ApiResultAsync<GetConfig> {
-  return NeverthrowResultAsync.fromPromise(sdk.getConfig(), (error: unknown) =>
+  return fromPromise(sdk.getConfig(), (error: unknown) =>
     Errors.other('Api', error instanceof Error ? error : undefined)
   )
 }

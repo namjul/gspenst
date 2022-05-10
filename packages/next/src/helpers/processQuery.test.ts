@@ -1,9 +1,11 @@
 import repository from '../repository'
 import { format } from '../errors'
-import { processQuery } from './processQuery'
+import { createLoaders, processQuery } from './processQuery'
 
 jest.mock('../api')
 jest.mock('../redis')
+
+const dataLoaders = createLoaders()
 
 beforeAll(async () => {
   const result = await repository.collect({
@@ -30,11 +32,8 @@ describe('processQuery', () => {
         slug: '7th-post',
         redirect: false,
       } as const
-      const result = (await processQuery(query))._unsafeUnwrap()
+      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
       expect(result).toHaveProperty('resource')
-      expect(
-        (await repository.get(result.resource.id))._unsafeUnwrap()
-      ).toHaveProperty('tinaData')
     })
   })
 
@@ -45,7 +44,7 @@ describe('processQuery', () => {
         resourceType: 'post',
         limit: 5,
       } as const
-      const result = (await processQuery(query))._unsafeUnwrap()
+      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
       expect(result).toHaveProperty('resources')
       expect(result).toHaveProperty('pagination')
       expect(result).toHaveProperty('pagination.total', 10)
@@ -58,7 +57,7 @@ describe('processQuery', () => {
         resourceType: 'post',
         limit: 'all',
       } as const
-      const result = (await processQuery(query))._unsafeUnwrap()
+      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
       expect(result.resources).toHaveLength(10)
     })
 
@@ -69,7 +68,7 @@ describe('processQuery', () => {
         filter: 'slug:-8th-post',
         limit: 5,
       } as const
-      const result = (await processQuery(query))._unsafeUnwrap()
+      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
       expect(result).toHaveProperty('resources')
       expect(result).toHaveProperty('pagination')
       expect(result).toHaveProperty('pagination.total', 9)
@@ -81,7 +80,7 @@ describe('processQuery', () => {
         resourceType: 'post',
         limit: 3,
       } as const
-      const result = await processQuery(query)
+      const result = await processQuery(query, dataLoaders)
       expect(result._unsafeUnwrap()).toHaveProperty('pagination.total', 10)
     })
 
@@ -93,7 +92,7 @@ describe('processQuery', () => {
         order: [{ field: 'date', order: 'asc' as const }],
       }
 
-      const result = (await processQuery(query))._unsafeUnwrap()
+      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
       expect(result.resources).toHaveLength(3)
       expect(result).toHaveProperty('resources[0].slug', '1th-post')
     })
