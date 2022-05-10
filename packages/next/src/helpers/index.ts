@@ -62,11 +62,16 @@ const EXPANSIONS = [
   },
 ]
 
-// TODO cache filter
+const cache = new Map()
 export function makeNqlFilter(filter: string) {
   return NeverThrowResult.fromThrowable(
     (obj: object) => {
-      return _nql(filter, { expansions: EXPANSIONS }).queryJSON(obj)
+      if (cache.has(filter)) {
+        return cache.get(filter)
+      }
+      const nqlFilter = _nql(filter, { expansions: EXPANSIONS }).queryJSON(obj)
+      cache.set(filter, nqlFilter)
+      return nqlFilter
     },
     (error) =>
       Errors.other(
