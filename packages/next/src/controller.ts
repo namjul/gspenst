@@ -1,4 +1,5 @@
 import { ok, err, combine } from './shared-kernel'
+import type { Semaphore } from 'async-mutex'
 import type {
   RoutingContext,
   CollectionRoutingContext,
@@ -264,9 +265,10 @@ type ControllerReturnType =
 export function controller(
   routingContextsResult:
     | Result<Option<RoutingContext>>
-    | Result<Option<RoutingContext>[]>
+    | Result<Option<RoutingContext>[]>,
+  sem?: Semaphore
 ): Result<Promise<ControllerReturnType>> {
-  const dataLoaders = createLoaders()
+  const dataLoaders = createLoaders(sem)
 
   return routingContextsResult.map(async (routingContext) => {
     for (const context of [routingContext].flat()) {

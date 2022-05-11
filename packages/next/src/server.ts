@@ -1,4 +1,5 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
+import type { Semaphore } from 'async-mutex'
 import { log } from './logger'
 import { routerManager } from './routing'
 import type { RoutesConfig } from './domain/routes'
@@ -27,7 +28,8 @@ export const getStaticPaths =
 export const getStaticProps =
   (
     routesConfig: RoutesConfig,
-    routingParameter: string
+    routingParameter: string,
+    sem: Semaphore
   ): GetStaticProps<PageProps> =>
   async (context) => {
     const { params } = context
@@ -37,7 +39,8 @@ export const getStaticProps =
     const router = routerManager(routesConfig)
 
     const controllerResult = controller(
-      router.handle(params?.[routingParameter])
+      router.handle(params?.[routingParameter]),
+      sem
     )
 
     if (controllerResult.isOk()) {

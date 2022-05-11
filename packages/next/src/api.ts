@@ -1,6 +1,6 @@
-import { fromPromise } from './shared-kernel'
 import { LocalClient } from 'tinacms'
 import { getSdk } from '../.tina/__generated__/types'
+import { fromPromise } from './shared-kernel'
 import * as Errors from './errors'
 import type { AsyncReturnType, ResultAsync } from './shared-kernel'
 

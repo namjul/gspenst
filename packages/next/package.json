@@ -16,6 +16,7 @@
     "@tryghost/nql": "^0.9.1",
     "@tryghost/string": "^0.1.23",
     "@tryghost/tpl": "^0.1.14",
+    "async-mutex": "^0.3.2",
     "cross-spawn": "^7.0.3",
     "dataloader": "^2.1.0",
     "debug": "^4.3.3",

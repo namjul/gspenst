@@ -1,11 +1,13 @@
 import sortOn from 'sort-on'
 import DataLoader from 'dataloader'
+import { Semaphore } from 'async-mutex'
+import type { SemaphoreInterface } from 'async-mutex'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import { do_, absurd } from '../utils'
 import repository from '../repository'
-import { combine, errAsync, ok, err, fromPromise } from '../shared-kernel'
-import type { ResultAsync, ID } from '../shared-kernel'
+import { combine, ok, err, fromPromise } from '../shared-kernel'
+import type { Result, ResultAsync, ID } from '../shared-kernel'
 import * as api from '../api'
 import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
@@ -20,65 +22,83 @@ const log = createLogger('processQuery')
 const moduleId = Math.random()
 log('init processQuery module with: ', moduleId)
 
-async function batchFunction(resources: ReadonlyArray<Resource>) {
-  log(
-    `batch loading(${moduleId})`,
-    resources.map(({ id }) => id)
-  )
-  const result = resources.map((resource) => {
-    const { resourceType, relativePath } = resource
-    switch (resourceType) {
-      case 'page':
-        return api
-          .getPage({ relativePath })
-          .map((tinaData) => ({ ...resource, tinaData }))
-      case 'post':
-        return api
-          .getPost({ relativePath })
-          .map((tinaData) => ({ ...resource, tinaData }))
-      case 'author':
-        return api
-          .getAuthor({ relativePath })
-          .map((tinaData) => ({ ...resource, tinaData }))
-      case 'tag':
-        return api
-          .getTag({ relativePath })
-          .map((tinaData) => ({ ...resource, tinaData }))
-      default:
-        return absurd(resourceType)
-    }
-  })
+function batchFunction(sem: SemaphoreInterface) {
+  log('Call BatchFunction')
+  return async (resources: ReadonlyArray<Resource>) => {
+    log(
+      `batch loading(${moduleId})`,
+      resources.map(({ id }) => id),
+      `semaphore: ${sem.isLocked()}`
+    )
 
-  return result
+    let count = 0
+
+    const x = resources.map(async (resource) => {
+      const { resourceType, relativePath } = resource
+      ++count
+      // log(`load ${resourceType}:${relativePath}`)
+      // log(++count)
+
+      const result = await sem.runExclusive(async () => {
+        switch (resourceType) {
+          case 'page':
+            return api.getPage({ relativePath }).map((tinaData) => ({
+              ...resource,
+              tinaData,
+            }))
+          case 'post':
+            return api.getPost({ relativePath }).map((tinaData) => ({
+              ...resource,
+              tinaData,
+            }))
+          case 'author':
+            return api.getAuthor({ relativePath }).map((tinaData) => ({
+              ...resource,
+              tinaData,
+            }))
+          case 'tag':
+            return api.getTag({ relativePath }).map((tinaData) => ({
+              ...resource,
+              tinaData,
+            }))
+          default:
+            return absurd(resourceType)
+        }
+      })
+      return result
+    })
+
+    log('resultList start')
+    const resultList = await Promise.all(x)
+    log(`resultList end. ${count} fetched from ${resources.length}`)
+    return resultList
+  }
 }
 
-export const createLoaders = () => {
-  const resourceLoader = new DataLoader<
-    Resource,
-    ResultAsync<ResourceData>,
-    ID
-  >(batchFunction, {
-    cacheKeyFn: (resource) => resource.id,
-  })
+const defaultSem = new Semaphore(100)
+
+export const createLoaders = (sem: SemaphoreInterface = defaultSem) => {
+  const resourceLoader = new DataLoader<Resource, Result<ResourceData>, ID>(
+    batchFunction(sem),
+    {
+      batchScheduleFn: (callback) => setTimeout(callback, 100),
+      cacheKeyFn: (resource) => resource.id,
+    }
+  )
 
   const loadResource = (resource: Resource) => {
     return fromPromise(resourceLoader.load(resource), (error: unknown) =>
-      Errors.other('loadResource', error instanceof Error ? error : undefined)
-    ).andThen((x) => x)
+      Errors.other(
+        `loadResource ${JSON.stringify(error, null, 2)}`,
+        error instanceof Error ? error : undefined
+      )
+    ).andThen((x) => {
+      return x
+    })
   }
 
   const loadManyResource = (resources: Resource[]) => {
-    return fromPromise(resourceLoader.loadMany(resources), (error: unknown) =>
-      Errors.other('loadResource', error instanceof Error ? error : undefined)
-    ).andThen((resourcesResultList) => {
-      return combine(
-        resourcesResultList.map((maybeResourceResult) => {
-          return maybeResourceResult instanceof Error
-            ? errAsync(Errors.other('loadManyResource', maybeResourceResult))
-            : maybeResourceResult
-        })
-      )
-    })
+    return combine(resources.map(loadResource))
   }
   return {
     loadResource,
@@ -112,7 +132,9 @@ export function processQuery(
             slug: query.slug,
           })
           .andThen(loadResource)
-          .map((resource) => ({ type, resource }))
+          .map((resource) => {
+            return { type, resource }
+          })
       case 'browse':
         return repository
           .findAll(query.resourceType)

@@ -47,12 +47,15 @@ async function loader(
   }
 
   if (themeConfigPath) {
-    themeConfigPath = path.resolve(themeConfigPath) // TODO use https://github.com/sindresorhus/slash https://github.com/preconstruct/preconstruct/pull/435
+    // TODO use https://github.com/sindresorhus/slash
+    // https://github.com/preconstruct/preconstruct/pull/435
+    themeConfigPath = path.resolve(themeConfigPath)
   }
 
   // lets nextjs know if any data changes to trigger `serverOnlyChanges` event
   // See: https://github.com/vercel/next.js/blob/2ecfa6aec3b2e4b8ebb4b4c8f55df7357b9d3000/packages/next/server/dev/hot-reloader.ts#L732
   // TODO check if files actually changed using hashes
+  // TODO replace with collect result, which changes when actual files change
   let effectHotReload = -1
 
   if (!isProductionBuild) {
@@ -77,7 +80,9 @@ async function loader(
     context.emitError(format(routesConfigResult.error))
   }
 
-  const routesConfig = routesConfigResult.isOk() ? routesConfigResult.value[0]! : {}
+  const routesConfig = routesConfigResult.isOk()
+    ? routesConfigResult.value[0]!
+    : {}
 
   const collectResult = await repository.collect(routesConfig)
 
@@ -92,6 +97,7 @@ async function loader(
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
   const imports = `
+import { Semaphore } from 'async-mutex'
 import * as __gspenst_server__ from '@gspenst/next/server'
 import GspenstClientPage from '@gspenst/next/client'
 import { tinaConfig } from '${tinaSchemaPath}'
@@ -115,12 +121,16 @@ export default function GspenstPage (props) {
   const dataFetchingFunctions = `
 const effectHotReload = ${effectHotReload}
 
+const sem = new Semaphore(10)
+
 export const getStaticPaths = async () => {
-  return __gspenst_server__.getStaticPaths(${routesConfigStringified}, ${JSON.stringify(resources)}, !!${staticExport})()
+  return __gspenst_server__.getStaticPaths(${routesConfigStringified}, ${JSON.stringify(
+    resources
+  )}, !!${staticExport})()
 }
 
 export const getStaticProps = async (context) => {
-  return __gspenst_server__.getStaticProps(${routesConfigStringified},'${routingParameter}')(context)
+  return __gspenst_server__.getStaticProps(${routesConfigStringified},'${routingParameter}', sem)(context)
 }
 `
 
