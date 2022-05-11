@@ -24,7 +24,7 @@ export function compilePermalink(
     // TODO use Result.fromThrowable https://github.com/supermacro/neverthrow#resultfromthrowable-static-class-method
     return ok(compile(permalink)(dynamicVariables))
   } catch (error: unknown) {
-    console.log(permalink, dynamicVariables, error);
+    console.log(permalink, dynamicVariables, error)
     return err(
       Errors.other(
         '`path-to-regexp`#compile',
@@ -33,7 +33,6 @@ export function compilePermalink(
     )
   }
 }
-
 
 const EXPANSIONS = [
   {
@@ -62,16 +61,16 @@ const EXPANSIONS = [
   },
 ]
 
-const cache = new Map()
+const cache = new Map<string, ReturnType<typeof _nql>>()
 export function makeNqlFilter(filter: string) {
   return NeverThrowResult.fromThrowable(
     (obj: object) => {
       if (cache.has(filter)) {
-        return cache.get(filter)
+        return cache.get(filter)!.queryJSON(obj)
       }
-      const nqlFilter = _nql(filter, { expansions: EXPANSIONS }).queryJSON(obj)
+      const nqlFilter = _nql(filter, { expansions: EXPANSIONS })
       cache.set(filter, nqlFilter)
-      return nqlFilter
+      return nqlFilter.queryJSON(obj)
     },
     (error) =>
       Errors.other(
