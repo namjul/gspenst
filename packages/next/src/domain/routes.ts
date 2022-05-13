@@ -2,7 +2,7 @@
 import { z, ok, err, combineWithAllErrors } from '../shared-kernel'
 import type { Split, Result, Entries } from '../shared-kernel'
 import * as Errors from '../errors'
-import { isString /*, isObject*/ } from '../utils'
+import { isString /*, isObject*/ } from '../shared/utils'
 import { resourceTypeSchema, resourceTypes } from './resource'
 import type { ResourceType } from './resource'
 

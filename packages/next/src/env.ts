@@ -1,4 +1,4 @@
-import { isString } from './utils'
+import { isString } from './shared/utils'
 
 type ProcessEnv = typeof process.env
 

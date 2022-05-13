@@ -1,3 +1,5 @@
+import path from 'path'
+import fs from 'fs'
 import _nql from '@tryghost/nql'
 import { compile, pathToRegexp as _pathToRegexp } from 'path-to-regexp' // TODO use https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API#pattern_syntax
 import { Result as NeverThrowResult } from 'neverthrow'
@@ -76,6 +78,23 @@ export function makeNqlFilter(filter: string) {
         '`nql`#queryJSON',
         error instanceof Error ? error : undefined
       )
+  )
+}
+
+export const existsSync = (f: string): boolean => {
+  try {
+    fs.accessSync(f, fs.constants.F_OK)
+    return true
+  } catch (e: unknown) {
+    return false
+  }
+}
+
+export function findContentDir(dir: string = process.cwd()): string {
+  if (existsSync(path.join(dir, 'content'))) return 'content'
+
+  throw new Error(
+    "> Couldn't find a `content` directory. Please create one under the project root"
   )
 }
 

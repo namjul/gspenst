@@ -15,7 +15,7 @@ import type { Tag } from './domain/tag'
 import type { Result, ResultAsync } from './shared-kernel'
 import * as api from './api'
 import { makeNqlFilter, compilePermalink } from './helpers'
-import { do_ } from './utils'
+import { do_ } from './shared/utils'
 import { createLogger } from './logger'
 
 const log = createLogger('collect')

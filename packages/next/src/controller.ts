@@ -13,7 +13,7 @@ import type { DataLoaders } from './helpers/processQuery'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared-kernel'
 import * as Errors from './errors'
-import { do_, absurd } from './utils'
+import { do_, absurd } from './shared/utils'
 import type { ThemeContext } from './domain/theming'
 
 // export type PageProps =
@@ -264,7 +264,6 @@ export function controller(
     | Result<Option<RoutingContext>[]>,
   dataLoaders: DataLoaders = createLoaders()
 ): Result<Promise<ControllerReturnType>> {
-
   return routingContextsResult.map(async (routingContext) => {
     for (const context of [routingContext].flat()) {
       if (context === undefined) {

@@ -1,5 +1,5 @@
 import type { RoutingContext } from '../domain/routing'
-import { absurd } from '../utils'
+import { absurd } from '../shared/utils'
 
 export function getTemplateHierarchy(routingContext: RoutingContext) {
   const { type } = routingContext

@@ -1,4 +1,4 @@
-import { absurd } from './utils'
+import { absurd } from './shared/utils'
 
 export type GspenstError =
   | { type: 'Other'; error: Error | undefined; context?: string }
@@ -36,7 +36,9 @@ export function format(errors: GspenstError | GspenstError[]) {
     switch (type) {
       case 'Other':
         return `${error.type}: ${error.context} ${
-          error.error ? `: cause: ${error.error.message} ${ error.error.stack }` : ''
+          error.error
+            ? `: cause: ${error.error.message} ${error.error.stack}`
+            : ''
         }`
       case 'Validation':
         return `${error.type}: ${error.message}${

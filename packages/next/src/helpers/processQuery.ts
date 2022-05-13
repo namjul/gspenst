@@ -4,7 +4,7 @@ import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
-import { do_, absurd } from '../utils'
+import { do_, absurd } from '../shared/utils'
 import { resourcesDataDb as db } from '../db'
 import repository from '../repository'
 import { combine, ok, err, fromPromise } from '../shared-kernel'
@@ -57,7 +57,7 @@ async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
   return Promise.all(
     resources.map(async (resource) => {
       return db.get(String(resource.id)).map((r) => {
-        const result =r[0]!
+        const result = r[0]!
         log(`redis cache hit (${moduleId})`, result.id)
         return result
       })

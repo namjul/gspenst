@@ -1,7 +1,7 @@
 import type { Get, Split, Result } from '../shared-kernel'
 import { idSchema, slugSchema, ok, err, z } from '../shared-kernel'
 import type { GetResourcesQuery } from '../../.tina/__generated__/types'
-import { do_ } from '../utils'
+import { do_ } from '../shared/utils'
 import * as Errors from '../errors'
 
 export const resourceTypePost = z.literal('post')
