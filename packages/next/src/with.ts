@@ -5,6 +5,7 @@ import { log } from './logger'
 import type { LoaderOptions } from './loader'
 import { GspenstPlugin } from './plugin'
 import { staticExport } from './env'
+import { resourcesDataDb} from './db'
 
 const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 const yamlExtensions = ['yml', 'yaml']
@@ -28,6 +29,10 @@ export default (...args: [string | LoaderOptions, string]) =>
       // eslint-disable-line @typescript-eslint/no-unsafe-call
       ...nextConfig,
       pageExtensions,
+      redirects: async () => {
+        await resourcesDataDb.delete()
+        return nextConfig.redirects ? nextConfig.redirects() : []
+      },
       webpack(config: Configuration, context) {
         const gspenst = new GspenstPlugin(context.isServer)
         if (config.plugins) {
