@@ -342,7 +342,7 @@ describe('router contexts', () => {
         undefined,
       ])
     )
-    expect(router.handle(['author', 'pedro', 'page', '1'])).toEqual(
+    expect(router.handle(['author', 'pedro'])).toEqual(
       ok([
         undefined,
         undefined,
@@ -356,9 +356,8 @@ describe('router contexts', () => {
           limit: 5,
           order: undefined,
           request: {
-            path: '/author/pedro/page/1/',
+            path: '/author/pedro/',
             params: {
-              page: 1,
               slug: 'pedro',
             },
           },

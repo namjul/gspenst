@@ -16,6 +16,7 @@ import {
   Opaque,
 } from 'type-fest'
 import type { GspenstError } from './errors'
+import { do_ } from './shared/utils'
 
 export {
   ok,
@@ -30,11 +31,20 @@ export {
 export { z }
 
 export type ID = Opaque<number, 'ID'>
-export const idSchema = z
-  .union([z.string(), z.number()])
-  .transform(
-    (value) => (typeof value === 'string' ? stringHash(value) : value) as ID
-  )
+export const idSchema = z.union([z.string(), z.number()]).transform((value) => {
+  return do_(() => {
+    if (typeof value === 'string') {
+      const num = Number(value)
+      if (Number.isInteger(num) && num > 0) {
+        return value
+      } else {
+        return stringHash(value)
+      }
+    }
+    return value
+  }) as ID
+})
+
 export const dateSchema = z.string().refine(
   (value) => {
     return !isNaN(Date.parse(value))
@@ -46,7 +56,7 @@ export const dateSchema = z.string().refine(
 
 export const slugSchema = z.string().transform((value) => slugify(value))
 
-export type Result<T> = Ok<T, GspenstError> | Err<T, GspenstError>
+export type Result<T, E = GspenstError> = Ok<T, E> | Err<T, E>
 export type ResultAsync<T> = NeverthrowResultAsync<T, GspenstError>
 export type Dict<T = any> = Record<string, T>
 export type Unpacked<T> = T extends Array<infer U> ? U : T

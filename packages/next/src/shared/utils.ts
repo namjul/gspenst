@@ -1,12 +1,14 @@
 // export * from 'dot-prop'
 
-export function removeNullish<T extends Record<string, any>>(obj: T) {
+export function removeNullish<T extends Record<string, any>>(
+  obj: T
+): { [P in keyof T]?: NonNullable<T[P]> } {
   Object.keys(obj).forEach((key) => {
     if (obj[key] === null || obj[key] === undefined) {
       delete obj[key] // eslint-disable-line @typescript-eslint/no-dynamic-delete
     }
   })
-  return obj as NonNullable<T>
+  return obj
 }
 
 export function isObject(arg: unknown): arg is object {

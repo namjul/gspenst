@@ -28,8 +28,8 @@ describe('processQuery', () => {
       const query = {
         resourceType: 'post',
         type: 'read',
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain --- TODO: return ErrResult if `slug` is not defined
         slug: '7th-post',
+        // id: `content/posts/7th-post.mdx`,
         redirect: false,
       } as const
       const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()

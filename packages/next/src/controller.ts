@@ -42,9 +42,7 @@ async function entryController(
   const query: DataQuery = {
     resourceType,
     type: 'read',
-    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain --- TODO: return ErrResult if `slug` is not defined
-    slug: request.params?.slug!,
-    redirect: false,
+    ...request.params,
   }
 
   return (await processQuery(query, dataLoaders)).map((entry) => {

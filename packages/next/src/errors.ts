@@ -1,13 +1,20 @@
+import { z } from './shared-kernel'
 import { absurd } from './shared/utils'
 
 export type GspenstError =
   | { type: 'Other'; error: Error | undefined; context?: string }
   | { type: 'Validation'; message: string; help?: string | undefined }
   | { type: 'NotFound'; context: string | undefined }
+  | { type: 'Parse'; error: z.ZodError }
 
 export const other = (context: string, error?: Error): GspenstError => ({
   type: 'Other',
   context,
+  error,
+})
+
+export const parse = (error: z.ZodError): GspenstError => ({
+  type: 'Parse',
   error,
 })
 
@@ -46,6 +53,8 @@ export function format(errors: GspenstError | GspenstError[]) {
         }`
       case 'NotFound':
         return `${error.type}: ${error.context}`
+      case 'Parse':
+        return `${error.type}: ${error.error}`
       default:
         return absurd(type)
     }

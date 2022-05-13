@@ -33,17 +33,20 @@ class TaxonomyRouter extends ParentRouter {
         const [match, ...paramKeys] = regExp.exec(request) ?? []
 
         if (match && paramKeys.length) {
-          const params = this.extractParams(paramKeys, this.keys)
+          const paramsResult = this.extractParams(paramKeys, this.keys)
 
-          const router = this.respectDominantRouter(
-            routers,
-            this.taxonomyKey,
-            params.slug
-          )
-          if (router) {
-            return ok(this.createRedirectContext(router))
-          } else {
-            return ok(this.#createContext(match, params))
+          if (paramsResult.isOk()) {
+            const params = paramsResult.value
+            const router = this.respectDominantRouter(
+              routers,
+              this.taxonomyKey,
+              params.slug
+            )
+            if (router) {
+              return ok(this.createRedirectContext(router))
+            } else {
+              return ok(this.#createContext(match, params))
+            }
           }
         }
         return ok(undefined)
@@ -73,46 +76,45 @@ class TaxonomyRouter extends ParentRouter {
   }
 
   resolvePaths(routers: ParentRouter[], resources: Resource[]) {
-    const paths = resources
-      .flatMap((resource) => {
-        if (resource.resourceType !== this.taxonomyKey) {
-          return []
-        }
-
-        if (
-          this.respectDominantRouter(
-            routers,
-            resource.resourceType,
-            resource.slug
-          )
-        ) {
-          return []
-        }
-
-        const postResources = resources.filter(
-          (_resource) =>
-            _resource.resourceType === 'post' &&
-            _resource.filters?.includes(this.#replaceFilter(resource.slug))
-        )
-
-        const { urlPathname } = resource
-
-        if (urlPathname) {
-          const pagesPathnames = Array.from(
-            {
-              length:
-                postResources.length /
-                (this.config.limit === 'all' ? 1 : this.config.limit),
-            },
-            (_, i) => {
-              return path.join(urlPathname, 'page', String(i + 1))
-            }
-          )
-          return [urlPathname, ...pagesPathnames]
-        }
-
+    const paths = resources.flatMap((resource) => {
+      if (resource.resourceType !== this.taxonomyKey) {
         return []
-      })
+      }
+
+      if (
+        this.respectDominantRouter(
+          routers,
+          resource.resourceType,
+          resource.slug
+        )
+      ) {
+        return []
+      }
+
+      const postResources = resources.filter(
+        (_resource) =>
+          _resource.resourceType === 'post' &&
+          _resource.filters?.includes(this.#replaceFilter(resource.slug))
+      )
+
+      const { urlPathname } = resource
+
+      if (urlPathname) {
+        const pagesPathnames = Array.from(
+          {
+            length:
+              postResources.length /
+              (this.config.limit === 'all' ? 1 : this.config.limit),
+          },
+          (_, i) => {
+            return path.join(urlPathname, 'page', String(i + 1))
+          }
+        )
+        return [urlPathname, ...pagesPathnames]
+      }
+
+      return []
+    })
 
     return paths
   }

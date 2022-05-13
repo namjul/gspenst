@@ -3,8 +3,9 @@ import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
 import type { DataQuery } from '../domain/routes'
+import { dynamicVariablesSchema } from '../domain/resource'
 import type { Resource } from '../domain/resource'
-import { do_, absurd } from '../shared/utils'
+import { do_, absurd, removeNullish } from '../shared/utils'
 import { resourcesDataDb as db } from '../db'
 import repository from '../repository'
 import { combine, ok, err, fromPromise } from '../shared-kernel'
@@ -14,6 +15,7 @@ import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
+import { parse } from './parser'
 import type { QueryOutcome, ResourceData } from '../domain/theming'
 import * as Errors from '../errors'
 
@@ -135,15 +137,16 @@ export function processQuery(
   const result = do_(() => {
     switch (type) {
       case 'read':
-        return repository
-          .find({
-            // TODO make it work with all dynamic variables
-            slug: query.slug,
-          })
-          .andThen(loadResource)
-          .map((resource) => {
-            return { type, resource }
-          })
+        return parse(dynamicVariablesSchema.partial(), query).asyncAndThen(
+          (dynamicVariables) => {
+            return repository
+              .find(removeNullish(dynamicVariables))
+              .andThen(loadResource)
+              .map((resource) => {
+                return { type, resource }
+              })
+          }
+        )
       case 'browse':
         return repository
           .findAll(query.resourceType)

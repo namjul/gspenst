@@ -2,11 +2,9 @@ import type { Key } from 'path-to-regexp'
 import type { Result, Option } from '../shared-kernel'
 import type { RoutingContext } from '../domain/routing'
 import type { Data } from '../domain/routes'
-import type {
-  ResourceType,
-  DynamicVariables,
-  Resource,
-} from '../domain/resource'
+import type { ResourceType, Resource } from '../domain/resource'
+import { paramsSchema } from '../domain/routing'
+import { parse } from '../helpers/parser'
 
 class ParentRouter {
   name: string
@@ -75,24 +73,18 @@ class ParentRouter {
 
   // TODO force equal array length https://stackoverflow.com/questions/65361696/arguments-of-same-length-typescript
   extractParams(values: string[], keys: Key[]) {
-    return values.reduce<Partial<DynamicVariables & { page: number }>>(
-      // return values.reduce<Record<string, string>>(
-      (acc, current, index) => {
-        const key = keys[index]
-        if (key && current) {
-          return {
-            [key.name]: ['page', 'year', 'month', 'day'].includes(
-              key.name as string
-            )
-              ? Number(current)
-              : current,
-            ...acc,
-          }
+    const input = values.reduce((acc, current, index) => {
+      const key = keys[index]
+      if (key && current) {
+        return {
+          [key.name]: current,
+          ...acc,
         }
-        return acc
-      },
-      {}
-    )
+      }
+      return acc
+    }, {})
+
+    return parse(paramsSchema.partial(), input)
   }
 
   getRoute() {
@@ -100,10 +92,7 @@ class ParentRouter {
     return this.route ?? '/'
   }
 
-  resolvePaths(
-    _routers: ParentRouter[],
-    _resources: Resource[]
-  ): string[] {
+  resolvePaths(_routers: ParentRouter[], _resources: Resource[]): string[] {
     return []
   }
 }

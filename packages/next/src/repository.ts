@@ -37,14 +37,12 @@ const repository = {
   get<T extends ID | ID[]>(id: T): GetValue<T> {
     const ids = [id].flat()
 
-    const result = db
-      .get(...ids.map(String))
-      .map((resources) => {
-        if (ids.length === 1) {
-          return resources[0]
-        }
-        return resources
-      })
+    const result = db.get(...ids.map(String)).map((resources) => {
+      if (ids.length === 1) {
+        return resources[0]
+      }
+      return resources
+    })
 
     return result as GetValue<T>
   },
@@ -62,7 +60,7 @@ const repository = {
         ? okAsync(found)
         : errAsync(
             Errors.notFound(
-              `Repo: ${JSON.stringify(partialResourceItem, null, 2)}`
+              `Repo#find: ${JSON.stringify(partialResourceItem, null, 2)}`
             )
           )
     })
@@ -87,10 +85,7 @@ const repository = {
         : true) &&
       Object.entries(partialResourceItem)
         .map(([key, value]) => {
-          return (
-            String(resource[key as keyof typeof partialResourceItem]) ===
-            String(value)
-          )
+          return String(resource[key as keyof Partial<T>]) === String(value)
         })
         .every(Boolean)
   },

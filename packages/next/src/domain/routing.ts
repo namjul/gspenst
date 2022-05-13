@@ -11,12 +11,13 @@ const redirectSchema = z.object({
 
 export type Redirect = z.infer<typeof redirectSchema>
 
+export const paramsSchema = dynamicVariablesSchema
+  .merge(z.object({ page: z.number().optional() }))
+  .partial()
+
 const requestSchema = z.object({
   path: z.string(),
-  params: dynamicVariablesSchema
-    .merge(z.object({ page: z.number().optional() }))
-    .partial()
-    .optional(),
+  params: paramsSchema.optional(),
 })
 
 export type Request = z.infer<typeof requestSchema>

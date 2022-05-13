@@ -1,17 +1,20 @@
 // import nql from '@tryghost/nql'
 import { z, ok, err, combineWithAllErrors } from '../shared-kernel'
-import type { Split, Result, Entries } from '../shared-kernel'
+import type { Split, Result, Entries, Option } from '../shared-kernel'
 import * as Errors from '../errors'
 import { isString /*, isObject*/ } from '../shared/utils'
-import { resourceTypeSchema, resourceTypes } from './resource'
+import {
+  resourceTypeSchema,
+  resourceTypes,
+  dynamicVariablesSchema,
+} from './resource'
 import type { ResourceType } from './resource'
+import { parse } from '../helpers/parser'
 
 const POST_PER_PAGE = 5
 
 const queryTypeRead = z.literal('read')
 const queryTypeBrowse = z.literal('browse')
-
-const slugSchema = z.string()
 
 const permalinkSchema = z
   .string()
@@ -75,9 +78,9 @@ const dataQueryRead = z
   .object({
     type: queryTypeRead,
     resourceType: resourceTypeSchema,
-    slug: slugSchema,
     redirect: z.boolean().optional(),
   })
+  .merge(dynamicVariablesSchema.partial())
   .strict()
 
 export type DataQueryRead = z.infer<typeof dataQueryRead>
@@ -150,7 +153,7 @@ const dataForm = z
           dataValue[1].type === 'read'
       )
       .reduce<{
-        [key in ResourceType]?: { redirect: boolean; slug: string }[]
+        [key in ResourceType]?: { redirect: boolean; slug: Option<string> }[]
       }>((acc, [_, { resourceType, slug, redirect }]) => {
         if (!acc[resourceType]) {
           acc[resourceType] = []
@@ -255,7 +258,7 @@ const routesSchema = z
 export type RoutesConfig = z.output<typeof routesSchema>
 
 export function parseRoutes(input: unknown) {
-  const result = routesSchema.safeParse(input)
+  const result = parse(routesSchema, input)
 
   const resultList: Result<RoutesConfig>[] = []
 
@@ -271,10 +274,10 @@ export function parseRoutes(input: unknown) {
     return error.issues.flatMap<z.ZodIssue>(processIssue)
   }
 
-  if (result.success) {
-    resultList.push(ok(result.data))
-  } else {
-    processError(result.error).forEach((issue) => {
+  if (result.isOk()) {
+    resultList.push(ok(result.value))
+  } else if (result.error.type === 'Parse') {
+    processError(result.error.error).forEach((issue) => {
       const message = `${issue.code} at ${issue.path.join('/')}`
       const help = issue.message
 

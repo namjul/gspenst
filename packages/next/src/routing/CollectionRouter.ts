@@ -57,18 +57,24 @@ class CollectionRouter extends ParentRouter {
               permalinkRegExp.exec(request) ?? []
 
             if (permalinkMatch && paramKeys.length) {
-              const params = this.extractParams(paramKeys, this.keysPermalink)
-
-              const router = this.respectDominantRouter(
-                routers,
-                'post',
-                params.slug
+              const paramsResult = this.extractParams(
+                paramKeys,
+                this.keysPermalink
               )
 
-              if (router) {
-                return ok(this.createRedirectContext(router))
-              } else {
-                return ok(this.#createEntryContext(permalinkMatch, params))
+              if (paramsResult.isOk()) {
+                const params = paramsResult.value
+                const router = this.respectDominantRouter(
+                  routers,
+                  'post',
+                  params.slug
+                )
+
+                if (router) {
+                  return ok(this.createRedirectContext(router))
+                } else {
+                  return ok(this.#createEntryContext(permalinkMatch, params))
+                }
               }
             }
           }
