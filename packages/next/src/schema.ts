@@ -1,10 +1,5 @@
-import { defineSchema, defineConfig } from 'tinacms'
-import type {
-  TinaCloudSchema,
-  TinaCollection,
-  TinaTemplate,
-  TinaField,
-} from 'tinacms'
+import { defineSchema } from 'tinacms'
+import type { TinaCollection, TinaTemplate, TinaField } from 'tinacms'
 
 const commonFields: TinaField[] = [
   {
@@ -147,28 +142,5 @@ export function createSchema(templates: TinaTemplate[] = []) {
       authorCollection,
       tagCollection,
     ],
-  })
-}
-
-export function createConfig(schema: TinaCloudSchema) {
-  const branch = 'main'
-  const apiURL =
-    process.env.NODE_ENV == 'development'
-      ? 'http://localhost:4001/graphql'
-      : `https://content.tinajs.io/content/${process.env.NEXT_PUBLIC_TINA_CLIENT_ID}/github/${branch}`
-  return defineConfig({
-    apiURL,
-    schema,
-    cmsCallback: (cms) => {
-      cms.flags.set('tina-admin', true)
-      return cms
-    },
-    formifyCallback: ({ formConfig, createForm, createGlobalForm }) => {
-      if (formConfig.id === 'content/config/index.json') {
-        return createGlobalForm(formConfig)
-      }
-
-      return createForm(formConfig)
-    },
   })
 }
