@@ -52,17 +52,10 @@ async function loader(
     themeConfigPath = path.resolve(themeConfigPath)
   }
 
-  // lets nextjs know if any data changes to trigger `serverOnlyChanges` event
-  // See: https://github.com/vercel/next.js/blob/2ecfa6aec3b2e4b8ebb4b4c8f55df7357b9d3000/packages/next/server/dev/hot-reloader.ts#L732
-  // TODO check if files actually changed using hashes
-  // TODO replace with collect result, which changes when actual files change
-  let effectHotReload = -1
-
   if (!isProductionBuild) {
     // Add the entire directory `content` as the dependency
     // so when manually editing the files pages are rebuild
     context.addContextDependency(contentDir)
-    effectHotReload = Math.random()
   }
 
   const { resourcePath } = context
@@ -119,18 +112,19 @@ export default function GspenstPage (props) {
 }`
 
   const dataFetchingFunctions = `
-const effectHotReload = ${effectHotReload}
-
 const sem = new Semaphore(10)
 
+const resources = ${JSON.stringify(resources)}
+const routesConfig = ${routesConfigStringified}
+const isStaticExport = !!${staticExport}
+const routingParameter = ${routingParameter}
+
 export const getStaticPaths = async () => {
-  return __gspenst_server__.getStaticPaths(${routesConfigStringified}, ${JSON.stringify(
-    resources
-  )}, !!${staticExport})()
+  return __gspenst_server__.getStaticPaths(routesConfig, resources, isStaticExport)()
 }
 
 export const getStaticProps = async (context) => {
-  return __gspenst_server__.getStaticProps(${routesConfigStringified},'${routingParameter}', sem)(context)
+  return __gspenst_server__.getStaticProps(routesConfig, routingParameter, sem)(context)
 }
 `
 
