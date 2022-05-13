@@ -1,5 +1,5 @@
 import { okAsync, errAsync, combine } from './shared-kernel'
-import db from './db'
+import { resourcesDb as db } from './db'
 import type { ResourceType, Resource } from './domain/resource'
 import type { RoutesConfig } from './domain/routes'
 import type { ID, ResultAsync } from './shared-kernel'
@@ -31,14 +31,14 @@ const repository = {
   },
 
   set(resource: Resource) {
-    return db.set<Resource>('resources', String(resource.id), resource)
+    return db.set(String(resource.id), resource)
   },
 
   get<T extends ID | ID[]>(id: T): GetValue<T> {
     const ids = [id].flat()
 
     const result = db
-      .get<Resource>('resources', ...ids.map(String))
+      .get(...ids.map(String))
       .map((resources) => {
         if (ids.length === 1) {
           return resources[0]
@@ -50,7 +50,7 @@ const repository = {
   },
 
   getAll() {
-    return db.keys('resources').andThen((idsResult) => {
+    return db.keys().andThen((idsResult) => {
       return this.get(idsResult as unknown as ID[])
     })
   },

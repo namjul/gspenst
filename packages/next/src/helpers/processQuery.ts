@@ -5,7 +5,7 @@ import type { SemaphoreInterface } from 'async-mutex'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import { do_, absurd } from '../utils'
-import db from '../db'
+import { resourcesDataDb as db } from '../db'
 import repository from '../repository'
 import { combine, ok, err, fromPromise } from '../shared-kernel'
 import type { Result, ResultAsync, ID } from '../shared-kernel'
@@ -56,9 +56,11 @@ function batchLoadFromTina(sem: SemaphoreInterface) {
 async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
   return Promise.all(
     resources.map(async (resource) => {
-      return db
-        .get<ResourceData>('dataLoaderCache', String(resource.id))
-        .map((r) => r[0]!)
+      return db.get(String(resource.id)).map((r) => {
+        const result =r[0]!
+        log(`redis cache hit (${moduleId})`, result.id)
+        return result
+      })
     })
   )
 }
@@ -98,9 +100,7 @@ export const createLoaders = (sem: SemaphoreInterface = defaultSem) => {
         )
           .andThen((x) => x)
           .andThen((r) => {
-            return db
-              .set<ResourceData>('dataLoaderCache', String(r.id), r)
-              .map(() => r)
+            return db.set(String(r.id), r).map(() => r)
           })
       })
   }

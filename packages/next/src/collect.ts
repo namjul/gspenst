@@ -1,5 +1,5 @@
 import { ok, err, combine } from './shared-kernel'
-import db from './db'
+import * as db from './db'
 import type { Resource } from './domain/resource'
 import type { RoutesConfig, DataQueryBrowse } from './domain/routes'
 import { getCollections, getRoutes } from './domain/routes'
