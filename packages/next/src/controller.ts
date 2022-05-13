@@ -1,5 +1,4 @@
 import { ok, err, combine } from './shared-kernel'
-import type { Semaphore } from 'async-mutex'
 import type {
   RoutingContext,
   CollectionRoutingContext,
@@ -81,16 +80,13 @@ async function channelController(
   //   return entry
   // }
 
-  const { filter, limit, order, request } = routingContext
-  const page = request.params?.page
-
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
-    filter,
-    limit,
-    order,
-    page,
+    filter: routingContext.filter,
+    limit: routingContext.limit,
+    order: routingContext.order,
+    page: routingContext.request.params?.page,
   }
 
   const data: { [name: string]: DataQuery } = {
@@ -266,9 +262,8 @@ export function controller(
   routingContextsResult:
     | Result<Option<RoutingContext>>
     | Result<Option<RoutingContext>[]>,
-  sem?: Semaphore
+  dataLoaders: DataLoaders = createLoaders()
 ): Result<Promise<ControllerReturnType>> {
-  const dataLoaders = createLoaders(sem)
 
   return routingContextsResult.map(async (routingContext) => {
     for (const context of [routingContext].flat()) {

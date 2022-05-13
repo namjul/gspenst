@@ -90,7 +90,6 @@ async function loader(
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
   const imports = `
-import { Semaphore } from 'async-mutex'
 import * as __gspenst_server__ from '@gspenst/next/server'
 import GspenstClientPage from '@gspenst/next/client'
 import { tinaConfig } from '${tinaSchemaPath}'
@@ -112,19 +111,18 @@ export default function GspenstPage (props) {
 }`
 
   const dataFetchingFunctions = `
-const sem = new Semaphore(10)
 
 const resources = ${JSON.stringify(resources)}
 const routesConfig = ${routesConfigStringified}
 const isStaticExport = !!${staticExport}
-const routingParameter = ${routingParameter}
+const routingParameter = '${routingParameter}'
 
 export const getStaticPaths = async () => {
   return __gspenst_server__.getStaticPaths(routesConfig, resources, isStaticExport)()
 }
 
 export const getStaticProps = async (context) => {
-  return __gspenst_server__.getStaticProps(routesConfig, routingParameter, sem)(context)
+  return __gspenst_server__.getStaticProps(routesConfig, routingParameter)(context)
 }
 `
 

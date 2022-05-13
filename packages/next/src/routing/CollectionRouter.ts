@@ -10,7 +10,6 @@ import ParentRouter from './ParentRouter'
 
 class CollectionRouter extends ParentRouter {
   routerName: string
-  permalink: string
   routeRegExpResult: Result<RegExp>
   permalinkRegExpResult: Result<RegExp>
   config: Collection
@@ -23,13 +22,12 @@ class CollectionRouter extends ParentRouter {
     this.config = config
     this.postSet = postStack
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
-    this.permalink = this.config.permalink
     this.routeRegExpResult = pathToRegexp(
       path.join(`/${this.route}`, '{page/:page(\\d+)}?'),
       this.keysRoute
     )
     this.permalinkRegExpResult = pathToRegexp(
-      this.permalink,
+      this.config.permalink,
       this.keysPermalink
     )
   }

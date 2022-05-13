@@ -5,6 +5,7 @@ import type { SemaphoreInterface } from 'async-mutex'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import { do_, absurd } from '../utils'
+import db from '../db'
 import repository from '../repository'
 import { combine, ok, err, fromPromise } from '../shared-kernel'
 import type { Result, ResultAsync, ID } from '../shared-kernel'
@@ -15,86 +16,93 @@ import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
 import type { QueryOutcome, ResourceData } from '../domain/theming'
 import * as Errors from '../errors'
-import { createLogger } from '../logger'
 
-const log = createLogger('processQuery')
-
-const moduleId = Math.random()
-log('init processQuery module with: ', moduleId)
-
-function batchFunction(sem: SemaphoreInterface) {
-  log('Call BatchFunction')
+function batchLoadFromTina(sem: SemaphoreInterface) {
   return async (resources: ReadonlyArray<Resource>) => {
-    log(
-      `batch loading(${moduleId})`,
-      resources.map(({ id }) => id),
-      `semaphore: ${sem.isLocked()}`
-    )
-
-    let count = 0
-
-    const x = resources.map(async (resource) => {
-      const { resourceType, relativePath } = resource
-      ++count
-      // log(`load ${resourceType}:${relativePath}`)
-      // log(++count)
-
-      const result = await sem.runExclusive(async () => {
-        switch (resourceType) {
-          case 'page':
-            return api.getPage({ relativePath }).map((tinaData) => ({
-              ...resource,
-              tinaData,
-            }))
-          case 'post':
-            return api.getPost({ relativePath }).map((tinaData) => ({
-              ...resource,
-              tinaData,
-            }))
-          case 'author':
-            return api.getAuthor({ relativePath }).map((tinaData) => ({
-              ...resource,
-              tinaData,
-            }))
-          case 'tag':
-            return api.getTag({ relativePath }).map((tinaData) => ({
-              ...resource,
-              tinaData,
-            }))
-          default:
-            return absurd(resourceType)
-        }
+    return Promise.all(
+      resources.map(async (resource) => {
+        const { resourceType, relativePath } = resource
+        return sem.runExclusive(async () => {
+          switch (resourceType) {
+            case 'page':
+              return api.getPage({ relativePath }).map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
+            case 'post':
+              return api.getPost({ relativePath }).map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
+            case 'author':
+              return api.getAuthor({ relativePath }).map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
+            case 'tag':
+              return api.getTag({ relativePath }).map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
+            default:
+              return absurd(resourceType)
+          }
+        })
       })
-      return result
-    })
-
-    log('resultList start')
-    const resultList = await Promise.all(x)
-    log(`resultList end. ${count} fetched from ${resources.length}`)
-    return resultList
+    )
   }
+}
+
+async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
+  return Promise.all(
+    resources.map(async (resource) => {
+      return db
+        .get<ResourceData>('dataLoaderCache', String(resource.id))
+        .map((r) => r[0]!)
+    })
+  )
 }
 
 const defaultSem = new Semaphore(100)
 
 export const createLoaders = (sem: SemaphoreInterface = defaultSem) => {
-  const resourceLoader = new DataLoader<Resource, Result<ResourceData>, ID>(
-    batchFunction(sem),
+  const fastResourceLoader = new DataLoader<Resource, Result<ResourceData>, ID>(
+    batchLoadFromRedis,
     {
-      batchScheduleFn: (callback) => setTimeout(callback, 100),
+      cacheKeyFn: (resource) => resource.id,
+    }
+  )
+  const slowResourceLoader = new DataLoader<Resource, Result<ResourceData>, ID>(
+    batchLoadFromTina(sem),
+    {
       cacheKeyFn: (resource) => resource.id,
     }
   )
 
   const loadResource = (resource: Resource) => {
-    return fromPromise(resourceLoader.load(resource), (error: unknown) =>
+    return fromPromise(fastResourceLoader.load(resource), (error: unknown) =>
       Errors.other(
         `loadResource ${JSON.stringify(error, null, 2)}`,
         error instanceof Error ? error : undefined
       )
-    ).andThen((x) => {
-      return x
-    })
+    )
+      .andThen((x) => x)
+      .orElse(() => {
+        return fromPromise(
+          slowResourceLoader.load(resource),
+          (error: unknown) =>
+            Errors.other(
+              `loadResource ${JSON.stringify(error, null, 2)}`,
+              error instanceof Error ? error : undefined
+            )
+        )
+          .andThen((x) => x)
+          .andThen((r) => {
+            return db
+              .set<ResourceData>('dataLoaderCache', String(r.id), r)
+              .map(() => r)
+          })
+      })
   }
 
   const loadManyResource = (resources: Resource[]) => {
@@ -129,6 +137,7 @@ export function processQuery(
       case 'read':
         return repository
           .find({
+            // TODO make it work with all dynamic variables
             slug: query.slug,
           })
           .andThen(loadResource)

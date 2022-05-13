@@ -18,6 +18,11 @@ const db = {
       Errors.other('Db', error instanceof Error ? error : undefined)
     )
   },
+  delete(key: string): DBResultAsync<number> {
+    return fromPromise(redis.del(key), (error: unknown) =>
+      Errors.other('Db', error instanceof Error ? error : undefined)
+    )
+  },
   set<T extends AObject>(
     key: string,
     field: string,
