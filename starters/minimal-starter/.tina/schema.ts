@@ -1,4 +1,4 @@
-import { createSchema, createConfig } from '@gspenst/next/client'
+import { createSchema } from '@gspenst/next/client'
 import type { TinaTemplate } from '@gspenst/next'
 
 const testimonialBlockSchema: TinaTemplate = {
@@ -33,7 +33,4 @@ const ctaBlockSchema: TinaTemplate = {
   ],
 }
 
-const schema = createSchema([testimonialBlockSchema, ctaBlockSchema])
-export const tinaConfig = createConfig(schema)
-
-export default schema
+export default createSchema([testimonialBlockSchema, ctaBlockSchema])
