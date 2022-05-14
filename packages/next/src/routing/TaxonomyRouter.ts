@@ -56,7 +56,12 @@ class TaxonomyRouter extends ParentRouter {
     return super.handle(request, contexts, routers)
   }
 
-  #createContext(_path: string, params?: Request['params']) {
+  #createContext(_path: string, params: Request['params'] = {}) {
+    const taxonomyQuery = {
+      type: 'read' as const,
+      resourceType: 'tag' as const,
+      slug: params.slug,
+    }
     return {
       type: 'channel' as const,
       name: this.taxonomyKey,
@@ -65,8 +70,11 @@ class TaxonomyRouter extends ParentRouter {
         params,
       },
       templates: [],
-      data: this.data?.query,
-      filter: params?.slug ? this.#replaceFilter(params.slug) : undefined,
+      data: {
+        ...this.data?.query,
+        [this.taxonomyKey]: taxonomyQuery,
+      },
+      filter: params.slug ? this.#replaceFilter(params.slug) : undefined,
       limit: this.config.limit,
     }
   }

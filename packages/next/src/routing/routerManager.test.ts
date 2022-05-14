@@ -282,7 +282,13 @@ describe('router contexts', () => {
           type: 'channel',
           name: 'author',
           templates: [],
-          data: undefined,
+          data: {
+            author: {
+              resourceType: 'tag',
+              slug: 'pedro',
+              type: 'read',
+            },
+          },
           filter: "authors:'pedro'",
           limit: 5,
           order: undefined,
@@ -350,7 +356,13 @@ describe('router contexts', () => {
         {
           type: 'channel',
           name: 'author',
-          data: undefined,
+          data: {
+            author: {
+              resourceType: 'tag',
+              slug: 'pedro',
+              type: 'read',
+            },
+          },
           templates: [],
           filter: "authors:'pedro'",
           limit: 5,
