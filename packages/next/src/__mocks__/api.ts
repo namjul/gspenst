@@ -14,6 +14,7 @@ const mapPost = (relativePath: string) =>
     '0th-post.mdx': {
       data: {
         config: {
+          __typename: 'Config' as const,
           id: 'content/config/index.json',
           darkMode: true,
         },
@@ -48,6 +49,7 @@ const mapPost = (relativePath: string) =>
       data: {
         config: {
           id: 'content/config/index.json',
+          __typename: 'Config' as const,
           darkMode: true,
         },
         post: {
@@ -81,6 +83,7 @@ const mapPost = (relativePath: string) =>
       data: {
         config: {
           id: 'content/config/index.json',
+          __typename: 'Config' as const,
           darkMode: true,
         },
         post: {
@@ -114,6 +117,7 @@ const mapPost = (relativePath: string) =>
       data: {
         config: {
           id: 'content/config/index.json',
+          __typename: 'Config' as const,
           darkMode: true,
         },
         post: {
@@ -172,6 +176,7 @@ const mapPost = (relativePath: string) =>
       data: {
         config: {
           id: 'content/config/index.json',
+          __typename: 'Config' as const,
           darkMode: true,
         },
         post: {
@@ -205,6 +210,7 @@ const mapPost = (relativePath: string) =>
       data: {
         config: {
           id: 'content/config/index.json',
+          __typename: 'Config' as const,
           darkMode: true,
         },
         post: {
@@ -238,6 +244,7 @@ const mapPost = (relativePath: string) =>
       data: {
         config: {
           id: 'content/config/index.json',
+          __typename: 'Config' as const,
           darkMode: true,
         },
         post: {
@@ -271,6 +278,7 @@ const mapPost = (relativePath: string) =>
       data: {
         config: {
           id: 'content/config/index.json',
+          __typename: 'Config' as const,
           darkMode: true,
         },
         post: {
@@ -328,6 +336,7 @@ const mapPost = (relativePath: string) =>
       data: {
         config: {
           id: 'content/config/index.json',
+          __typename: 'Config' as const,
           darkMode: true,
         },
         post: {
@@ -361,6 +370,7 @@ const mapPost = (relativePath: string) =>
       data: {
         config: {
           id: 'content/config/index.json',
+          __typename: 'Config' as const,
           darkMode: true,
         },
         post: {
@@ -590,6 +600,7 @@ export const getResources = (): ApiResultAsync<{
                       __typename: 'PostTags',
                       tag: {
                         id: 'content/tags/tag-1.mdx',
+                        __typename: 'Tag',
                         _sys: { filename: 'tag-1' },
                         name: 'Tag 1',
                         date: '2021-07-03T20:30:00.000Z',
@@ -602,6 +613,7 @@ export const getResources = (): ApiResultAsync<{
                       __typename: 'PostAuthors',
                       author: {
                         id: 'content/authors/pedro.mdx',
+                        __typename: 'Author',
                         _sys: { filename: 'pedro' },
                         name: 'Pedro',
                         date: '2021-07-03T20:30:00.000Z',
@@ -633,6 +645,7 @@ export const getResources = (): ApiResultAsync<{
                       __typename: 'PostTags',
                       tag: {
                         id: 'content/tags/tag-2.mdx',
+                        __typename: 'Tag',
                         _sys: { filename: 'tag-2' },
                         name: 'Tag 2',
                         date: '2021-07-03T20:30:00.000Z',
@@ -645,6 +658,7 @@ export const getResources = (): ApiResultAsync<{
                       __typename: 'PostAuthors',
                       author: {
                         id: 'content/authors/napolean.mdx',
+                        __typename: 'Author',
                         _sys: { filename: 'napolean' },
                         name: 'Napolean',
                         date: '2021-07-03T20:30:00.000Z',
@@ -718,6 +732,7 @@ export const getResources = (): ApiResultAsync<{
                       __typename: 'PostTags',
                       tag: {
                         id: 'content/tags/tag-1.mdx',
+                        __typename: 'Tag',
                         _sys: { filename: 'tag-1' },
                         name: 'Tag 1',
                         date: '2021-07-03T20:30:00.000Z',
@@ -728,6 +743,7 @@ export const getResources = (): ApiResultAsync<{
                       __typename: 'PostTags',
                       tag: {
                         id: 'content/tags/tag-2.mdx',
+                        __typename: 'Tag',
                         _sys: { filename: 'tag-2' },
                         name: 'Tag 2',
                         date: '2021-07-03T20:30:00.000Z',
@@ -740,6 +756,7 @@ export const getResources = (): ApiResultAsync<{
                       __typename: 'PostAuthors',
                       author: {
                         id: 'content/authors/napolean.mdx',
+                        __typename: 'Author',
                         _sys: { filename: 'napolean' },
                         name: 'Napolean',
                         date: '2021-07-03T20:30:00.000Z',
@@ -750,6 +767,7 @@ export const getResources = (): ApiResultAsync<{
                       __typename: 'PostAuthors',
                       author: {
                         id: 'content/authors/pedro.mdx',
+                        __typename: 'Author',
                         _sys: { filename: 'pedro' },
                         name: 'Pedro',
                         date: '2021-07-03T20:30:00.000Z',
@@ -913,6 +931,7 @@ export const getPage = (): ApiResultAsync<{ data: GetPageQuery }> => {
   return okAsync({
     data: {
       config: {
+        __typename: 'Config',
         id: 'content/config/index.json',
         darkMode: true,
       },
@@ -956,6 +975,7 @@ export const getAuthor = (): ApiResultAsync<{ data: GetAuthorQuery }> => {
         slug: 'pedro',
       },
       config: {
+        __typename: 'Config',
         id: 'content/config/index.json',
         darkMode: true,
       },
@@ -974,6 +994,7 @@ export const getTag = (): ApiResultAsync<{ data: GetTagQuery }> => {
         slug: 'tag-1',
       },
       config: {
+        __typename: 'Config',
         id: 'content/config/index.json',
         darkMode: true,
       },
@@ -985,6 +1006,7 @@ export const getConfig = (): ApiResultAsync<{ data: GetConfigQuery }> => {
   return okAsync({
     data: {
       config: {
+        __typename: 'Config',
         id: 'content/config/index.json',
         darkMode: true,
       },

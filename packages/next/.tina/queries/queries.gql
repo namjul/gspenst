@@ -101,17 +101,17 @@ query getPost($relativePath: String!) {
   }
 }
 
-query getPosts {
-  ...ConfigQueryFragment
-  postConnection {
-    totalCount
-    edges {
-      node {
-        ...PostFragment
-      }
-    }
-  }
-}
+# query getPosts($filter: PostFilter) {
+#   ...ConfigQueryFragment
+#   postConnection(filter: $filter) {
+#     totalCount
+#     edges {
+#       node {
+#         ...PostFragment
+#       }
+#     }
+#   }
+# }
 
 query getPage($relativePath: String!) {
   ...ConfigQueryFragment
@@ -120,17 +120,17 @@ query getPage($relativePath: String!) {
   }
 }
 
-query getPages {
-  ...ConfigQueryFragment
-  pageConnection {
-    totalCount
-    edges {
-      node {
-        ...PageFragment
-      }
-    }
-  }
-}
+# query getPages($filter: PageFilter) {
+#   ...ConfigQueryFragment
+#   pageConnection(filter: $filter) {
+#     totalCount
+#     edges {
+#       node {
+#         ...PageFragment
+#       }
+#     }
+#   }
+# }
 
 query getAuthor($relativePath: String!) {
   ...ConfigQueryFragment
@@ -139,17 +139,17 @@ query getAuthor($relativePath: String!) {
   }
 }
 
-query getAuthors {
-  ...ConfigQueryFragment
-  authorConnection {
-    totalCount
-    edges {
-      node {
-        ...AuthorFragment
-      }
-    }
-  }
-}
+# query getAuthors($filter: AuthorFilter) {
+#   ...ConfigQueryFragment
+#   authorConnection(filter: $filter) {
+#     totalCount
+#     edges {
+#       node {
+#         ...AuthorFragment
+#       }
+#     }
+#   }
+# }
 
 query getTag($relativePath: String!) {
   ...ConfigQueryFragment
@@ -158,14 +158,14 @@ query getTag($relativePath: String!) {
   }
 }
 
-query getTags {
-  ...ConfigQueryFragment
-  tagConnection {
-    totalCount
-    edges {
-      node {
-        ...TagFragment
-      }
-    }
-  }
-}
+# query getTags($filter: TagFilter) {
+#   ...ConfigQueryFragment
+#   tagConnection(filter: $filter) {
+#     totalCount
+#     edges {
+#       node {
+#         ...TagFragment
+#       }
+#     }
+#   }
+# }

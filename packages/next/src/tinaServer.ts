@@ -18,6 +18,7 @@ export async function startTinaServer(this: GspenstPlugin) {
 
   log('Starting tina server', this.projectPath)
 
+  // TODO remove `--noWatch` and add `--experimentalData`
   const ps = spawn('tinacms', ['server:start', '--noWatch'], {
     cwd: this.projectPath,
   })

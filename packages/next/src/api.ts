@@ -1,4 +1,5 @@
 import { getSdk } from '../.tina/__generated__/types'
+// import type { PageFilter, PostFilter, AuthorFilter, TagFilter } from '../.tina/__generated__/types'
 import { fromPromise } from './shared-kernel'
 import * as Errors from './errors'
 import type { AsyncReturnType, ResultAsync } from './shared-kernel'
@@ -29,6 +30,15 @@ export function getPage(variables: {
   )
 }
 
+// export type GetPages = AsyncReturnType<typeof sdk.getPages>
+// export function getPages(variables: {
+//   filter: PageFilter
+// }): ApiResultAsync<GetPages> {
+//   return fromPromise(sdk.getPages(variables), (error: unknown) =>
+//     Errors.other('Api#getPages', error instanceof Error ? error : undefined)
+//   )
+// }
+
 export type GetPost = AsyncReturnType<typeof sdk.getPost>
 export function getPost(variables: {
   relativePath: string
@@ -37,6 +47,15 @@ export function getPost(variables: {
     Errors.other('Api#getPost', error instanceof Error ? error : undefined)
   )
 }
+
+// export type GetPosts = AsyncReturnType<typeof sdk.getPosts>
+// export function getPosts(variables: {
+//   filter: PostFilter
+// }): ApiResultAsync<GetPosts> {
+//   return fromPromise(sdk.getPosts(variables), (error: unknown) =>
+//     Errors.other('Api#getPosts', error instanceof Error ? error : undefined)
+//   )
+// }
 
 export type GetAuthor = AsyncReturnType<typeof sdk.getAuthor>
 export function getAuthor(variables: {
@@ -47,6 +66,15 @@ export function getAuthor(variables: {
   )
 }
 
+// export type GetAuthors = AsyncReturnType<typeof sdk.getAuthors>
+// export function getAuthors(variables: {
+//   filter: AuthorFilter
+// }): ApiResultAsync<GetAuthors> {
+//   return fromPromise(sdk.getAuthors(variables), (error: unknown) =>
+//     Errors.other('Api#getAuthors', error instanceof Error ? error : undefined)
+//   )
+// }
+
 export type GetTag = AsyncReturnType<typeof sdk.getTag>
 export function getTag(variables: {
   relativePath: string
@@ -55,6 +83,15 @@ export function getTag(variables: {
     Errors.other('Api#getTag', error instanceof Error ? error : undefined)
   )
 }
+
+// export type GetTags = AsyncReturnType<typeof sdk.getTags>
+// export function getTags(variables: {
+//   filter: AuthorFilter
+// }): ApiResultAsync<GetTags> {
+//   return fromPromise(sdk.getTags(variables), (error: unknown) =>
+//     Errors.other('Api#getTags', error instanceof Error ? error : undefined)
+//   )
+// }
 
 export type GetConfig = AsyncReturnType<typeof sdk.getConfig>
 export function getConfig(): ApiResultAsync<GetConfig> {

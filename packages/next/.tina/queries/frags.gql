@@ -1,12 +1,14 @@
 
 fragment ConfigQueryFragment on Query {
   config(relativePath: "index.json") {
+    __typename
     id
     ...ConfigParts
   }
 }
 
 fragment PostFragment on Post {
+  __typename
   id
   ...PostParts
   tags {
@@ -26,6 +28,7 @@ fragment PostFragment on Post {
 }
 
 fragment PageFragment on Page {
+  __typename
   id
   ...PageParts
   tags {
@@ -45,11 +48,13 @@ fragment PageFragment on Page {
 }
 
 fragment AuthorFragment on Author {
+  __typename
   id
   ...AuthorParts
 }
 
 fragment TagFragment on Tag {
+  __typename
   id
   ...TagParts
 }
