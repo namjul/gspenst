@@ -1,51 +1,5 @@
 import { z } from '../shared-kernel'
-import type { GetTag, GetAuthor, GetPage, GetPost } from '../api'
-import {
-  postResourceSchema,
-  pageResourceSchema,
-  authorResourceSchema,
-  tagResourceSchema,
-} from './resource'
-import { limitSchema } from './routes'
-
-const getPostSchema = z.custom<GetPost>((value) => value)
-const getPageSchema = z.custom<GetPage>((value) => value)
-const getTagSchema = z.custom<GetTag>((value) => value)
-const getAuthorSchema = z.custom<GetAuthor>((value) => value)
-
-const paginationSchema = z.object({
-  page: z.number(), // the current page number
-  prev: z.number().nullable(), // the previous page number
-  next: z.number().nullable(), // the next page number
-  pages: z.number(), // the number of pages available
-  total: z.number(), // the number of posts available
-  limit: limitSchema, // the number of posts per page
-})
-
-export type Pagination = z.infer<typeof paginationSchema>
-
-export const resourceDataSchema = z.discriminatedUnion('resourceType', [
-  postResourceSchema.merge(z.object({ tinaData: getPostSchema })),
-  pageResourceSchema.merge(z.object({ tinaData: getPageSchema })),
-  authorResourceSchema.merge(z.object({ tinaData: getAuthorSchema })),
-  tagResourceSchema.merge(z.object({ tinaData: getTagSchema })),
-])
-
-export type ResourceData = z.infer<typeof resourceDataSchema>
-
-export const queryOutcomeSchema = z.discriminatedUnion('type', [
-  z.object({
-    type: z.literal('read'),
-    resource: resourceDataSchema,
-  }),
-  z.object({
-    type: z.literal('browse'),
-    resources: z.array(resourceDataSchema),
-    pagination: paginationSchema,
-  }),
-])
-
-export type QueryOutcome = z.infer<typeof queryOutcomeSchema>
+import { queryOutcomeSchema } from '../helpers/processQuery'
 
 // const queryOutcomeRead = z.object({
 //   type: z.literal('read'),

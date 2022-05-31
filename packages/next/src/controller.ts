@@ -1,4 +1,4 @@
-import { ok, err, combine } from './shared-kernel'
+import { ok, err } from './shared-kernel'
 import type {
   RoutingContext,
   CollectionRoutingContext,
@@ -8,7 +8,7 @@ import type {
   Redirect,
 } from './domain/routing'
 import type { DataQuery } from './domain/routes'
-import { createLoaders, processQuery } from './helpers/processQuery'
+import { createLoaders, processData } from './helpers/processQuery'
 import type { DataLoaders } from './helpers/processQuery'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared-kernel'
@@ -39,21 +39,24 @@ async function entryController(
   dataLoaders: DataLoaders
 ): Promise<ControllerResult<PageProps>> {
   const { resourceType, request } = routingContext
+
   const query: DataQuery = {
     resourceType,
     type: 'read',
     ...request.params,
   }
 
-  return (await processQuery(query, dataLoaders)).map((entry) => {
-    return {
+  const data: { [name: string]: DataQuery } = {
+    entry: query,
+  }
+
+  return processData(data, dataLoaders).andThen((_data) => {
+    return ok({
       context: resourceType,
-      data: {
-        entry,
-      },
+      data: _data,
       templates: getTemplateHierarchy(routingContext),
       route: routingContext.request.path,
-    }
+    })
   })
 }
 
@@ -92,24 +95,7 @@ async function channelController(
     posts: postsQuery,
   }
 
-  const keys = Object.keys(data)
-  const result = combine(
-    await Promise.all(
-      keys.map(async (key) => {
-        return processQuery(data[key]!, dataLoaders)
-      })
-    )
-  )
-
-  return result.andThen((resource) => {
-    const dataEntries = keys.reduce((acc, current, index) => {
-      const queryOutcome = resource[index]
-      return {
-        ...acc,
-        [current]: queryOutcome,
-      }
-    }, {})
-
+  return processData(data, dataLoaders).andThen((_data) => {
     // TODO
     // if ((limit === 'all' && page > 1) || page > pages) {
     //   //redirect
@@ -118,9 +104,7 @@ async function channelController(
     return ok({
       context: 'index' as const,
       templates: getTemplateHierarchy(routingContext),
-      data: {
-        ...dataEntries,
-      },
+      data: _data,
       route: routingContext.request.path,
     })
   })
@@ -168,30 +152,11 @@ async function collectionController(
     posts: postsQuery,
   }
 
-  const keys = Object.keys(data)
-  const result = combine(
-    await Promise.all(
-      keys.map(async (key) => {
-        return processQuery(data[key]!, dataLoaders)
-      })
-    )
-  )
-
-  return result.andThen((resource) => {
-    const dataEntries = keys.reduce((acc, current, index) => {
-      const queryOutcome = resource[index]
-      return {
-        ...acc,
-        [current]: queryOutcome,
-      }
-    }, {})
-
+  return processData(data, dataLoaders).andThen((_data) => {
     return ok({
       context: 'index' as const,
       templates: getTemplateHierarchy(routingProperties),
-      data: {
-        ...dataEntries,
-      },
+      data: _data,
       route: routingProperties.request.path,
     })
   })
@@ -222,31 +187,11 @@ async function customController(
     ...routingProperties.data,
   }
 
-  const keys = Object.keys(data)
-  const result = combine(
-    await Promise.all(
-      keys.map(async (key) => {
-        return processQuery(data[key]!, dataLoaders)
-      })
-    )
-  )
-
-  return result.andThen((resource) => {
-    const dataEntries = keys.reduce((acc, current, index) => {
-      const queryOutcome = resource[index]
-      return {
-        ...acc,
-        [current]: queryOutcome,
-      }
-    }, {})
-
+  return processData(data, dataLoaders).andThen((_data) => {
     return ok({
       context: null,
       templates: getTemplateHierarchy(routingProperties),
-      data: {
-        // entry: entry.value, // TODO embed the first one from the data list
-        ...dataEntries,
-      },
+      data: _data,
       route: routingProperties.request.path,
     })
   })

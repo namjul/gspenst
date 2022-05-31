@@ -77,9 +77,6 @@ export const routerManager = (routesConfig: RoutesConfig) => {
       const paths = routers.flatMap((_router) => {
         return _router.resolvePaths(routers, resources)
       })
-
-      // console.log('PATHS:', paths)
-
       return paths
     },
   }
