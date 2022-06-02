@@ -1,6 +1,11 @@
 import type { Get, Split, Result } from '../shared-kernel'
 import { idSchema, slugSchema, ok, err, z } from '../shared-kernel'
-import type { GetResourcesQuery } from '../../.tina/__generated__/types'
+import type {
+  PostFragmentFragment,
+  PageFragmentFragment,
+  AuthorFragmentFragment,
+  TagFragmentFragment,
+} from '../../.tina/__generated__/types'
 import { do_ } from '../shared/utils'
 import * as Errors from '../errors'
 
@@ -89,21 +94,18 @@ export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
-export type ResourcesNode = NonNullable<
-  Exclude<
-    Get<GetResourcesQuery, 'collections[0].documents.edges[0].node'>,
-    { __typename: 'Config' }
-  >
->
+type ResourceNode =
+  | PostFragmentFragment
+  | PageFragmentFragment
+  | AuthorFragmentFragment
+  | TagFragmentFragment
 
 export function createResource(
-  node: ResourcesNode,
+  node: Partial<ResourceNode>,
   urlPathname: string | undefined,
   filters: string[] = []
 ): Result<Resource> {
-  const {
-    _sys: { filename, path: filepath, relativePath },
-  } = node
+  const { _sys: { filename, path: filepath, relativePath } = {} } = node
 
   const dynamicVariablesResult = createDynamicVariables(node)
 
@@ -113,14 +115,10 @@ export function createResource(
 
   const dynamicVariables = dynamicVariablesResult.value
 
-  const [resourceType] = node.__typename
-    .toLowerCase()
-    .split('document') as Split<Lowercase<typeof node.__typename>, 'document'>
-
   const resource = {
     filename,
     filepath,
-    resourceType,
+    resourceType: node.__typename?.toLowerCase(),
     relativePath,
     urlPathname,
     filters,
@@ -137,11 +135,9 @@ export function createResource(
 }
 
 export function createDynamicVariables(
-  node: ResourcesNode
+  node: Partial<ResourceNode>
 ): Result<DynamicVariables> {
-  const {
-    _sys: { filename },
-  } = node
+  const { _sys: { filename } = {} } = node
 
   const { slug, primary_tag, primary_author } = do_(() => {
     /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
@@ -163,7 +159,7 @@ export function createDynamicVariables(
     /* eslint-enable */
   })
 
-  const [day, month, year] = new Date(node.date)
+  const [day, month, year] = (node.date ? new Date(node.date) : new Date())
     .toLocaleString('en-GB', {
       year: 'numeric',
       month: '2-digit',
