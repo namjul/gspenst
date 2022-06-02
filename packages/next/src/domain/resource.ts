@@ -140,15 +140,13 @@ export function createDynamicVariables(
   node: ResourcesNode
 ): Result<DynamicVariables> {
   const {
-    __typename,
     _sys: { filename },
-    date,
   } = node
 
   const { slug, primary_tag, primary_author } = do_(() => {
     /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
     const empty = 'all'
-    if (__typename === 'Page' || __typename === 'Post') {
+    if ('tags' in node || 'authors' in node) {
       const tag = node.tags?.[0]?.tag
       const author = node.authors?.[0]?.author
       return {
@@ -158,14 +156,14 @@ export function createDynamicVariables(
       }
     }
     return {
-      slug: node.slug || node.name || filename,
+      slug: node.slug || ('name' in node && node.name) || filename,
       primary_tag: empty,
       primary_author: empty,
     }
     /* eslint-enable */
   })
 
-  const [day, month, year] = new Date(date)
+  const [day, month, year] = new Date(node.date)
     .toLocaleString('en-GB', {
       year: 'numeric',
       month: '2-digit',
