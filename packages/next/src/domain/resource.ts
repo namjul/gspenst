@@ -105,7 +105,7 @@ export function createResource(
   urlPathname: string | undefined,
   filters: string[] = []
 ): Result<Resource> {
-  const { _sys: { filename, path: filepath, relativePath } = {} } = node
+  const { _sys: { filename, path: filepath, relativePath } = {}, __typename } = node
 
   const dynamicVariablesResult = createDynamicVariables(node)
 
@@ -118,7 +118,7 @@ export function createResource(
   const resource = {
     filename,
     filepath,
-    resourceType: node.__typename?.toLowerCase(),
+    resourceType: __typename?.toLowerCase(),
     relativePath,
     urlPathname,
     filters,
