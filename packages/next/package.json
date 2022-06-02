@@ -5,6 +5,7 @@
   "module": "dist/gspenst-next.esm.js",
   "scripts": {
     "gen": "tinacms schema:compile && tinacms schema:types",
+    "test:tina": "tinacms audit",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
