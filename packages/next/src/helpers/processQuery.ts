@@ -77,7 +77,6 @@ async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
       ]).andThen((result) => {
         const [updatedAt, resource] = result as [number, Resource]
         if (isNumber(updatedAt)) {
-          console.log(`revalidate ${resource.id} ${updatedAt}`)
           if (updatedAt > REVALIDATE) {
             return err(Errors.other('Revlidate resource'))
           }
