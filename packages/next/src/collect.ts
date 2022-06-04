@@ -37,7 +37,7 @@ export function collect(
           return []
         }
 
-        const x = do_(() => {
+        return do_(() => {
           if ('postConnection' in collectionResources.data) {
             return collectionResources.data.postConnection.edges?.flatMap(
               (collectionEdge) => {
@@ -78,9 +78,8 @@ export function collect(
               }
             )
           }
+          return []
         })
-
-        return x ?? []
       })
     })
     .andThen((nodes) => {
