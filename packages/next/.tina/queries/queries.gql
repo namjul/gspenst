@@ -5,84 +5,18 @@ query getResources {
         node {
           ... on Document {
             __typename
-            _sys {
-              filename
-                basename
-                breadcrumbs
-                path
-                relativePath
-                extension
-            }
-            id
           }
           ... on Post {
-            id
-            ...PostParts
-            tags {
-              tag {
-                ... on Document {
-                  _sys {
-                    filename
-                  }
-                }
-                ... on Tag {
-                  ...TagFragment
-                }
-              }
-            }
-            authors {
-              author {
-                ... on Document {
-                  _sys {
-                    filename
-                  }
-                }
-                ... on Author {
-                  ...AuthorFragment
-                }
-              }
-            }
+            ...PostFragment
           }
           ... on Page {
-            title
-            slug
-            date
-            tags {
-              __typename
-              tag {
-                ... on Document {
-                  _sys {
-                    filename
-                  }
-                }
-                ... on Tag {
-                  ...TagFragment
-                }
-              }
-            }
-            authors {
-              __typename
-              author {
-                ... on Document {
-                  _sys {
-                    filename
-                  }
-                }
-                ... on Author {
-                  ...AuthorFragment
-                }
-              }
-            }
+            ...PageFragment
           }
           ... on Author {
-            slug
-            date
-            name
+            ...AuthorFragment
           }
           ... on Tag {
-            slug
-            date
-            name
+            ...TagFragment
           }
         }
       }
@@ -90,19 +24,13 @@ query getResources {
   }
 }
 
-query getConfig {
-  ...ConfigQueryFragment
-}
-
 query getPost($relativePath: String!) {
-  ...ConfigQueryFragment
   post(relativePath: $relativePath) {
     ...PostFragment
   }
 }
 
 # query getPosts($filter: PostFilter) {
-#   ...ConfigQueryFragment
 #   postConnection(filter: $filter) {
 #     totalCount
 #     edges {
@@ -114,14 +42,12 @@ query getPost($relativePath: String!) {
 # }
 
 query getPage($relativePath: String!) {
-  ...ConfigQueryFragment
   page(relativePath: $relativePath) {
     ...PageFragment
   }
 }
 
 # query getPages($filter: PageFilter) {
-#   ...ConfigQueryFragment
 #   pageConnection(filter: $filter) {
 #     totalCount
 #     edges {
@@ -133,14 +59,12 @@ query getPage($relativePath: String!) {
 # }
 
 query getAuthor($relativePath: String!) {
-  ...ConfigQueryFragment
   author(relativePath: $relativePath) {
     ...AuthorFragment
   }
 }
 
 # query getAuthors($filter: AuthorFilter) {
-#   ...ConfigQueryFragment
 #   authorConnection(filter: $filter) {
 #     totalCount
 #     edges {
@@ -152,14 +76,12 @@ query getAuthor($relativePath: String!) {
 # }
 
 query getTag($relativePath: String!) {
-  ...ConfigQueryFragment
   tag(relativePath: $relativePath) {
     ...TagFragment
   }
 }
 
 # query getTags($filter: TagFilter) {
-#   ...ConfigQueryFragment
 #   tagConnection(filter: $filter) {
 #     totalCount
 #     edges {

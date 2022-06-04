@@ -1,11 +1,13 @@
-import type { Get, Split, Result } from '../shared-kernel'
+import type { Result } from '../shared-kernel'
 import { idSchema, slugSchema, ok, err, z } from '../shared-kernel'
+import { GetPostDocument, GetPageDocument, GetAuthorDocument, GetTagDocument } from '../../.tina/__generated__/types';
 import type {
   PostFragmentFragment,
   PageFragmentFragment,
   AuthorFragmentFragment,
   TagFragmentFragment,
 } from '../../.tina/__generated__/types'
+import type { GetTag, GetAuthor, GetPage, GetPost } from '../api'
 import { do_ } from '../shared/utils'
 import * as Errors from '../errors'
 
@@ -51,9 +53,65 @@ const resourceBaseSchema = z
   })
   .merge(dynamicVariablesSchema)
 
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+const postFragmentSchema = z.custom<PostFragmentFragment>((value: any) => '__typename' in value && value.__typename === 'Post')
+const pageFragmentSchema = z.custom<PageFragmentFragment>((value: any) => '__typename' in value && value.__typename === 'Page')
+const tagFragmentSchema = z.custom<TagFragmentFragment>((value: any) => '__typename' in value && value.__typename === 'Tag')
+const authorFragmentSchema = z.custom<AuthorFragmentFragment>((value: any) => '__typename' in value && value.__typename === 'Author')
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */
+
+const postTinaDataSchema = postFragmentSchema.transform((postFragment): GetPost => {
+  return {
+    data: {
+      post: postFragment
+    },
+    query: GetPostDocument,
+    variables: {
+      relativePath: postFragment._sys.relativePath
+    }
+  }
+})
+
+const pageTinaDataSchema = pageFragmentSchema.transform((pageFragment): GetPage => {
+  return {
+    data: {
+      page: pageFragment
+    },
+    query: GetPageDocument,
+    variables: {
+      relativePath: pageFragment._sys.relativePath
+    }
+  }
+})
+
+const authorTinaDataSchema = authorFragmentSchema.transform((authorFragment): GetAuthor => {
+  return {
+    data: {
+      author: authorFragment
+    },
+    query: GetAuthorDocument,
+    variables: {
+      relativePath: authorFragment._sys.relativePath
+    }
+  }
+})
+
+const tagTinaDataSchema = tagFragmentSchema.transform((tagFragment): GetTag => {
+  return {
+    data: {
+      tag: tagFragment
+    },
+    query: GetTagDocument,
+    variables: {
+      relativePath: tagFragment._sys.relativePath
+    }
+  }
+})
+
 export const postResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypePost,
+    tinaData: postTinaDataSchema
   })
 )
 
@@ -62,6 +120,7 @@ export type PostResource = z.infer<typeof postResourceSchema>
 export const pageResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypePage,
+    tinaData: pageTinaDataSchema
   })
 )
 
@@ -70,6 +129,7 @@ export type PageResource = z.infer<typeof pageResourceSchema>
 export const authorResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypeAuthor,
+    tinaData: authorTinaDataSchema
   })
 )
 
@@ -78,6 +138,7 @@ export type AuthorResource = z.infer<typeof authorResourceSchema>
 export const tagResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypeTag,
+    tinaData: tagTinaDataSchema
   })
 )
 
@@ -122,6 +183,7 @@ export function createResource(
     relativePath,
     urlPathname,
     filters,
+    tinaData: node,
     ...dynamicVariables,
   }
 

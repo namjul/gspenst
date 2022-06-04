@@ -5,65 +5,31 @@ import type { SemaphoreInterface } from 'async-mutex'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import type { Result, ResultAsync, ID } from '../shared-kernel'
-import type { GetTag, GetAuthor, GetPage, GetPost } from '../api'
 import { do_, absurd, removeNullish } from '../shared/utils'
-import { resourcesDataDb as db } from '../db'
+import { resourcesDb as db } from '../db'
 import repository from '../repository'
-import { combine, ok, err, fromPromise, z } from '../shared-kernel'
+import { combine, ok, err, fromPromise } from '../shared-kernel'
 import * as api from '../api'
+import type { Pagination } from '../domain/theming'
 import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
-import { limitSchema } from '../domain/routes'
-import {
-  dynamicVariablesSchema,
-  postResourceSchema,
-  pageResourceSchema,
-  authorResourceSchema,
-  tagResourceSchema,
-} from '../domain/resource'
+import { dynamicVariablesSchema } from '../domain/resource'
 import * as Errors from '../errors'
 import { parse } from './parser'
 
-const getPostSchema = z.custom<GetPost>((value) => value)
-const getPageSchema = z.custom<GetPage>((value) => value)
-const getTagSchema = z.custom<GetTag>((value) => value)
-const getAuthorSchema = z.custom<GetAuthor>((value) => value)
-
-const paginationSchema = z.object({
-  page: z.number(), // the current page number
-  prev: z.number().nullable(), // the previous page number
-  next: z.number().nullable(), // the next page number
-  pages: z.number(), // the number of pages available
-  total: z.number(), // the number of posts available
-  limit: limitSchema, // the number of posts per page
-})
-
-export type Pagination = z.infer<typeof paginationSchema>
-
-export const resourceDataSchema = z.discriminatedUnion('resourceType', [
-  postResourceSchema.merge(z.object({ tinaData: getPostSchema })),
-  pageResourceSchema.merge(z.object({ tinaData: getPageSchema })),
-  authorResourceSchema.merge(z.object({ tinaData: getAuthorSchema })),
-  tagResourceSchema.merge(z.object({ tinaData: getTagSchema })),
-])
-
-export type ResourceData = z.infer<typeof resourceDataSchema>
-
-export const queryOutcomeSchema = z.discriminatedUnion('type', [
-  z.object({
-    type: z.literal('read'),
-    resource: resourceDataSchema,
-  }),
-  z.object({
-    type: z.literal('browse'),
-    resources: z.array(resourceDataSchema),
-    pagination: paginationSchema,
-  }),
-])
-
-export type QueryOutcome = z.infer<typeof queryOutcomeSchema>
+type ReadQueryOutcome = { type: 'read' } & { resource: Resource }
+type BrowseQueryOutcome = {
+  type: 'browse'
+  pagination: Pagination
+  resources: Resource[]
+  // resources: ID[]
+  // entities: {
+  //   resources: { [id: ID]: ResourceNormalized }
+  // }
+}
+type QueryOutcome = ReadQueryOutcome | BrowseQueryOutcome
 
 function batchLoadFromTina(sem: SemaphoreInterface) {
   return async (resources: ReadonlyArray<Resource>) => {
@@ -115,14 +81,14 @@ async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
 const defaultSem = new Semaphore(100)
 
 export const createLoaders = (sem: SemaphoreInterface = defaultSem) => {
-  const fastResourceLoader = new DataLoader<Resource, Result<ResourceData>, ID>(
+  const fastResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
     batchLoadFromRedis,
     {
       cacheKeyFn: (resource) => resource.id,
     }
   )
 
-  const slowResourceLoader = new DataLoader<Resource, Result<ResourceData>, ID>(
+  const slowResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
     batchLoadFromTina(sem),
     {
       cacheKeyFn: (resource) => resource.id,
@@ -147,8 +113,10 @@ export const createLoaders = (sem: SemaphoreInterface = defaultSem) => {
             )
         )
           .andThen((x) => x)
-          .andThen((r) => {
-            return db.set(String(r.id), r).map(() => r)
+          .andThen((_resource) => {
+            return db
+              .set(String(_resource.id), _resource)
+              .map(() => _resource)
           })
       })
   }
@@ -175,7 +143,7 @@ export function processQuery<T extends DataQuery>(
 export function processQuery(
   query: DataQuery,
   dataLoaders: DataLoaders
-): ResultAsync<QueryOutcome> | ResultAsync<QueryOutcome[]> {
+): ResultAsync<QueryOutcome> {
   const { loadResource, loadManyResource } = dataLoaders
 
   const { type } = query
@@ -186,7 +154,7 @@ export function processQuery(
         return parse(dynamicVariablesSchema.partial(), query).asyncAndThen(
           (dynamicVariables) => {
             return repository
-              .find(removeNullish(dynamicVariables))
+              .find(removeNullish(dynamicVariables)) // TODO if not found, check if `slug` is used and load resource with it
               .andThen(loadResource)
               .map((resource) => {
                 return { type, resource }
@@ -266,6 +234,8 @@ export function processQuery(
               next = end < sortedResources.length ? page + 1 : null
             }
 
+            const resources = sortedResources.slice(start, end)
+
             return {
               type,
               pagination: {
@@ -276,9 +246,7 @@ export function processQuery(
                 prev,
                 next,
               },
-              resources: sortedResources
-                .slice(start, end)
-                .map(({ resource }) => resource),
+              resources: resources.map(({ resource }) => resource),
             }
           })
 
@@ -289,23 +257,6 @@ export function processQuery(
 
   return result
 }
-
-// const tagSchema = new schema.Entity('tags')
-// const authorSchema = new schema.Entity('authors')
-// const postSchema = new schema.Entity('posts', {
-//   tags: [tagSchema],
-//   authors: [authorSchema],
-// })
-// const pageSchema = new schema.Entity('pages', {
-//   tags: [tagSchema],
-//   authors: [authorSchema],
-// })
-// const resourceSchema = new schema.Entity('resources', {
-//   post: postSchema,
-//   page: pageSchema,
-//   tag: tagSchema,
-//   author: authorSchema,
-// })
 
 export function processData(
   data: { [name: string]: DataQuery },

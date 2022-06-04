@@ -1,5 +1,22 @@
 import { z } from '../shared-kernel'
-import { queryOutcomeSchema } from '../helpers/processQuery'
+// import type { ID } from '../shared-kernel'
+// import type { Resource } from './resource'
+// import type { Post } from './post'
+// import type { Page } from './page'
+// import type { Author } from './author'
+// import type { Tag } from './tag'
+import { limitSchema } from './routes'
+
+const paginationSchema = z.object({
+  page: z.number(), // the current page number
+  prev: z.number().nullable(), // the previous page number
+  next: z.number().nullable(), // the next page number
+  pages: z.number(), // the number of pages available
+  total: z.number(), // the number of posts available
+  limit: limitSchema, // the number of posts per page
+})
+
+export type Pagination = z.infer<typeof paginationSchema>
 
 // const queryOutcomeRead = z.object({
 //   type: z.literal('read'),
@@ -23,11 +40,35 @@ import { queryOutcomeSchema } from '../helpers/processQuery'
 //
 // export type QueryOutcome = z.infer<typeof queryOutcomeSchema>
 
+// const entitiesSchema = z.object({
+//   resources: z.record(resourceNormalizedSchema),
+// })
+
 const themeContextBaseSchema = z.object({
   templates: z.array(z.string()),
   route: z.string(),
-  data: z.record(queryOutcomeSchema),
+  // tinaData: z.object({}),
+  // data: z.record(z.union([z.array(idSchema), idSchema])),
+  // entities: entitiesSchema,
 })
+
+// type Data = {
+//   data: {
+//     [name: string]: {
+//       resources: ID[]
+//       posts: ID[]
+//       pages: ID[]
+//       authors: ID[]
+//       tags: ID[]
+//     }
+//   }
+//   entities: {
+//     posts: { [id: ID]: PostResource }
+//     pages: { [id: ID]: PageResource }
+//     authors: { [id: ID]: AuthorResource }
+//     tags: { [id: ID]: TagResource }
+//   }
+// }
 
 const postThemeContext = themeContextBaseSchema.merge(
   z.object({

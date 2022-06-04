@@ -113,7 +113,7 @@ export function collect(
               entry: entryResult.value,
             })
           } else if (current.__typename === 'Page') {
-            const entryResult = createPage({ content: '', ...current })
+            const entryResult = createPage(current)
             if (entryResult.isErr()) {
               return err(entryResult.error)
             }

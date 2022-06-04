@@ -93,9 +93,9 @@ export function getTag(variables: {
 //   )
 // }
 
-export type GetConfig = AsyncReturnType<typeof sdk.getConfig>
-export function getConfig(): ApiResultAsync<GetConfig> {
-  return fromPromise(sdk.getConfig(), (error: unknown) =>
-    Errors.other('Api#getConfig', error instanceof Error ? error : undefined)
-  )
-}
+// export type GetConfig = AsyncReturnType<typeof sdk.getConfig>
+// export function getConfig(): ApiResultAsync<GetConfig> {
+//   return fromPromise(sdk.getConfig(), (error: unknown) =>
+//     Errors.other('Api#getConfig', error instanceof Error ? error : undefined)
+//   )
+// }

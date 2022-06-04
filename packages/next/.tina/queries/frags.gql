@@ -9,6 +9,14 @@ fragment ConfigQueryFragment on Query {
 
 fragment PostFragment on Post {
   __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
   id
   ...PostParts
   tags {
@@ -29,6 +37,14 @@ fragment PostFragment on Post {
 
 fragment PageFragment on Page {
   __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
   id
   ...PageParts
   tags {
@@ -49,12 +65,28 @@ fragment PageFragment on Page {
 
 fragment AuthorFragment on Author {
   __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
   id
   ...AuthorParts
 }
 
 fragment TagFragment on Tag {
   __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
   id
   ...TagParts
 }
