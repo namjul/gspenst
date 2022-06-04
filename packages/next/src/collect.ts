@@ -78,8 +78,7 @@ export function collect(
               }
             )
           }
-          return []
-        })
+        }) ?? []
       })
     })
     .andThen((nodes) => {
