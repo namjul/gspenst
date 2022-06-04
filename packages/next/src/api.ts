@@ -14,13 +14,6 @@ const sdk = getSdk(async (query: any, variables: any): Promise<any> => {
 
 type ApiResultAsync<T> = ResultAsync<T>
 
-export type GetResources = AsyncReturnType<typeof sdk.getResources>
-export function getResources(): ApiResultAsync<GetResources> {
-  return fromPromise(sdk.getResources(), (error: unknown) =>
-    Errors.other('Api#getResources', error instanceof Error ? error : undefined)
-  )
-}
-
 export type GetPage = AsyncReturnType<typeof sdk.getPage>
 export function getPage(variables: {
   relativePath: string
