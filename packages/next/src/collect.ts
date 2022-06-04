@@ -1,6 +1,6 @@
 import { ok, err, combine } from './shared-kernel'
 import * as db from './db'
-import type { Resource } from './domain/resource'
+import type { Resource, ResourceNode } from './domain/resource'
 import type { RoutesConfig, DataQueryBrowse } from './domain/routes'
 import { getCollections, getRoutes } from './domain/routes'
 import { createResource, createDynamicVariables } from './domain/resource'
@@ -24,24 +24,63 @@ export function collect(
   routesConfig: RoutesConfig = {}
 ): ResultAsync<Resource[]> {
   log('start')
-  const result = combine([db.clear(), api.getResources()])
+  const result = combine([
+    db.clear(),
+    api.getTags(),
+    api.getAuthors(),
+    api.getPosts(),
+    api.getPages(),
+  ])
     .map((results) => {
-      return results.flatMap((collectionResources) => {
+      return results.flatMap<ResourceNode>((collectionResources) => {
         if (collectionResources === 'OK') {
           return []
         }
-        return collectionResources.data.collections.flatMap((collection) => {
-          return (collection.documents.edges ?? []).flatMap(
-            (collectionEdge) => {
-              if (collectionEdge?.node) {
-                return collectionEdge.node.__typename === 'Config'
-                  ? []
-                  : collectionEdge.node
+
+        const x = do_(() => {
+          if ('postConnection' in collectionResources.data) {
+            return collectionResources.data.postConnection.edges?.flatMap(
+              (collectionEdge) => {
+                if (collectionEdge?.node) {
+                  return collectionEdge.node
+                }
+                return []
               }
-              return []
-            }
-          )
+            )
+          }
+          if ('pageConnection' in collectionResources.data) {
+            return collectionResources.data.pageConnection.edges?.flatMap(
+              (collectionEdge) => {
+                if (collectionEdge?.node) {
+                  return collectionEdge.node
+                }
+                return []
+              }
+            )
+          }
+          if ('authorConnection' in collectionResources.data) {
+            return collectionResources.data.authorConnection.edges?.flatMap(
+              (collectionEdge) => {
+                if (collectionEdge?.node) {
+                  return collectionEdge.node
+                }
+                return []
+              }
+            )
+          }
+          if ('tagConnection' in collectionResources.data) {
+            return collectionResources.data.tagConnection.edges?.flatMap(
+              (collectionEdge) => {
+                if (collectionEdge?.node) {
+                  return collectionEdge.node
+                }
+                return []
+              }
+            )
+          }
         })
+
+        return x ?? []
       })
     })
     .andThen((nodes) => {

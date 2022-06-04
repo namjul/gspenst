@@ -27,6 +27,7 @@ export type Scalars = {
 export type SystemInfo = {
   __typename?: 'SystemInfo';
   filename: Scalars['String'];
+  title?: Maybe<Scalars['String']>;
   basename: Scalars['String'];
   breadcrumbs: Array<Scalars['String']>;
   path: Scalars['String'];
@@ -536,17 +537,17 @@ export type AuthorFragmentFragment = { __typename: 'Author', id: string, name: s
 
 export type TagFragmentFragment = { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
 
-export type GetResourcesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetResourcesQuery = { __typename?: 'Query', collections: Array<{ __typename?: 'Collection', documents: { __typename?: 'DocumentConnection', edges?: Array<{ __typename?: 'DocumentConnectionEdges', node?: { __typename: 'Config' } | { __typename: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PageTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } | { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PostTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } | { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } }> };
-
 export type GetPostQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
 export type GetPostQuery = { __typename?: 'Query', post: { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PostTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+
+export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPostsQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, edges?: Array<{ __typename?: 'PostConnectionEdges', node?: { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PostTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } | null } | null> | null } };
 
 export type GetPageQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -555,6 +556,11 @@ export type GetPageQueryVariables = Exact<{
 
 export type GetPageQuery = { __typename?: 'Query', page: { __typename: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PageTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
+export type GetPagesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPagesQuery = { __typename?: 'Query', pageConnection: { __typename?: 'PageConnection', totalCount: number, edges?: Array<{ __typename?: 'PageConnectionEdges', node?: { __typename: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PageTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } | null } | null> | null } };
+
 export type GetAuthorQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
@@ -562,12 +568,22 @@ export type GetAuthorQueryVariables = Exact<{
 
 export type GetAuthorQuery = { __typename?: 'Query', author: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
+export type GetAuthorsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAuthorsQuery = { __typename?: 'Query', authorConnection: { __typename?: 'AuthorConnection', totalCount: number, edges?: Array<{ __typename?: 'AuthorConnectionEdges', node?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+
 export type GetTagQueryVariables = Exact<{
   relativePath: Scalars['String'];
 }>;
 
 
 export type GetTagQuery = { __typename?: 'Query', tag: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+
+export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTagsQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export type ConfigPartsFragment = { __typename?: 'Config', darkMode?: boolean | null };
 
@@ -809,40 +825,22 @@ export const PageFragmentFragmentDoc = gql`
     ${PagePartsFragmentDoc}
 ${TagFragmentFragmentDoc}
 ${AuthorFragmentFragmentDoc}`;
-export const GetResourcesDocument = gql`
-    query getResources {
-  collections {
-    documents {
-      edges {
-        node {
-          ... on Document {
-            __typename
-          }
-          ... on Post {
-            ...PostFragment
-          }
-          ... on Page {
-            ...PageFragment
-          }
-          ... on Author {
-            ...AuthorFragment
-          }
-          ... on Tag {
-            ...TagFragment
-          }
-        }
-      }
-    }
-  }
-}
-    ${PostFragmentFragmentDoc}
-${PageFragmentFragmentDoc}
-${AuthorFragmentFragmentDoc}
-${TagFragmentFragmentDoc}`;
 export const GetPostDocument = gql`
     query getPost($relativePath: String!) {
   post(relativePath: $relativePath) {
     ...PostFragment
+  }
+}
+    ${PostFragmentFragmentDoc}`;
+export const GetPostsDocument = gql`
+    query getPosts {
+  postConnection {
+    totalCount
+    edges {
+      node {
+        ...PostFragment
+      }
+    }
   }
 }
     ${PostFragmentFragmentDoc}`;
@@ -853,10 +851,34 @@ export const GetPageDocument = gql`
   }
 }
     ${PageFragmentFragmentDoc}`;
+export const GetPagesDocument = gql`
+    query getPages {
+  pageConnection {
+    totalCount
+    edges {
+      node {
+        ...PageFragment
+      }
+    }
+  }
+}
+    ${PageFragmentFragmentDoc}`;
 export const GetAuthorDocument = gql`
     query getAuthor($relativePath: String!) {
   author(relativePath: $relativePath) {
     ...AuthorFragment
+  }
+}
+    ${AuthorFragmentFragmentDoc}`;
+export const GetAuthorsDocument = gql`
+    query getAuthors {
+  authorConnection {
+    totalCount
+    edges {
+      node {
+        ...AuthorFragment
+      }
+    }
   }
 }
     ${AuthorFragmentFragmentDoc}`;
@@ -867,18 +889,32 @@ export const GetTagDocument = gql`
   }
 }
     ${TagFragmentFragmentDoc}`;
+export const GetTagsDocument = gql`
+    query getTags {
+  tagConnection {
+    totalCount
+    edges {
+      node {
+        ...TagFragment
+      }
+    }
+  }
+}
+    ${TagFragmentFragmentDoc}`;
 export const ConfigDocument = gql`
     query config($relativePath: String!) {
   config(relativePath: $relativePath) {
-    _sys {
-      filename
-      basename
-      breadcrumbs
-      path
-      relativePath
-      extension
+    ... on Document {
+      _sys {
+        filename
+        basename
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
     }
-    id
     ...ConfigParts
   }
 }
@@ -889,14 +925,16 @@ export const ConfigConnectionDocument = gql`
     totalCount
     edges {
       node {
-        id
-        _sys {
-          filename
-          basename
-          breadcrumbs
-          path
-          relativePath
-          extension
+        ... on Document {
+          _sys {
+            filename
+            basename
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
         }
         ...ConfigParts
       }
@@ -907,15 +945,17 @@ export const ConfigConnectionDocument = gql`
 export const PageDocument = gql`
     query page($relativePath: String!) {
   page(relativePath: $relativePath) {
-    _sys {
-      filename
-      basename
-      breadcrumbs
-      path
-      relativePath
-      extension
+    ... on Document {
+      _sys {
+        filename
+        basename
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
     }
-    id
     ...PageParts
   }
 }
@@ -926,14 +966,16 @@ export const PageConnectionDocument = gql`
     totalCount
     edges {
       node {
-        id
-        _sys {
-          filename
-          basename
-          breadcrumbs
-          path
-          relativePath
-          extension
+        ... on Document {
+          _sys {
+            filename
+            basename
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
         }
         ...PageParts
       }
@@ -944,15 +986,17 @@ export const PageConnectionDocument = gql`
 export const PostDocument = gql`
     query post($relativePath: String!) {
   post(relativePath: $relativePath) {
-    _sys {
-      filename
-      basename
-      breadcrumbs
-      path
-      relativePath
-      extension
+    ... on Document {
+      _sys {
+        filename
+        basename
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
     }
-    id
     ...PostParts
   }
 }
@@ -963,14 +1007,16 @@ export const PostConnectionDocument = gql`
     totalCount
     edges {
       node {
-        id
-        _sys {
-          filename
-          basename
-          breadcrumbs
-          path
-          relativePath
-          extension
+        ... on Document {
+          _sys {
+            filename
+            basename
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
         }
         ...PostParts
       }
@@ -981,15 +1027,17 @@ export const PostConnectionDocument = gql`
 export const AuthorDocument = gql`
     query author($relativePath: String!) {
   author(relativePath: $relativePath) {
-    _sys {
-      filename
-      basename
-      breadcrumbs
-      path
-      relativePath
-      extension
+    ... on Document {
+      _sys {
+        filename
+        basename
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
     }
-    id
     ...AuthorParts
   }
 }
@@ -1000,14 +1048,16 @@ export const AuthorConnectionDocument = gql`
     totalCount
     edges {
       node {
-        id
-        _sys {
-          filename
-          basename
-          breadcrumbs
-          path
-          relativePath
-          extension
+        ... on Document {
+          _sys {
+            filename
+            basename
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
         }
         ...AuthorParts
       }
@@ -1018,15 +1068,17 @@ export const AuthorConnectionDocument = gql`
 export const TagDocument = gql`
     query tag($relativePath: String!) {
   tag(relativePath: $relativePath) {
-    _sys {
-      filename
-      basename
-      breadcrumbs
-      path
-      relativePath
-      extension
+    ... on Document {
+      _sys {
+        filename
+        basename
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
     }
-    id
     ...TagParts
   }
 }
@@ -1037,14 +1089,16 @@ export const TagConnectionDocument = gql`
     totalCount
     edges {
       node {
-        id
-        _sys {
-          filename
-          basename
-          breadcrumbs
-          path
-          relativePath
-          extension
+        ... on Document {
+          _sys {
+            filename
+            basename
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
         }
         ...TagParts
       }
@@ -1055,20 +1109,29 @@ export const TagConnectionDocument = gql`
 export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R>
   export function getSdk<C>(requester: Requester<C>) {
     return {
-      getResources(variables?: GetResourcesQueryVariables, options?: C): Promise<{data: GetResourcesQuery, variables: GetResourcesQueryVariables, query: string}> {
-        return requester<{data: GetResourcesQuery, variables: GetResourcesQueryVariables, query: string}, GetResourcesQueryVariables>(GetResourcesDocument, variables, options);
-      },
-    getPost(variables: GetPostQueryVariables, options?: C): Promise<{data: GetPostQuery, variables: GetPostQueryVariables, query: string}> {
+      getPost(variables: GetPostQueryVariables, options?: C): Promise<{data: GetPostQuery, variables: GetPostQueryVariables, query: string}> {
         return requester<{data: GetPostQuery, variables: GetPostQueryVariables, query: string}, GetPostQueryVariables>(GetPostDocument, variables, options);
+      },
+    getPosts(variables?: GetPostsQueryVariables, options?: C): Promise<{data: GetPostsQuery, variables: GetPostsQueryVariables, query: string}> {
+        return requester<{data: GetPostsQuery, variables: GetPostsQueryVariables, query: string}, GetPostsQueryVariables>(GetPostsDocument, variables, options);
       },
     getPage(variables: GetPageQueryVariables, options?: C): Promise<{data: GetPageQuery, variables: GetPageQueryVariables, query: string}> {
         return requester<{data: GetPageQuery, variables: GetPageQueryVariables, query: string}, GetPageQueryVariables>(GetPageDocument, variables, options);
       },
+    getPages(variables?: GetPagesQueryVariables, options?: C): Promise<{data: GetPagesQuery, variables: GetPagesQueryVariables, query: string}> {
+        return requester<{data: GetPagesQuery, variables: GetPagesQueryVariables, query: string}, GetPagesQueryVariables>(GetPagesDocument, variables, options);
+      },
     getAuthor(variables: GetAuthorQueryVariables, options?: C): Promise<{data: GetAuthorQuery, variables: GetAuthorQueryVariables, query: string}> {
         return requester<{data: GetAuthorQuery, variables: GetAuthorQueryVariables, query: string}, GetAuthorQueryVariables>(GetAuthorDocument, variables, options);
       },
+    getAuthors(variables?: GetAuthorsQueryVariables, options?: C): Promise<{data: GetAuthorsQuery, variables: GetAuthorsQueryVariables, query: string}> {
+        return requester<{data: GetAuthorsQuery, variables: GetAuthorsQueryVariables, query: string}, GetAuthorsQueryVariables>(GetAuthorsDocument, variables, options);
+      },
     getTag(variables: GetTagQueryVariables, options?: C): Promise<{data: GetTagQuery, variables: GetTagQueryVariables, query: string}> {
         return requester<{data: GetTagQuery, variables: GetTagQueryVariables, query: string}, GetTagQueryVariables>(GetTagDocument, variables, options);
+      },
+    getTags(variables?: GetTagsQueryVariables, options?: C): Promise<{data: GetTagsQuery, variables: GetTagsQueryVariables, query: string}> {
+        return requester<{data: GetTagsQuery, variables: GetTagsQueryVariables, query: string}, GetTagsQueryVariables>(GetTagsDocument, variables, options);
       },
     config(variables: ConfigQueryVariables, options?: C): Promise<{data: ConfigQuery, variables: ConfigQueryVariables, query: string}> {
         return requester<{data: ConfigQuery, variables: ConfigQueryVariables, query: string}, ConfigQueryVariables>(ConfigDocument, variables, options);
@@ -1105,30 +1168,43 @@ export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) 
   export type Sdk = ReturnType<typeof getSdk>;
 
 // TinaSDK generated code
-import { createClient } from 'tinacms/dist/client'
-const client = createClient({url: 'http://localhost:4001/graphql'})
+import { createClient, TinaClient } from "tinacms/dist/client";
 
-const requester: (doc: any, vars?: any, options?: any) => Promise<any> = async (
-  doc,
-  vars,
-  _options
-) => {
-  let data = {}
-  try {
-    data = await client.request({
-      query: doc,
-      variables: vars,
-    })
-  } catch (e) {
-    // swallow errors related to document creation
-    console.warn('Warning: There was an error when fetching data')
-    console.warn(e)
-  }
+const generateRequester = (client: TinaClient) => {
+  const requester: (
+    doc: any,
+    vars?: any,
+    options?: any,
+    client
+  ) => Promise<any> = async (doc, vars, _options) => {
+    let data = {};
+    try {
+      data = await client.request({
+        query: doc,
+        variables: vars,
+      });
+    } catch (e) {
+      // swallow errors related to document creation
+      console.warn("Warning: There was an error when fetching data");
+      console.warn(e);
+    }
 
-  return { data: data?.data, query: doc, variables: vars || {} }
-}
+    return { data: data?.data, query: doc, variables: vars || {} };
+  };
+
+  return requester;
+};
 
 /**
  * @experimental this class can be used but may change in the future
  **/
-export const ExperimentalGetTinaClient = ()=>getSdk(requester)
+export const ExperimentalGetTinaClient = () =>
+  getSdk(
+    generateRequester(createClient({ url: "http://localhost:4001/graphql" }))
+  );
+
+export const queries = (client: TinaClient) => {
+  const requester = generateRequester(client);
+  return getSdk(requester);
+};
+

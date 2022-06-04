@@ -1,29 +1,3 @@
-query getResources {
-  collections {
-    documents {
-      edges {
-        node {
-          ... on Document {
-            __typename
-          }
-          ... on Post {
-            ...PostFragment
-          }
-          ... on Page {
-            ...PageFragment
-          }
-          ... on Author {
-            ...AuthorFragment
-          }
-          ... on Tag {
-            ...TagFragment
-          }
-        }
-      }
-    }
-  }
-}
-
 query getPost($relativePath: String!) {
   post(relativePath: $relativePath) {
     ...PostFragment
@@ -31,15 +5,17 @@ query getPost($relativePath: String!) {
 }
 
 # query getPosts($filter: PostFilter) {
-#   postConnection(filter: $filter) {
-#     totalCount
-#     edges {
-#       node {
-#         ...PostFragment
-#       }
-#     }
-#   }
-# }
+query getPosts {
+  # postConnection(filter: $filter) {
+  postConnection {
+    totalCount
+    edges {
+      node {
+        ...PostFragment
+      }
+    }
+  }
+}
 
 query getPage($relativePath: String!) {
   page(relativePath: $relativePath) {
@@ -48,15 +24,17 @@ query getPage($relativePath: String!) {
 }
 
 # query getPages($filter: PageFilter) {
-#   pageConnection(filter: $filter) {
-#     totalCount
-#     edges {
-#       node {
-#         ...PageFragment
-#       }
-#     }
-#   }
-# }
+query getPages {
+  # pageConnection(filter: $filter) {
+  pageConnection {
+    totalCount
+    edges {
+      node {
+        ...PageFragment
+      }
+    }
+  }
+}
 
 query getAuthor($relativePath: String!) {
   author(relativePath: $relativePath) {
@@ -65,15 +43,17 @@ query getAuthor($relativePath: String!) {
 }
 
 # query getAuthors($filter: AuthorFilter) {
-#   authorConnection(filter: $filter) {
-#     totalCount
-#     edges {
-#       node {
-#         ...AuthorFragment
-#       }
-#     }
-#   }
-# }
+query getAuthors {
+  # authorConnection(filter: $filter) {
+  authorConnection {
+    totalCount
+    edges {
+      node {
+        ...AuthorFragment
+      }
+    }
+  }
+}
 
 query getTag($relativePath: String!) {
   tag(relativePath: $relativePath) {
@@ -82,12 +62,14 @@ query getTag($relativePath: String!) {
 }
 
 # query getTags($filter: TagFilter) {
-#   tagConnection(filter: $filter) {
-#     totalCount
-#     edges {
-#       node {
-#         ...TagFragment
-#       }
-#     }
-#   }
-# }
+query getTags {
+  # tagConnection(filter: $filter) {
+  tagConnection {
+    totalCount
+    edges {
+      node {
+        ...TagFragment
+      }
+    }
+  }
+}

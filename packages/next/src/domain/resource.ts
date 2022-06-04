@@ -155,7 +155,7 @@ export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
-type ResourceNode =
+export type ResourceNode =
   | PostFragmentFragment
   | PageFragmentFragment
   | AuthorFragmentFragment
