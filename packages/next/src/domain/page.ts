@@ -1,12 +1,15 @@
-import { ok, err, z, combine } from '../shared-kernel'
-import * as Errors from '../errors'
-import type { Result, Get } from '../shared-kernel'
-import type { GetPageQuery } from '../../.tina/__generated__/types'
-import { createAuthor } from './author'
-import { createTag } from './tag'
-import { postSchema } from './post'
+import { z } from '../shared-kernel'
+import { parse } from '../helpers/parser';
+import type { Result } from '../shared-kernel'
+import type {
+  PageFragmentFragment,
+} from '../../.tina/__generated__/types'
+import { postSchema, createPost } from './post'
 
-export const pageSchema = postSchema.merge(z.object({}).strict())
+export const pageSchema = postSchema.transform(post => {
+  post.page = true
+  return post
+})
 
 export type Page = z.infer<typeof pageSchema>
 
@@ -28,29 +31,6 @@ export function createPage(pageData: Get<GetPageQuery, 'page'> & { _sys?: object
     })
   )
 
-  const authorsResult = combine(
-    (rawAuthors ?? []).flatMap((author) => {
-      if (author?.author) {
-        return createAuthor(author.author)
-      }
-      return []
-    })
-  )
-
-  return combine([tagsResult, authorsResult]).andThen(([tags, authors]) => {
-    const page = {
-      ...restPageProps,
-      tags,
-      authors,
-      primary_tag: tags?.[0],
-      primary_author: authors?.[0],
-    }
-
-    const parsedPageResult = postSchema.safeParse(page)
-    if (parsedPageResult.success) {
-      return ok(parsedPageResult.data)
-    } else {
-      return err(Errors.other('Create Post', parsedPageResult.error))
-    }
-  })
+export function createPage(pageData: PageFragmentFragment): Result<Page> {
+  return createPost(pageData).andThen(post => parse(pageSchema, post))
 }
