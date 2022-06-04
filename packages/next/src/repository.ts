@@ -31,7 +31,25 @@ const repository = {
   },
 
   set(resource: Resource) {
-    return db.set(String(resource.id), resource)
+    return combine([db.set(String(resource.id), resource), db.set('meta', { updated_at: (new Date()).getTime() })])
+  },
+
+  sinceLastUpdate(date: Date) {
+    return db.get('meta').andThen(resources => {
+      if (resources.length !== 1) {
+        return errAsync(Errors.other('sinceLastUpdate: there should be only a single meta entry'))
+      } else {
+        const resourcesMetaData = resources[0]
+        if (resourcesMetaData && 'updated_at' in resourcesMetaData) {
+          return okAsync(date.getTime() - Number(resourcesMetaData.updated_at))
+        }
+         return errAsync(
+            Errors.notFound(
+              `Repo#sinceLastUpdate`
+            )
+          )
+      }
+    })
   },
 
   get<T extends ID | ID[]>(id: T): GetValue<T> {

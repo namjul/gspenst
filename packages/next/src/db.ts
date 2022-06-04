@@ -6,19 +6,13 @@ import * as Errors from './errors'
 
 type DBResultAsync<T> = ResultAsync<T>
 
-type AObject =
-  | {
-      [index: number]: any
-    }
-  | Record<string, any>
-
 export function clear(): DBResultAsync<'OK'> {
   return fromPromise(redis.flushall(), (error: unknown) =>
     Errors.other('Db', error instanceof Error ? error : undefined)
   )
 }
 
-export function createDb<T extends AObject>(key: string) {
+export function createDb<T extends any>(key: string) {
   const db = {
     delete(): DBResultAsync<number> {
       return fromPromise(redis.del(key), (error: unknown) =>
@@ -68,4 +62,4 @@ export function createDb<T extends AObject>(key: string) {
   return db
 }
 
-export const resourcesDb = createDb<Resource>('resources')
+export const resourcesDb = createDb<Resource | { updated_at: number }>('resources')

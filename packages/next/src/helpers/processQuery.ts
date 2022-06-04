@@ -5,8 +5,7 @@ import type { SemaphoreInterface } from 'async-mutex'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import type { Result, ResultAsync, ID } from '../shared-kernel'
-import { do_, absurd, removeNullish } from '../shared/utils'
-import { resourcesDb as db } from '../db'
+import { do_, absurd, removeNullish, isNumber } from '../shared/utils'
 import repository from '../repository'
 import { combine, ok, err, fromPromise } from '../shared-kernel'
 import * as api from '../api'
@@ -67,12 +66,23 @@ function batchLoadFromTina(sem: SemaphoreInterface) {
   }
 }
 
+const REVALIDATE = 60
+
 async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
   return Promise.all(
     resources.map(async (resource) => {
-      return db.get(String(resource.id)).map((r) => {
-        const result = r[0]!
-        return result
+      return combine([
+        repository.sinceLastUpdate(new Date()),
+        repository.get(resource.id),
+      ]).andThen((result) => {
+        const [updatedAt, resource] = result as [number, Resource]
+        if (isNumber(updatedAt)) {
+          console.log(`revalidate ${resource.id} ${updatedAt}`)
+          if (updatedAt > REVALIDATE) {
+            return err(Errors.other('Revlidate resource'))
+          }
+        }
+        return ok(resource)
       })
     })
   )
@@ -114,9 +124,7 @@ export const createLoaders = (sem: SemaphoreInterface = defaultSem) => {
         )
           .andThen((x) => x)
           .andThen((_resource) => {
-            return db
-              .set(String(_resource.id), _resource)
-              .map(() => _resource)
+            return repository.set(_resource).map(() => _resource)
           })
       })
   }
