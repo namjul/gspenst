@@ -28,7 +28,7 @@ export {
   fromPromise,
   fromThrowable,
 } from 'neverthrow'
-export { z }
+export { z, stringHash }
 
 export type ID = Opaque<number, 'ID'>
 export const idSchema = z.union([z.string(), z.number()]).transform((value) => {
@@ -55,6 +55,13 @@ export const dateSchema = z.string().refine(
 )
 
 export const slugSchema = z.string().transform((value) => slugify(value))
+
+const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()])
+type Json = z.infer<typeof literalSchema> | { [key: string]: Json } | Json[]
+
+export const jsonSchema: z.ZodType<Json> = z.lazy(() =>
+  z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)])
+)
 
 export type Result<T, E = GspenstError> = Ok<T, E> | Err<T, E>
 export type ResultAsync<T> = NeverthrowResultAsync<T, GspenstError>

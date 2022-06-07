@@ -3,7 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import type { FallbackProps } from 'react-error-boundary'
 import type { TinaCloudSchema } from 'tinacms'
 import { defineConfig } from 'tinacms'
-// import { useTina } from 'tinacms/dist/edit-state'
+import { useTina } from 'tinacms/dist/edit-state'
 import type { NextPage } from 'next'
 import { isValidElementType } from 'react-is'
 import { client } from './shared/client'
@@ -34,17 +34,21 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 }
 
 const Container = ({ pageProps, Component }: ContainerProps) => {
-  // const tinaData = pageProps.data.entry
+  const { resource } = pageProps
+  const { tinaData } = resource
 
   if (!isValidElementType(Component)) {
     throw new Error('Theme must export HOC.')
   }
 
-  // const { data, isLoading } = useTina({
-  //   query: tinaData.query,
-  //   variables: tinaData.variables,
-  //   data: tinaData.data,
-  // })
+  const { data, isLoading } = useTina({
+    query: tinaData.query,
+    variables: tinaData.variables,
+    data: tinaData.data,
+  })
+
+  console.log('data: ', data)
+  console.log('isLoading: ', isLoading)
 
   // overwrite with dynamic value from tina
   // pageProps.data.entry.data = data
@@ -97,6 +101,7 @@ const Page: NextPage<NextPageProps> = ({
       return cms
     },
     formifyCallback: ({ formConfig, createForm, createGlobalForm }) => {
+      console.log('formConfig: ', formConfig)
       if (formConfig.id === 'content/config/index.json') {
         return createGlobalForm(formConfig)
       }

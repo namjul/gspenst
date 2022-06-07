@@ -8,13 +8,19 @@ import type {
   Redirect,
 } from './domain/routing'
 import type { DataQuery } from './domain/routes'
-import { createLoaders, processData } from './helpers/processQuery'
+import {
+  createLoaders,
+  processData,
+  processQuery,
+} from './helpers/processQuery'
 import type { DataLoaders } from './helpers/processQuery'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared-kernel'
 import * as Errors from './errors'
 import { do_, absurd } from './shared/utils'
 import type { ThemeContext } from './domain/theming'
+import { configId } from './constants'
+import repository from './repository'
 
 // export type PageProps =
 //   | {
@@ -46,14 +52,11 @@ async function entryController(
     ...request.params,
   }
 
-  const data: { [name: string]: DataQuery } = {
-    entry: query,
-  }
-
-  return processData(data, dataLoaders).andThen((_data) => {
+  return processQuery(query, dataLoaders).andThen((_data) => {
     return ok({
       context: resourceType,
-      data: _data,
+      resource: _data.resource,
+      data: {},
       templates: getTemplateHierarchy(routingContext),
       route: routingContext.request.path,
     })
@@ -64,23 +67,6 @@ async function channelController(
   routingContext: ChannelRoutingContext,
   dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
-  // const posts = (await repository.findAll('post'))
-
-  // const configResourceID = 'content/config/index.json'
-  // const configResourceItem = resources[configResourceID] as
-  //   | ConfigResourceItem
-  //   | undefined
-  //
-  // if (!configResourceItem || !configResourceItem.tinaData) {
-  //   return err(Errors.notFound(routingProperties.request.path))
-  // }
-  //
-  // const entry = configResourceItem.tinaData
-  //
-  // if (entry.isErr()) {
-  //   return entry
-  // }
-
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
@@ -95,17 +81,20 @@ async function channelController(
     posts: postsQuery,
   }
 
-  return processData(data, dataLoaders).andThen((_data) => {
-    // TODO
-    // if ((limit === 'all' && page > 1) || page > pages) {
-    //   //redirect
-    // }
+  return repository.find({ id: configId }).andThen((configResource) => {
+    return processData(data, dataLoaders).andThen((_data) => {
+      // TODO
+      // if ((limit === 'all' && page > 1) || page > pages) {
+      //   //redirect
+      // }
 
-    return ok({
-      context: 'index' as const,
-      templates: getTemplateHierarchy(routingContext),
-      data: _data,
-      route: routingContext.request.path,
+      return ok({
+        context: 'index' as const,
+        templates: getTemplateHierarchy(routingContext),
+        resource: configResource,
+        data: _data,
+        route: routingContext.request.path,
+      })
     })
   })
 }
@@ -114,30 +103,6 @@ async function collectionController(
   routingProperties: CollectionRoutingContext,
   dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
-  // const posts = await repository.findAll('post')
-  //
-  // if (posts.isErr()) {
-  //   return err(posts.error)
-  // }
-
-  // const configResourceID = 'content/config/index.json'
-  // const configResourceItem = await repository.get(configResourceID)
-  //
-  // if (configResourceItem.isErr()) {
-  //   return err(configResourceItem.error)
-  // }
-  //
-  // const entry = configResourceItem.value.tinaData
-  //
-  // if (entry.isErr()) {
-  //   return err(
-  //     Errors.other(
-  //       'Controller: ',
-  //       entry.error instanceof Error ? entry.error : undefined
-  //     )
-  //   )
-  // }
-
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
@@ -152,12 +117,15 @@ async function collectionController(
     posts: postsQuery,
   }
 
-  return processData(data, dataLoaders).andThen((_data) => {
-    return ok({
-      context: 'index' as const,
-      templates: getTemplateHierarchy(routingProperties),
-      data: _data,
-      route: routingProperties.request.path,
+  return repository.find({ id: configId }).andThen((configResource) => {
+    return processData(data, dataLoaders).andThen((_data) => {
+      return ok({
+        context: 'index' as const,
+        resource: configResource,
+        templates: getTemplateHierarchy(routingProperties),
+        data: _data,
+        route: routingProperties.request.path,
+      })
     })
   })
 }
@@ -166,33 +134,19 @@ async function customController(
   routingProperties: CustomRoutingContext,
   dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
-  // const resources = await repository.getAll()
-
-  // const configResourceID = 'content/config/index.json'
-  // const configResourceItem = resources[configResourceID] as
-  //   | ConfigResourceItem
-  //   | undefined
-  //
-  // if (!configResourceItem || !configResourceItem.tinaData) {
-  //   return err(Errors.notFound(routingProperties.request.path))
-  // }
-  //
-  // const entry = configResourceItem.tinaData
-  //
-  // if (entry.isErr()) {
-  //   return entry
-  // }
-
   const data: { [name: string]: DataQuery } = {
     ...routingProperties.data,
   }
 
-  return processData(data, dataLoaders).andThen((_data) => {
-    return ok({
-      context: null,
-      templates: getTemplateHierarchy(routingProperties),
-      data: _data,
-      route: routingProperties.request.path,
+  return repository.find({ id: configId }).andThen((configResource) => {
+    return processData(data, dataLoaders).andThen((_data) => {
+      return ok({
+        context: null,
+        resource: configResource,
+        templates: getTemplateHierarchy(routingProperties),
+        data: _data,
+        route: routingProperties.request.path,
+      })
     })
   })
 }
