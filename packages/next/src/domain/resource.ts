@@ -31,7 +31,6 @@ export const resourceTypeSchema = z.union([
 ])
 
 export const dynamicVariablesSchema = z.object({
-  id: idSchema,
   slug: slugSchema,
   year: z.number(),
   month: z.number(),
@@ -42,6 +41,7 @@ export const dynamicVariablesSchema = z.object({
 
 const resourceBaseSchema = z
   .object({
+    id: idSchema,
     filename: z.string(),
     filepath: z.string(),
     relativePath: z.string(),
@@ -231,7 +231,6 @@ export function createDynamicVariables(
     .map(Number) as [number, number, number]
 
   const dynamicVariablesParsed = dynamicVariablesSchema.safeParse({
-    id: node.id,
     slug,
     year,
     month,
