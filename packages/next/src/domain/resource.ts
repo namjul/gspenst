@@ -214,14 +214,14 @@ export function createDynamicVariables(
       }
     }
     return {
-      slug: node.slug || ('name' in node && node.name) || filename,
+      slug: ('slug' in node && node.slug) || ('name' in node && node.name) || filename,
       primary_tag: empty,
       primary_author: empty,
     }
     /* eslint-enable */
   })
 
-  const [day, month, year] = (node.date ? new Date(node.date) : new Date())
+  const [day, month, year] = ('date' in node ? new Date(node.date) : new Date())
     .toLocaleString('en-GB', {
       year: 'numeric',
       month: '2-digit',
