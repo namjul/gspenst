@@ -43,18 +43,18 @@ const repository = {
 
   sinceLastUpdate(date: Date) {
     return db.get('meta').andThen((resources) => {
-      if (resources.length !== 1) {
-        return errAsync(
-          Errors.other(
-            'sinceLastUpdate: there should be only a single meta entry'
-          )
-        )
-      } else {
+      if (resources.length === 1) {
         const resourcesMetaData = resources[0]
         if (resourcesMetaData && 'updated_at' in resourcesMetaData) {
           return okAsync(date.getTime() - Number(resourcesMetaData.updated_at))
         }
         return errAsync(Errors.notFound(`Repo#sinceLastUpdate`))
+      } else {
+        return errAsync(
+          Errors.other(
+            'sinceLastUpdate: there should be only a single meta entry'
+          )
+        )
       }
     })
   },

@@ -3,6 +3,7 @@ import { z, ok, err, combineWithAllErrors } from '../shared-kernel'
 import type { Split, Result, Entries, Option } from '../shared-kernel'
 import * as Errors from '../errors'
 import { isString /*, isObject*/ } from '../shared/utils'
+import { parse } from '../helpers/parser'
 import {
   dynamicVariablesSchema,
   resourceTypePost,
@@ -10,7 +11,6 @@ import {
   resourceTypeAuthor,
   resourceTypeTag,
 } from './resource'
-import { parse } from '../helpers/parser'
 
 export const resourceTypes = [
   resourceTypePost.value,

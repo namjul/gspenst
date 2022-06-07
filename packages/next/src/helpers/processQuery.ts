@@ -2,22 +2,21 @@ import sortOn from 'sort-on'
 import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
-import { z } from '../shared-kernel'
+import { z, combine, ok, err, fromPromise } from '../shared-kernel'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import type { Result, ResultAsync, ID } from '../shared-kernel'
 import { do_, absurd, removeNullish, isNumber } from '../shared/utils'
 import repository from '../repository'
-import { combine, ok, err, fromPromise } from '../shared-kernel'
 import * as api from '../api'
 import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
 import { dynamicVariablesSchema, resourceSchema } from '../domain/resource'
+import { limitSchema } from '../domain/routes'
 import * as Errors from '../errors'
 import { parse } from './parser'
-import { limitSchema } from '../domain/routes'
 
 const paginationSchema = z.object({
   page: z.number(), // the current page number
@@ -102,13 +101,13 @@ async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
         repository.sinceLastUpdate(new Date()),
         repository.get(resource.id),
       ]).andThen((result) => {
-        const [updatedAt, resource] = result as [number, Resource]
+        const [updatedAt, _resource] = result as [number, Resource]
         if (isNumber(updatedAt)) {
           if (updatedAt > REVALIDATE) {
             return err(Errors.other('Revlidate resource'))
           }
         }
-        return ok(resource)
+        return ok(_resource)
       })
     })
   )
@@ -226,7 +225,7 @@ export function processQuery(
                     case 'tag':
                       return createTag(resource.tinaData.data.tag)
                     case 'config':
-                      return resource.tinaData.data.config._values
+                      return ok(resource.tinaData.data.config._values as JSON)
                     default:
                       return absurd(resourceType)
                   }

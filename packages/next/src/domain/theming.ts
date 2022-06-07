@@ -1,6 +1,6 @@
 import { z } from '../shared-kernel'
+import { queryOutcomeSchema } from '../helpers/processQuery'
 import { resourceSchema } from './resource'
-import { queryOutcomeSchema } from '../helpers/processQuery';
 
 const themeContextBaseSchema = z.object({
   templates: z.array(z.string()),

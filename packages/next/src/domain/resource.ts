@@ -215,8 +215,8 @@ export function createResource(
   urlPathname: string | undefined,
   filters: string[] = []
 ): Result<Resource> {
-
-  const dynamicVariablesResult = node.__typename === 'Config' ? ok({}) : createDynamicVariables(node)
+  const dynamicVariablesResult =
+    node.__typename === 'Config' ? ok({}) : createDynamicVariables(node)
 
   if (dynamicVariablesResult.isErr()) {
     return err(dynamicVariablesResult.error)
@@ -231,7 +231,7 @@ export function createResource(
     id: node.id,
     filename,
     filepath,
-    resourceType: __typename?.toLowerCase(),
+    resourceType: __typename.toLowerCase(),
     relativePath,
     urlPathname,
     filters,

@@ -11,7 +11,7 @@ export function clear(): DBResultAsync<'OK'> {
   )
 }
 
-export function createDb<T extends any>(key: string) {
+export function createDb<T extends object>(key: string) {
   const db = {
     delete(): DBResultAsync<number> {
       return fromPromise(redis.del(key), (error: unknown) =>
