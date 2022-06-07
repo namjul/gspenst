@@ -20,7 +20,10 @@ const commonFields: TinaField[] = [
   },
 ]
 
-export function createSchema(templates: TinaTemplate[] = []) {
+export function createSchema(
+  templates: TinaTemplate[] = [],
+  themeFields: TinaField[] = []
+) {
   const postFields: TinaField[] = [
     {
       type: 'string',
@@ -79,11 +82,12 @@ export function createSchema(templates: TinaTemplate[] = []) {
     format: 'json',
     fields: [
       {
-        type: 'boolean',
-        label: 'Dark Mode',
-        name: 'darkMode',
+        type: 'string',
+        label: 'Placeholder',
+        name: 'Placeholder',
       },
     ],
+    ...(themeFields.length && { fields: themeFields })
   }
 
   const pageCollection: TinaCollection = {

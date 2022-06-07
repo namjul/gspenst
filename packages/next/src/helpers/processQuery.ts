@@ -57,6 +57,11 @@ function batchLoadFromTina(sem: SemaphoreInterface) {
                 ...resource,
                 tinaData,
               }))
+            case 'config':
+              return api.getConfig().map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
             default:
               return absurd(resourceType)
           }
@@ -198,6 +203,8 @@ export function processQuery(
                       return createAuthor(resource.tinaData.data.author)
                     case 'tag':
                       return createTag(resource.tinaData.data.tag)
+                    case 'config':
+                      return resource.tinaData.data.config._values
                     default:
                       return absurd(resourceType)
                   }

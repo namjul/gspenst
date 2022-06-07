@@ -4,12 +4,41 @@ import type { Split, Result, Entries, Option } from '../shared-kernel'
 import * as Errors from '../errors'
 import { isString /*, isObject*/ } from '../shared/utils'
 import {
-  resourceTypeSchema,
-  resourceTypes,
   dynamicVariablesSchema,
+  resourceTypePost,
+  resourceTypePage,
+  resourceTypeAuthor,
+  resourceTypeTag,
+  postResourceSchema,
+  pageResourceSchema,
+  authorResourceSchema,
+  tagResourceSchema,
 } from './resource'
-import type { ResourceType } from './resource'
 import { parse } from '../helpers/parser'
+
+export const resourceTypes = [
+  resourceTypePost.value,
+  resourceTypePage.value,
+  resourceTypeAuthor.value,
+  resourceTypeTag.value,
+]
+
+export const resourceTypeSchema = z.union([
+  resourceTypePost,
+  resourceTypePage,
+  resourceTypeAuthor,
+  resourceTypeTag,
+])
+
+export const resourceSchema = z.discriminatedUnion('resourceType', [
+  postResourceSchema,
+  pageResourceSchema,
+  authorResourceSchema,
+  tagResourceSchema,
+])
+
+export type ResourceType = z.infer<typeof resourceTypeSchema>
+export type Resource = z.infer<typeof resourceSchema>
 
 const POST_PER_PAGE = 5
 

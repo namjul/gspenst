@@ -1,10 +1,15 @@
-
-fragment ConfigQueryFragment on Query {
-  config(relativePath: "index.json") {
-    __typename
-    id
-    ...ConfigParts
+fragment ThemeConfigFragment on Config {
+  __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
   }
+  id
+  _values
 }
 
 fragment PostFragment on Post {

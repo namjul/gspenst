@@ -3,41 +3,41 @@ import * as db from './db'
 import type { Resource, ResourceNode } from './domain/resource'
 import type { RoutesConfig, DataQueryBrowse } from './domain/routes'
 import { getCollections, getRoutes } from './domain/routes'
-import { createResource, createDynamicVariables } from './domain/resource'
+import {
+  createResource as createInternalResource,
+  createDynamicVariables,
+} from './domain/resource'
 import { createPost } from './domain/post'
 import { createPage } from './domain/page'
 import { createAuthor } from './domain/author'
 import { createTag } from './domain/tag'
-import type { Post } from './domain/post'
-import type { Page } from './domain/page'
-import type { Author } from './domain/author'
-import type { Tag } from './domain/tag'
-import type { Result, ResultAsync } from './shared-kernel'
+import type { ResultAsync } from './shared-kernel'
 import * as api from './api'
 import { makeNqlFilter, compilePermalink } from './helpers'
-import { do_ } from './shared/utils'
+import { do_, absurd } from './shared/utils'
 import { createLogger } from './logger'
 
 const log = createLogger('collect')
 
-export function collect(
-  routesConfig: RoutesConfig = {}
-): ResultAsync<Resource[]> {
-  log('start')
-  const result = combine([
+function collectResourceNodes() {
+  return combine([
     db.clear(),
+    api.getConfig(),
     api.getTags(),
     api.getAuthors(),
     api.getPosts(),
     api.getPages(),
-  ])
-    .map((results) => {
-      return results.flatMap<ResourceNode>((collectionResources) => {
-        if (collectionResources === 'OK') {
-          return []
-        }
+  ]).map((results) => {
+    return results.flatMap<ResourceNode>((collectionResources) => {
+      if (collectionResources === 'OK') {
+        return []
+      }
 
-        return do_(() => {
+      return (
+        do_(() => {
+          if ('config' in collectionResources.data) {
+            return collectionResources.data.config
+          }
           if ('postConnection' in collectionResources.data) {
             return collectionResources.data.postConnection.edges?.flatMap(
               (collectionEdge) => {
@@ -79,120 +79,168 @@ export function collect(
             )
           }
         }) ?? []
-      })
+      )
     })
-    .andThen((nodes) => {
-      const resourceResultList = nodes.reduce<
-        Result<
-          | {
-              type: Extract<Resource['resourceType'], 'post'>
-              resource: Resource
-              entry: Post
-            }
-          | {
-              type: Extract<Resource['resourceType'], 'page'>
-              resource: Resource
-              entry: Page
-            }
-          | {
-              type: Extract<Resource['resourceType'], 'author'>
-              resource: Resource
-              entry: Author
-            }
-          | {
-              type: Extract<Resource['resourceType'], 'tag'>
-              resource: Resource
-              entry: Tag
-            }
-        >[]
-      >((acc, current) => {
-        const dynamicVariablesResult = createDynamicVariables(current)
-        if (dynamicVariablesResult.isErr()) {
-          acc.push(err(dynamicVariablesResult.error))
-          return acc
+  })
+}
+
+function createUrlPathname(
+  routesConfig: RoutesConfig,
+  resourceNode: ResourceNode
+) {
+  const { __typename } = resourceNode
+  switch (__typename) {
+    case 'Config':
+    case 'Post': {
+      return ok(undefined)
+    }
+    case 'Page': {
+      const dynamicVariablesResult = createDynamicVariables(resourceNode)
+      if (dynamicVariablesResult.isErr()) {
+        return err(dynamicVariablesResult.error)
+      }
+      return ok(`/${dynamicVariablesResult.value.slug}`)
+    }
+    case 'Tag':
+    case 'Author': {
+      const dynamicVariablesResult = createDynamicVariables(resourceNode)
+      if (dynamicVariablesResult.isErr()) {
+        return err(dynamicVariablesResult.error)
+      }
+      const taxonomyEntry =
+        resourceNode.__typename === 'Author'
+          ? routesConfig.taxonomies?.author
+          : routesConfig.taxonomies?.tag
+      if (taxonomyEntry) {
+        const permalinkResult = compilePermalink(
+          taxonomyEntry.permalink,
+          dynamicVariablesResult.value
+        )
+        if (permalinkResult.isErr()) {
+          return err(permalinkResult.error)
+        } else {
+          return ok(permalinkResult.value)
         }
+      }
+      return ok(undefined)
+    }
+    default:
+      return absurd(__typename)
+  }
+}
 
-        const urlPathname = do_(() => {
-          if (current.__typename === 'Page') {
-            return `/${dynamicVariablesResult.value.slug}`
-          }
-          const taxonomyEntry =
-            current.__typename === 'Author'
-              ? routesConfig.taxonomies?.author
-              : routesConfig.taxonomies?.tag
-          if (taxonomyEntry) {
-            const permalinkResult = compilePermalink(
-              taxonomyEntry.permalink,
-              dynamicVariablesResult.value
-            )
-            if (permalinkResult.isErr()) {
-              acc.push(err(permalinkResult.error))
-            } else {
-              return permalinkResult.value
-            }
-          }
-          return undefined
-        })
+function createResource(
+  routesConfig: RoutesConfig,
+  resourceNode: ResourceNode
+) {
+  const urlPathname = createUrlPathname(routesConfig, resourceNode)
+  if (urlPathname.isErr()) {
+    return err(urlPathname.error)
+  }
 
-        const resourceItem = do_(() => {
-          if (current.__typename === 'Post') {
-            const entryResult = createPost(current)
-            if (entryResult.isErr()) {
-              return err(entryResult.error)
-            }
-            const resourceResult = createResource(current, urlPathname)
-            if (resourceResult.isErr()) {
-              return err(resourceResult.error)
-            }
-            return ok({
-              type: 'post' as const,
-              resource: resourceResult.value,
-              entry: entryResult.value,
-            })
-          } else if (current.__typename === 'Page') {
-            const entryResult = createPage(current)
-            if (entryResult.isErr()) {
-              return err(entryResult.error)
-            }
-            const resourceResult = createResource(current, urlPathname)
-            if (resourceResult.isErr()) {
-              return err(resourceResult.error)
-            }
-            return ok({
-              type: 'page' as const,
-              resource: resourceResult.value,
-              entry: entryResult.value,
-            })
-          } else if (current.__typename === 'Author') {
-            const entryResult = createAuthor(current)
-            if (entryResult.isErr()) {
-              return err(entryResult.error)
-            }
-            const resourceResult = createResource(current, urlPathname)
-            if (resourceResult.isErr()) {
-              return err(resourceResult.error)
-            }
-            return ok({
-              type: 'author' as const,
-              resource: resourceResult.value,
-              entry: entryResult.value,
-            })
-          } else {
-            const entryResult = createTag(current)
-            if (entryResult.isErr()) {
-              return err(entryResult.error)
-            }
-            const resourceResult = createResource(current, urlPathname)
-            if (resourceResult.isErr()) {
-              return err(resourceResult.error)
-            }
-            return ok({
-              type: 'tag' as const,
-              resource: resourceResult.value,
-              entry: entryResult.value,
-            })
-          }
-        })
+  const { __typename } = resourceNode
+  switch (__typename) {
+    case 'Post': {
+      const resourceResult = createInternalResource(
+        resourceNode,
+        urlPathname.value
+      )
+      if (resourceResult.isErr()) {
+        return err(resourceResult.error)
+      }
+
+      const entryResult = createPost(resourceNode)
+      if (entryResult.isErr()) {
+        return err(entryResult.error)
+      }
+      return ok({
+        type: 'post' as const,
+        resource: resourceResult.value,
+        entry: entryResult.value,
+      })
+    }
+    case 'Page': {
+      const resourceResult = createInternalResource(
+        resourceNode,
+        urlPathname.value
+      )
+      if (resourceResult.isErr()) {
+        return err(resourceResult.error)
+      }
+      const entryResult = createPage(resourceNode)
+      if (entryResult.isErr()) {
+        return err(entryResult.error)
+      }
+      return ok({
+        type: 'page' as const,
+        resource: resourceResult.value,
+        entry: entryResult.value,
+      })
+    }
+    case 'Author': {
+      const resourceResult = createInternalResource(
+        resourceNode,
+        urlPathname.value
+      )
+      if (resourceResult.isErr()) {
+        return err(resourceResult.error)
+      }
+      const entryResult = createAuthor(resourceNode)
+      if (entryResult.isErr()) {
+        return err(entryResult.error)
+      }
+      return ok({
+        type: 'author' as const,
+        resource: resourceResult.value,
+        entry: entryResult.value,
+      })
+    }
+    case 'Tag': {
+      const resourceResult = createInternalResource(
+        resourceNode,
+        urlPathname.value
+      )
+      if (resourceResult.isErr()) {
+        return err(resourceResult.error)
+      }
+      const entryResult = createTag(resourceNode)
+      if (entryResult.isErr()) {
+        return err(entryResult.error)
+      }
+      return ok({
+        type: 'tag' as const,
+        resource: resourceResult.value,
+        entry: entryResult.value,
+      })
+    }
+    case 'Config': {
+      const resourceResult = createInternalResource(
+        resourceNode,
+        urlPathname.value
+      )
+      if (resourceResult.isErr()) {
+        return err(resourceResult.error)
+      }
+      return ok({
+        type: 'config' as const,
+        resource: resourceResult.value,
+      })
+    }
+    default:
+      return absurd(__typename)
+  }
+}
+
+export function collect(
+  routesConfig: RoutesConfig = {}
+): ResultAsync<Resource[]> {
+  log('start')
+  const result = collectResourceNodes()
+    .andThen((resourceNodes) => {
+      const resourceResultList = resourceNodes.reduce<
+        ReturnType<typeof createResource>[]
+      >((acc, current) => {
+        const resourceItem = createResource(routesConfig, current)
 
         if (resourceItem.isErr()) {
           acc.push(err(resourceItem.error))
@@ -221,7 +269,7 @@ export function collect(
           }),
         ]
 
-        const z = [
+        const resourceFilters = [
           ...getRoutes(routesConfig),
           ...getCollections(routesConfig),
         ].reduce<{
@@ -260,22 +308,28 @@ export function collect(
         )
 
         return combine(
-          resources.flatMap(({ resource, entry }) => {
+          resources.flatMap((resourceItem) => {
             // calculate matching filters
-            const matchingFilter = z[resource.resourceType].filter(
-              (routeFilter) => {
-                const nqlFilter = makeNqlFilter(routeFilter)
-                const nqlFilterResult = nqlFilter(entry)
-                if (nqlFilterResult.isErr()) {
-                  return false
-                }
-                return nqlFilterResult.value
+            const matchingFilter = do_(() => {
+              if (resourceItem.type === 'config') {
+                return []
               }
-            )
+              return resourceFilters[resourceItem.type].filter(
+                (routeFilter) => {
+                  const nqlFilter = makeNqlFilter(routeFilter)
+                  const nqlFilterResult = nqlFilter(resourceItem.entry)
+                  if (nqlFilterResult.isErr()) {
+                    return false
+                  }
+                  return nqlFilterResult.value
+                }
+              )
+            })
 
-            let urlPathname = resource.urlPathname
+            let urlPathname = resourceItem.resource.urlPathname
 
-            if (resource.resourceType === 'post') {
+            if (resourceItem.type === 'post' && resourceItem.resource.resourceType === 'post') {
+              const { resource, entry } = resourceItem
               // find owning collection
               const collectionRouteConfig = getCollections(routesConfig).find(
                 ([_, collection]) => {
@@ -302,7 +356,7 @@ export function collect(
             }
 
             return ok({
-              ...resource,
+              ...resourceItem.resource,
               urlPathname,
               filters: [...new Set(matchingFilter)],
             })

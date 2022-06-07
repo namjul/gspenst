@@ -1,6 +1,5 @@
 import { fromPromise } from './shared-kernel'
 import redis from './redis'
-import type { Resource } from './domain/resource'
 import type { ResultAsync } from './shared-kernel'
 import * as Errors from './errors'
 
@@ -61,5 +60,3 @@ export function createDb<T extends any>(key: string) {
   }
   return db
 }
-
-export const resourcesDb = createDb<Resource | { updated_at: number }>('resources')

@@ -124,7 +124,7 @@ class CollectionRouter extends ParentRouter {
             this.respectDominantRouter(
               routers,
               resource.resourceType,
-              resource.slug
+              'slug' in resource ? resource.slug : undefined
             )
           ) {
             return []

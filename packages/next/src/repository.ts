@@ -1,10 +1,14 @@
 import { okAsync, errAsync, combine } from './shared-kernel'
-import { resourcesDb as db } from './db'
+import { createDb } from './db'
 import type { ResourceType, Resource } from './domain/resource'
 import type { RoutesConfig } from './domain/routes'
 import type { ID, ResultAsync } from './shared-kernel'
 import * as Errors from './errors'
 import { collect } from './collect'
+
+type Meta = { type: 'meta'; updated_at: number }
+
+export const db = createDb<Resource | Meta>('resources')
 
 type RepoResultAsync<T> = ResultAsync<T>
 
@@ -13,9 +17,7 @@ type GetValue<T extends ID | ID[]> = T extends ID[]
   : RepoResultAsync<Resource>
 
 type FindAllValue<T extends ResourceType> = RepoResultAsync<
-  (T extends null | undefined
-    ? Resource
-    : Extract<Resource, { resourceType: T }>)[]
+  (T extends null | undefined ? Resource : Extract<Resource, { resourceType: T }>)[]
 >
 
 const repository = {
@@ -30,24 +32,27 @@ const repository = {
     })
   },
 
-  set(resource: Resource) {
-    return combine([db.set(String(resource.id), resource), db.set('meta', { updated_at: (new Date()).getTime() })])
+  set(entity: Resource) {
+    return combine([
+      db.set(String(entity.id), entity),
+      db.set('meta', { type: 'meta', updated_at: new Date().getTime() }),
+    ])
   },
 
   sinceLastUpdate(date: Date) {
-    return db.get('meta').andThen(resources => {
+    return db.get('meta').andThen((resources) => {
       if (resources.length !== 1) {
-        return errAsync(Errors.other('sinceLastUpdate: there should be only a single meta entry'))
+        return errAsync(
+          Errors.other(
+            'sinceLastUpdate: there should be only a single meta entry'
+          )
+        )
       } else {
         const resourcesMetaData = resources[0]
         if (resourcesMetaData && 'updated_at' in resourcesMetaData) {
           return okAsync(date.getTime() - Number(resourcesMetaData.updated_at))
         }
-         return errAsync(
-            Errors.notFound(
-              `Repo#sinceLastUpdate`
-            )
-          )
+        return errAsync(Errors.notFound(`Repo#sinceLastUpdate`))
       }
     })
   },
@@ -96,16 +101,23 @@ const repository = {
     })
   },
 
-  match<T extends Resource>(partialResourceItem: Partial<T>) {
-    return (resource: T) =>
-      (partialResourceItem.resourceType
-        ? partialResourceItem.resourceType === resource.resourceType
-        : true) &&
-      Object.entries(partialResourceItem)
-        .map(([key, value]) => {
-          return String(resource[key as keyof Partial<T>]) === String(value)
-        })
-        .every(Boolean)
+  match(partialEntity: Partial<Resource>) {
+    return (resource: Resource) => {
+      const isResource =
+        'resourceType' in partialEntity && 'resourceType' in resource
+      return (
+        (isResource
+          ? partialEntity.resourceType === resource.resourceType
+          : true) &&
+        Object.entries(partialEntity)
+          .map(([key, value]) => {
+            return (
+              String(resource[key as keyof Partial<Resource>]) === String(value)
+            )
+          })
+          .every(Boolean)
+      )
+    }
   },
 }
 

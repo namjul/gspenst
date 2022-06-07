@@ -1,3 +1,9 @@
+query getConfig {
+  config(relativePath: "index.json") {
+    ...ThemeConfigFragment
+  }
+}
+
 query getPost($relativePath: String!) {
   post(relativePath: $relativePath) {
     ...PostFragment

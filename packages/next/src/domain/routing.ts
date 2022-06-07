@@ -1,6 +1,6 @@
 import { z } from '../shared-kernel'
-import { dynamicVariablesSchema, resourceTypeSchema } from './resource'
-import { queryFilterOptions, dataQuery } from './routes'
+import { dynamicVariablesSchema } from './resource'
+import { queryFilterOptions, dataQuery, resourceTypeSchema } from './routes'
 
 // TODO rename to routerContext?
 
