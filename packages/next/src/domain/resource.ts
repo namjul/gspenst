@@ -177,6 +177,7 @@ export function createResource(
   const dynamicVariables = dynamicVariablesResult.value
 
   const resource = {
+    id: node.id,
     filename,
     filepath,
     resourceType: __typename?.toLowerCase(),
