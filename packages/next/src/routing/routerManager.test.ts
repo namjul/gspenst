@@ -39,7 +39,7 @@ describe('router resolvePaths', () => {
         '/page/2',
         '/tag/tag-1',
         '/tag/tag-2',
-        '/author/napolean',
+        '/author/napoleon',
         '/author/pedro',
         '/about',
         '/home',
@@ -141,7 +141,7 @@ describe('router resolvePaths', () => {
       '/page/1',
       '/page/2',
       '/tag/tag-2',
-      '/author/napolean',
+      '/author/napoleon',
       '/author/pedro',
       '/about',
       '/portfolio',
@@ -233,7 +233,7 @@ describe('router resolvePaths', () => {
     const router = routerManager(routesConfig)
     const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
     const result = router.resolvePaths(resources)
-    expect(result).toContain('/category-2/napolean')
+    expect(result).toContain('/category-2/napoleon')
     expect(result).toContain('/category-2/pedro')
   })
 })

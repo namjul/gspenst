@@ -9,10 +9,6 @@ import {
   resourceTypePage,
   resourceTypeAuthor,
   resourceTypeTag,
-  postResourceSchema,
-  pageResourceSchema,
-  authorResourceSchema,
-  tagResourceSchema,
 } from './resource'
 import { parse } from '../helpers/parser'
 
@@ -30,15 +26,7 @@ export const resourceTypeSchema = z.union([
   resourceTypeTag,
 ])
 
-export const resourceSchema = z.discriminatedUnion('resourceType', [
-  postResourceSchema,
-  pageResourceSchema,
-  authorResourceSchema,
-  tagResourceSchema,
-])
-
-export type ResourceType = z.infer<typeof resourceTypeSchema>
-export type Resource = z.infer<typeof resourceSchema>
+type ResourceType = z.infer<typeof resourceTypeSchema>
 
 const POST_PER_PAGE = 5
 

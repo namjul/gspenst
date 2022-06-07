@@ -58,41 +58,45 @@ describe('collect', () => {
     }
     const collectResult = await collect(routesConfig)
     const resources = collectResult._unsafeUnwrap()
-    expect(resources).toHaveLength(17)
-    expect(resources).toContainEqual({
-      filename: '3th-post',
-      filepath: 'content/posts/3th-post.mdx',
-      relativePath: '3th-post.mdx',
-      urlPathname: '/post/3th-post/2021/',
-      filters: [
-        "authors:'pedro'",
-        "tags:'tag-1'",
-        'primary_tag:tag-1',
-        'tags:tag-1',
-      ],
-      id: 1824064168,
-      slug: '3th-post',
-      year: 2021,
-      month: 3,
-      day: 3,
-      primary_tag: 'tag-1',
-      primary_author: 'pedro',
-      resourceType: 'post',
-    })
-    expect(resources).toContainEqual({
-      filename: 'tag-2',
-      filepath: 'content/tags/tag-2.mdx',
-      relativePath: 'tag-2.mdx',
-      urlPathname: '/tag/tag-2',
-      filters: ["date:>'2015-07-20'"],
-      id: 1071642883,
-      slug: 'tag-2',
-      year: 2021,
-      month: 7,
-      day: 3,
-      primary_tag: 'all',
-      primary_author: 'all',
-      resourceType: 'tag',
-    })
+    expect(resources).toHaveLength(18)
+    expect(resources.find(({ id }) => id === 1824064168)).toEqual(
+      expect.objectContaining({
+        id: 1824064168,
+        filename: '3th-post',
+        filepath: 'content/posts/3th-post.mdx',
+        relativePath: '3th-post.mdx',
+        urlPathname: '/post/3th-post/2021/',
+        filters: [
+          "tags:'tag-1'",
+          "authors:'pedro'",
+          'primary_tag:tag-1',
+          'tags:tag-1',
+        ],
+        slug: '3th-post',
+        year: 2021,
+        month: 3,
+        day: 3,
+        primary_tag: 'tag-1',
+        primary_author: 'pedro',
+        resourceType: 'post',
+      })
+    )
+    expect(resources.find(({ id }) => id === 1071642883)).toEqual(
+      expect.objectContaining({
+        filename: 'tag-2',
+        filepath: 'content/tags/tag-2.mdx',
+        relativePath: 'tag-2.mdx',
+        urlPathname: '/tag/tag-2',
+        filters: ["date:>'2015-07-20'"],
+        id: 1071642883,
+        slug: 'tag-2',
+        year: 2021,
+        month: 7,
+        day: 3,
+        primary_tag: 'all',
+        primary_author: 'all',
+        resourceType: 'tag',
+      })
+    )
   })
 })

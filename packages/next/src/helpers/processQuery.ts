@@ -2,6 +2,7 @@ import sortOn from 'sort-on'
 import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
+import { z } from '../shared-kernel'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import type { Result, ResultAsync, ID } from '../shared-kernel'
@@ -9,26 +10,47 @@ import { do_, absurd, removeNullish, isNumber } from '../shared/utils'
 import repository from '../repository'
 import { combine, ok, err, fromPromise } from '../shared-kernel'
 import * as api from '../api'
-import type { Pagination } from '../domain/theming'
 import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
-import { dynamicVariablesSchema } from '../domain/resource'
+import { dynamicVariablesSchema, resourceSchema } from '../domain/resource'
 import * as Errors from '../errors'
 import { parse } from './parser'
+import { limitSchema } from '../domain/routes'
 
-type ReadQueryOutcome = { type: 'read' } & { resource: Resource }
-type BrowseQueryOutcome = {
-  type: 'browse'
-  pagination: Pagination
-  resources: Resource[]
-  // resources: ID[]
-  // entities: {
-  //   resources: { [id: ID]: ResourceNormalized }
-  // }
-}
-type QueryOutcome = ReadQueryOutcome | BrowseQueryOutcome
+const paginationSchema = z.object({
+  page: z.number(), // the current page number
+  prev: z.number().nullable(), // the previous page number
+  next: z.number().nullable(), // the next page number
+  pages: z.number(), // the number of pages available
+  total: z.number(), // the number of posts available
+  limit: limitSchema, // the number of posts per page
+})
+
+export type Pagination = z.infer<typeof paginationSchema>
+
+const queryOutcomeRead = z.object({
+  type: z.literal('read'),
+  resource: resourceSchema,
+})
+
+export type QueryOutcomeRead = z.infer<typeof queryOutcomeRead>
+
+const queryOutcomeBrowse = z.object({
+  type: z.literal('browse'),
+  pagination: paginationSchema,
+  resources: z.array(resourceSchema),
+})
+
+export type QueryOutcomeBrowse = z.infer<typeof queryOutcomeBrowse>
+
+export const queryOutcomeSchema = z.discriminatedUnion('type', [
+  queryOutcomeRead,
+  queryOutcomeBrowse,
+])
+
+export type QueryOutcome = z.infer<typeof queryOutcomeSchema>
 
 function batchLoadFromTina(sem: SemaphoreInterface) {
   return async (resources: ReadonlyArray<Resource>) => {

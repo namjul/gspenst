@@ -17,7 +17,9 @@ type GetValue<T extends ID | ID[]> = T extends ID[]
   : RepoResultAsync<Resource>
 
 type FindAllValue<T extends ResourceType> = RepoResultAsync<
-  (T extends null | undefined ? Resource : Extract<Resource, { resourceType: T }>)[]
+  (T extends null | undefined
+    ? Resource
+    : Extract<Resource, { resourceType: T }>)[]
 >
 
 const repository = {
@@ -72,7 +74,9 @@ const repository = {
 
   getAll() {
     return db.keys().andThen((idsResult) => {
-      return this.get(idsResult as unknown as ID[])
+      return this.get(
+        idsResult.filter((id) => id !== 'meta') as unknown as ID[]
+      )
     })
   },
 

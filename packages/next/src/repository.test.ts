@@ -15,27 +15,7 @@ beforeAll(async () => {
 describe('repository', () => {
   test('init', async () => {
     const result = (await repository.collect())._unsafeUnwrap();
-    expect(result).toHaveLength(17)
-  })
-
-  test('set', async () => {
-    const resource = {
-      id: 123 as ID,
-      filename: '1th-post',
-      filepath: 'content/posts/1th-post.mdx',
-      resourceType: 'post' as const,
-      relativePath: '1th-post.mdx',
-      slug: '1th-post',
-      year: 2022,
-      month: 10,
-      day: 12,
-      primary_tag: 'tag-1',
-      primary_author: 'tag-2',
-      urlPathname: '/1th-post',
-      filters: []
-    }
-    const result = await repository.set(resource)
-    expect(result.isOk()).toBe(true)
+    expect(result).toHaveLength(18)
   })
 
   test('get single', async () => {
@@ -82,6 +62,6 @@ describe('repository', () => {
 
     const result2 = await repository.findAll('post')
     expect(result2._unsafeUnwrap()).toBeDefined()
-    expect(result2._unsafeUnwrap()).toHaveLength(11)
+    expect(result2._unsafeUnwrap()).toHaveLength(10)
   })
 })
