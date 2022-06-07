@@ -1,5 +1,5 @@
 fragment ConfigParts on Config {
-  darkMode
+  Placeholder
 }
 
 fragment PageParts on Page {

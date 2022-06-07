@@ -86,7 +86,7 @@ type Collection {
 union DocumentNode = Config | Page | Post | Author | Tag
 
 type Config implements Node & Document {
-  darkMode: Boolean
+  Placeholder: String
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
@@ -241,7 +241,7 @@ input DocumentMutation {
 }
 
 input ConfigMutation {
-  darkMode: Boolean
+  Placeholder: String
 }
 
 input PageAuthorsMutation {

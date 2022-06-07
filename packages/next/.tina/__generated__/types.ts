@@ -215,7 +215,7 @@ export type DocumentNode = Config | Page | Post | Author | Tag;
 
 export type Config = Node & Document & {
   __typename?: 'Config';
-  darkMode?: Maybe<Scalars['Boolean']>;
+  Placeholder?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   _sys: SystemInfo;
   _values: Scalars['JSON'];
@@ -476,7 +476,7 @@ export type DocumentMutation = {
 };
 
 export type ConfigMutation = {
-  darkMode?: InputMaybe<Scalars['Boolean']>;
+  Placeholder?: InputMaybe<Scalars['String']>;
 };
 
 export type PageAuthorsMutation = {
@@ -527,7 +527,7 @@ export type TagMutation = {
   slug?: InputMaybe<Scalars['String']>;
 };
 
-export type ConfigQueryFragmentFragment = { __typename?: 'Query', config: { __typename: 'Config', id: string, darkMode?: boolean | null } };
+export type ThemeConfigFragmentFragment = { __typename: 'Config', id: string, _values: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
 
 export type PostFragmentFragment = { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PostTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null };
 
@@ -536,6 +536,11 @@ export type PageFragmentFragment = { __typename: 'Page', id: string, date: strin
 export type AuthorFragmentFragment = { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
 
 export type TagFragmentFragment = { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
+
+export type GetConfigQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetConfigQuery = { __typename?: 'Query', config: { __typename: 'Config', id: string, _values: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type GetPostQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -585,7 +590,7 @@ export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetTagsQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
-export type ConfigPartsFragment = { __typename?: 'Config', darkMode?: boolean | null };
+export type ConfigPartsFragment = { __typename?: 'Config', Placeholder?: string | null };
 
 export type PagePartsFragment = { __typename?: 'Page', date: string, slug: string, title: string, excerpt?: any | null, content: any, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', id: string } | null } | null> | null, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', id: string } | null } | null> | null };
 
@@ -600,12 +605,12 @@ export type ConfigQueryVariables = Exact<{
 }>;
 
 
-export type ConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type ConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', id: string, Placeholder?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type ConfigConnectionQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ConfigConnectionQuery = { __typename?: 'Query', configConnection: { __typename?: 'ConfigConnection', totalCount: number, edges?: Array<{ __typename?: 'ConfigConnectionEdges', node?: { __typename?: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type ConfigConnectionQuery = { __typename?: 'Query', configConnection: { __typename?: 'ConfigConnection', totalCount: number, edges?: Array<{ __typename?: 'ConfigConnectionEdges', node?: { __typename?: 'Config', id: string, Placeholder?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export type PageQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -655,20 +660,21 @@ export type TagConnectionQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type TagConnectionQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
-export const ConfigPartsFragmentDoc = gql`
-    fragment ConfigParts on Config {
-  darkMode
+export const ThemeConfigFragmentFragmentDoc = gql`
+    fragment ThemeConfigFragment on Config {
+  __typename
+  _sys {
+    filename
+    basename
+    breadcrumbs
+    path
+    relativePath
+    extension
+  }
+  id
+  _values
 }
     `;
-export const ConfigQueryFragmentFragmentDoc = gql`
-    fragment ConfigQueryFragment on Query {
-  config(relativePath: "index.json") {
-    __typename
-    id
-    ...ConfigParts
-  }
-}
-    ${ConfigPartsFragmentDoc}`;
 export const PostPartsFragmentDoc = gql`
     fragment PostParts on Post {
   date
@@ -825,6 +831,18 @@ export const PageFragmentFragmentDoc = gql`
     ${PagePartsFragmentDoc}
 ${TagFragmentFragmentDoc}
 ${AuthorFragmentFragmentDoc}`;
+export const ConfigPartsFragmentDoc = gql`
+    fragment ConfigParts on Config {
+  Placeholder
+}
+    `;
+export const GetConfigDocument = gql`
+    query getConfig {
+  config(relativePath: "index.json") {
+    ...ThemeConfigFragment
+  }
+}
+    ${ThemeConfigFragmentFragmentDoc}`;
 export const GetPostDocument = gql`
     query getPost($relativePath: String!) {
   post(relativePath: $relativePath) {
@@ -1109,7 +1127,10 @@ export const TagConnectionDocument = gql`
 export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R>
   export function getSdk<C>(requester: Requester<C>) {
     return {
-      getPost(variables: GetPostQueryVariables, options?: C): Promise<{data: GetPostQuery, variables: GetPostQueryVariables, query: string}> {
+      getConfig(variables?: GetConfigQueryVariables, options?: C): Promise<{data: GetConfigQuery, variables: GetConfigQueryVariables, query: string}> {
+        return requester<{data: GetConfigQuery, variables: GetConfigQueryVariables, query: string}, GetConfigQueryVariables>(GetConfigDocument, variables, options);
+      },
+    getPost(variables: GetPostQueryVariables, options?: C): Promise<{data: GetPostQuery, variables: GetPostQueryVariables, query: string}> {
         return requester<{data: GetPostQuery, variables: GetPostQueryVariables, query: string}, GetPostQueryVariables>(GetPostDocument, variables, options);
       },
     getPosts(variables?: GetPostsQueryVariables, options?: C): Promise<{data: GetPostsQuery, variables: GetPostsQueryVariables, query: string}> {
