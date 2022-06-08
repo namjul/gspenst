@@ -1,5 +1,5 @@
 import type { Result } from '../shared-kernel'
-import { idSchema, slugSchema, ok, err, z } from '../shared-kernel'
+import { idSchema, slugSchema, urlSchema, ok, err, z } from '../shared-kernel'
 import {
   GetPostDocument,
   GetPageDocument,
@@ -32,6 +32,13 @@ export const resourceTypeSchema = z.union([
   resourceTypeTag,
 ])
 
+const resourceBaseSchema = z.object({
+  id: idSchema,
+  filename: z.string(),
+  filepath: z.string(),
+  relativePath: z.string(),
+})
+
 export const dynamicVariablesSchema = z.object({
   slug: slugSchema,
   year: z.number(),
@@ -41,17 +48,10 @@ export const dynamicVariablesSchema = z.object({
   primary_author: z.string().default('all'),
 })
 
-const resourceBaseSchema = z.object({
-  id: idSchema,
-  filename: z.string(),
-  filepath: z.string(),
-  relativePath: z.string(),
-  urlPathname: z
-    .string()
-    .regex(/^\/([^?/]+)/)
-    .optional(),
+const locatorResourceSchema = z.object({
+  urlPathname: urlSchema.optional(),
   filters: z.array(z.string()).nullable(),
-})
+}).merge(dynamicVariablesSchema)
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 const themeConfigFragmentSchema = z.custom<ThemeConfigFragmentFragment>(
@@ -147,7 +147,7 @@ export const themeConfigResourceSchema = resourceBaseSchema.merge(
 export type ConfigResource = z.infer<typeof themeConfigResourceSchema>
 
 export const postResourceSchema = resourceBaseSchema
-  .merge(dynamicVariablesSchema)
+  .merge(locatorResourceSchema)
   .merge(
     z.object({
       resourceType: resourceTypePost,
@@ -158,7 +158,7 @@ export const postResourceSchema = resourceBaseSchema
 export type PostResource = z.infer<typeof postResourceSchema>
 
 export const pageResourceSchema = resourceBaseSchema
-  .merge(dynamicVariablesSchema)
+  .merge(locatorResourceSchema)
   .merge(
     z.object({
       resourceType: resourceTypePage,
@@ -169,7 +169,7 @@ export const pageResourceSchema = resourceBaseSchema
 export type PageResource = z.infer<typeof pageResourceSchema>
 
 export const authorResourceSchema = resourceBaseSchema
-  .merge(dynamicVariablesSchema)
+  .merge(locatorResourceSchema)
   .merge(
     z.object({
       resourceType: resourceTypeAuthor,
@@ -180,7 +180,7 @@ export const authorResourceSchema = resourceBaseSchema
 export type AuthorResource = z.infer<typeof authorResourceSchema>
 
 export const tagResourceSchema = resourceBaseSchema
-  .merge(dynamicVariablesSchema)
+  .merge(locatorResourceSchema)
   .merge(
     z.object({
       resourceType: resourceTypeTag,
@@ -202,13 +202,13 @@ export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
-type PagesResourceNode =
+type LocatorResourceNode =
   | PostFragmentFragment
   | PageFragmentFragment
   | AuthorFragmentFragment
   | TagFragmentFragment
 
-export type ResourceNode = PagesResourceNode | ThemeConfigFragmentFragment
+export type ResourceNode = LocatorResourceNode | ThemeConfigFragmentFragment
 
 export function createResource(
   node: ResourceNode,
@@ -227,16 +227,24 @@ export function createResource(
   const { _sys: { filename, path: filepath, relativePath } = {}, __typename } =
     node
 
-  const resource = {
+  const baseResource = {
     id: node.id,
     filename,
     filepath,
-    resourceType: __typename.toLowerCase(),
     relativePath,
+  }
+
+  const locatorResource = {
+    ...baseResource,
     urlPathname,
     filters,
-    tinaData: node,
     ...dynamicVariables,
+  }
+
+  const resource = {
+    ...locatorResource,
+    resourceType: __typename.toLowerCase(),
+    tinaData: node,
   }
 
   const resourceParsed = resourceSchema.safeParse(resource)
@@ -249,7 +257,7 @@ export function createResource(
 }
 
 export function createDynamicVariables(
-  node: Partial<PagesResourceNode>
+  node: Partial<LocatorResourceNode>
 ): Result<DynamicVariables> {
   const { _sys: { filename } = {} } = node
 
