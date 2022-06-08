@@ -5,10 +5,12 @@ import { compile, pathToRegexp as _pathToRegexp } from 'path-to-regexp' // TODO 
 import { Result as NeverThrowResult } from 'neverthrow'
 import { ok, err } from '../shared-kernel'
 import type { Result } from '../shared-kernel'
-import type { DynamicVariables } from '../domain/resource'
+import type { DynamicVariables, Resource, LocatorResource  } from '../domain/resource'
 import * as Errors from '../errors'
 
 import { nodeEnvironment } from '../env'
+
+export const filterLocatorResources = (resource: Resource): resource is LocatorResource => resource.resourceType !== 'config'
 
 export const isProductionBuild = nodeEnvironment === 'production'
 

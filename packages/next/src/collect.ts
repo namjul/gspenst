@@ -309,11 +309,13 @@ export function collect(
 
         return combine(
           resources.flatMap((resourceItem) => {
+            // TODO refactor to remove this douple check
+            if (resourceItem.type === 'config' || resourceItem.resource.resourceType === 'config') {
+              return ok(resourceItem.resource)
+            }
+
             // calculate matching filters
             const matchingFilter = do_(() => {
-              if (resourceItem.type === 'config') {
-                return []
-              }
               return resourceFilters[resourceItem.type].filter(
                 (routeFilter) => {
                   const nqlFilter = makeNqlFilter(routeFilter)
@@ -328,7 +330,10 @@ export function collect(
 
             let urlPathname = resourceItem.resource.urlPathname
 
-            if (resourceItem.type === 'post' && resourceItem.resource.resourceType === 'post') {
+            if (
+              resourceItem.type === 'post' &&
+              resourceItem.resource.resourceType === 'post'
+            ) {
               const { resource, entry } = resourceItem
               // find owning collection
               const collectionRouteConfig = getCollections(routesConfig).find(

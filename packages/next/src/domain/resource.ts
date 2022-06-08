@@ -12,7 +12,7 @@ import type {
   PageFragmentFragment,
   AuthorFragmentFragment,
   TagFragmentFragment,
-  ThemeConfigFragmentFragment,
+  ThemeConfigFragmentFragment as ConfigResourceNode
 } from '../../.tina/__generated__/types'
 import type { GetTag, GetAuthor, GetPage, GetPost, GetConfig } from '../api'
 import { do_ } from '../shared/utils'
@@ -26,6 +26,13 @@ export const resourceTypeTag = z.literal('tag')
 
 export const resourceTypeSchema = z.union([
   resourceTypeConfig,
+  resourceTypePost,
+  resourceTypePage,
+  resourceTypeAuthor,
+  resourceTypeTag,
+])
+
+export const locatorResourceTypeSchema = z.union([
   resourceTypePost,
   resourceTypePage,
   resourceTypeAuthor,
@@ -48,13 +55,16 @@ export const dynamicVariablesSchema = z.object({
   primary_author: z.string().default('all'),
 })
 
-const locatorResourceSchema = z.object({
-  urlPathname: urlSchema.optional(),
-  filters: z.array(z.string()).nullable(),
-}).merge(dynamicVariablesSchema)
+const locatorResourceBaseSchema = z
+  .object({
+    relationships: z.array(idSchema),
+    urlPathname: urlSchema.optional(),
+    filters: z.array(z.string()).nullable(),
+  })
+  .merge(dynamicVariablesSchema)
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-const themeConfigFragmentSchema = z.custom<ThemeConfigFragmentFragment>(
+const themeConfigFragmentSchema = z.custom<ConfigResourceNode>(
   (value: any) => '__typename' in value && value.__typename === 'Config'
 )
 const postFragmentSchema = z.custom<PostFragmentFragment>(
@@ -147,7 +157,7 @@ export const themeConfigResourceSchema = resourceBaseSchema.merge(
 export type ConfigResource = z.infer<typeof themeConfigResourceSchema>
 
 export const postResourceSchema = resourceBaseSchema
-  .merge(locatorResourceSchema)
+  .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
       resourceType: resourceTypePost,
@@ -158,7 +168,7 @@ export const postResourceSchema = resourceBaseSchema
 export type PostResource = z.infer<typeof postResourceSchema>
 
 export const pageResourceSchema = resourceBaseSchema
-  .merge(locatorResourceSchema)
+  .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
       resourceType: resourceTypePage,
@@ -169,7 +179,7 @@ export const pageResourceSchema = resourceBaseSchema
 export type PageResource = z.infer<typeof pageResourceSchema>
 
 export const authorResourceSchema = resourceBaseSchema
-  .merge(locatorResourceSchema)
+  .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
       resourceType: resourceTypeAuthor,
@@ -180,7 +190,7 @@ export const authorResourceSchema = resourceBaseSchema
 export type AuthorResource = z.infer<typeof authorResourceSchema>
 
 export const tagResourceSchema = resourceBaseSchema
-  .merge(locatorResourceSchema)
+  .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
       resourceType: resourceTypeTag,
@@ -198,8 +208,17 @@ export const resourceSchema = z.discriminatedUnion('resourceType', [
   tagResourceSchema,
 ])
 
+export const locatorResourceSchema = z.discriminatedUnion('resourceType', [
+  postResourceSchema,
+  pageResourceSchema,
+  authorResourceSchema,
+  tagResourceSchema,
+])
+
 export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>
+export type LocatorResourceType = z.infer<typeof locatorResourceTypeSchema>
+export type LocatorResource = z.infer<typeof locatorResourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
 type LocatorResourceNode =
@@ -208,15 +227,18 @@ type LocatorResourceNode =
   | AuthorFragmentFragment
   | TagFragmentFragment
 
-export type ResourceNode = LocatorResourceNode | ThemeConfigFragmentFragment
+export type ResourceNode = LocatorResourceNode | ConfigResourceNode
 
 export function createResource(
   node: ResourceNode,
   urlPathname: string | undefined,
   filters: string[] = []
 ): Result<Resource> {
+
+  const isLocator = node.__typename !== 'Config'
+
   const dynamicVariablesResult =
-    node.__typename === 'Config' ? ok({}) : createDynamicVariables(node)
+    isLocator ? createDynamicVariables(node) : ok({})
 
   if (dynamicVariablesResult.isErr()) {
     return err(dynamicVariablesResult.error)
@@ -234,14 +256,14 @@ export function createResource(
     relativePath,
   }
 
-  const locatorResource = {
-    ...baseResource,
+  const locatorResource = isLocator ? {
+    ...dynamicVariables,
     urlPathname,
     filters,
-    ...dynamicVariables,
-  }
+  } : {}
 
   const resource = {
+    ...baseResource,
     ...locatorResource,
     resourceType: __typename.toLowerCase(),
     tinaData: node,

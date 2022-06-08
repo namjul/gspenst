@@ -2,7 +2,7 @@ import type { GetStaticProps, GetStaticPaths } from 'next'
 import { log } from './logger'
 import { routerManager } from './routing'
 import type { RoutesConfig } from './domain/routes'
-import type { Resource } from './domain/resource'
+import type { LocatorResource } from './domain/resource'
 import type { PageProps } from './controller'
 import { controller } from './controller'
 import { format } from './errors'
@@ -10,7 +10,7 @@ import { format } from './errors'
 export const getStaticPaths =
   (
     routesConfig: RoutesConfig,
-    resources: Resource[],
+    resources: LocatorResource[],
     staticExport: boolean
   ): GetStaticPaths =>
   async () => {

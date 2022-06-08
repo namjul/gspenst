@@ -2,6 +2,7 @@ import { ok } from '../shared-kernel'
 import repository from '../repository'
 import { parseRoutes } from '../domain/routes'
 import defaultRoutes from '../defaultRoutes'
+import { filterLocatorResources } from '../helpers'
 import { routerManager } from './routerManager'
 
 jest.mock('../api')
@@ -12,8 +13,9 @@ describe('router resolvePaths', () => {
     test('empty config', async () => {
       const routesConfig = {}
       const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+      const locatorResources = resources.filter(filterLocatorResources)
       const router = routerManager(routesConfig)
-      const result = router.resolvePaths(resources)
+      const result = router.resolvePaths(locatorResources)
       expect(result).toEqual(['/admin', '/about', '/home', '/portfolio'])
     })
 
@@ -21,7 +23,8 @@ describe('router resolvePaths', () => {
       const routesConfig = parseRoutes(defaultRoutes)._unsafeUnwrap()[0]!
       const router = routerManager(routesConfig)
       const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
-      const result = router.resolvePaths(resources)
+      const locatorResources = resources.filter(filterLocatorResources)
+      const result = router.resolvePaths(locatorResources)
       expect(result).toEqual([
         '/admin',
         '/',
@@ -125,7 +128,8 @@ describe('router resolvePaths', () => {
     }
     const router = routerManager(routesConfig)
     const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
-    const result = router.resolvePaths(resources)
+    const locatorResources = resources.filter(filterLocatorResources)
+    const result = router.resolvePaths(locatorResources)
     expect(result).toEqual([
       '/admin',
       '/features/',
@@ -160,7 +164,8 @@ describe('router resolvePaths', () => {
     }
     const router = routerManager(routesConfig)
     const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
-    const result = router.resolvePaths(resources)
+    const locatorResources = resources.filter(filterLocatorResources)
+    const result = router.resolvePaths(locatorResources)
     expect(result).toEqual([
       '/admin',
       '/features/',
@@ -192,7 +197,8 @@ describe('router resolvePaths', () => {
     }
     const router = routerManager(routesConfig)
     const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
-    const result = router.resolvePaths(resources)
+    const locatorResources = resources.filter(filterLocatorResources)
+    const result = router.resolvePaths(locatorResources)
     expect(result).toEqual([
       '/admin',
       '/',
@@ -232,7 +238,8 @@ describe('router resolvePaths', () => {
     }
     const router = routerManager(routesConfig)
     const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
-    const result = router.resolvePaths(resources)
+    const locatorResources = resources.filter(filterLocatorResources)
+    const result = router.resolvePaths(locatorResources)
     expect(result).toContain('/category-2/napoleon')
     expect(result).toContain('/category-2/pedro')
   })

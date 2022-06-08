@@ -4,7 +4,7 @@ import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderContext } from 'webpack'
 import { parseRoutes } from './domain/routes'
-import { isProductionBuild, findContentDir } from './helpers'
+import { isProductionBuild, findContentDir, filterLocatorResources } from './helpers'
 import { format } from './errors'
 import defaultRoutes from './defaultRoutes'
 import repository from './repository'
@@ -84,6 +84,8 @@ async function loader(
 
   const resources = collectResult.isOk() ? collectResult.value : []
 
+  const locatorResources = resources.filter(filterLocatorResources)
+
   const routesConfigStringified = JSON.stringify(routesConfig)
 
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
@@ -111,13 +113,13 @@ export default function GspenstPage (props) {
 
   const dataFetchingFunctions = `
 
-const resources = ${JSON.stringify(resources)}
+const locatorResources = ${JSON.stringify(locatorResources)}
 const routesConfig = ${routesConfigStringified}
 const isStaticExport = !!${staticExport}
 const routingParameter = '${routingParameter}'
 
 export const getStaticPaths = async () => {
-  return __gspenst_server__.getStaticPaths(routesConfig, resources, isStaticExport)()
+  return __gspenst_server__.getStaticPaths(routesConfig, locatorResources, isStaticExport)()
 }
 
 export const getStaticProps = async (context) => {

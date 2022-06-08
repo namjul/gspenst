@@ -5,7 +5,7 @@ import { ok, combine } from '../shared-kernel'
 import type { Result, Option, ID } from '../shared-kernel'
 import type { RoutingContext, Request } from '../domain/routing'
 import type { Collection } from '../domain/routes'
-import type { Resource } from '../domain/resource'
+import type { LocatorResource } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class CollectionRouter extends ParentRouter {
@@ -109,7 +109,7 @@ class CollectionRouter extends ParentRouter {
     }
   }
 
-  resolvePaths(routers: ParentRouter[], resources: Resource[]) {
+  resolvePaths(routers: ParentRouter[], resources: LocatorResource[]) {
     const postResources = resources.filter(
       (resource) =>
         resource.resourceType === 'post' &&

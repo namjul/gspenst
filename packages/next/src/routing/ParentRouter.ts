@@ -2,7 +2,7 @@ import type { Key } from 'path-to-regexp'
 import type { Result, Option } from '../shared-kernel'
 import type { RoutingContext } from '../domain/routing'
 import type { Data } from '../domain/routes'
-import type { ResourceType, Resource } from '../domain/resource'
+import type { LocatorResourceType, LocatorResource } from '../domain/resource'
 import { paramsSchema } from '../domain/routing'
 import { parse } from '../helpers/parser'
 
@@ -35,7 +35,7 @@ class ParentRouter {
 
   respectDominantRouter(
     routers: ParentRouter[],
-    resourceType: ResourceType,
+    resourceType: LocatorResourceType,
     slug: string | undefined
   ): ParentRouter | undefined {
     return routers.find((router) =>
@@ -54,7 +54,7 @@ class ParentRouter {
   }
 
   isRedirectEnabled(
-    resourceType: ResourceType,
+    resourceType: LocatorResourceType,
     slug: string | undefined
   ): boolean {
     if (!this.data || Object.keys(this.data.router).length === 0) {
@@ -92,7 +92,7 @@ class ParentRouter {
     return this.route ?? '/'
   }
 
-  resolvePaths(_routers: ParentRouter[], _resources: Resource[]): string[] {
+  resolvePaths(_routers: ParentRouter[], _resources: LocatorResource[]): string[] {
     return []
   }
 }

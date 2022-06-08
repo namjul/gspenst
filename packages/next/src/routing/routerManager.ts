@@ -3,7 +3,7 @@ import { ok, combine } from '../shared-kernel'
 import type { Result, Option, ID } from '../shared-kernel'
 import type { RoutesConfig } from '../domain/routes'
 import type { RoutingContext } from '../domain/routing'
-import type { Resource } from '../domain/resource'
+import type { LocatorResource } from '../domain/resource'
 import { getRoutes, getCollections, getTaxonomies } from '../domain/routes'
 
 import AdminRouter from './AdminRouter'
@@ -73,7 +73,7 @@ export const routerManager = (routesConfig: RoutesConfig) => {
       }
       return ok(undefined)
     },
-    resolvePaths(resources: Resource[]) {
+    resolvePaths(resources: LocatorResource[]) {
       const paths = routers.flatMap((_router) => {
         return _router.resolvePaths(routers, resources)
       })
