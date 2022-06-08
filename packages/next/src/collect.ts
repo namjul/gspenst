@@ -3,10 +3,7 @@ import * as db from './db'
 import type { Resource, ResourceNode } from './domain/resource'
 import type { RoutesConfig, DataQueryBrowse } from './domain/routes'
 import { getCollections, getRoutes } from './domain/routes'
-import {
-  createResource as createInternalResource,
-  createDynamicVariables,
-} from './domain/resource'
+import { createResource, createDynamicVariables } from './domain/resource'
 import { createPost } from './domain/post'
 import { createPage } from './domain/page'
 import { createAuthor } from './domain/author'
@@ -129,7 +126,7 @@ function createUrlPathname(
   }
 }
 
-function createResource(
+function createInternalResource(
   routesConfig: RoutesConfig,
   resourceNode: ResourceNode
 ) {
@@ -141,90 +138,19 @@ function createResource(
   const { __typename } = resourceNode
   switch (__typename) {
     case 'Post': {
-      const resourceResult = createInternalResource(
-        resourceNode,
-        urlPathname.value
-      )
-      if (resourceResult.isErr()) {
-        return err(resourceResult.error)
-      }
-
-      const entryResult = createPost(resourceNode)
-      if (entryResult.isErr()) {
-        return err(entryResult.error)
-      }
-      return ok({
-        type: 'post' as const,
-        resource: resourceResult.value,
-        entry: entryResult.value,
-      })
+      return createResource(resourceNode, urlPathname.value)
     }
     case 'Page': {
-      const resourceResult = createInternalResource(
-        resourceNode,
-        urlPathname.value
-      )
-      if (resourceResult.isErr()) {
-        return err(resourceResult.error)
-      }
-      const entryResult = createPage(resourceNode)
-      if (entryResult.isErr()) {
-        return err(entryResult.error)
-      }
-      return ok({
-        type: 'page' as const,
-        resource: resourceResult.value,
-        entry: entryResult.value,
-      })
+      return createResource(resourceNode, urlPathname.value)
     }
     case 'Author': {
-      const resourceResult = createInternalResource(
-        resourceNode,
-        urlPathname.value
-      )
-      if (resourceResult.isErr()) {
-        return err(resourceResult.error)
-      }
-      const entryResult = createAuthor(resourceNode)
-      if (entryResult.isErr()) {
-        return err(entryResult.error)
-      }
-      return ok({
-        type: 'author' as const,
-        resource: resourceResult.value,
-        entry: entryResult.value,
-      })
+      return createResource(resourceNode, urlPathname.value)
     }
     case 'Tag': {
-      const resourceResult = createInternalResource(
-        resourceNode,
-        urlPathname.value
-      )
-      if (resourceResult.isErr()) {
-        return err(resourceResult.error)
-      }
-      const entryResult = createTag(resourceNode)
-      if (entryResult.isErr()) {
-        return err(entryResult.error)
-      }
-      return ok({
-        type: 'tag' as const,
-        resource: resourceResult.value,
-        entry: entryResult.value,
-      })
+      return createResource(resourceNode, urlPathname.value)
     }
     case 'Config': {
-      const resourceResult = createInternalResource(
-        resourceNode,
-        urlPathname.value
-      )
-      if (resourceResult.isErr()) {
-        return err(resourceResult.error)
-      }
-      return ok({
-        type: 'config' as const,
-        resource: resourceResult.value,
-      })
+      return createResource(resourceNode, urlPathname.value)
     }
     default:
       return absurd(__typename)
@@ -238,9 +164,9 @@ export function collect(
   const result = collectResourceNodes()
     .andThen((resourceNodes) => {
       const resourceResultList = resourceNodes.reduce<
-        ReturnType<typeof createResource>[]
+        ReturnType<typeof createInternalResource>[]
       >((acc, current) => {
-        const resourceItem = createResource(routesConfig, current)
+        const resourceItem = createInternalResource(routesConfig, current)
 
         if (resourceItem.isErr()) {
           acc.push(err(resourceItem.error))
@@ -254,7 +180,7 @@ export function collect(
 
       return combine(resourceResultList).andThen((resources) => {
         const collectionFilters = [
-          ...resources.flatMap(({ resource }) => {
+          ...resources.flatMap((resource) => {
             if (
               resource.resourceType === 'tag' ||
               resource.resourceType === 'author'
@@ -308,18 +234,38 @@ export function collect(
         )
 
         return combine(
-          resources.flatMap((resourceItem) => {
-            // TODO refactor to remove this douple check
-            if (resourceItem.type === 'config' || resourceItem.resource.resourceType === 'config') {
-              return ok(resourceItem.resource)
+          resources.flatMap((resource) => {
+            if (resource.resourceType === 'config') {
+              return ok(resource)
+            }
+
+            const entryResult = do_(() => {
+              const { resourceType } = resource
+
+              switch (resourceType) {
+                case 'post':
+                  return createPost(resource.tinaData.data.post)
+                case 'page':
+                  return createPage(resource.tinaData.data.page)
+                case 'author':
+                  return createAuthor(resource.tinaData.data.author)
+                case 'tag':
+                  return createTag(resource.tinaData.data.tag)
+                default:
+                  return absurd(resourceType)
+              }
+            })
+
+            if (entryResult.isErr()) {
+              return err(entryResult.error)
             }
 
             // calculate matching filters
             const matchingFilter = do_(() => {
-              return resourceFilters[resourceItem.type].filter(
+              return resourceFilters[resource.resourceType].filter(
                 (routeFilter) => {
                   const nqlFilter = makeNqlFilter(routeFilter)
-                  const nqlFilterResult = nqlFilter(resourceItem.entry)
+                  const nqlFilterResult = nqlFilter(entryResult.value)
                   if (nqlFilterResult.isErr()) {
                     return false
                   }
@@ -328,13 +274,9 @@ export function collect(
               )
             })
 
-            let urlPathname = resourceItem.resource.urlPathname
+            let urlPathname = resource.urlPathname
 
-            if (
-              resourceItem.type === 'post' &&
-              resourceItem.resource.resourceType === 'post'
-            ) {
-              const { resource, entry } = resourceItem
+            if (resource.resourceType === 'post') {
               // find owning collection
               const collectionRouteConfig = getCollections(routesConfig).find(
                 ([_, collection]) => {
@@ -342,7 +284,7 @@ export function collect(
                     ? makeNqlFilter(collection.filter)
                     : () => ok(true)
 
-                  const nqlFilterResult = nqlFilter(entry)
+                  const nqlFilterResult = nqlFilter(entryResult.value)
                   if (nqlFilterResult.isErr()) {
                     return false
                   }
@@ -361,7 +303,7 @@ export function collect(
             }
 
             return ok({
-              ...resourceItem.resource,
+              ...resource,
               urlPathname,
               filters: [...new Set(matchingFilter)],
             })
