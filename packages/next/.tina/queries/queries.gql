@@ -1,12 +1,12 @@
 query getConfig {
   config(relativePath: "index.json") {
-    ...ThemeConfigFragment
+    ...ThemeConfigNode
   }
 }
 
 query getPost($relativePath: String!) {
   post(relativePath: $relativePath) {
-    ...PostFragment
+    ...PostNode
   }
 }
 
@@ -17,7 +17,7 @@ query getPosts {
     totalCount
     edges {
       node {
-        ...PostFragment
+        ...PostNode
       }
     }
   }
@@ -25,7 +25,7 @@ query getPosts {
 
 query getPage($relativePath: String!) {
   page(relativePath: $relativePath) {
-    ...PageFragment
+    ...PageNode
   }
 }
 
@@ -36,7 +36,7 @@ query getPages {
     totalCount
     edges {
       node {
-        ...PageFragment
+        ...PageNode
       }
     }
   }
@@ -44,7 +44,7 @@ query getPages {
 
 query getAuthor($relativePath: String!) {
   author(relativePath: $relativePath) {
-    ...AuthorFragment
+    ...AuthorNode
   }
 }
 
@@ -55,7 +55,7 @@ query getAuthors {
     totalCount
     edges {
       node {
-        ...AuthorFragment
+        ...AuthorNode
       }
     }
   }
@@ -63,7 +63,7 @@ query getAuthors {
 
 query getTag($relativePath: String!) {
   tag(relativePath: $relativePath) {
-    ...TagFragment
+    ...TagNode
   }
 }
 
@@ -74,7 +74,7 @@ query getTags {
     totalCount
     edges {
       node {
-        ...TagFragment
+        ...TagNode
       }
     }
   }

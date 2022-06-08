@@ -1,7 +1,7 @@
 import { idSchema, dateSchema, ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { Result } from '../shared-kernel'
-import type { AuthorFragmentFragment } from '../../.tina/__generated__/types'
+import type { AuthorNodeFragment } from '../../.tina/__generated__/types'
 
 export const authorSchema = z
   .object({
@@ -13,7 +13,7 @@ export const authorSchema = z
   .strict()
 
 export function createAuthor(
-  authorData: AuthorFragmentFragment
+  authorData: AuthorNodeFragment
 ): Result<Author> {
   const { __typename, _sys, ...restPageAuthor } = authorData
 

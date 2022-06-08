@@ -2,8 +2,8 @@ import { idSchema, dateSchema, ok, err, z, combine } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { Result } from '../shared-kernel'
 import type {
-  PostFragmentFragment,
-  PageFragmentFragment,
+  PostNodeFragment,
+  PageNodeFragment,
 } from '../../.tina/__generated__/types'
 import { authorSchema, createAuthor } from './author'
 import { tagSchema, createTag } from './tag'
@@ -29,7 +29,7 @@ export type Post = z.infer<typeof postSchema>
 // TODO add Post type with special attributes https://ghost.org/docs/themes/contexts/post/
 //https://www.typescriptlang.org/play?exactOptionalPropertyTypes=true#code/KYDwDg9gTgLgBDAnmYcByBDAtqgvHAbzgDttgAuOAZxigEtiBzOAXwChRJYFlUBJACZx8ROgMrEArlgBGwKKw7ho8JCjgA1DABtJwADwAVOKBjBiAqnADyYGHQjF9NekwB8b4XGOnzluJIWwABmDMBCAPzoZHCUgmxKXKq8NnYOToae+MYAPgFBocThCYkqcMGBAMb2jnCVUMAYZkYmIGYWVrY1Ti4MjFn5AiFhAm4AFAJNGOS9TAA0cABuOnoRlIYAlJRaugaZhGxwR3B0wXBjasAQZ8u7wrj4AOSzjI8bcA0wklDEhCRklFuelYcAwVh2eiMbgSxzqjioEG0wAAdNoIIwxkDgBtDsdPt9fqJxHAAIwAJgAzCCwZoVntoew2JV4fAQF56o0zGNHpMYBhHgtngJgm8mSy4Ih2Q0msBubz+QtAkNCuEccziDQ4AAvKWc2U8qZvIA
 export function createPost(
-  postData: PostFragmentFragment | PageFragmentFragment
+  postNode: PostNodeFragment | PageNodeFragment,
 ): Result<Post> {
   const {
     __typename,

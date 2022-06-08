@@ -1,4 +1,4 @@
-fragment ThemeConfigFragment on Config {
+fragment ThemeConfigNode on Config {
   __typename
   _sys {
     filename
@@ -12,7 +12,7 @@ fragment ThemeConfigFragment on Config {
   _values
 }
 
-fragment PostFragment on Post {
+fragment PostNode on Post {
   __typename
   _sys {
     filename
@@ -27,20 +27,20 @@ fragment PostFragment on Post {
   tags {
     tag {
       ... on Tag {
-        ...TagFragment
+        ...TagNode
       }
     }
   }
   authors {
     author {
       ... on Author {
-        ...AuthorFragment
+        ...AuthorNode
       }
     }
   }
 }
 
-fragment PageFragment on Page {
+fragment PageNode on Page {
   __typename
   _sys {
     filename
@@ -55,20 +55,20 @@ fragment PageFragment on Page {
   tags {
     tag {
       ... on Tag {
-        ...TagFragment
+        ...TagNode
       }
     }
   }
   authors {
     author {
       ... on Author {
-        ...AuthorFragment
+        ...AuthorNode
       }
     }
   }
 }
 
-fragment AuthorFragment on Author {
+fragment AuthorNode on Author {
   __typename
   _sys {
     filename
@@ -82,7 +82,7 @@ fragment AuthorFragment on Author {
   ...AuthorParts
 }
 
-fragment TagFragment on Tag {
+fragment TagNode on Tag {
   __typename
   _sys {
     filename

@@ -1,7 +1,7 @@
 import { idSchema, dateSchema, ok, err, z } from '../shared-kernel'
 import * as Errors from '../errors'
 import type { Result } from '../shared-kernel'
-import type { TagFragmentFragment } from '../../.tina/__generated__/types'
+import type { TagNodeFragment } from '../../.tina/__generated__/types'
 
 export const tagSchema = z
   .object({
@@ -12,7 +12,7 @@ export const tagSchema = z
   })
   .strict()
 
-export function createTag(tagData: TagFragmentFragment): Result<Tag> {
+export function createTag(tagData: TagNodeFragment): Result<Tag> {
   const { __typename, _sys, ...restPageTag } = tagData
   const tag = {
     ...restPageTag,

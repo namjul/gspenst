@@ -527,15 +527,15 @@ export type TagMutation = {
   slug?: InputMaybe<Scalars['String']>;
 };
 
-export type ThemeConfigFragmentFragment = { __typename: 'Config', id: string, _values: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
+export type ThemeConfigNodeFragment = { __typename: 'Config', id: string, _values: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
 
-export type PostFragmentFragment = { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PostTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null };
+export type PostNodeFragment = { __typename: 'Post', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PostTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null };
 
-export type PageFragmentFragment = { __typename: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PageTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null };
+export type PageNodeFragment = { __typename: 'Page', id: string, date: string, slug: string, title: string, excerpt?: any | null, content: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, tags?: Array<{ __typename: 'PageTags', tag?: { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null };
 
-export type AuthorFragmentFragment = { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
+export type AuthorNodeFragment = { __typename: 'Author', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
 
-export type TagFragmentFragment = { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
+export type TagNodeFragment = { __typename: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } };
 
 export type GetConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -660,8 +660,8 @@ export type TagConnectionQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type TagConnectionQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename?: 'Tag', id: string, name: string, date: string, slug: string, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
-export const ThemeConfigFragmentFragmentDoc = gql`
-    fragment ThemeConfigFragment on Config {
+export const ThemeConfigNodeFragmentDoc = gql`
+    fragment ThemeConfigNode on Config {
   __typename
   _sys {
     filename
@@ -707,8 +707,8 @@ export const TagPartsFragmentDoc = gql`
   slug
 }
     `;
-export const TagFragmentFragmentDoc = gql`
-    fragment TagFragment on Tag {
+export const TagNodeFragmentDoc = gql`
+    fragment TagNode on Tag {
   __typename
   _sys {
     filename
@@ -729,8 +729,8 @@ export const AuthorPartsFragmentDoc = gql`
   slug
 }
     `;
-export const AuthorFragmentFragmentDoc = gql`
-    fragment AuthorFragment on Author {
+export const AuthorNodeFragmentDoc = gql`
+    fragment AuthorNode on Author {
   __typename
   _sys {
     filename
@@ -744,8 +744,8 @@ export const AuthorFragmentFragmentDoc = gql`
   ...AuthorParts
 }
     ${AuthorPartsFragmentDoc}`;
-export const PostFragmentFragmentDoc = gql`
-    fragment PostFragment on Post {
+export const PostNodeFragmentDoc = gql`
+    fragment PostNode on Post {
   __typename
   _sys {
     filename
@@ -760,21 +760,21 @@ export const PostFragmentFragmentDoc = gql`
   tags {
     tag {
       ... on Tag {
-        ...TagFragment
+        ...TagNode
       }
     }
   }
   authors {
     author {
       ... on Author {
-        ...AuthorFragment
+        ...AuthorNode
       }
     }
   }
 }
     ${PostPartsFragmentDoc}
-${TagFragmentFragmentDoc}
-${AuthorFragmentFragmentDoc}`;
+${TagNodeFragmentDoc}
+${AuthorNodeFragmentDoc}`;
 export const PagePartsFragmentDoc = gql`
     fragment PageParts on Page {
   date
@@ -800,8 +800,8 @@ export const PagePartsFragmentDoc = gql`
   content
 }
     `;
-export const PageFragmentFragmentDoc = gql`
-    fragment PageFragment on Page {
+export const PageNodeFragmentDoc = gql`
+    fragment PageNode on Page {
   __typename
   _sys {
     filename
@@ -816,21 +816,21 @@ export const PageFragmentFragmentDoc = gql`
   tags {
     tag {
       ... on Tag {
-        ...TagFragment
+        ...TagNode
       }
     }
   }
   authors {
     author {
       ... on Author {
-        ...AuthorFragment
+        ...AuthorNode
       }
     }
   }
 }
     ${PagePartsFragmentDoc}
-${TagFragmentFragmentDoc}
-${AuthorFragmentFragmentDoc}`;
+${TagNodeFragmentDoc}
+${AuthorNodeFragmentDoc}`;
 export const ConfigPartsFragmentDoc = gql`
     fragment ConfigParts on Config {
   Placeholder
@@ -839,86 +839,86 @@ export const ConfigPartsFragmentDoc = gql`
 export const GetConfigDocument = gql`
     query getConfig {
   config(relativePath: "index.json") {
-    ...ThemeConfigFragment
+    ...ThemeConfigNode
   }
 }
-    ${ThemeConfigFragmentFragmentDoc}`;
+    ${ThemeConfigNodeFragmentDoc}`;
 export const GetPostDocument = gql`
     query getPost($relativePath: String!) {
   post(relativePath: $relativePath) {
-    ...PostFragment
+    ...PostNode
   }
 }
-    ${PostFragmentFragmentDoc}`;
+    ${PostNodeFragmentDoc}`;
 export const GetPostsDocument = gql`
     query getPosts {
   postConnection {
     totalCount
     edges {
       node {
-        ...PostFragment
+        ...PostNode
       }
     }
   }
 }
-    ${PostFragmentFragmentDoc}`;
+    ${PostNodeFragmentDoc}`;
 export const GetPageDocument = gql`
     query getPage($relativePath: String!) {
   page(relativePath: $relativePath) {
-    ...PageFragment
+    ...PageNode
   }
 }
-    ${PageFragmentFragmentDoc}`;
+    ${PageNodeFragmentDoc}`;
 export const GetPagesDocument = gql`
     query getPages {
   pageConnection {
     totalCount
     edges {
       node {
-        ...PageFragment
+        ...PageNode
       }
     }
   }
 }
-    ${PageFragmentFragmentDoc}`;
+    ${PageNodeFragmentDoc}`;
 export const GetAuthorDocument = gql`
     query getAuthor($relativePath: String!) {
   author(relativePath: $relativePath) {
-    ...AuthorFragment
+    ...AuthorNode
   }
 }
-    ${AuthorFragmentFragmentDoc}`;
+    ${AuthorNodeFragmentDoc}`;
 export const GetAuthorsDocument = gql`
     query getAuthors {
   authorConnection {
     totalCount
     edges {
       node {
-        ...AuthorFragment
+        ...AuthorNode
       }
     }
   }
 }
-    ${AuthorFragmentFragmentDoc}`;
+    ${AuthorNodeFragmentDoc}`;
 export const GetTagDocument = gql`
     query getTag($relativePath: String!) {
   tag(relativePath: $relativePath) {
-    ...TagFragment
+    ...TagNode
   }
 }
-    ${TagFragmentFragmentDoc}`;
+    ${TagNodeFragmentDoc}`;
 export const GetTagsDocument = gql`
     query getTags {
   tagConnection {
     totalCount
     edges {
       node {
-        ...TagFragment
+        ...TagNode
       }
     }
   }
 }
-    ${TagFragmentFragmentDoc}`;
+    ${TagNodeFragmentDoc}`;
 export const ConfigDocument = gql`
     query config($relativePath: String!) {
   config(relativePath: $relativePath) {

@@ -2,7 +2,7 @@ import { z } from '../shared-kernel'
 import { parse } from '../helpers/parser';
 import type { Result } from '../shared-kernel'
 import type {
-  PageFragmentFragment,
+  PageNodeFragment,
 } from '../../.tina/__generated__/types'
 import { postSchema, createPost } from './post'
 
@@ -31,6 +31,6 @@ export function createPage(pageData: Get<GetPageQuery, 'page'> & { _sys?: object
     })
   )
 
-export function createPage(pageData: PageFragmentFragment): Result<Page> {
+export function createPage(pageData: PageNodeFragment): Result<Page> {
   return createPost(pageData).andThen(post => parse(pageSchema, post))
 }

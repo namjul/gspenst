@@ -8,11 +8,11 @@ import {
   GetConfigDocument,
 } from '../../.tina/__generated__/types'
 import type {
-  PostFragmentFragment,
-  PageFragmentFragment,
-  AuthorFragmentFragment,
-  TagFragmentFragment,
-  ThemeConfigFragmentFragment as ConfigResourceNode,
+  PostNodeFragment,
+  PageNodeFragment,
+  AuthorNodeFragment,
+  TagNodeFragment,
+  ThemeConfigNodeFragment as ConfigResourceNode,
 } from '../../.tina/__generated__/types'
 import type { GetTag, GetAuthor, GetPage, GetPost, GetConfig } from '../api'
 import { do_, absurd } from '../shared/utils'
@@ -67,16 +67,16 @@ const locatorResourceBaseSchema = z
 const themeConfigFragmentSchema = z.custom<ConfigResourceNode>(
   (value: any) => '__typename' in value && value.__typename === 'Config'
 )
-const postFragmentSchema = z.custom<PostFragmentFragment>(
+const postFragmentSchema = z.custom<PostNodeFragment>(
   (value: any) => '__typename' in value && value.__typename === 'Post'
 )
-const pageFragmentSchema = z.custom<PageFragmentFragment>(
+const pageFragmentSchema = z.custom<PageNodeFragment>(
   (value: any) => '__typename' in value && value.__typename === 'Page'
 )
-const tagFragmentSchema = z.custom<TagFragmentFragment>(
+const tagFragmentSchema = z.custom<TagNodeFragment>(
   (value: any) => '__typename' in value && value.__typename === 'Tag'
 )
-const authorFragmentSchema = z.custom<AuthorFragmentFragment>(
+const authorFragmentSchema = z.custom<AuthorNodeFragment>(
   (value: any) => '__typename' in value && value.__typename === 'Author'
 )
 /* eslint-enable @typescript-eslint/no-unsafe-member-access */
@@ -222,10 +222,10 @@ export type LocatorResource = z.infer<typeof locatorResourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
 type LocatorResourceNode =
-  | PostFragmentFragment
-  | PageFragmentFragment
-  | AuthorFragmentFragment
-  | TagFragmentFragment
+  | PostNodeFragment
+  | PageNodeFragment
+  | AuthorNodeFragment
+  | TagNodeFragment
 
 export type ResourceNode = LocatorResourceNode | ConfigResourceNode
 
