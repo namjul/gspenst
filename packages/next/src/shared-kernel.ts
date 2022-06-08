@@ -28,7 +28,7 @@ export {
   fromPromise,
   fromThrowable,
 } from 'neverthrow'
-export { z, stringHash }
+export { z }
 
 export type ID = Opaque<number, 'ID'>
 export const idSchema = z.union([z.string(), z.number()]).transform((value) => {
@@ -55,6 +55,8 @@ export const dateSchema = z.string().refine(
 )
 
 export const slugSchema = z.string().transform((value) => slugify(value))
+
+export const urlSchema = z.string().regex(/^\/([^?/]+)/)
 
 const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()])
 type Json = z.infer<typeof literalSchema> | { [key: string]: Json } | Json[]

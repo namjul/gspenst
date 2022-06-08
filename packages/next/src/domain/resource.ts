@@ -12,10 +12,10 @@ import type {
   PageFragmentFragment,
   AuthorFragmentFragment,
   TagFragmentFragment,
-  ThemeConfigFragmentFragment as ConfigResourceNode
+  ThemeConfigFragmentFragment as ConfigResourceNode,
 } from '../../.tina/__generated__/types'
 import type { GetTag, GetAuthor, GetPage, GetPost, GetConfig } from '../api'
-import { do_ } from '../shared/utils'
+import { do_, absurd } from '../shared/utils'
 import * as Errors from '../errors'
 
 export const resourceTypeConfig = z.literal('config')
@@ -234,11 +234,11 @@ export function createResource(
   urlPathname: string | undefined,
   filters: string[] = []
 ): Result<Resource> {
-
   const isLocator = node.__typename !== 'Config'
 
-  const dynamicVariablesResult =
-    isLocator ? createDynamicVariables(node) : ok({})
+  const dynamicVariablesResult = isLocator
+    ? createDynamicVariables(node)
+    : ok({})
 
   if (dynamicVariablesResult.isErr()) {
     return err(dynamicVariablesResult.error)
@@ -256,11 +256,14 @@ export function createResource(
     relativePath,
   }
 
-  const locatorResource = isLocator ? {
-    ...dynamicVariables,
-    urlPathname,
-    filters,
-  } : {}
+  const locatorResource = isLocator
+    ? {
+        ...dynamicVariables,
+        urlPathname,
+        filters,
+        relationships: extractRelations(node).map((relNode) => relNode.id),
+      }
+    : {}
 
   const resource = {
     ...baseResource,
@@ -328,5 +331,30 @@ export function createDynamicVariables(
     return ok(dynamicVariablesParsed.data)
   } else {
     return err(Errors.other('createResource', dynamicVariablesParsed.error))
+  }
+}
+
+function extractRelations(node: LocatorResourceNode) {
+  const { __typename } = node
+  switch (__typename) {
+    case 'Page':
+    case 'Post': {
+      return [...(node.tags ?? []), ...(node.authors ?? [])].flatMap(
+        (childNode) => {
+          if (childNode && 'tag' in childNode) {
+            return childNode.tag ?? []
+          }
+          if (childNode && 'author' in childNode) {
+            return childNode.author ?? []
+          }
+          return []
+        }
+      )
+    }
+    case 'Author':
+    case 'Tag':
+      return []
+    default:
+      return absurd(__typename)
   }
 }
