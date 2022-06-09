@@ -10,11 +10,7 @@ import type {
 } from './domain/resource'
 import type { RoutesConfig, DataQueryBrowse } from './domain/routes'
 import { getCollections, getRoutes } from './domain/routes'
-import {
-  createResource,
-  createDynamicVariables,
-  denomarlizeResources,
-} from './domain/resource'
+import { createResource, createDynamicVariables } from './domain/resource'
 import { createPost } from './domain/post'
 import { createPage } from './domain/page'
 import { createAuthor } from './domain/author'
@@ -24,6 +20,7 @@ import * as api from './api'
 import { makeNqlFilter, compilePermalink } from './helpers'
 import { do_, absurd } from './shared/utils'
 import { createLogger } from './logger'
+import { denomarlizeResources } from './helpers/normalize'
 
 const log = createLogger('collect')
 

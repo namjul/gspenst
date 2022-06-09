@@ -30,6 +30,15 @@ export const postSchema = z
 
 export type Post = z.infer<typeof postSchema>
 
+export const postNormalizedSchema = postSchema.merge(
+  z.object({
+    tags: z.array(idSchema),
+    authors: z.array(idSchema),
+  })
+)
+
+export type PostNormalized = z.infer<typeof postNormalizedSchema>
+
 export function createPost(
   resource: PostResource | PageResource
 ): Result<Post> {

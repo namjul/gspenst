@@ -1,6 +1,4 @@
-import { schema } from 'normalizr'
-import { denormalize } from '../helpers/normalize'
-import type { Result, ID } from '../shared-kernel'
+import type { Result } from '../shared-kernel'
 import { idSchema, slugSchema, urlSchema, ok, err, z } from '../shared-kernel'
 import { parse } from '../helpers/parser'
 import {
@@ -373,32 +371,5 @@ function extractRelations(node: LocatorResourceNode) {
       return []
     default:
       return absurd(__typename)
-  }
-}
-
-const resourceEntitySchema = new schema.Entity('resources')
-resourceEntitySchema.define({ relationships: [resourceEntitySchema] })
-
-export function denomarlizeResource<T extends Resource>(
-  id: ID,
-  entities: {
-    resources: {
-      [id: ID]: Resource
-    }
-  }
-): Result<T> {
-  return denormalize(id, resourceEntitySchema, entities)
-}
-
-export function denomarlizeResources(resources: Resource[]) {
-  const entities = {
-    resources: resources.reduce<{ [id: ID]: Resource }>((map, resource) => {
-      map[resource.id] = resource
-      return map
-    }, {}),
-  }
-
-  return <T extends Resource>(id: ID) => {
-    return denomarlizeResource<T>(id, entities)
   }
 }
