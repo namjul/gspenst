@@ -51,117 +51,9 @@ export const queryOutcomeSchema = z.discriminatedUnion('type', [
 
 export type QueryOutcome = z.infer<typeof queryOutcomeSchema>
 
-function batchLoadFromTina(sem: SemaphoreInterface) {
-  return async (resources: ReadonlyArray<Resource>) => {
-    return Promise.all(
-      resources.map(async (resource) => {
-        const { resourceType, relativePath } = resource
-        return sem.runExclusive(async () => {
-          switch (resourceType) {
-            case 'page':
-              return api.getPage({ relativePath }).map((tinaData) => ({
-                ...resource,
-                tinaData,
-              }))
-            case 'post':
-              return api.getPost({ relativePath }).map((tinaData) => ({
-                ...resource,
-                tinaData,
-              }))
-            case 'author':
-              return api.getAuthor({ relativePath }).map((tinaData) => ({
-                ...resource,
-                tinaData,
-              }))
-            case 'tag':
-              return api.getTag({ relativePath }).map((tinaData) => ({
-                ...resource,
-                tinaData,
-              }))
-            case 'config':
-              return api.getConfig().map((tinaData) => ({
-                ...resource,
-                tinaData,
-              }))
-            default:
-              return absurd(resourceType)
-          }
-        })
-      })
-    )
-  }
-}
-
 const REVALIDATE = 60
 
-async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
-  return Promise.all(
-    resources.map(async (resource) => {
-      return combine([
-        repository.sinceLastUpdate(new Date()),
-        repository.get(resource.id),
-      ]).andThen((result) => {
-        const [updatedAt, _resource] = result as [number, Resource]
-        if (isNumber(updatedAt)) {
-          if (updatedAt > REVALIDATE) {
-            return err(Errors.other('Revlidate resource'))
-          }
-        }
-        return ok(_resource)
-      })
-    })
-  )
-}
-
 const defaultSem = new Semaphore(100)
-
-export const createLoaders = (sem: SemaphoreInterface = defaultSem) => {
-  const fastResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
-    batchLoadFromRedis,
-    {
-      cacheKeyFn: (resource) => resource.id,
-    }
-  )
-
-  const slowResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
-    batchLoadFromTina(sem),
-    {
-      cacheKeyFn: (resource) => resource.id,
-    }
-  )
-
-  const loadResource = (resource: Resource) => {
-    return fromPromise(fastResourceLoader.load(resource), (error: unknown) =>
-      Errors.other(
-        `loadResource ${JSON.stringify(error, null, 2)}`,
-        error instanceof Error ? error : undefined
-      )
-    )
-      .andThen((x) => x)
-      .orElse(() => {
-        return fromPromise(
-          slowResourceLoader.load(resource),
-          (error: unknown) =>
-            Errors.other(
-              `loadResource ${JSON.stringify(error, null, 2)}`,
-              error instanceof Error ? error : undefined
-            )
-        )
-          .andThen((x) => x)
-          .andThen((_resource) => {
-            return repository.set(_resource).map(() => _resource)
-          })
-      })
-  }
-
-  const loadManyResource = (resources: Resource[]) => {
-    return combine(resources.map(loadResource))
-  }
-  return {
-    loadResource,
-    loadManyResource,
-  }
-}
 
 export type DataLoaders = ReturnType<typeof createLoaders>
 
@@ -210,36 +102,8 @@ export function processQuery(
             })
           })
           .andThen(loadManyResource)
-          .andThen((enrichedResources) => {
-            return combine(
-              enrichedResources.flatMap((resource) => {
-                const entity = do_(() => {
-                  const { resourceType } = resource
-                  switch (resourceType) {
-                    case 'post':
-                      return createPost(resource)
-                    case 'page':
-                      return createPage(resource)
-                    case 'author':
-                      return createAuthor(resource)
-                    case 'tag':
-                      return createTag(resource)
-                    case 'config':
-                      return ok(resource.tinaData.data.config._values as JSON)
-                    default:
-                      return absurd(resourceType)
-                  }
-                })
-
-                if (entity.isErr()) {
-                  return err(entity.error)
-                }
-
-                return ok({ resource, entity: entity.value })
-              })
-            )
-          })
-          .map((filteredResources) => {
+          .andThen(resolveResourcesData)
+          .map((entityResources) => {
             const property = query.order?.map((orderValue) => {
               return `${orderValue.order === 'desc' ? '-' : ''}entity.${
                 orderValue.field
@@ -247,8 +111,8 @@ export function processQuery(
             })
 
             const sortedResources = property
-              ? sortOn(filteredResources, property)
-              : filteredResources
+              ? sortOn(entityResources, property)
+              : entityResources
 
             const limit = query.limit
             const total = sortedResources.length
@@ -320,4 +184,142 @@ export function processData(
   })
 
   return result
+}
+
+function resolveResourceData(resource: Resource) {
+  const entityResult = do_(() => {
+    const { resourceType } = resource
+    switch (resourceType) {
+      case 'post':
+        return createPost(resource)
+      case 'page':
+        return createPage(resource)
+      case 'author':
+        return createAuthor(resource)
+      case 'tag':
+        return createTag(resource)
+      case 'config':
+        return ok(resource.tinaData.data.config._values as JSON)
+      default:
+        return absurd(resourceType)
+    }
+  })
+
+  if (entityResult.isErr()) {
+    return err(entityResult.error)
+  }
+
+  return ok({ resource, entity: entityResult.value })
+}
+
+function resolveResourcesData(resources: Resource[]) {
+  return combine(resources.flatMap(resolveResourceData))
+}
+
+async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
+  return Promise.all(
+    resources.map(async (resource) => {
+      return combine([
+        repository.sinceLastUpdate(new Date()),
+        repository.get(resource.id),
+      ]).andThen((result) => {
+        const [updatedAt, _resource] = result as [number, Resource]
+        if (isNumber(updatedAt)) {
+          if (updatedAt > REVALIDATE) {
+            return err(Errors.other('Revlidate resource'))
+          }
+        }
+        return ok(_resource)
+      })
+    })
+  )
+}
+
+function batchLoadFromTina(sem: SemaphoreInterface) {
+  return async (resources: ReadonlyArray<Resource>) => {
+    return Promise.all(
+      resources.map(async (resource) => {
+        const { resourceType, relativePath } = resource
+        return sem.runExclusive(async () => {
+          switch (resourceType) {
+            case 'page':
+              return api.getPage({ relativePath }).map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
+            case 'post':
+              return api.getPost({ relativePath }).map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
+            case 'author':
+              return api.getAuthor({ relativePath }).map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
+            case 'tag':
+              return api.getTag({ relativePath }).map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
+            case 'config':
+              return api.getConfig().map((tinaData) => ({
+                ...resource,
+                tinaData,
+              }))
+            default:
+              return absurd(resourceType)
+          }
+        })
+      })
+    )
+  }
+}
+
+export function createLoaders(sem: SemaphoreInterface = defaultSem) {
+  const fastResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
+    batchLoadFromRedis,
+    {
+      cacheKeyFn: (resource) => resource.id,
+    }
+  )
+
+  const slowResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
+    batchLoadFromTina(sem),
+    {
+      cacheKeyFn: (resource) => resource.id,
+    }
+  )
+
+  const loadResource = (resource: Resource) => {
+    return fromPromise(fastResourceLoader.load(resource), (error: unknown) =>
+      Errors.other(
+        `loadResource ${JSON.stringify(error, null, 2)}`,
+        error instanceof Error ? error : undefined
+      )
+    )
+      .andThen((x) => x)
+      .orElse(() => {
+        return fromPromise(
+          slowResourceLoader.load(resource),
+          (error: unknown) =>
+            Errors.other(
+              `loadResource ${JSON.stringify(error, null, 2)}`,
+              error instanceof Error ? error : undefined
+            )
+        )
+          .andThen((x) => x)
+          .andThen((_resource) => {
+            return repository.set(_resource).map(() => _resource)
+          })
+      })
+  }
+
+  const loadManyResource = (resources: Resource[]) => {
+    return combine(resources.map(loadResource))
+  }
+  return {
+    loadResource,
+    loadManyResource,
+  }
 }
