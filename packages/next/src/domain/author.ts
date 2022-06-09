@@ -1,7 +1,7 @@
-import { idSchema, dateSchema, ok, err, z } from '../shared-kernel'
-import * as Errors from '../errors'
+import { idSchema, urlSchema, dateSchema, z } from '../shared-kernel'
 import type { Result } from '../shared-kernel'
-import type { AuthorNodeFragment } from '../../.tina/__generated__/types'
+import { parse } from '../helpers/parser'
+import type { AuthorResource } from './resource'
 
 export const authorSchema = z
   .object({
@@ -9,24 +9,20 @@ export const authorSchema = z
     name: z.string(),
     date: dateSchema,
     slug: z.string(),
+    url: urlSchema,
   })
   .strict()
 
-export function createAuthor(
-  authorData: AuthorNodeFragment
-): Result<Author> {
-  const { __typename, _sys, ...restPageAuthor } = authorData
+export function createAuthor(authorResource: AuthorResource): Result<Author> {
+  const { tinaData, urlPathname } = authorResource
+  const {
+    author: { __typename, _sys, ...author },
+  } = tinaData.data
 
-  const author = {
-    ...restPageAuthor,
-  }
-
-  const result = authorSchema.safeParse(author)
-  if (result.success) {
-    return ok(result.data)
-  } else {
-    return err(Errors.other('Create Author', result.error))
-  }
+  return parse(authorSchema, {
+    ...author,
+    url: urlPathname ?? `/${authorResource.id}`,
+  })
 }
 
 export type Author = z.infer<typeof authorSchema>

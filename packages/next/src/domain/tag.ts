@@ -1,7 +1,7 @@
-import { idSchema, dateSchema, ok, err, z } from '../shared-kernel'
-import * as Errors from '../errors'
+import { idSchema, urlSchema, dateSchema, z } from '../shared-kernel'
 import type { Result } from '../shared-kernel'
-import type { TagNodeFragment } from '../../.tina/__generated__/types'
+import { parse } from '../helpers/parser'
+import type { TagResource } from './resource'
 
 export const tagSchema = z
   .object({
@@ -9,21 +9,20 @@ export const tagSchema = z
     name: z.string(),
     date: dateSchema,
     slug: z.string(),
+    url: urlSchema,
   })
   .strict()
 
-export function createTag(tagData: TagNodeFragment): Result<Tag> {
-  const { __typename, _sys, ...restPageTag } = tagData
-  const tag = {
-    ...restPageTag,
-  }
+export function createTag(tagResource: TagResource): Result<Tag> {
+  const { tinaData, urlPathname } = tagResource
+  const {
+    tag: { __typename, _sys, ...tag },
+  } = tinaData.data
 
-  const result = tagSchema.safeParse(tag)
-  if (result.success) {
-    return ok(result.data)
-  } else {
-    return err(Errors.other('Create Tag', result.error))
-  }
+  return parse(tagSchema, {
+    ...tag,
+    url: urlPathname ?? `/${tagResource.id}`,
+  })
 }
 
 export type Tag = z.infer<typeof tagSchema>

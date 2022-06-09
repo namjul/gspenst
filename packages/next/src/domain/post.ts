@@ -1,12 +1,15 @@
-import { idSchema, dateSchema, ok, err, z, combine } from '../shared-kernel'
-import * as Errors from '../errors'
+import { idSchema, dateSchema, urlSchema, z, combine } from '../shared-kernel'
 import type { Result } from '../shared-kernel'
-import type {
-  PostNodeFragment,
-  PageNodeFragment,
-} from '../../.tina/__generated__/types'
+import { isNumber } from '../shared/utils'
+import { parse } from '../helpers/parser'
 import { authorSchema, createAuthor } from './author'
 import { tagSchema, createTag } from './tag'
+import type {
+  PostResource,
+  PageResource,
+  TagResource,
+  AuthorResource,
+} from './resource'
 
 export const postSchema = z
   .object({
@@ -16,6 +19,7 @@ export const postSchema = z
     title: z.string(),
     excerpt: z.custom().optional(),
     content: z.custom(),
+    url: urlSchema,
     tags: z.array(tagSchema),
     primary_tag: tagSchema.optional(),
     authors: z.array(authorSchema),
@@ -26,52 +30,57 @@ export const postSchema = z
 
 export type Post = z.infer<typeof postSchema>
 
-// TODO add Post type with special attributes https://ghost.org/docs/themes/contexts/post/
-//https://www.typescriptlang.org/play?exactOptionalPropertyTypes=true#code/KYDwDg9gTgLgBDAnmYcByBDAtqgvHAbzgDttgAuOAZxigEtiBzOAXwChRJYFlUBJACZx8ROgMrEArlgBGwKKw7ho8JCjgA1DABtJwADwAVOKBjBiAqnADyYGHQjF9NekwB8b4XGOnzluJIWwABmDMBCAPzoZHCUgmxKXKq8NnYOToae+MYAPgFBocThCYkqcMGBAMb2jnCVUMAYZkYmIGYWVrY1Ti4MjFn5AiFhAm4AFAJNGOS9TAA0cABuOnoRlIYAlJRaugaZhGxwR3B0wXBjasAQZ8u7wrj4AOSzjI8bcA0wklDEhCRklFuelYcAwVh2eiMbgSxzqjioEG0wAAdNoIIwxkDgBtDsdPt9fqJxHAAIwAJgAzCCwZoVntoew2JV4fAQF56o0zGNHpMYBhHgtngJgm8mSy4Ih2Q0msBubz+QtAkNCuEccziDQ4AAvKWc2U8qZvIA
 export function createPost(
-  postNode: PostNodeFragment | PageNodeFragment,
+  resource: PostResource | PageResource
 ): Result<Post> {
-  const {
-    __typename,
-    _sys,
-    tags: rawTags,
-    authors: rawAuthors,
-    ...restPostProps
-  } = postData
+  const { tinaData, relationships, urlPathname, resourceType } = resource
+
+  const { __typename, _sys, ...post } =
+    resourceType === 'post' ? tinaData.data.post : tinaData.data.page
+
+  const rawTags = (post.tags ?? []).flatMap((tag) => {
+    return tag?.tag ?? []
+  })
+
+  const rawAuthors = (post.authors ?? []).flatMap((author) => {
+    return author?.author ?? []
+  })
+
+  const tagResources = relationships.filter(
+    (_resource): _resource is TagResource =>
+      !isNumber(_resource) && _resource.resourceType === 'tag'
+  )
+  const authorResources = relationships.filter(
+    (_resource): _resource is AuthorResource =>
+      !isNumber(_resource) && _resource.resourceType === 'author'
+  )
 
   const tagsResult = combine(
-    (rawTags ?? []).flatMap((tag) => {
-      if (tag?.tag) {
-        return createTag(tag.tag)
-      }
-      return []
+    tagResources.map((tagResource, index) => {
+      tagResource.tinaData.data.tag = rawTags[index]!
+      return createTag(tagResource)
     })
   )
 
   const authorsResult = combine(
-    (rawAuthors ?? []).flatMap((author) => {
-      if (author?.author) {
-        return createAuthor(author.author)
-      }
-      return []
+    authorResources.map((authorResource, index) => {
+      authorResource.tinaData.data.author = rawAuthors[index]!
+      return createAuthor(authorResource)
     })
   )
 
   return combine([tagsResult, authorsResult]).andThen(([tags, authors]) => {
-    const post = {
-      ...restPostProps,
-      tags,
-      authors,
+    const specialAttributes = {
       primary_tag: tags?.[0],
       primary_author: authors?.[0],
-      page: __typename === 'Page'
+      url: urlPathname ?? `/${resource.id}`,
     }
 
-    const parsedPostResult = postSchema.safeParse(post)
-    if (parsedPostResult.success) {
-      return ok(parsedPostResult.data)
-    } else {
-      return err(Errors.other('Create Post', parsedPostResult.error))
-    }
+    return parse(postSchema, {
+      ...post,
+      tags,
+      authors,
+      ...specialAttributes,
+    })
   })
 }

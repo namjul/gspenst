@@ -1,9 +1,20 @@
 import { ok, err, combine } from './shared-kernel'
 import * as db from './db'
-import type { Resource, ResourceNode } from './domain/resource'
+import type {
+  Resource,
+  ResourceNode,
+  PostResource,
+  PageResource,
+  AuthorResource,
+  TagResource,
+} from './domain/resource'
 import type { RoutesConfig, DataQueryBrowse } from './domain/routes'
 import { getCollections, getRoutes } from './domain/routes'
-import { createResource, createDynamicVariables } from './domain/resource'
+import {
+  createResource,
+  createDynamicVariables,
+  denomarlizeResources,
+} from './domain/resource'
 import { createPost } from './domain/post'
 import { createPage } from './domain/page'
 import { createAuthor } from './domain/author'
@@ -233,6 +244,8 @@ export function collect(
           }
         )
 
+        const denomarlizeResource = denomarlizeResources(resources)
+
         return combine(
           resources.flatMap((resource) => {
             if (resource.resourceType === 'config') {
@@ -243,14 +256,46 @@ export function collect(
               const { resourceType } = resource
 
               switch (resourceType) {
-                case 'post':
-                  return createPost(resource.tinaData.data.post)
-                case 'page':
-                  return createPage(resource.tinaData.data.page)
-                case 'author':
-                  return createAuthor(resource.tinaData.data.author)
-                case 'tag':
-                  return createTag(resource.tinaData.data.tag)
+                case 'post': {
+                  const postResourceResult = denomarlizeResource<PostResource>(
+                    resource.id
+                  )
+                  if (postResourceResult.isErr()) {
+                    return err(postResourceResult.error)
+                  }
+                  // adding placeholder url to create valid post
+                  // the actual url will be add below
+                  return createPost({
+                    ...postResourceResult.value,
+                    urlPathname: '/placeholder',
+                  })
+                }
+                case 'page': {
+                  const pageResourceResult = denomarlizeResource<PageResource>(
+                    resource.id
+                  )
+                  if (pageResourceResult.isErr()) {
+                    return err(pageResourceResult.error)
+                  }
+                  return createPage(pageResourceResult.value)
+                }
+                case 'author': {
+                  const authorResourceResult =
+                    denomarlizeResource<AuthorResource>(resource.id)
+                  if (authorResourceResult.isErr()) {
+                    return err(authorResourceResult.error)
+                  }
+                  return createAuthor(authorResourceResult.value)
+                }
+                case 'tag': {
+                  const tagResourceResult = denomarlizeResource<TagResource>(
+                    resource.id
+                  )
+                  if (tagResourceResult.isErr()) {
+                    return err(tagResourceResult.error)
+                  }
+                  return createTag(tagResourceResult.value)
+                }
                 default:
                   return absurd(resourceType)
               }
@@ -276,6 +321,7 @@ export function collect(
 
             let urlPathname = resource.urlPathname
 
+            // calculate urlPathname
             if (resource.resourceType === 'post') {
               // find owning collection
               const collectionRouteConfig = getCollections(routesConfig).find(

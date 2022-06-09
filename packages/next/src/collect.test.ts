@@ -79,6 +79,7 @@ describe('collect', () => {
         primary_tag: 'tag-1',
         primary_author: 'pedro',
         resourceType: 'post',
+        relationships: [2502649434, 2198476025],
       })
     )
     expect(resources.find(({ id }) => id === 1071642883)).toEqual(

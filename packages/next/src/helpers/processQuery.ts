@@ -217,13 +217,13 @@ export function processQuery(
                   const { resourceType } = resource
                   switch (resourceType) {
                     case 'post':
-                      return createPost(resource.tinaData.data.post)
+                      return createPost(resource)
                     case 'page':
-                      return createPage(resource.tinaData.data.page)
+                      return createPage(resource)
                     case 'author':
-                      return createAuthor(resource.tinaData.data.author)
+                      return createAuthor(resource)
                     case 'tag':
-                      return createTag(resource.tinaData.data.tag)
+                      return createTag(resource)
                     case 'config':
                       return ok(resource.tinaData.data.config._values as JSON)
                     default:

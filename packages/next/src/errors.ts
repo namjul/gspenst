@@ -54,7 +54,7 @@ export function format(errors: GspenstError | GspenstError[]) {
       case 'NotFound':
         return `${error.type}: ${error.context}`
       case 'Parse':
-        return `${error.type}: ${error.error}`
+        return `${error.type}: cause: ${error.error.message} ${error.error.stack}`
       default:
         return absurd(type)
     }

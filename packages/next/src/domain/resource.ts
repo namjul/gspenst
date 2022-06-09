@@ -1,5 +1,8 @@
-import type { Result } from '../shared-kernel'
+import { schema } from 'normalizr'
+import { denormalize } from '../helpers/normalize'
+import type { Result, ID } from '../shared-kernel'
 import { idSchema, slugSchema, urlSchema, ok, err, z } from '../shared-kernel'
+import { parse } from '../helpers/parser'
 import {
   GetPostDocument,
   GetPageDocument,
@@ -16,7 +19,6 @@ import type {
 } from '../../.tina/__generated__/types'
 import type { GetTag, GetAuthor, GetPage, GetPost, GetConfig } from '../api'
 import { do_, absurd } from '../shared/utils'
-import * as Errors from '../errors'
 
 export const resourceTypeConfig = z.literal('config')
 export const resourceTypePost = z.literal('post')
@@ -57,7 +59,6 @@ export const dynamicVariablesSchema = z.object({
 
 const locatorResourceBaseSchema = z
   .object({
-    relationships: z.array(idSchema),
     urlPathname: urlSchema.optional(),
     filters: z.array(z.string()).nullable(),
   })
@@ -156,28 +157,6 @@ export const themeConfigResourceSchema = resourceBaseSchema.merge(
 
 export type ConfigResource = z.infer<typeof themeConfigResourceSchema>
 
-export const postResourceSchema = resourceBaseSchema
-  .merge(locatorResourceBaseSchema)
-  .merge(
-    z.object({
-      resourceType: resourceTypePost,
-      tinaData: postTinaDataSchema,
-    })
-  )
-
-export type PostResource = z.infer<typeof postResourceSchema>
-
-export const pageResourceSchema = resourceBaseSchema
-  .merge(locatorResourceBaseSchema)
-  .merge(
-    z.object({
-      resourceType: resourceTypePage,
-      tinaData: pageTinaDataSchema,
-    })
-  )
-
-export type PageResource = z.infer<typeof pageResourceSchema>
-
 export const authorResourceSchema = resourceBaseSchema
   .merge(locatorResourceBaseSchema)
   .merge(
@@ -199,6 +178,34 @@ export const tagResourceSchema = resourceBaseSchema
   )
 
 export type TagResource = z.infer<typeof tagResourceSchema>
+
+export const postResourceSchema = resourceBaseSchema
+  .merge(locatorResourceBaseSchema)
+  .merge(
+    z.object({
+      relationships: z.array(
+        z.union([idSchema, authorResourceSchema, tagResourceSchema])
+      ),
+      resourceType: resourceTypePost,
+      tinaData: postTinaDataSchema,
+    })
+  )
+
+export type PostResource = z.infer<typeof postResourceSchema>
+
+export const pageResourceSchema = resourceBaseSchema
+  .merge(locatorResourceBaseSchema)
+  .merge(
+    z.object({
+      relationships: z.array(
+        z.union([idSchema, authorResourceSchema, tagResourceSchema])
+      ),
+      resourceType: resourceTypePage,
+      tinaData: pageTinaDataSchema,
+    })
+  )
+
+export type PageResource = z.infer<typeof pageResourceSchema>
 
 export const resourceSchema = z.discriminatedUnion('resourceType', [
   themeConfigResourceSchema,
@@ -235,6 +242,8 @@ export function createResource(
   filters: string[] = []
 ): Result<Resource> {
   const isLocator = node.__typename !== 'Config'
+  const isPost = node.__typename !== 'Post'
+  const isPage = node.__typename !== 'Page'
 
   const dynamicVariablesResult = isLocator
     ? createDynamicVariables(node)
@@ -261,7 +270,13 @@ export function createResource(
         ...dynamicVariables,
         urlPathname,
         filters,
-        relationships: extractRelations(node).map((relNode) => relNode.id),
+        ...(isPost || isPage
+          ? {
+              relationships: extractRelations(node).map(
+                (relNode) => relNode.id
+              ),
+            }
+          : {}),
       }
     : {}
 
@@ -272,13 +287,7 @@ export function createResource(
     tinaData: node,
   }
 
-  const resourceParsed = resourceSchema.safeParse(resource)
-
-  if (resourceParsed.success) {
-    return ok(resourceParsed.data)
-  } else {
-    return err(Errors.other('createResource', resourceParsed.error))
-  }
+  return parse(resourceSchema, resource)
 }
 
 export function createDynamicVariables(
@@ -318,7 +327,7 @@ export function createDynamicVariables(
     .split('/')
     .map(Number) as [number, number, number]
 
-  const dynamicVariablesParsed = dynamicVariablesSchema.safeParse({
+  return parse(dynamicVariablesSchema, {
     slug,
     year,
     month,
@@ -326,12 +335,6 @@ export function createDynamicVariables(
     primary_tag,
     primary_author,
   })
-
-  if (dynamicVariablesParsed.success) {
-    return ok(dynamicVariablesParsed.data)
-  } else {
-    return err(Errors.other('createResource', dynamicVariablesParsed.error))
-  }
 }
 
 function extractRelations(node: LocatorResourceNode) {
@@ -356,5 +359,32 @@ function extractRelations(node: LocatorResourceNode) {
       return []
     default:
       return absurd(__typename)
+  }
+}
+
+const resourceEntitySchema = new schema.Entity('resources')
+resourceEntitySchema.define({ relationships: [resourceEntitySchema] })
+
+export function denomarlizeResource<T extends Resource>(
+  id: ID,
+  entities: {
+    resources: {
+      [id: ID]: Resource
+    }
+  }
+): Result<T> {
+  return denormalize(id, resourceEntitySchema, entities)
+}
+
+export function denomarlizeResources(resources: Resource[]) {
+  const entities = {
+    resources: resources.reduce<{ [id: ID]: Resource }>((map, resource) => {
+      map[resource.id] = resource
+      return map
+    }, {}),
+  }
+
+  return <T extends Resource>(id: ID) => {
+    return denomarlizeResource<T>(id, entities)
   }
 }
