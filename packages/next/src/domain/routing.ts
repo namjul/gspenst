@@ -1,6 +1,6 @@
 import { z } from '../shared-kernel'
-import { dynamicVariablesSchema } from './resource'
-import { queryFilterOptions, dataQuery, resourceTypeSchema } from './routes'
+import { dynamicVariablesSchema, locatorResourceTypeSchema } from './resource'
+import { queryFilterOptions, dataQuery } from './routes'
 
 // TODO rename to routerContext?
 
@@ -50,7 +50,7 @@ export type ChannelRoutingContext = z.infer<typeof channelRoutingContextSchema>
 
 const entryRoutingContextSchema = z.object({
   type: z.literal('entry'),
-  resourceType: resourceTypeSchema,
+  resourceType: locatorResourceTypeSchema,
   templates: z.array(z.string()),
   request: requestSchema,
 })

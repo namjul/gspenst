@@ -5,28 +5,11 @@ import * as Errors from '../errors'
 import { isString /*, isObject*/ } from '../shared/utils'
 import { parse } from '../helpers/parser'
 import {
+  locatorResourceTypeSchema,
   dynamicVariablesSchema,
-  resourceTypePost,
-  resourceTypePage,
-  resourceTypeAuthor,
-  resourceTypeTag,
+  resourceTypes,
 } from './resource'
-
-export const resourceTypes = [
-  resourceTypePost.value,
-  resourceTypePage.value,
-  resourceTypeAuthor.value,
-  resourceTypeTag.value,
-]
-
-export const resourceTypeSchema = z.union([
-  resourceTypePost,
-  resourceTypePage,
-  resourceTypeAuthor,
-  resourceTypeTag,
-])
-
-type ResourceType = z.infer<typeof resourceTypeSchema>
+import type { LocatorResourceType } from './resource'
 
 const POST_PER_PAGE = 5
 
@@ -94,7 +77,7 @@ export type QueryFilterOptions = z.infer<typeof queryFilterOptions>
 const dataQueryRead = z
   .object({
     type: queryTypeRead,
-    resourceType: resourceTypeSchema,
+    resourceType: locatorResourceTypeSchema,
     redirect: z.boolean().optional(),
   })
   .merge(dynamicVariablesSchema.partial())
@@ -105,7 +88,7 @@ export type DataQueryRead = z.infer<typeof dataQueryRead>
 const dataQueryBrowse = z
   .object({
     type: queryTypeBrowse,
-    resourceType: resourceTypeSchema,
+    resourceType: locatorResourceTypeSchema,
     page: z.number().nullish(), // TODO make non optional
   })
   .merge(queryFilterOptions)
@@ -121,7 +104,7 @@ export type DataQuery = z.infer<typeof dataQuery>
 
 const template = z.string()
 
-type DataForm = `${ResourceType}.${string}`
+type DataForm = `${z.infer<typeof locatorResourceTypeSchema>}.${string}`
 
 const dataString = z
   .string()
@@ -170,7 +153,10 @@ const dataForm = z
           dataValue[1].type === 'read'
       )
       .reduce<{
-        [key in ResourceType]?: { redirect: boolean; slug: Option<string> }[]
+        [key in LocatorResourceType]?: {
+          redirect: boolean
+          slug: Option<string>
+        }[]
       }>((acc, [_, { resourceType, slug, redirect }]) => {
         if (!acc[resourceType]) {
           acc[resourceType] = []

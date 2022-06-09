@@ -26,6 +26,13 @@ export const resourceTypePage = z.literal('page')
 export const resourceTypeAuthor = z.literal('author')
 export const resourceTypeTag = z.literal('tag')
 
+export const resourceTypes = [
+  resourceTypePost.value,
+  resourceTypePage.value,
+  resourceTypeAuthor.value,
+  resourceTypeTag.value,
+]
+
 export const resourceTypeSchema = z.union([
   resourceTypeConfig,
   resourceTypePost,
@@ -33,6 +40,13 @@ export const resourceTypeSchema = z.union([
   resourceTypeAuthor,
   resourceTypeTag,
 ])
+
+export const locatorResourceTypes = [
+  resourceTypePost.value,
+  resourceTypePage.value,
+  resourceTypeAuthor.value,
+  resourceTypeTag.value,
+]
 
 export const locatorResourceTypeSchema = z.union([
   resourceTypePost,
@@ -228,7 +242,7 @@ export type LocatorResourceType = z.infer<typeof locatorResourceTypeSchema>
 export type LocatorResource = z.infer<typeof locatorResourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
-type LocatorResourceNode =
+export type LocatorResourceNode =
   | PostNodeFragment
   | PageNodeFragment
   | AuthorNodeFragment
