@@ -170,12 +170,12 @@ type ResultAsyncQueryOutcome<T> = T extends Extract<DataQuery, { type: 'read' }>
   : ResultAsync<Extract<QueryOutcome, { type: 'browse' }>>
 
 export function processQuery<T extends DataQuery>(
-  query: T,
-  dataLoaders: DataLoaders
+  dataLoaders: DataLoaders,
+  query: T
 ): ResultAsyncQueryOutcome<T>
 export function processQuery(
-  query: DataQuery,
-  dataLoaders: DataLoaders
+  dataLoaders: DataLoaders,
+  query: DataQuery
 ): ResultAsync<QueryOutcome> {
   const { loadResource, loadManyResource } = dataLoaders
 
@@ -294,13 +294,13 @@ export function processQuery(
 }
 
 export function processData(
-  data: { [name: string]: DataQuery },
-  dataLoaders: DataLoaders
+  dataLoaders: DataLoaders,
+  data: { [name: string]: DataQuery } = {}
 ) {
   const keys = Object.keys(data)
   const result = combine(
     keys.map((key) => {
-      return processQuery(data[key]!, dataLoaders)
+      return processQuery(dataLoaders, data[key]!)
     })
   ).map((outcomes) => {
     const dataEntries = keys.reduce<{

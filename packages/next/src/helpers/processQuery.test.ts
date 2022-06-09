@@ -32,7 +32,7 @@ describe('processQuery', () => {
         // id: `content/posts/7th-post.mdx`,
         redirect: false,
       } as const
-      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
+      const result = (await processQuery(dataLoaders, query))._unsafeUnwrap()
       expect(result).toHaveProperty('resource')
     })
   })
@@ -44,7 +44,7 @@ describe('processQuery', () => {
         resourceType: 'post',
         limit: 5,
       } as const
-      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
+      const result = (await processQuery(dataLoaders, query))._unsafeUnwrap()
       expect(result).toHaveProperty('resources')
       expect(result).toHaveProperty('pagination')
       expect(result).toHaveProperty('pagination.total', 10)
@@ -57,7 +57,7 @@ describe('processQuery', () => {
         resourceType: 'post',
         limit: 'all',
       } as const
-      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
+      const result = (await processQuery(dataLoaders, query))._unsafeUnwrap()
       expect(result.resources).toHaveLength(10)
     })
 
@@ -68,7 +68,7 @@ describe('processQuery', () => {
         filter: 'slug:-8th-post',
         limit: 5,
       } as const
-      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
+      const result = (await processQuery(dataLoaders, query))._unsafeUnwrap()
       expect(result).toHaveProperty('resources')
       expect(result).toHaveProperty('pagination')
       expect(result).toHaveProperty('pagination.total', 9)
@@ -80,7 +80,7 @@ describe('processQuery', () => {
         resourceType: 'post',
         limit: 3,
       } as const
-      const result = await processQuery(query, dataLoaders)
+      const result = await processQuery(dataLoaders, query)
       expect(result._unsafeUnwrap()).toHaveProperty('pagination.total', 10)
     })
 
@@ -92,7 +92,7 @@ describe('processQuery', () => {
         order: [{ field: 'date', order: 'asc' as const }],
       }
 
-      const result = (await processQuery(query, dataLoaders))._unsafeUnwrap()
+      const result = (await processQuery(dataLoaders, query))._unsafeUnwrap()
       expect(result.resources).toHaveLength(3)
       expect(result).toHaveProperty('resources[0].slug', '1th-post')
     })

@@ -46,16 +46,14 @@ async function entryController(
 ): Promise<ControllerResult<PageProps>> {
   const { resourceType, request } = routingContext
 
-  const query: DataQuery = {
+  return processQuery(dataLoaders, {
     resourceType,
     type: 'read',
     ...request.params,
-  }
-
-  return processQuery(query, dataLoaders).andThen((_data) => {
+  }).andThen((data) => {
     return ok({
       context: resourceType,
-      resource: _data.resource,
+      resource: data.resource,
       data: {},
       templates: getTemplateHierarchy(routingContext),
       route: routingContext.request.path,
@@ -76,13 +74,11 @@ async function channelController(
     page: routingContext.request.params?.page,
   }
 
-  const data: { [name: string]: DataQuery } = {
-    ...routingContext.data,
-    posts: postsQuery,
-  }
-
   return repository.find({ id: configId }).andThen((configResource) => {
-    return processData(data, dataLoaders).andThen((_data) => {
+    return processData(dataLoaders, {
+      ...routingContext.data,
+      posts: postsQuery,
+    }).andThen((data) => {
       // TODO
       // if ((limit === 'all' && page > 1) || page > pages) {
       //   //redirect
@@ -92,7 +88,7 @@ async function channelController(
         context: 'index' as const,
         templates: getTemplateHierarchy(routingContext),
         resource: configResource,
-        data: _data,
+        data,
         route: routingContext.request.path,
       })
     })
@@ -112,18 +108,16 @@ async function collectionController(
     page: routingProperties.request.params?.page,
   }
 
-  const data: { [name: string]: DataQuery } = {
-    ...routingProperties.data,
-    posts: postsQuery,
-  }
-
   return repository.find({ id: configId }).andThen((configResource) => {
-    return processData(data, dataLoaders).andThen((_data) => {
+    return processData(dataLoaders, {
+      ...routingProperties.data,
+      posts: postsQuery,
+    }).andThen((data) => {
       return ok({
         context: 'index' as const,
         resource: configResource,
         templates: getTemplateHierarchy(routingProperties),
-        data: _data,
+        data,
         route: routingProperties.request.path,
       })
     })
@@ -134,17 +128,13 @@ async function customController(
   routingProperties: CustomRoutingContext,
   dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
-  const data: { [name: string]: DataQuery } = {
-    ...routingProperties.data,
-  }
-
   return repository.find({ id: configId }).andThen((configResource) => {
-    return processData(data, dataLoaders).andThen((_data) => {
+    return processData(dataLoaders, routingProperties.data).andThen((data) => {
       return ok({
         context: null,
         resource: configResource,
         templates: getTemplateHierarchy(routingProperties),
-        data: _data,
+        data,
         route: routingProperties.request.path,
       })
     })
