@@ -62,8 +62,6 @@ export const limitSchema = z
   .union([z.number(), z.literal('all')])
   .default(POST_PER_PAGE)
 
-export type Limit = z.infer<typeof limitSchema>
-
 export const queryFilterOptions = z.object({
   filter: z.string().optional(),
   limit: limitSchema,

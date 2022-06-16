@@ -51,10 +51,14 @@ resourceEntitySchema.define({ relationships: [resourceEntitySchema] })
 const tagEntitySchema = new schema.Entity('tags')
 const authorEntitySchema = new schema.Entity('authors')
 const postEntitySchema = new schema.Entity('posts', {
+  primary_author: authorEntitySchema,
+  primary_tag: tagEntitySchema,
   authors: [authorEntitySchema],
   tags: [tagEntitySchema],
 })
 const pageEntitySchema = new schema.Entity('pages', {
+  primary_author: authorEntitySchema,
+  primary_tag: tagEntitySchema,
   authors: [authorEntitySchema],
   tags: [tagEntitySchema],
 })

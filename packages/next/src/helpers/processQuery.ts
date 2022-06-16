@@ -3,26 +3,24 @@ import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
 import { combine, ok, err, fromPromise } from '../shared-kernel'
-import type { DataQuery, Limit } from '../domain/routes'
+import { dynamicVariablesSchema } from '../domain/resource'
+import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
+import type { Pagination, Data } from '../domain/theming'
 import type { Result, ResultAsync, ID } from '../shared-kernel'
-import { absurd, removeNullish, isNumber } from '../shared/utils'
+import {
+  absurd,
+  removeNullish,
+  isNumber,
+  do_,
+  filterObject,
+} from '../shared/utils'
 import repository from '../repository'
 import * as api from '../api'
-import { dynamicVariablesSchema } from '../domain/resource'
 import * as Errors from '../errors'
 import { parse } from './parser'
 import { normalizeResource, normalizeResources } from './normalize'
 import type { Entities } from './normalize'
-
-type Pagination = {
-  page: number // the current page number
-  prev: number | null // the previous page number
-  next: number | null // the next page number
-  pages: number // the number of pages available
-  total: number // the number of posts available
-  limit: Limit // the number of posts per page
-}
 
 export type QueryOutcomeRead = {
   type: 'read'
@@ -84,7 +82,7 @@ export function processQuery(
               const queryOutcomeRead: QueryOutcomeRead = {
                 type,
                 resource,
-                entities,
+                entities: filterObject(entities, (key) => key !== 'resources'),
               }
               return ok(queryOutcomeRead)
             })
@@ -165,7 +163,7 @@ export function processQuery(
               next,
             },
             resources: resources.map(({ resource }) => resource),
-            entities,
+            entities: filterObject(entities, (key) => key !== 'resources'),
           }
         })
 
@@ -174,30 +172,57 @@ export function processQuery(
   }
 }
 
+type ProcessData = {
+  data: Data
+  entities: Entities
+}
 export function processData(
   dataLoaders: DataLoaders,
   data: { [name: string]: DataQuery } = {}
-) {
+): ResultAsync<ProcessData> {
   const keys = Object.keys(data)
   const result = combine(
     keys.map((key) => {
       return processQuery(dataLoaders, data[key]!)
     })
   ).map((outcomes) => {
-    const dataEntries = keys.reduce<{
-      [name: string]: typeof outcomes[number]
-    }>((acc, current, index) => {
-      const queryOutcome = outcomes[index]
-      if (!queryOutcome) {
-        return acc
-      }
-      return {
-        ...acc,
-        [current]: queryOutcome,
-      }
-    }, {})
+    return keys.reduce<ProcessData>(
+      (acc, current, index) => {
+        const queryOutcome = outcomes[index]
+        if (!queryOutcome) {
+          return acc
+        }
+        const { entities, ...queryOutcomeRest } = queryOutcome
+        return {
+          data: {
+            ...acc.data,
+            [current]: do_(() => {
+              const { type } = queryOutcomeRest
 
-    return dataEntries
+              switch (type) {
+                case 'read':
+                  return { type, resource: queryOutcomeRest.resource.id }
+                case 'browse': {
+                  const { resources, pagination } = queryOutcomeRest
+                  return {
+                    type,
+                    resources: resources.map(({ id }) => id),
+                    pagination,
+                  }
+                }
+                default:
+                  return absurd(type)
+              }
+            }),
+          },
+          entities: {
+            ...acc.entities,
+            ...entities,
+          },
+        }
+      },
+      { data: {}, entities: {} }
+    )
   })
 
   return result

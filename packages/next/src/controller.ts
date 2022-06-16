@@ -50,11 +50,12 @@ async function entryController(
     resourceType,
     type: 'read',
     ...request.params,
-  }).andThen((data) => {
+  }).andThen(({ resource, entities }) => {
     return ok({
       context: resourceType,
-      resource: data.resource,
+      resource,
       data: {},
+      entities,
       templates: getTemplateHierarchy(routingContext),
       route: routingContext.request.path,
     })
@@ -78,7 +79,7 @@ async function channelController(
     return processData(dataLoaders, {
       ...routingContext.data,
       posts: postsQuery,
-    }).andThen((data) => {
+    }).andThen(({ data, entities }) => {
       // TODO
       // if ((limit === 'all' && page > 1) || page > pages) {
       //   //redirect
@@ -89,6 +90,7 @@ async function channelController(
         templates: getTemplateHierarchy(routingContext),
         resource: configResource,
         data,
+        entities,
         route: routingContext.request.path,
       })
     })
@@ -112,12 +114,13 @@ async function collectionController(
     return processData(dataLoaders, {
       ...routingProperties.data,
       posts: postsQuery,
-    }).andThen((data) => {
+    }).andThen(({ data, entities }) => {
       return ok({
         context: 'index' as const,
         resource: configResource,
         templates: getTemplateHierarchy(routingProperties),
         data,
+        entities,
         route: routingProperties.request.path,
       })
     })
@@ -129,15 +132,18 @@ async function customController(
   dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
   return repository.find({ id: configId }).andThen((configResource) => {
-    return processData(dataLoaders, routingProperties.data).andThen((data) => {
-      return ok({
-        context: null,
-        resource: configResource,
-        templates: getTemplateHierarchy(routingProperties),
-        data,
-        route: routingProperties.request.path,
-      })
-    })
+    return processData(dataLoaders, routingProperties.data).andThen(
+      ({ data, entities }) => {
+        return ok({
+          context: null,
+          resource: configResource,
+          templates: getTemplateHierarchy(routingProperties),
+          data,
+          entities,
+          route: routingProperties.request.path,
+        })
+      }
+    )
   })
 }
 
