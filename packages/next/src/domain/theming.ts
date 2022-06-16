@@ -1,11 +1,11 @@
 import { z } from '../shared-kernel'
-import { queryOutcomeSchema } from '../helpers/processQuery'
+import type { QueryOutcome } from '../helpers/processQuery'
 import { resourceSchema } from './resource'
 
 const themeContextBaseSchema = z.object({
   templates: z.array(z.string()),
   route: z.string(),
-  data: z.record(queryOutcomeSchema),
+  data: z.custom<Record<string, QueryOutcome>>((value) => value),
   resource: resourceSchema,
 })
 

@@ -2,54 +2,42 @@ import sortOn from 'sort-on'
 import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
-import { z, combine, ok, err, fromPromise } from '../shared-kernel'
-import type { DataQuery } from '../domain/routes'
+import { combine, ok, err, fromPromise } from '../shared-kernel'
+import type { DataQuery, Limit } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import type { Result, ResultAsync, ID } from '../shared-kernel'
-import { do_, absurd, removeNullish, isNumber } from '../shared/utils'
+import { absurd, removeNullish, isNumber } from '../shared/utils'
 import repository from '../repository'
 import * as api from '../api'
-import { createPost } from '../domain/post'
-import { createPage } from '../domain/page'
-import { createAuthor } from '../domain/author'
-import { createTag } from '../domain/tag'
-import { dynamicVariablesSchema, resourceSchema } from '../domain/resource'
-import { limitSchema } from '../domain/routes'
+import { dynamicVariablesSchema } from '../domain/resource'
 import * as Errors from '../errors'
 import { parse } from './parser'
+import { normalizeResource, normalizeResources } from './normalize'
+import type { Entities } from './normalize'
 
-const paginationSchema = z.object({
-  page: z.number(), // the current page number
-  prev: z.number().nullable(), // the previous page number
-  next: z.number().nullable(), // the next page number
-  pages: z.number(), // the number of pages available
-  total: z.number(), // the number of posts available
-  limit: limitSchema, // the number of posts per page
-})
+type Pagination = {
+  page: number // the current page number
+  prev: number | null // the previous page number
+  next: number | null // the next page number
+  pages: number // the number of pages available
+  total: number // the number of posts available
+  limit: Limit // the number of posts per page
+}
 
-export type Pagination = z.infer<typeof paginationSchema>
+export type QueryOutcomeRead = {
+  type: 'read'
+  resource: Resource
+  entities: Entities
+}
 
-const queryOutcomeRead = z.object({
-  type: z.literal('read'),
-  resource: resourceSchema,
-})
+export type QueryOutcomeBrowse = {
+  type: 'browse'
+  pagination: Pagination
+  resources: Resource[]
+  entities: Entities
+}
 
-export type QueryOutcomeRead = z.infer<typeof queryOutcomeRead>
-
-const queryOutcomeBrowse = z.object({
-  type: z.literal('browse'),
-  pagination: paginationSchema,
-  resources: z.array(resourceSchema),
-})
-
-export type QueryOutcomeBrowse = z.infer<typeof queryOutcomeBrowse>
-
-export const queryOutcomeSchema = z.discriminatedUnion('type', [
-  queryOutcomeRead,
-  queryOutcomeBrowse,
-])
-
-export type QueryOutcome = z.infer<typeof queryOutcomeSchema>
+export type QueryOutcome = QueryOutcomeRead | QueryOutcomeBrowse
 
 const REVALIDATE = 60
 
@@ -73,88 +61,117 @@ export function processQuery(
 
   const { type } = query
 
-  const result = do_(() => {
-    switch (type) {
-      case 'read':
-        return parse(dynamicVariablesSchema.partial(), query).asyncAndThen(
-          (dynamicVariables) => {
-            return repository
-              .find(removeNullish(dynamicVariables)) // TODO if not found, check if `slug` is used and load resource with it
-              .andThen(loadResource)
-              .map((resource) => {
-                return { type, resource }
-              })
-          }
-        )
-      case 'browse':
-        return repository
-          .findAll(query.resourceType)
-          .map((resources) => {
-            // apply filter
-            return resources.flatMap((resource) => {
-              if (query.filter) {
-                if (resource.filters?.includes(query.filter)) {
-                  return resource
-                }
-                return []
+  switch (type) {
+    case 'read':
+      return parse(dynamicVariablesSchema.partial(), query).asyncAndThen(
+        (dynamicVariables) => {
+          return repository
+            .find(removeNullish(dynamicVariables))
+            .andThen(loadResource)
+            .andThen((resource) =>
+              repository.getDenormalized(resource.id).andThen(normalizeResource)
+            )
+            .andThen(({ result, entities }) => {
+              const { resources = {} } = entities
+              const resource = resources[result]
+              if (!resource) {
+                return err(
+                  Errors.other(
+                    `Should not happen: resource ${result} not found`
+                  )
+                )
               }
-              return resource
+              const queryOutcomeRead: QueryOutcomeRead = {
+                type,
+                resource,
+                entities,
+              }
+              return ok(queryOutcomeRead)
             })
-          })
-          .andThen(loadManyResource)
-          .andThen(resolveResourcesData)
-          .map((entityResources) => {
-            const property = query.order?.map((orderValue) => {
-              return `${orderValue.order === 'desc' ? '-' : ''}entity.${
-                orderValue.field
-              }`
-            })
-
-            const sortedResources = property
-              ? sortOn(entityResources, property)
-              : entityResources
-
-            const limit = query.limit
-            const total = sortedResources.length
-            let page = query.page ?? 1
-            let pages = 1
-            let start = 0
-            let end
-            let prev = null
-            let next = null
-
-            if (limit === 'all') {
-              page = 1
-            } else {
-              pages = Math.floor(total / limit)
-              start = (page - 1) * limit
-              end = start + limit
-              prev = start > 0 ? page - 1 : null
-              next = end < sortedResources.length ? page + 1 : null
+        }
+      )
+    case 'browse':
+      return repository
+        .findAll(query.resourceType)
+        .map((resources) => {
+          // apply filter
+          return resources.flatMap((resource) => {
+            if (query.filter) {
+              if (resource.filters?.includes(query.filter)) {
+                return resource
+              }
+              return []
             }
-
-            const resources = sortedResources.slice(start, end)
-
+            return resource
+          })
+        })
+        .andThen(loadManyResource)
+        .andThen((resources) =>
+          repository
+            .getDenormalized(resources.map(({ id }) => id))
+            .andThen(normalizeResources)
+        )
+        .map(({ result, entities }) => {
+          const entityResources = result.map((id) => {
+            const { resources = {} } = entities
+            const resource = resources[id]!
+            const entityType = `${resource.resourceType}s` as const
+            const entity = entities[entityType]![id]
             return {
-              type,
-              pagination: {
-                total,
-                limit,
-                pages,
-                page,
-                prev,
-                next,
-              },
-              resources: resources.map(({ resource }) => resource),
+              resource,
+              entity,
             }
           })
 
-      default:
-        return absurd(type)
-    }
-  })
+          const property = query.order?.map((orderValue) => {
+            return `${orderValue.order === 'desc' ? '-' : ''}entity.${
+              orderValue.field
+            }`
+          })
 
-  return result
+          const sortedResources = property
+            ? sortOn(entityResources, property)
+            : entityResources
+
+          const limit = query.limit
+          const total = sortedResources.length
+          let page = query.page ?? 1
+          let pages = 1
+          let start = 0
+          let end
+          let prev = null
+          let next = null
+
+          if (limit === 'all') {
+            page = 1
+          } else {
+            pages = Math.floor(total / limit)
+            start = (page - 1) * limit
+            end = start + limit
+            prev = start > 0 ? page - 1 : null
+            next = end < sortedResources.length ? page + 1 : null
+          }
+
+          const resources = sortedResources.slice(start, end)
+
+          return {
+            type,
+            pagination: {
+              total,
+              limit,
+              pages,
+              page,
+              prev,
+              next,
+            },
+            resources: resources.map(({ resource }) => resource),
+            entities,
+          }
+        })
+
+    default:
+      return absurd(type)
+  }
 }
 
 export function processData(
@@ -184,36 +201,6 @@ export function processData(
   })
 
   return result
-}
-
-function resolveResourceData(resource: Resource) {
-  const entityResult = do_(() => {
-    const { resourceType } = resource
-    switch (resourceType) {
-      case 'post':
-        return createPost(resource)
-      case 'page':
-        return createPage(resource)
-      case 'author':
-        return createAuthor(resource)
-      case 'tag':
-        return createTag(resource)
-      case 'config':
-        return ok(resource.tinaData.data.config._values as JSON)
-      default:
-        return absurd(resourceType)
-    }
-  })
-
-  if (entityResult.isErr()) {
-    return err(entityResult.error)
-  }
-
-  return ok({ resource, entity: entityResult.value })
-}
-
-function resolveResourcesData(resources: Resource[]) {
-  return combine(resources.flatMap(resolveResourceData))
 }
 
 async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {

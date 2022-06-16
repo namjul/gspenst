@@ -14,17 +14,17 @@ import type {
 export const postSchema = z
   .object({
     id: idSchema,
+    type: z.literal('post'),
     date: dateSchema,
     slug: z.string(),
     title: z.string(),
     excerpt: z.custom().optional(),
     content: z.custom(),
     url: urlSchema,
-    tags: z.array(tagSchema),
     primary_tag: tagSchema.optional(),
-    authors: z.array(authorSchema),
     primary_author: authorSchema.optional(),
-    page: z.boolean().default(false),
+    tags: z.array(tagSchema),
+    authors: z.array(authorSchema),
   })
   .strict()
 
@@ -79,13 +79,16 @@ export function createPost(
   )
 
   return combine([tagsResult, authorsResult]).andThen(([tags, authors]) => {
+    const primary_tag = tags?.[0]
+    const primary_author = authors?.[0]
     const specialAttributes = {
-      primary_tag: tags?.[0],
-      primary_author: authors?.[0],
+      ...(primary_tag && { primary_tag }),
+      ...(primary_author && { primary_author }),
       url: urlPathname ?? `/${resource.id}`,
     }
 
     return parse(postSchema, {
+      type: 'post',
       ...post,
       tags,
       authors,

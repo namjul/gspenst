@@ -5,6 +5,7 @@ import type { TagResource } from './resource'
 
 export const tagSchema = z
   .object({
+    type: z.literal('tag'),
     id: idSchema,
     name: z.string(),
     date: dateSchema,
@@ -13,6 +14,8 @@ export const tagSchema = z
   })
   .strict()
 
+export type Tag = z.infer<typeof tagSchema>
+
 export function createTag(tagResource: TagResource): Result<Tag> {
   const { tinaData, urlPathname } = tagResource
   const {
@@ -20,9 +23,8 @@ export function createTag(tagResource: TagResource): Result<Tag> {
   } = tinaData.data
 
   return parse(tagSchema, {
+    type: 'tag',
     ...tag,
     url: urlPathname ?? `/${tagResource.id}`,
   })
 }
-
-export type Tag = z.infer<typeof tagSchema>

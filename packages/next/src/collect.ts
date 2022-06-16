@@ -20,7 +20,7 @@ import * as api from './api'
 import { makeNqlFilter, compilePermalink } from './helpers'
 import { do_, absurd } from './shared/utils'
 import { createLogger } from './logger'
-import { denomarlizeResources } from './helpers/normalize'
+import { denormalizeResource } from './helpers/normalize'
 
 const log = createLogger('collect')
 
@@ -241,7 +241,20 @@ export function collect(
           }
         )
 
-        const denomarlizeResource = denomarlizeResources(resources)
+        const entities = {
+          configs: [],
+          posts: [],
+          pages: [],
+          tags: [],
+          authors: [],
+          resources: resources.reduce<{ [id: string]: Resource }>(
+            (map, resource) => {
+              map[resource.id] = resource
+              return map
+            },
+            {}
+          ),
+        }
 
         return combine(
           resources.flatMap((resource) => {
@@ -254,8 +267,9 @@ export function collect(
 
               switch (resourceType) {
                 case 'post': {
-                  const postResourceResult = denomarlizeResource<PostResource>(
-                    resource.id
+                  const postResourceResult = denormalizeResource<PostResource>(
+                    resource,
+                    entities
                   )
                   if (postResourceResult.isErr()) {
                     return err(postResourceResult.error)
@@ -268,8 +282,9 @@ export function collect(
                   })
                 }
                 case 'page': {
-                  const pageResourceResult = denomarlizeResource<PageResource>(
-                    resource.id
+                  const pageResourceResult = denormalizeResource<PageResource>(
+                    resource,
+                    entities
                   )
                   if (pageResourceResult.isErr()) {
                     return err(pageResourceResult.error)
@@ -278,15 +293,16 @@ export function collect(
                 }
                 case 'author': {
                   const authorResourceResult =
-                    denomarlizeResource<AuthorResource>(resource.id)
+                    denormalizeResource<AuthorResource>(resource, entities)
                   if (authorResourceResult.isErr()) {
                     return err(authorResourceResult.error)
                   }
                   return createAuthor(authorResourceResult.value)
                 }
                 case 'tag': {
-                  const tagResourceResult = denomarlizeResource<TagResource>(
-                    resource.id
+                  const tagResourceResult = denormalizeResource<TagResource>(
+                    resource,
+                    entities
                   )
                   if (tagResourceResult.isErr()) {
                     return err(tagResourceResult.error)

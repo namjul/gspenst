@@ -5,6 +5,7 @@ import type { AuthorResource } from './resource'
 
 export const authorSchema = z
   .object({
+    type: z.literal('author'),
     id: idSchema,
     name: z.string(),
     date: dateSchema,
@@ -13,6 +14,8 @@ export const authorSchema = z
   })
   .strict()
 
+export type Author = z.infer<typeof authorSchema>
+
 export function createAuthor(authorResource: AuthorResource): Result<Author> {
   const { tinaData, urlPathname } = authorResource
   const {
@@ -20,9 +23,8 @@ export function createAuthor(authorResource: AuthorResource): Result<Author> {
   } = tinaData.data
 
   return parse(authorSchema, {
+    type: 'author',
     ...author,
     url: urlPathname ?? `/${authorResource.id}`,
   })
 }
-
-export type Author = z.infer<typeof authorSchema>

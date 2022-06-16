@@ -5,6 +5,8 @@ import type { RoutesConfig } from './domain/routes'
 import type { ID, ResultAsync } from './shared-kernel'
 import * as Errors from './errors'
 import { collect } from './collect'
+import { denormalizeEntities } from './helpers/normalize'
+import { convertArrayToObject } from './shared/utils'
 
 type Meta = { type: 'meta'; updated_at: number }
 
@@ -62,21 +64,27 @@ const repository = {
   get<T extends ID | ID[]>(id: T): GetValue<T> {
     const ids = [id].flat()
 
-    const result = db.get(...ids.map(String)).map((resources) => {
-      if (ids.length === 1) {
-        return resources[0]
-      }
-      return resources
-    })
+    const result = db
+      .get(...ids.map(String))
+      .map((resources) => {
+        return resources.filter((resource) => {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          return !('type' in resource && resource.type === 'meta')
+        })
+      })
+      .map((resources) => {
+        if (ids.length === 1) {
+          return resources[0]
+        }
+        return resources
+      })
 
     return result as GetValue<T>
   },
 
   getAll() {
-    return db.keys().andThen((idsResult) => {
-      return this.get(
-        idsResult.filter((id) => id !== 'meta') as unknown as ID[]
-      )
+    return db.keys().andThen((ids) => {
+      return this.get(ids as unknown as ID[])
     })
   },
 
@@ -91,6 +99,29 @@ const repository = {
             )
           )
     })
+  },
+
+  getDenormalized<T extends ID | ID[]>(id: T): GetValue<T> {
+    const ids = [id].flat()
+    const result = this.getAll()
+      .andThen((resources) => {
+        return denormalizeEntities(
+          { resources: ids },
+          {
+            resources: convertArrayToObject<Resource>(
+              resources,
+              'id'
+            ) as Record<ID, Resource>,
+          }
+        )
+      })
+      .map(({ resources = [] }) => {
+        if (ids.length === 1) {
+          return resources[0]
+        }
+        return resources
+      })
+    return result as GetValue<T>
   },
 
   findAll<T extends ResourceType>(resourceType?: T): FindAllValue<T> {

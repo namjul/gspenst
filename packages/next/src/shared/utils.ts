@@ -34,3 +34,15 @@ export const do_ = <T>(f: () => T): T => f()
 export function absurd(_: never): never {
   throw new Error('absurd')
 }
+
+export function convertArrayToObject<T extends Record<string, any>>(
+  array: T[],
+  key: string
+) {
+  return array.reduce<Record<string, T>>((obj, item) => {
+    return {
+      ...obj,
+      [item[key]]: item,
+    }
+  }, {})
+}

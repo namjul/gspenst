@@ -1,74 +1,52 @@
-import { Result as NeverThrowResult } from 'neverthrow'
 import {
   schema,
   normalize as _normalize,
   denormalize as _denormalize,
 } from 'normalizr'
 import type { NormalizedSchema } from 'normalizr'
-import { z } from '../shared-kernel'
+import { combine, fromThrowable, err } from '../shared-kernel'
 import * as Errors from '../errors'
-import { postNormalizedSchema } from '../domain/post'
-import { pageNormalizedSchema } from '../domain/page'
-import { authorSchema } from '../domain/author'
-import { tagSchema } from '../domain/tag'
 import type { Resource } from '../domain/resource'
-import type { Post } from '../domain/post'
-import type { Page } from '../domain/page'
+import type { Post, PostNormalized } from '../domain/post'
+import type { Page, PageNormalized } from '../domain/page'
 import type { Author } from '../domain/author'
 import type { Tag } from '../domain/tag'
+import type { Config } from '../domain/config'
 import type { Result, ID } from '../shared-kernel'
+import { absurd, isNumber } from '../shared/utils'
+import { createPost } from '../domain/post'
+import { createPage } from '../domain/page'
+import { createAuthor } from '../domain/author'
+import { createTag } from '../domain/tag'
+import { createConfig } from '../domain/config'
 
-export const entitiesSchema = z.object({
-  post: z.record(postNormalizedSchema),
-  page: z.record(pageNormalizedSchema),
-  author: z.record(authorSchema),
-  tag: z.record(tagSchema),
-})
+export type Entity = Config | Post | Page | Author | Tag
 
-export type Entities = z.infer<typeof entitiesSchema>
+export type Entities = {
+  configs?: { [id: ID]: Config }
+  posts?: { [id: ID]: PostNormalized }
+  pages?: { [id: ID]: PageNormalized }
+  authors?: { [id: ID]: Author }
+  tags?: { [id: ID]: Tag }
+  resources?: { [id: ID]: Resource }
+}
 
-export const normalize = NeverThrowResult.fromThrowable(_normalize, (error) =>
+export const normalize = fromThrowable(_normalize, (error) =>
   Errors.other(
     '`normalizr#normalize`',
     error instanceof Error ? error : undefined
   )
 )
 
-export const denormalize = NeverThrowResult.fromThrowable(
-  _denormalize,
-  (error) =>
-    Errors.other(
-      '`normalizr#denormalize`',
-      error instanceof Error ? error : undefined
-    )
+export const denormalize = fromThrowable(_denormalize, (error) =>
+  Errors.other(
+    '`normalizr#denormalize`',
+    error instanceof Error ? error : undefined
+  )
 )
 
 const resourceEntitySchema = new schema.Entity('resources')
 resourceEntitySchema.define({ relationships: [resourceEntitySchema] })
-
-export function denomarlizeResource<T extends Resource>(
-  id: ID,
-  entities: {
-    resources: {
-      [id: ID]: Resource
-    }
-  }
-): Result<T> {
-  return denormalize(id, resourceEntitySchema, entities)
-}
-
-export function denomarlizeResources(resources: Resource[]) {
-  const entities = {
-    resources: resources.reduce<{ [id: ID]: Resource }>((map, resource) => {
-      map[resource.id] = resource
-      return map
-    }, {}),
-  }
-
-  return <T extends Resource>(id: ID) => {
-    return denomarlizeResource<T>(id, entities)
-  }
-}
 
 const tagEntitySchema = new schema.Entity('tags')
 const authorEntitySchema = new schema.Entity('authors')
@@ -81,45 +59,149 @@ const pageEntitySchema = new schema.Entity('pages', {
   tags: [tagEntitySchema],
 })
 
-const entitiesNormalizrSchema = {
+const entitiesSchema = {
   posts: [postEntitySchema],
   pages: [pageEntitySchema],
   tags: [tagEntitySchema],
   authors: [authorEntitySchema],
+  resources: [resourceEntitySchema],
 }
 
-export function normalizeEntity(data: {
-  posts: Post[]
-  pages: Page[]
-  tags: Tag[]
-  authors: Author[]
+export function normalizeEntities(data: {
+  configs?: Config[]
+  posts?: Post[]
+  pages?: Page[]
+  tags?: Tag[]
+  authors?: Author[]
+  resources?: Resource[]
 }) {
-  return normalize(data, entitiesNormalizrSchema) as Result<
+  // console.log('normalizeEntities', data);
+  return normalize(data, entitiesSchema) as Result<
     NormalizedSchema<
       Entities,
       {
-        posts: ID[]
-        pages: ID[]
-        tags: ID[]
-        authors: ID[]
+        configs?: ID[]
+        posts?: ID[]
+        pages?: ID[]
+        tags?: ID[]
+        authors?: ID[]
+        resources?: ID[]
       }
     >
   >
 }
 
-export function denormalizeEntity(
+export function denormalizeEntities(
   data: {
-    posts: ID[]
-    pages: ID[]
-    tags: ID[]
-    authors: ID[]
+    configs?: ID[]
+    posts?: ID[]
+    pages?: ID[]
+    tags?: ID[]
+    authors?: ID[]
+    resources?: ID[]
   },
   entities: Entities
+): Result<{
+  configs?: Config[]
+  posts?: Post[]
+  pages?: Page[]
+  tags?: Tag[]
+  authors?: Author[]
+  resources?: Resource[]
+}> {
+  return denormalize(data, entitiesSchema, entities)
+}
+
+export function normalizeResource(resource: Resource) {
+  return resolveResourceData(resource).andThen((entity) => {
+    return normalizeEntities({
+      [`${resource.resourceType}s`]: [entity],
+      resources: [resource],
+    }).map(({ entities }) => {
+      return {
+        result: resource.id,
+        entities,
+      }
+    })
+  })
+}
+
+export function normalizeResources(resources: Resource[]) {
+  return combine(resources.map(resolveResourceData)).andThen((entityList) => {
+    return normalizeEntities(
+      entityList.reduce<Required<Parameters<typeof normalizeEntities>[0]>>(
+        (acc, entity, index) => {
+          const resource = resources[index]
+          if (resource) {
+            acc.resources.push(resource)
+            const { resourceType } = resource
+            if (resourceType === 'post' && entity.type === 'post') {
+              acc.posts.push(entity)
+            } else if (resourceType === 'page' && entity.type === 'page') {
+              acc.pages.push(entity)
+            } else if (resourceType === 'author' && entity.type === 'author') {
+              acc.authors.push(entity)
+            } else if (resourceType === 'tag' && entity.type === 'tag') {
+              acc.tags.push(entity)
+            } else if (resourceType === 'config' && entity.type === 'config') {
+              acc.configs.push(entity)
+            }
+          }
+          return acc
+        },
+        {
+          configs: [],
+          posts: [],
+          pages: [],
+          tags: [],
+          authors: [],
+          resources: [],
+        }
+      )
+    ).map(({ entities }) => {
+      return {
+        result: resources.map((resource) => resource.id),
+        entities,
+      }
+    })
+  })
+}
+
+export function denormalizeResource<T extends Resource>(
+  resource: Resource,
+  entities: Entities
 ) {
-  return denormalize(data, entitiesNormalizrSchema, entities) as Result<{
-    posts: Post[]
-    pages: Page[]
-    tags: Tag[]
-    authors: Author[]
-  }>
+  return denormalizeEntities({ resources: [resource.id] }, entities).map(
+    ({ resources = [] }) => {
+      return resources.at(0) as T
+    }
+  )
+}
+
+export function resolveResourceData(resource: Resource): Result<Entity> {
+  if ('relationships' in resource) {
+    if (resource.relationships.some((relResource) => isNumber(relResource))) {
+      return err(
+        Errors.other(
+          `Resource at \`${resource.filepath}\` should be denormalized`
+        )
+      )
+    }
+  }
+
+  const { resourceType } = resource
+  switch (resourceType) {
+    case 'post':
+      return createPost(resource)
+    case 'page':
+      return createPage(resource)
+    case 'author':
+      return createAuthor(resource)
+    case 'tag':
+      return createTag(resource)
+    case 'config':
+      return createConfig(resource)
+    default:
+      return absurd(resourceType)
+  }
 }
