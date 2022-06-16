@@ -9,7 +9,7 @@ import { isValidElementType } from 'react-is'
 import { client } from './shared/client'
 import DynamicTinaProvider from './TinaDynamicProvider'
 import getComponent from './componentRegistry'
-// import getHeaders from './getHeaders'
+// import getHeaders from './helpers/getHeaders'
 import type { PageProps } from './types'
 import type { PageProps as InternalPageProps } from './controller'
 
