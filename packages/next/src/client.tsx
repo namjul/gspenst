@@ -11,7 +11,6 @@ import DynamicTinaProvider from './TinaDynamicProvider'
 import getComponent from './componentRegistry'
 // import getHeaders from './getHeaders'
 import type { PageProps } from './types'
-import type { /*Root,*/ Simplify } from './shared-kernel'
 import type { PageProps as InternalPageProps } from './controller'
 
 export { createSchema } from './schema'
@@ -19,7 +18,7 @@ export { createSchema } from './schema'
 type ThemeComponent = React.ComponentType<PageProps>
 
 export type ContainerProps = {
-  pageProps: Simplify<Exclude<InternalPageProps, { context: 'internal' }> & {}>
+  pageProps: Exclude<InternalPageProps, { context: 'internal' }> & {}
   Component: ThemeComponent
 }
 
@@ -47,8 +46,13 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
     data: tinaData.data,
   })
 
-  console.log('data: ', data)
-  console.log('isLoading: ', isLoading)
+  const _pageProps = {
+    ...pageProps,
+    resource: { ...resource, tinaData: { ...resource.tinaData, data } },
+  } as ContainerProps['pageProps']
+
+  console.log('pageProps: ', _pageProps)
+  console.log('client#isLoading: ', isLoading)
 
   // overwrite with dynamic value from tina
   // pageProps.data.entry.data = data
@@ -65,7 +69,7 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <Component {...pageProps} />
+      <Component {..._pageProps} />
     </ErrorBoundary>
   )
 }
