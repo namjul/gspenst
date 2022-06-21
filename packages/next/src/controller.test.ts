@@ -32,7 +32,7 @@ describe('controller', () => {
       )
       expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
-          context: 'page',
+          context: ['page'],
         }),
       })
     })
@@ -52,7 +52,7 @@ describe('controller', () => {
       )
       expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
-          context: 'post',
+          context: ['post'],
         }),
       })
     })
@@ -78,7 +78,7 @@ describe('controller', () => {
       )
       expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
-          context: 'index',
+          context: ['index'],
         }),
       })
     })
@@ -107,7 +107,7 @@ describe('controller', () => {
       )
       expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
-          context: 'index',
+          context: ['page'],
           data: {
             page: { resource: {} },
           },
@@ -143,7 +143,7 @@ describe('controller', () => {
       )
       expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
-          context: 'index',
+          context: ['page'],
           data: {
             page: { resource: {} },
           },

@@ -1,11 +1,11 @@
-import { z } from './shared/kernel'
-import { absurd } from './shared/utils'
+import { absurd as _absurd } from './shared/utils'
 
 export type GspenstError =
   | { type: 'Other'; error: Error | undefined; context?: string }
   | { type: 'Validation'; message: string; help?: string | undefined }
   | { type: 'NotFound'; context: string | undefined }
-  | { type: 'Parse'; error: z.ZodError }
+  | { type: 'Parse'; error: Error }
+  | { type: 'Absurd'; message: string | undefined }
 
 export const other = (context: string, error?: Error): GspenstError => ({
   type: 'Other',
@@ -13,9 +13,12 @@ export const other = (context: string, error?: Error): GspenstError => ({
   error,
 })
 
-// TODO add absurd error type
+export const absurd = (message: string): GspenstError => ({
+  type: 'Absurd',
+  message,
+})
 
-export const parse = (error: z.ZodError): GspenstError => ({
+export const parse = <T extends Error>(error: T): GspenstError => ({
   type: 'Parse',
   error,
 })
@@ -57,8 +60,10 @@ export function format(errors: GspenstError | GspenstError[]) {
         return `${error.type}: ${error.context}`
       case 'Parse':
         return `${error.type}: cause: ${error.error.message} ${error.error.stack}`
+      case 'Absurd':
+        return `${error.type}: ${error.message}`
       default:
-        return absurd(type)
+        return _absurd(type)
     }
   }
 

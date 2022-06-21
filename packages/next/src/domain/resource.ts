@@ -94,6 +94,8 @@ const authorFragmentSchema = z.custom<AuthorNodeFragment>(
 )
 /* eslint-enable @typescript-eslint/no-unsafe-member-access */
 
+type Confify<T> = T & { data: { config?: ConfigResourceNode } }
+
 const configTinaDataSchema = themeConfigFragmentSchema.transform(
   (themeConfigFragment): GetConfig => {
     return {
@@ -107,7 +109,7 @@ const configTinaDataSchema = themeConfigFragmentSchema.transform(
 )
 
 const postTinaDataSchema = postFragmentSchema.transform(
-  (postFragment): GetPost => {
+  (postFragment): Confify<GetPost> => {
     return {
       data: {
         post: postFragment,
@@ -121,7 +123,7 @@ const postTinaDataSchema = postFragmentSchema.transform(
 )
 
 const pageTinaDataSchema = pageFragmentSchema.transform(
-  (pageFragment): GetPage => {
+  (pageFragment): Confify<GetPage> => {
     return {
       data: {
         page: pageFragment,
@@ -135,7 +137,7 @@ const pageTinaDataSchema = pageFragmentSchema.transform(
 )
 
 const authorTinaDataSchema = authorFragmentSchema.transform(
-  (authorFragment): GetAuthor => {
+  (authorFragment): Confify<GetAuthor> => {
     return {
       data: {
         author: authorFragment,
@@ -148,26 +150,28 @@ const authorTinaDataSchema = authorFragmentSchema.transform(
   }
 )
 
-const tagTinaDataSchema = tagFragmentSchema.transform((tagFragment): GetTag => {
-  return {
-    data: {
-      tag: tagFragment,
-    },
-    query: GetTagDocument,
-    variables: {
-      relativePath: tagFragment._sys.relativePath,
-    },
+const tagTinaDataSchema = tagFragmentSchema.transform(
+  (tagFragment): Confify<GetTag> => {
+    return {
+      data: {
+        tag: tagFragment,
+      },
+      query: GetTagDocument,
+      variables: {
+        relativePath: tagFragment._sys.relativePath,
+      },
+    }
   }
-})
+)
 
-export const themeConfigResourceSchema = resourceBaseSchema.merge(
+export const configResourceSchema = resourceBaseSchema.merge(
   z.object({
     resourceType: resourceTypeConfig,
     tinaData: configTinaDataSchema,
   })
 )
 
-export type ConfigResource = z.infer<typeof themeConfigResourceSchema>
+export type ConfigResource = z.infer<typeof configResourceSchema>
 
 export const authorResourceSchema = resourceBaseSchema
   .merge(locatorResourceBaseSchema)
@@ -220,7 +224,7 @@ export const pageResourceSchema = resourceBaseSchema
 export type PageResource = z.infer<typeof pageResourceSchema>
 
 export const resourceSchema = z.discriminatedUnion('resourceType', [
-  themeConfigResourceSchema,
+  configResourceSchema,
   postResourceSchema,
   pageResourceSchema,
   authorResourceSchema,

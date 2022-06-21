@@ -27,7 +27,7 @@ export const getStaticPaths =
 export const getStaticProps =
   (
     routesConfig: RoutesConfig,
-    routingParameter: string,
+    routingParameter: string
   ): GetStaticProps<PageProps> =>
   async (context) => {
     const { params } = context
@@ -35,10 +35,8 @@ export const getStaticProps =
     log('Page [...slug].js getStaticProps')
 
     const router = routerManager(routesConfig)
-
-    const controllerResult = controller(
-      router.handle(params?.[routingParameter]),
-    )
+    const routingContext = router.handle(params?.[routingParameter])
+    const controllerResult = controller(routingContext)
 
     if (controllerResult.isOk()) {
       const result = await controllerResult.value

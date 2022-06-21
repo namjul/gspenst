@@ -26,6 +26,7 @@
     "find-cache-dir": "^3.3.2",
     "fnv1a": "^1.1.1",
     "fs-extra": "^10.0.0",
+    "graphql": "^16.5.0",
     "gray-matter": "^4.0.3",
     "ioredis": "^5.0.3",
     "js-yaml": "^4.1.0",
@@ -38,7 +39,7 @@
     "sort-on": "^5.0.0",
     "styled-components": "^5.3.5",
     "tinacms": "^0.68.7",
-    "zod": "^3.14.4"
+    "zod": "^3.17.3"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",

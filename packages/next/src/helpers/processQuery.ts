@@ -8,13 +8,7 @@ import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import type { Pagination, Data } from '../domain/theming'
 import type { Result, ResultAsync, ID } from '../shared/kernel'
-import {
-  absurd,
-  removeNullish,
-  isNumber,
-  do_,
-  filterObject,
-} from '../shared/utils'
+import { absurd, removeNullish, isNumber, do_ } from '../shared/utils'
 import repository from '../repository'
 import * as api from '../api'
 import * as Errors from '../errors'
@@ -82,7 +76,7 @@ export function processQuery(
               const queryOutcomeRead: QueryOutcomeRead = {
                 type,
                 resource,
-                entities: filterObject(entities, (key) => key !== 'resources'),
+                entities,
               }
               return ok(queryOutcomeRead)
             })
@@ -163,7 +157,7 @@ export function processQuery(
               next,
             },
             resources: resources.map(({ resource }) => resource),
-            entities: filterObject(entities, (key) => key !== 'resources'),
+            entities,
           }
         })
 

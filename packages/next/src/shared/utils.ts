@@ -1,6 +1,3 @@
-export * from 'dot-prop'
-export { default as filterObject } from 'filter-obj'
-
 export function removeNullish<T extends Record<string, any>>(
   obj: T
 ): { [P in keyof T]?: NonNullable<T[P]> } {

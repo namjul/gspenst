@@ -1,3 +1,4 @@
+// import filterObject from 'filter-obj'
 import { ok, err } from './shared/kernel'
 import type {
   RoutingContext,
@@ -8,12 +9,9 @@ import type {
   Redirect,
 } from './domain/routing'
 import type { DataQuery } from './domain/routes'
-import {
-  createLoaders,
-  processData,
-  processQuery,
-} from './helpers/processQuery'
+import { createLoaders, processData } from './helpers/processQuery'
 import type { DataLoaders } from './helpers/processQuery'
+import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared/kernel'
 import * as Errors from './errors'
@@ -21,6 +19,7 @@ import { do_, absurd } from './shared/utils'
 import type { ThemeContext } from './domain/theming'
 import { configId } from './constants'
 import repository from './repository'
+import { confifyTinaData } from './helpers/confifyTinaData'
 
 // export type PageProps =
 //   | {
@@ -44,20 +43,45 @@ async function entryController(
   routingContext: EntryRoutingContext,
   dataLoaders: DataLoaders
 ): Promise<ControllerResult<PageProps>> {
-  const { resourceType, request } = routingContext
+  return repository.find({ id: configId }).andThen((configResource) => {
+    return processData(dataLoaders, {
+      entry: {
+        resourceType: routingContext.resourceType,
+        type: 'read',
+        ...routingContext.request.params,
+      },
+    }).andThen(({ data, entities }) => {
+      const { entry } = data
 
-  return processQuery(dataLoaders, {
-    resourceType,
-    type: 'read',
-    ...request.params,
-  }).andThen(({ resource, entities }) => {
-    return ok({
-      context: resourceType,
-      resource,
-      data: {},
-      entities,
-      templates: getTemplateHierarchy(routingContext),
-      route: routingContext.request.path,
+      if (!entry || entry.type !== 'read') {
+        return err(Errors.absurd('error in processData'))
+      }
+
+      if (configResource.resourceType !== 'config') {
+        return err(Errors.absurd('Did not fetch config resource'))
+      }
+
+      const entryResource =
+        'resources' in entities ? entities.resources[entry.resource] : undefined
+      if (entryResource) {
+        const templates = getTemplateHierarchy(routingContext)
+
+        const resourceResult = confifyTinaData(configResource, entryResource)
+
+        if (resourceResult.isErr()) {
+          return err(resourceResult.error)
+        }
+
+        return ok({
+          context: getContext(routingContext),
+          resource: resourceResult.value,
+          data: {},
+          entities,
+          templates,
+          route: routingContext.request.path,
+        })
+      }
+      return err(Errors.absurd('Could not find entry'))
     })
   })
 }
@@ -85,8 +109,12 @@ async function channelController(
       //   //redirect
       // }
 
+      if (configResource.resourceType !== 'config') {
+        return err(Errors.absurd('Did not fetch config resource'))
+      }
+
       return ok({
-        context: 'index' as const,
+        context: getContext(routingContext),
         templates: getTemplateHierarchy(routingContext),
         resource: configResource,
         data,
@@ -98,49 +126,53 @@ async function channelController(
 }
 
 async function collectionController(
-  routingProperties: CollectionRoutingContext,
+  routingContext: CollectionRoutingContext,
   dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
-    filter: routingProperties.filter,
-    limit: routingProperties.limit,
-    order: routingProperties.order,
-    page: routingProperties.request.params?.page,
+    filter: routingContext.filter,
+    limit: routingContext.limit,
+    order: routingContext.order,
+    page: routingContext.request.params?.page,
   }
 
   return repository.find({ id: configId }).andThen((configResource) => {
     return processData(dataLoaders, {
-      ...routingProperties.data,
+      ...routingContext.data,
       posts: postsQuery,
     }).andThen(({ data, entities }) => {
+      if (configResource.resourceType !== 'config') {
+        return err(Errors.absurd('Did not fetch config resource'))
+      }
+
       return ok({
-        context: 'index' as const,
+        context: getContext(routingContext),
         resource: configResource,
-        templates: getTemplateHierarchy(routingProperties),
+        templates: getTemplateHierarchy(routingContext),
         data,
         entities,
-        route: routingProperties.request.path,
+        route: routingContext.request.path,
       })
     })
   })
 }
 
 async function customController(
-  routingProperties: CustomRoutingContext,
+  routingContext: CustomRoutingContext,
   dataLoaders: DataLoaders
 ): Promise<ControllerResultAsync<PageProps>> {
   return repository.find({ id: configId }).andThen((configResource) => {
-    return processData(dataLoaders, routingProperties.data).andThen(
+    return processData(dataLoaders, routingContext.data).andThen(
       ({ data, entities }) => {
         return ok({
           context: null,
           resource: configResource,
-          templates: getTemplateHierarchy(routingProperties),
+          templates: getTemplateHierarchy(routingContext),
           data,
           entities,
-          route: routingProperties.request.path,
+          route: routingContext.request.path,
         })
       }
     )

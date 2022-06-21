@@ -280,7 +280,7 @@ export function parseRoutes(input: unknown) {
   if (result.isOk()) {
     resultList.push(ok(result.value))
   } else if (result.error.type === 'Parse') {
-    processError(result.error.error).forEach((issue) => {
+    processError(result.error.error as z.ZodError).forEach((issue) => {
       const message = `${issue.code} at ${issue.path.join('/')}`
       const help = issue.message
 

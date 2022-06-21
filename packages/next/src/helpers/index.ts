@@ -1,23 +1,37 @@
 import path from 'path'
 import fs from 'fs'
+import * as graphql from 'graphql'
 import _nql from '@tryghost/nql'
 import { compile, pathToRegexp as _pathToRegexp } from 'path-to-regexp' // TODO use https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API#pattern_syntax
-import { Result as NeverThrowResult } from 'neverthrow'
-import { ok, err } from '../shared/kernel'
+import { ok, err, fromThrowable } from '../shared/kernel'
 import type { Result } from '../shared/kernel'
-import type { DynamicVariables, Resource, LocatorResource  } from '../domain/resource'
+import type {
+  DynamicVariables,
+  Resource,
+  LocatorResource,
+  TagResource,
+  AuthorResource,
+} from '../domain/resource'
 import * as Errors from '../errors'
 
 import { nodeEnvironment } from '../env'
 
-export const filterLocatorResources = (resource: Resource): resource is LocatorResource => resource.resourceType !== 'config'
+export const filterLocatorResources = (
+  resource: Resource
+): resource is LocatorResource => resource.resourceType !== 'config'
+
+export const filterTagResources = (
+  resource: Resource
+): resource is TagResource => resource.resourceType === 'tag'
+
+export const filterAuthorResources = (
+  resource: Resource
+): resource is AuthorResource => resource.resourceType === 'author'
 
 export const isProductionBuild = nodeEnvironment === 'production'
 
-export const pathToRegexp = NeverThrowResult.fromThrowable(
-  _pathToRegexp,
-  (error) =>
-    Errors.other('`path-to-regexp`', error instanceof Error ? error : undefined)
+export const pathToRegexp = fromThrowable(_pathToRegexp, (error) =>
+  Errors.other('`path-to-regexp`', error instanceof Error ? error : undefined)
 )
 
 export function compilePermalink(
@@ -66,7 +80,7 @@ const EXPANSIONS = [
 
 const cache = new Map<string, ReturnType<typeof _nql>>()
 export function makeNqlFilter(filter: string) {
-  return NeverThrowResult.fromThrowable(
+  return fromThrowable(
     (obj: object) => {
       if (cache.has(filter)) {
         return cache.get(filter)!.queryJSON(obj)
@@ -100,14 +114,24 @@ export function findContentDir(dir: string = process.cwd()): string {
   )
 }
 
-// export const safeJsonParse = ResultInternal.fromThrowable(
-//   JSON.parse,
-//   (error: unknown) =>
-//     Errors.other('JSON.parse', error instanceof Error ? error : undefined)
-// )
-//
-// export const safeJsonStringify = ResultInternal.fromThrowable(
-//   JSON.stringify,
-//   (error: unknown) =>
-//     Errors.other('JSON.stringify', error instanceof Error ? error : undefined)
-// )
+export const safeJsonParse = fromThrowable(JSON.parse, (error: unknown) =>
+  error instanceof Error ? Errors.parse(error) : Errors.other('JSON.parse')
+)
+
+export const safeJsonStringify = fromThrowable(
+  JSON.stringify,
+  (error: unknown) =>
+    error instanceof Error
+      ? Errors.parse(error)
+      : Errors.other('JSON.stringify')
+)
+
+export const safeGraphqlParse = fromThrowable(graphql.parse, (error: unknown) =>
+  error instanceof Error ? Errors.parse(error) : Errors.other('graphql.parse')
+)
+
+export const safeGraphqlStringify = fromThrowable(
+  graphql.print,
+  (error: unknown) =>
+    error instanceof Error ? Errors.parse(error) : Errors.other('graphql.print')
+)
