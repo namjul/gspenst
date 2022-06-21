@@ -1,4 +1,4 @@
-import { ok } from '../shared-kernel'
+import { ok } from '../shared/kernel'
 import { parseRoutes } from './routes'
 
 describe('routing object parsing', () => {

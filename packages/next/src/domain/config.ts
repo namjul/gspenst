@@ -1,6 +1,6 @@
-import { idSchema, jsonSchema, z } from '../shared-kernel'
+import { idSchema, jsonSchema, z } from '../shared/kernel'
 import { parse } from '../helpers/parser'
-import type { Result } from '../shared-kernel'
+import type { Result } from '../shared/kernel'
 import type { ConfigResource } from './resource'
 
 export const configSchema = z

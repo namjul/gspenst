@@ -1,4 +1,4 @@
-import { z } from './shared-kernel'
+import { z } from './shared/kernel'
 import { absurd } from './shared/utils'
 
 export type GspenstError =
@@ -12,6 +12,8 @@ export const other = (context: string, error?: Error): GspenstError => ({
   context,
   error,
 })
+
+// TODO add absurd error type
 
 export const parse = (error: z.ZodError): GspenstError => ({
   type: 'Parse',

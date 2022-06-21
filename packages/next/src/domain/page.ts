@@ -1,6 +1,6 @@
-import { z } from '../shared-kernel'
+import { z } from '../shared/kernel'
 import { parse } from '../helpers/parser'
-import type { Result } from '../shared-kernel'
+import type { Result } from '../shared/kernel'
 import type { PageResource } from './resource'
 import { postSchema, postNormalizedSchema, createPost } from './post'
 

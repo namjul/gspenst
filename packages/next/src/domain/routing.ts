@@ -1,4 +1,4 @@
-import { z } from '../shared-kernel'
+import { z } from '../shared/kernel'
 import { dynamicVariablesSchema, locatorResourceTypeSchema } from './resource'
 import { queryFilterOptions, dataQuery } from './routes'
 

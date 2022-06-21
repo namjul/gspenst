@@ -1,5 +1,5 @@
 import type { Key } from 'path-to-regexp'
-import type { Result, Option } from '../shared-kernel'
+import type { Result, Option } from '../shared/kernel'
 import type { RoutingContext } from '../domain/routing'
 import type { Data } from '../domain/routes'
 import type { LocatorResourceType, LocatorResource } from '../domain/resource'

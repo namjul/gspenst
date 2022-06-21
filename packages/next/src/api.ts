@@ -1,8 +1,8 @@
 import { getSdk } from '../.tina/__generated__/types'
 // import type { PageFilter, PostFilter, AuthorFilter, TagFilter } from '../.tina/__generated__/types'
-import { fromPromise } from './shared-kernel'
+import { fromPromise } from './shared/kernel'
 import * as Errors from './errors'
-import type { AsyncReturnType, ResultAsync } from './shared-kernel'
+import type { AsyncReturnType, ResultAsync } from './shared/kernel'
 import { client } from './shared/client'
 
 const sdk = getSdk(async (query: any, variables: any): Promise<any> => {

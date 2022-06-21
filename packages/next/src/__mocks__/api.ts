@@ -1,5 +1,5 @@
-import type { ResultAsync } from '../shared-kernel'
-import { okAsync } from '../shared-kernel'
+import type { ResultAsync } from '../shared/kernel'
+import { okAsync } from '../shared/kernel'
 import type {
   GetPostQuery,
   GetPageQuery,

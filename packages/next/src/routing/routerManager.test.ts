@@ -1,4 +1,4 @@
-import { ok } from '../shared-kernel'
+import { ok } from '../shared/kernel'
 import repository from '../repository'
 import { parseRoutes } from '../domain/routes'
 import defaultRoutes from '../defaultRoutes'

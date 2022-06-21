@@ -1,4 +1,4 @@
-import { ok, err } from './shared-kernel'
+import { ok, err } from './shared/kernel'
 import type {
   RoutingContext,
   CollectionRoutingContext,
@@ -15,7 +15,7 @@ import {
 } from './helpers/processQuery'
 import type { DataLoaders } from './helpers/processQuery'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
-import type { Result, ResultAsync, Option } from './shared-kernel'
+import type { Result, ResultAsync, Option } from './shared/kernel'
 import * as Errors from './errors'
 import { do_, absurd } from './shared/utils'
 import type { ThemeContext } from './domain/theming'

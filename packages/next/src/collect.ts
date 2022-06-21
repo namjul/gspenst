@@ -1,4 +1,4 @@
-import { ok, err, combine } from './shared-kernel'
+import { ok, err, combine } from './shared/kernel'
 import * as db from './db'
 import type {
   Resource,
@@ -15,7 +15,7 @@ import { createPost } from './domain/post'
 import { createPage } from './domain/page'
 import { createAuthor } from './domain/author'
 import { createTag } from './domain/tag'
-import type { ResultAsync } from './shared-kernel'
+import type { ResultAsync } from './shared/kernel'
 import * as api from './api'
 import { makeNqlFilter, compilePermalink } from './helpers'
 import { do_, absurd } from './shared/utils'

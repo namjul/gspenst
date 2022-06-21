@@ -3,8 +3,8 @@ import fs from 'fs'
 import _nql from '@tryghost/nql'
 import { compile, pathToRegexp as _pathToRegexp } from 'path-to-regexp' // TODO use https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API#pattern_syntax
 import { Result as NeverThrowResult } from 'neverthrow'
-import { ok, err } from '../shared-kernel'
-import type { Result } from '../shared-kernel'
+import { ok, err } from '../shared/kernel'
+import type { Result } from '../shared/kernel'
 import type { DynamicVariables, Resource, LocatorResource  } from '../domain/resource'
 import * as Errors from '../errors'
 

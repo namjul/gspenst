@@ -2,12 +2,12 @@ import sortOn from 'sort-on'
 import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
-import { combine, ok, err, fromPromise } from '../shared-kernel'
+import { combine, ok, err, fromPromise } from '../shared/kernel'
 import { dynamicVariablesSchema } from '../domain/resource'
 import type { DataQuery } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import type { Pagination, Data } from '../domain/theming'
-import type { Result, ResultAsync, ID } from '../shared-kernel'
+import type { Result, ResultAsync, ID } from '../shared/kernel'
 import {
   absurd,
   removeNullish,

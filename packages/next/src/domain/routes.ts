@@ -1,6 +1,6 @@
 // import nql from '@tryghost/nql'
-import { z, ok, err, combineWithAllErrors } from '../shared-kernel'
-import type { Split, Result, Entries, Option } from '../shared-kernel'
+import { z, ok, err, combineWithAllErrors } from '../shared/kernel'
+import type { Split, Result, Entries, Option } from '../shared/kernel'
 import * as Errors from '../errors'
 import { isString /*, isObject*/ } from '../shared/utils'
 import { parse } from '../helpers/parser'

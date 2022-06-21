@@ -1,4 +1,4 @@
-import { z, idSchema } from '../shared-kernel'
+import { z, idSchema } from '../shared/kernel'
 import { limitSchema } from './routes'
 import { resourceSchema } from './resource'
 

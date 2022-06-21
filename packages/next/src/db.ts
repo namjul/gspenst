@@ -1,6 +1,6 @@
-import { fromPromise } from './shared-kernel'
+import { fromPromise } from './shared/kernel'
 import redis from './redis'
-import type { ResultAsync } from './shared-kernel'
+import type { ResultAsync } from './shared/kernel'
 import * as Errors from './errors'
 
 type DBResultAsync<T> = ResultAsync<T>

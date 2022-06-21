@@ -1,5 +1,5 @@
-import type { Result } from '../shared-kernel'
-import { idSchema, slugSchema, urlSchema, ok, err, z } from '../shared-kernel'
+import type { Result } from '../shared/kernel'
+import { idSchema, slugSchema, urlSchema, ok, err, z } from '../shared/kernel'
 import { parse } from '../helpers/parser'
 import {
   GetPostDocument,

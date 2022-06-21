@@ -1,6 +1,6 @@
 import { slugify } from '@tryghost/string'
-import { ok, combine } from '../shared-kernel'
-import type { Result, Option, ID } from '../shared-kernel'
+import { ok, combine } from '../shared/kernel'
+import type { Result, Option, ID } from '../shared/kernel'
 import type { RoutesConfig } from '../domain/routes'
 import type { RoutingContext } from '../domain/routing'
 import type { LocatorResource } from '../domain/resource'

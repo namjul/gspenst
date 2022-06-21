@@ -1,4 +1,4 @@
-import { ok } from './shared-kernel'
+import { ok } from './shared/kernel'
 import { controller } from './controller'
 import repository from './repository'
 import { format } from './errors'

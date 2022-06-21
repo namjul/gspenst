@@ -1,5 +1,5 @@
-import { idSchema, dateSchema, urlSchema, z, combine } from '../shared-kernel'
-import type { Result } from '../shared-kernel'
+import { idSchema, dateSchema, urlSchema, z, combine } from '../shared/kernel'
+import type { Result } from '../shared/kernel'
 import { isNumber } from '../shared/utils'
 import { parse } from '../helpers/parser'
 import { authorSchema, createAuthor } from './author'

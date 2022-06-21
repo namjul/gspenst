@@ -15,8 +15,8 @@ import {
   Get,
   Opaque,
 } from 'type-fest'
-import type { GspenstError } from './errors'
-import { do_ } from './shared/utils'
+import type { GspenstError } from '../errors'
+import { do_ } from './utils'
 
 export {
   ok,
