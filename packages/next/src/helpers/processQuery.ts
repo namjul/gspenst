@@ -67,7 +67,7 @@ export function processQuery(
               const resource = resources[result]
               if (!resource) {
                 return err(
-                  Errors.other(
+                  Errors.absurd(
                     `Should not happen: resource ${result} not found`
                   )
                 )
