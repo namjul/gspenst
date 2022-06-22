@@ -61,8 +61,10 @@ async function entryController(
         return err(Errors.absurd('Did not fetch config resource'))
       }
 
-      const entryResource =
-        'resources' in entities ? entities.resources[entry.resource] : undefined
+      const resources = entities.resources
+      const id = entry.resource
+      const entryResource = resources?.[id]
+
       if (entryResource) {
         const templates = getTemplateHierarchy(routingContext)
 

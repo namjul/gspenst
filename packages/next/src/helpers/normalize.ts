@@ -3,8 +3,8 @@ import type { NormalizedSchema } from 'normalizr'
 import { combine, err } from '../shared/kernel'
 import * as Errors from '../errors'
 import type { Resource } from '../domain/resource'
-import type { Post, PostNormalized } from '../domain/post'
-import type { Page, PageNormalized } from '../domain/page'
+import type { Post } from '../domain/post'
+import type { Page } from '../domain/page'
 import type { Author } from '../domain/author'
 import type { Tag } from '../domain/tag'
 import type { Config } from '../domain/config'
@@ -15,18 +15,10 @@ import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
 import { createConfig } from '../domain/config'
+import type { Entities } from '../domain/theming'
 import { normalize, denormalize } from './index'
 
 export type Entity = Config | Post | Page | Author | Tag
-
-export type Entities = {
-  configs?: { [id: ID]: Config }
-  posts?: { [id: ID]: PostNormalized }
-  pages?: { [id: ID]: PageNormalized }
-  authors?: { [id: ID]: Author }
-  tags?: { [id: ID]: Tag }
-  resources?: { [id: ID]: Resource }
-}
 
 const resourceEntitySchema = new schema.Entity('resources')
 resourceEntitySchema.define({ relationships: [resourceEntitySchema] })

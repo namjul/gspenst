@@ -1,4 +1,9 @@
 import { z, idSchema } from '../shared/kernel'
+import { configSchema } from './config'
+import { postNormalizedSchema } from './post'
+import { pageNormalizedSchema } from './page'
+import { authorSchema } from './author'
+import { tagSchema } from './tag'
 import { limitSchema } from './routes'
 import { resourceSchema } from './resource'
 
@@ -26,13 +31,30 @@ const dataSchema = z.record(
 
 export type Data = z.infer<typeof dataSchema>
 
-const themeContextSchema = z.object({
-  templates: z.array(z.string()),
-  route: z.string(),
-  data: dataSchema,
-  context: z.array(z.string()).nullable(),
-  resource: resourceSchema,
-})
+export const entitiesSchema = z
+  .object({
+    configs: z.record(idSchema, configSchema),
+    posts: z.record(idSchema, postNormalizedSchema),
+    pages: z.record(idSchema, pageNormalizedSchema),
+    authors: z.record(idSchema, authorSchema),
+    tags: z.record(idSchema, tagSchema),
+    resources: z.record(idSchema, resourceSchema),
+  })
+  .partial()
+  .strict()
+
+export type Entities = z.infer<typeof entitiesSchema>
+
+const themeContextSchema = z
+  .object({
+    templates: z.array(z.string()),
+    route: z.string(),
+    data: dataSchema,
+    context: z.array(z.string()).nullable(),
+    resource: resourceSchema,
+    entities: entitiesSchema,
+  })
+  .strict()
 
 const internalThemeContext = z.object({
   context: z.literal('internal'),
