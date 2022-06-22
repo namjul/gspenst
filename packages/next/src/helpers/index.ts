@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import * as graphql from 'graphql'
+import { normalize as _normalize, denormalize as _denormalize } from 'normalizr'
 import _nql from '@tryghost/nql'
 import { compile, pathToRegexp as _pathToRegexp } from 'path-to-regexp' // TODO use https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API#pattern_syntax
 import { ok, err, fromThrowable } from '../shared/kernel'
@@ -134,4 +135,18 @@ export const safeGraphqlStringify = fromThrowable(
   graphql.print,
   (error: unknown) =>
     error instanceof Error ? Errors.parse(error) : Errors.other('graphql.print')
+)
+
+export const normalize = fromThrowable(_normalize, (error) =>
+  Errors.other(
+    '`normalizr#normalize`',
+    error instanceof Error ? error : undefined
+  )
+)
+
+export const denormalize = fromThrowable(_denormalize, (error) =>
+  Errors.other(
+    '`normalizr#denormalize`',
+    error instanceof Error ? error : undefined
+  )
 )

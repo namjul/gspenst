@@ -1,10 +1,6 @@
-import {
-  schema,
-  normalize as _normalize,
-  denormalize as _denormalize,
-} from 'normalizr'
+import { schema } from 'normalizr'
 import type { NormalizedSchema } from 'normalizr'
-import { combine, fromThrowable, err } from '../shared/kernel'
+import { combine, err } from '../shared/kernel'
 import * as Errors from '../errors'
 import type { Resource } from '../domain/resource'
 import type { Post, PostNormalized } from '../domain/post'
@@ -19,6 +15,7 @@ import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
 import { createConfig } from '../domain/config'
+import { normalize, denormalize } from './index'
 
 export type Entity = Config | Post | Page | Author | Tag
 
@@ -30,20 +27,6 @@ export type Entities = {
   tags?: { [id: ID]: Tag }
   resources?: { [id: ID]: Resource }
 }
-
-export const normalize = fromThrowable(_normalize, (error) =>
-  Errors.other(
-    '`normalizr#normalize`',
-    error instanceof Error ? error : undefined
-  )
-)
-
-export const denormalize = fromThrowable(_denormalize, (error) =>
-  Errors.other(
-    '`normalizr#denormalize`',
-    error instanceof Error ? error : undefined
-  )
-)
 
 const resourceEntitySchema = new schema.Entity('resources')
 resourceEntitySchema.define({ relationships: [resourceEntitySchema] })
