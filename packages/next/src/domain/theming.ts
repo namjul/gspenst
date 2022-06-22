@@ -5,7 +5,7 @@ import { pageNormalizedSchema } from './page'
 import { authorSchema } from './author'
 import { tagSchema } from './tag'
 import { limitSchema } from './routes'
-import { resourceSchema } from './resource'
+import { resourceSchema, resourceTypeSchema } from './resource'
 
 const paginationSchema = z.object({
   page: z.number(), // the current page number
@@ -20,9 +20,14 @@ export type Pagination = z.infer<typeof paginationSchema>
 
 const dataSchema = z.record(
   z.discriminatedUnion('type', [
-    z.object({ type: z.literal('read'), resource: idSchema }),
+    z.object({
+      type: z.literal('read'),
+      resourceType: resourceTypeSchema,
+      resource: idSchema,
+    }),
     z.object({
       type: z.literal('browse'),
+      resourceType: resourceTypeSchema,
       resources: z.array(idSchema),
       pagination: paginationSchema,
     }),

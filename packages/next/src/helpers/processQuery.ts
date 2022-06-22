@@ -5,7 +5,7 @@ import type { SemaphoreInterface } from 'async-mutex'
 import { combine, ok, err, fromPromise } from '../shared/kernel'
 import { dynamicVariablesSchema } from '../domain/resource'
 import type { DataQuery } from '../domain/routes'
-import type { Resource } from '../domain/resource'
+import type { Resource, ResourceType } from '../domain/resource'
 import type { Entities, Pagination, Data } from '../domain/theming'
 import type { Result, ResultAsync, ID } from '../shared/kernel'
 import { absurd, removeNullish, isNumber, do_ } from '../shared/utils'
@@ -17,12 +17,14 @@ import { normalizeResource, normalizeResources } from './normalize'
 
 export type QueryOutcomeRead = {
   type: 'read'
+  resourceType: ResourceType
   resource: Resource
   entities: Entities
 }
 
 export type QueryOutcomeBrowse = {
   type: 'browse'
+  resourceType: ResourceType
   pagination: Pagination
   resources: Resource[]
   entities: Entities
@@ -74,6 +76,7 @@ export function processQuery(
               }
               const queryOutcomeRead: QueryOutcomeRead = {
                 type,
+                resourceType: query.resourceType,
                 resource,
                 entities,
               }
@@ -156,6 +159,7 @@ export function processQuery(
               next,
             },
             resources: resources.map(({ resource }) => resource),
+            resourceType: query.resourceType,
             entities,
           }
         })
@@ -193,12 +197,20 @@ export function processData(
               const { type } = queryOutcomeRest
 
               switch (type) {
-                case 'read':
-                  return { type, resource: queryOutcomeRest.resource.id }
-                case 'browse': {
-                  const { resources, pagination } = queryOutcomeRest
+                case 'read': {
+                  const { resource, resourceType } = queryOutcomeRest
                   return {
                     type,
+                    resourceType,
+                    resource: resource.id,
+                  }
+                }
+                case 'browse': {
+                  const { resources, pagination, resourceType } =
+                    queryOutcomeRest
+                  return {
+                    type,
+                    resourceType,
                     resources: resources.map(({ id }) => id),
                     pagination,
                   }
