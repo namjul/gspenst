@@ -1,4 +1,6 @@
 import { createClient } from 'tinacms/dist/client'
+import type { TinaCloudSchema } from 'tinacms'
+import type { RoutingMapping } from '../domain/resource'
 import { tinaClientId, tinaReadonlyTokens, nodeEnvironment } from '../env'
 
 const branch = 'main'
@@ -11,3 +13,8 @@ export const client = createClient({
   url: apiURL,
   ...(tinaReadonlyTokens && { token: tinaReadonlyTokens }),
 })
+
+export type ClientConfig = {
+  tinaSchema: TinaCloudSchema
+  routingMapping: RoutingMapping
+}

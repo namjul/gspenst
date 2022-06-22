@@ -1,19 +1,27 @@
 import TinaCMS, { defineConfig } from 'tinacms'
-import type { TinaCloudSchema } from 'tinacms'
+import type { ClientConfig } from './shared/client'
 import { client } from './shared/client'
 
 const TinaProvider = ({
-  tinaSchema,
+  config,
   children,
 }: React.PropsWithChildren<{
-  tinaSchema: TinaCloudSchema
+  config: ClientConfig
 }>) => {
   const tinaConfig = defineConfig({
     client,
-    schema: tinaSchema,
+    schema: config.tinaSchema,
     cmsCallback: (cms) => {
       // enable tina admin
       cms.flags.set('tina-admin', true)
+
+      // When `tina-admin` is enabled, this plugin configures contextual editing for collections
+      import('tinacms').then(({ RouteMappingPlugin }) => {
+        const RouteMapping = new RouteMappingPlugin((collection, document) => {
+          return config.routingMapping[document._sys.path]
+        })
+        cms.plugins.add(RouteMapping)
+      })
 
       return cms
     },

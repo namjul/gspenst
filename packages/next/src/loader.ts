@@ -4,7 +4,12 @@ import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderContext } from 'webpack'
 import { parseRoutes } from './domain/routes'
-import { isProductionBuild, findContentDir, filterLocatorResources } from './helpers'
+import {
+  isProductionBuild,
+  findContentDir,
+  filterLocatorResources,
+} from './helpers'
+import { createRoutingMapping } from './domain/resource'
 import { format } from './errors'
 import defaultRoutes from './defaultRoutes'
 import repository from './repository'
@@ -90,6 +95,8 @@ async function loader(
 
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
+  const routingMapping = createRoutingMapping(locatorResources)
+
   const imports = `
 import * as __gspenst_server__ from '@gspenst/next/server'
 import GspenstClientPage from '@gspenst/next/client'
@@ -103,12 +110,13 @@ ${
 `
 
   const component = `
+const routingMapping = ${JSON.stringify(routingMapping)}
 const GspenstLayout = __gspenst_withTheme__(${
     themeConfigPath ? '__gspenst_themeConfig__' : 'null'
   })
 
 export default function GspenstPage (props) {
-  return <GspenstClientPage pageProps={props} Component={GspenstLayout} tinaSchema={tinaSchema} />
+  return <GspenstClientPage pageProps={props} Component={GspenstLayout} config={{ tinaSchema, routingMapping }} />
 }`
 
   const dataFetchingFunctions = `

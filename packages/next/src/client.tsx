@@ -1,7 +1,6 @@
 import type * as React from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import type { FallbackProps } from 'react-error-boundary'
-import type { TinaCloudSchema } from 'tinacms'
 import { useTina } from 'tinacms/dist/edit-state'
 import type { NextPage } from 'next'
 import { isValidElementType } from 'react-is'
@@ -10,6 +9,7 @@ import getComponent from './componentRegistry'
 // import getHeaders from './helpers/getHeaders'
 import type { PageProps } from './types'
 import type { PageProps as InternalPageProps } from './controller'
+import type { ClientConfig } from './shared/client'
 
 export { createSchema } from './schema'
 
@@ -75,14 +75,11 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
 export type NextPageProps = {
   pageProps: InternalPageProps
   Component: ThemeComponent
-  tinaSchema: TinaCloudSchema
+  config: ClientConfig
 }
 
-const Page: NextPage<NextPageProps> = ({
-  pageProps,
-  Component,
-  tinaSchema,
-}) => {
+const Page: NextPage<NextPageProps> = ({ pageProps, Component, config }) => {
+  console.log('config', config)
   // console.log('PageProps(next): ', pageProps)
   let component
 
@@ -95,11 +92,7 @@ const Page: NextPage<NextPageProps> = ({
     component = <Container pageProps={pageProps} Component={Component} />
   }
 
-  return (
-    <DynamicTinaProvider tinaSchema={tinaSchema}>
-      {component}
-    </DynamicTinaProvider>
-  )
+  return <DynamicTinaProvider config={config}>{component}</DynamicTinaProvider>
 }
 
 export default Page

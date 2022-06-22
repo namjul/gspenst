@@ -1,12 +1,12 @@
 import { TinaEditProvider } from 'tinacms/dist/edit-state'
-import type { TinaCloudSchema } from 'tinacms'
+import type { ClientConfig } from './shared/client'
 import getComponent from './componentRegistry'
 
 const DynamicTinaProvider = ({
-  tinaSchema,
+  config,
   children,
 }: React.PropsWithChildren<{
-  tinaSchema: TinaCloudSchema
+  config: ClientConfig
 }>) => {
   const TinaProvider = getComponent('TinaProvider')
 
@@ -15,7 +15,7 @@ const DynamicTinaProvider = ({
   }
   return (
     <TinaEditProvider
-      editMode={<TinaProvider tinaSchema={tinaSchema}>{children}</TinaProvider>}
+      editMode={<TinaProvider config={config}>{children}</TinaProvider>}
     >
       {children}
     </TinaEditProvider>

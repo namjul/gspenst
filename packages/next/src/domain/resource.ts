@@ -377,3 +377,16 @@ function extractRelations(node: LocatorResourceNode) {
       return absurd(__typename)
   }
 }
+
+export type RoutingMapping = Record<
+  LocatorResource['filepath'],
+  LocatorResource['urlPathname']
+>
+export function createRoutingMapping(locatorResources: LocatorResource[]) {
+  return locatorResources.reduce<RoutingMapping>((acc, resource) => {
+    return {
+      ...acc,
+      [resource.filepath]: resource.urlPathname,
+    }
+  }, {})
+}
