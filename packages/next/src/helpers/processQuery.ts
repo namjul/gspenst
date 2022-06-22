@@ -1,3 +1,4 @@
+import merge from 'deepmerge'
 import sortOn from 'sort-on'
 import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
@@ -190,6 +191,7 @@ export function processData(
           return acc
         }
         const { entities, ...queryOutcomeRest } = queryOutcome
+
         return {
           data: {
             ...acc.data,
@@ -220,10 +222,7 @@ export function processData(
               }
             }),
           },
-          entities: {
-            ...acc.entities,
-            ...entities,
-          },
+          entities: merge(acc.entities, entities),
         }
       },
       { data: {}, entities: {} }
