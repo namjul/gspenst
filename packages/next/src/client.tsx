@@ -2,11 +2,9 @@ import type * as React from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import type { FallbackProps } from 'react-error-boundary'
 import type { TinaCloudSchema } from 'tinacms'
-import { defineConfig } from 'tinacms'
 import { useTina } from 'tinacms/dist/edit-state'
 import type { NextPage } from 'next'
 import { isValidElementType } from 'react-is'
-import { client } from './shared/client'
 import DynamicTinaProvider from './TinaDynamicProvider'
 import getComponent from './componentRegistry'
 // import getHeaders from './helpers/getHeaders'
@@ -97,25 +95,8 @@ const Page: NextPage<NextPageProps> = ({
     component = <Container pageProps={pageProps} Component={Component} />
   }
 
-  const tinaConfig = defineConfig({
-    client,
-    schema: tinaSchema,
-    cmsCallback: (cms) => {
-      cms.flags.set('tina-admin', true)
-      return cms
-    },
-    formifyCallback: ({ formConfig, createForm, createGlobalForm }) => {
-      console.log('formConfig: ', formConfig)
-      if (formConfig.id === 'content/config/index.json') {
-        return createGlobalForm(formConfig)
-      }
-
-      return createForm(formConfig)
-    },
-  })
-
   return (
-    <DynamicTinaProvider tinaConfig={tinaConfig}>
+    <DynamicTinaProvider tinaSchema={tinaSchema}>
       {component}
     </DynamicTinaProvider>
   )
