@@ -20,6 +20,7 @@ import type { ThemeContext } from './domain/theming'
 import { configId } from './constants'
 import repository from './repository'
 import { confifyTinaData } from './helpers/confifyTinaData'
+import { findMainResource } from './helpers/findMainResource'
 
 // export type PageProps =
 //   | {
@@ -45,15 +46,15 @@ async function entryController(
 ): Promise<ControllerResult<PageProps>> {
   return repository.find({ id: configId }).andThen((configResource) => {
     return processData(dataLoaders, {
-      entry: {
+      main: {
         resourceType: routingContext.resourceType,
         type: 'read',
         ...routingContext.request.params,
       },
     }).andThen(({ data, entities }) => {
-      const { entry } = data
+      const { main } = data
 
-      if (!entry || entry.type !== 'read') {
+      if (!main || main.type !== 'read') {
         return err(Errors.absurd('error in processData'))
       }
 
@@ -62,28 +63,26 @@ async function entryController(
       }
 
       const resources = entities.resources
-      const id = entry.resource
-      const entryResource = resources?.[id]
+      const id = main.resource
+      const mainResource = resources?.[id]
 
-      if (entryResource) {
-        const templates = getTemplateHierarchy(routingContext)
+      if (mainResource) {
+        const mainResourceResult = confifyTinaData(configResource, mainResource)
 
-        const resourceResult = confifyTinaData(configResource, entryResource)
-
-        if (resourceResult.isErr()) {
-          return err(resourceResult.error)
+        if (mainResourceResult.isErr()) {
+          return err(mainResourceResult.error)
         }
 
         return ok({
           context: getContext(routingContext),
-          resource: resourceResult.value,
+          resource: mainResourceResult.value,
           data: {},
           entities,
-          templates,
+          templates: getTemplateHierarchy(routingContext),
           route: routingContext.request.path,
         })
       }
-      return err(Errors.absurd('Could not find entry'))
+      return err(Errors.absurd('Could not find main resource'))
     })
   })
 }
@@ -115,10 +114,18 @@ async function channelController(
         return err(Errors.absurd('Did not fetch config resource'))
       }
 
+      const mainResource = findMainResource(data, entities)
+
+      const mainResourceResult = confifyTinaData(configResource, mainResource)
+
+      if (mainResourceResult.isErr()) {
+        return err(mainResourceResult.error)
+      }
+
       return ok({
         context: getContext(routingContext),
         templates: getTemplateHierarchy(routingContext),
-        resource: configResource,
+        resource: mainResourceResult.value,
         data,
         entities,
         route: routingContext.request.path,
@@ -149,9 +156,17 @@ async function collectionController(
         return err(Errors.absurd('Did not fetch config resource'))
       }
 
+      const mainResource = findMainResource(data, entities)
+
+      const mainResourceResult = confifyTinaData(configResource, mainResource)
+
+      if (mainResourceResult.isErr()) {
+        return err(mainResourceResult.error)
+      }
+
       return ok({
         context: getContext(routingContext),
-        resource: configResource,
+        resource: mainResourceResult.value,
         templates: getTemplateHierarchy(routingContext),
         data,
         entities,
@@ -168,9 +183,21 @@ async function customController(
   return repository.find({ id: configId }).andThen((configResource) => {
     return processData(dataLoaders, routingContext.data).andThen(
       ({ data, entities }) => {
+        if (configResource.resourceType !== 'config') {
+          return err(Errors.absurd('Did not fetch config resource'))
+        }
+
+        const mainResource = findMainResource(data, entities)
+
+        const mainResourceResult = confifyTinaData(configResource, mainResource)
+
+        if (mainResourceResult.isErr()) {
+          return err(mainResourceResult.error)
+        }
+
         return ok({
           context: null,
-          resource: configResource,
+          resource: mainResourceResult.value,
           templates: getTemplateHierarchy(routingContext),
           data,
           entities,

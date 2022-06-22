@@ -171,7 +171,7 @@ export function processQuery(
 }
 
 type ProcessData = {
-  data: Data
+  data: Record<string, Data>
   entities: Entities
 }
 export function processData(

@@ -6,10 +6,18 @@ import * as Errors from '../errors'
 import { safeGraphqlParse, safeGraphqlStringify } from '../helpers'
 import type { Resource, ConfigResource } from '../domain/resource'
 
-export function confifyTinaData<T extends Resource>(
+export function confifyTinaData(
   configResource: ConfigResource,
-  resource: T
-): Result<T> {
+  resource: Resource | undefined
+): Result<Resource> {
+  if (!resource) {
+    return ok(configResource)
+  }
+
+  if (resource.resourceType === 'config') {
+    return err(Errors.other('confifyTinaData: Cannot confify config resource.'))
+  }
+
   return combine([
     safeGraphqlParse(configResource.tinaData.query),
     safeGraphqlParse(resource.tinaData.query),

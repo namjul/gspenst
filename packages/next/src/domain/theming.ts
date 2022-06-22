@@ -18,21 +18,27 @@ const paginationSchema = z.object({
 
 export type Pagination = z.infer<typeof paginationSchema>
 
-const dataSchema = z.record(
-  z.discriminatedUnion('type', [
-    z.object({
-      type: z.literal('read'),
-      resourceType: resourceTypeSchema,
-      resource: idSchema,
-    }),
-    z.object({
-      type: z.literal('browse'),
-      resourceType: resourceTypeSchema,
-      resources: z.array(idSchema),
-      pagination: paginationSchema,
-    }),
-  ])
-)
+const readDataSchema = z.object({
+  type: z.literal('read'),
+  resourceType: resourceTypeSchema,
+  resource: idSchema,
+})
+
+export type ReadData = z.infer<typeof readDataSchema>
+
+const browseDataSchema = z.object({
+  type: z.literal('browse'),
+  resourceType: resourceTypeSchema,
+  resources: z.array(idSchema),
+  pagination: paginationSchema,
+})
+
+export type BrowseData = z.infer<typeof browseDataSchema>
+
+const dataSchema = z.discriminatedUnion('type', [
+  readDataSchema,
+  browseDataSchema,
+])
 
 export type Data = z.infer<typeof dataSchema>
 
@@ -54,7 +60,7 @@ const themeContextSchema = z
   .object({
     templates: z.array(z.string()),
     route: z.string(),
-    data: dataSchema,
+    data: z.record(dataSchema),
     context: z.array(z.string()).nullable(),
     resource: resourceSchema,
     entities: entitiesSchema,
