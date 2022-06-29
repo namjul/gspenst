@@ -35,7 +35,7 @@ import { findMainResource } from './helpers/findMainResource'
 //     }
 //   | { context: 'internal' }
 
-export type PageProps = ThemeContext
+// export type PageProps = ThemeContext
 
 type ControllerResult<T> = Result<T>
 type ControllerResultAsync<T> = ResultAsync<T>
@@ -43,7 +43,7 @@ type ControllerResultAsync<T> = ResultAsync<T>
 async function entryController(
   routingContext: EntryRoutingContext,
   dataLoaders: DataLoaders
-): Promise<ControllerResult<PageProps>> {
+): Promise<ControllerResult<ThemeContext>> {
   return repository.find({ id: configId }).andThen((configResource) => {
     return processData(dataLoaders, {
       main: {
@@ -90,7 +90,7 @@ async function entryController(
 async function channelController(
   routingContext: ChannelRoutingContext,
   dataLoaders: DataLoaders
-): Promise<ControllerResultAsync<PageProps>> {
+): Promise<ControllerResultAsync<ThemeContext>> {
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
@@ -137,7 +137,7 @@ async function channelController(
 async function collectionController(
   routingContext: CollectionRoutingContext,
   dataLoaders: DataLoaders
-): Promise<ControllerResultAsync<PageProps>> {
+): Promise<ControllerResultAsync<ThemeContext>> {
   const postsQuery: DataQuery = {
     type: 'browse',
     resourceType: 'post',
@@ -179,7 +179,7 @@ async function collectionController(
 async function customController(
   routingContext: CustomRoutingContext,
   dataLoaders: DataLoaders
-): Promise<ControllerResultAsync<PageProps>> {
+): Promise<ControllerResultAsync<ThemeContext>> {
   return repository.find({ id: configId }).andThen((configResource) => {
     return processData(dataLoaders, routingContext.data).andThen(
       ({ data, entities }) => {
@@ -209,7 +209,7 @@ async function customController(
 }
 
 type ControllerReturnType =
-  | { type: 'props'; props: ControllerResult<PageProps> }
+  | { type: 'props'; props: ControllerResult<ThemeContext> }
   | { type: 'redirect'; redirect: Redirect }
 
 export function controller(

@@ -4,19 +4,16 @@ import type { FallbackProps } from 'react-error-boundary'
 import { useTina } from 'tinacms/dist/edit-state'
 import type { NextPage } from 'next'
 import { isValidElementType } from 'react-is'
+import type { ThemeContext } from '@gspenst/core'
 import DynamicTinaProvider from './TinaDynamicProvider'
 import getComponent from './componentRegistry'
 // import getHeaders from './helpers/getHeaders'
-import type { PageProps } from './types'
-import type { PageProps as InternalPageProps } from './controller'
-import type { ClientConfig } from './shared/client'
-
-export { createSchema } from './schema'
+import type { PageProps, ClientConfig } from './types'
 
 type ThemeComponent = React.ComponentType<PageProps>
 
 export type ContainerProps = {
-  pageProps: Exclude<InternalPageProps, { context: 'internal' }> & {}
+  pageProps: PageProps
   Component: ThemeComponent
 }
 
@@ -73,7 +70,7 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
 }
 
 export type NextPageProps = {
-  pageProps: InternalPageProps
+  pageProps: ThemeContext
   Component: ThemeComponent
   config: ClientConfig
 }

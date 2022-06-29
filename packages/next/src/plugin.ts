@@ -2,8 +2,8 @@ import EventEmitter from 'events'
 import type { ChildProcess } from 'child_process'
 import path from 'path'
 import type { Compiler } from 'webpack'
+import { startTinaServer } from '@gspenst/core'
 import pkg from '../package.json'
-import { startTinaServer } from './tinaServer'
 
 // api lookup: https://webpack.js.org/api/plugins/
 // example: https://github.com/shellscape/webpack-plugin-serve/blob/master/lib/index.js
@@ -21,6 +21,8 @@ export class GspenstPlugin extends EventEmitter {
 
   constructor(isServer: boolean) {
     super()
+
+    console.log('GspenstPlugin constructor')
 
     this.isServer = isServer
 

@@ -1,5 +1,5 @@
 import { TinaEditProvider } from 'tinacms/dist/edit-state'
-import type { ClientConfig } from './shared/client'
+import type { ClientConfig } from './types'
 import getComponent from './componentRegistry'
 
 const DynamicTinaProvider = ({

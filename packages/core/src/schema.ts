@@ -87,7 +87,7 @@ export function createSchema(
         name: 'Placeholder',
       },
     ],
-    ...(themeFields.length && { fields: themeFields })
+    ...(themeFields.length && { fields: themeFields }),
   }
 
   const pageCollection: TinaCollection = {

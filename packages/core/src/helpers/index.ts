@@ -1,5 +1,3 @@
-import path from 'path'
-import fs from 'fs'
 import * as graphql from 'graphql'
 import { normalize as _normalize, denormalize as _denormalize } from 'normalizr'
 import _nql from '@tryghost/nql'
@@ -95,23 +93,6 @@ export function makeNqlFilter(filter: string) {
         '`nql`#queryJSON',
         error instanceof Error ? error : undefined
       )
-  )
-}
-
-export const existsSync = (f: string): boolean => {
-  try {
-    fs.accessSync(f, fs.constants.F_OK)
-    return true
-  } catch (e: unknown) {
-    return false
-  }
-}
-
-export function findContentDir(dir: string = process.cwd()): string {
-  if (existsSync(path.join(dir, 'content'))) return 'content'
-
-  throw new Error(
-    "> Couldn't find a `content` directory. Please create one under the project root"
   )
 }
 

@@ -3,16 +3,14 @@
 import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderContext } from 'webpack'
-import { parseRoutes } from './domain/routes'
 import {
-  isProductionBuild,
-  findContentDir,
-  filterLocatorResources,
-} from './helpers'
-import { createRoutingMapping } from './domain/resource'
-import { format } from './errors'
-import defaultRoutes from './defaultRoutes'
-import repository from './repository'
+  parseRoutes,
+  createRoutingMapping,
+  Errors,
+  defaultRoutes,
+  repository,
+} from '@gspenst/core'
+import { findContentDir, filterLocatorResources } from './utils'
 import { log } from './logger'
 
 export type LoaderOptions = {
@@ -20,6 +18,8 @@ export type LoaderOptions = {
   themeConfig?: string
   staticExport?: boolean
 }
+
+const isProductionBuild = process.env.NODE_ENV === 'production'
 
 const contentDir = path.resolve(findContentDir())
 
@@ -74,7 +74,7 @@ async function loader(
   })
 
   if (routesConfigResult.isErr()) {
-    context.emitError(format(routesConfigResult.error))
+    context.emitError(Errors.format(routesConfigResult.error))
   }
 
   const routesConfig = routesConfigResult.isOk()
@@ -84,7 +84,7 @@ async function loader(
   const collectResult = await repository.collect(routesConfig)
 
   if (collectResult.isErr()) {
-    context.emitError(format(collectResult.error))
+    context.emitError(Errors.format(collectResult.error))
   }
 
   const resources = collectResult.isOk() ? collectResult.value : []

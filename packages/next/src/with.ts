@@ -29,6 +29,7 @@ export default (...args: [string | LoaderOptions, string]) =>
       ...nextConfig,
       pageExtensions,
       webpack(config: Configuration, context) {
+        log('Initializing next webpack config')
         const gspenst = new GspenstPlugin(context.isServer)
         if (config.plugins) {
           config.plugins.push(gspenst)

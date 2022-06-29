@@ -14,7 +14,7 @@ beforeAll(async () => {
 
 describe('repository', () => {
   test('init', async () => {
-    const result = (await repository.collect())._unsafeUnwrap();
+    const result = (await repository.collect())._unsafeUnwrap()
     expect(result).toHaveLength(18)
   })
 

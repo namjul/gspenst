@@ -92,7 +92,10 @@ class ParentRouter {
     return this.route ?? '/'
   }
 
-  resolvePaths(_routers: ParentRouter[], _resources: LocatorResource[]): string[] {
+  resolvePaths(
+    _routers: ParentRouter[],
+    _resources: LocatorResource[]
+  ): string[] {
     return []
   }
 }

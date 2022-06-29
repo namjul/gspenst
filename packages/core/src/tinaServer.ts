@@ -1,13 +1,14 @@
 import path from 'path'
-import { once } from 'events'
+import EventEmitter, { once } from 'events'
 import fse from 'fs-extra'
 import spawn from 'cross-spawn'
 import { createLogger } from './logger'
-import type { GspenstPlugin } from './plugin'
 
 const log = createLogger('tinaServer')
 
-export async function startTinaServer(this: GspenstPlugin) {
+export async function startTinaServer(
+  this: { projectPath: string } & EventEmitter
+) {
   if (
     !(await fse.pathExists(
       path.resolve(this.projectPath, '.tina', 'schema.ts')

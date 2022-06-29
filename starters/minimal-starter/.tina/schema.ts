@@ -1,5 +1,5 @@
-import { createSchema } from '@gspenst/next/client'
-import type { TinaTemplate } from '@gspenst/next'
+import { createSchema } from '@gspenst/core/client'
+import type { TinaTemplate, TinaField } from '@gspenst/core'
 
 const testimonialBlockSchema: TinaTemplate = {
   name: 'BlockQuote',

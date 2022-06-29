@@ -1,11 +1,7 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
+import type { RoutesConfig, LocatorResource, ThemeContext } from '@gspenst/core'
+import { controller, routerManager, Errors } from '@gspenst/core'
 import { log } from './logger'
-import { routerManager } from './routing'
-import type { RoutesConfig } from './domain/routes'
-import type { LocatorResource } from './domain/resource'
-import type { PageProps } from './controller'
-import { controller } from './controller'
-import { format } from './errors'
 
 export const getStaticPaths =
   (
@@ -28,7 +24,7 @@ export const getStaticProps =
   (
     routesConfig: RoutesConfig,
     routingParameter: string
-  ): GetStaticProps<PageProps> =>
+  ): GetStaticProps<ThemeContext> =>
   async (context) => {
     const { params } = context
 
@@ -50,10 +46,10 @@ export const getStaticProps =
             notFound: true,
           }
         }
-        throw format(result.props.error)
+        throw Errors.format(result.props.error)
       }
 
       return { props: result.props.value }
     }
-    throw format(controllerResult.error)
+    throw Errors.format(controllerResult.error)
   }

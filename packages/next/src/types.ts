@@ -1,12 +1,13 @@
-import type { PageProps as InternalPageProps } from './controller'
-import type { HeadingsReturn } from './helpers/getHeaders'
+import type { TinaCloudSchema } from 'tinacms'
+import type { ThemeContext } from '@gspenst/core'
+import { getHeaders, createRoutingMapping } from '@gspenst/core'
 
-/* --- Domain --- */
-
-export type PageProps = Exclude<
-  InternalPageProps,
-  { context: 'internal' }
-> & {} & {
+export type PageProps = Exclude<ThemeContext, { context: 'internal' }> & {} & {
   loading?: boolean
-  headers?: HeadingsReturn
+  headers?: ReturnType<typeof getHeaders>
+}
+
+export type ClientConfig = {
+  tinaSchema: TinaCloudSchema
+  routingMapping: ReturnType<typeof createRoutingMapping>
 }

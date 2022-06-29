@@ -1,5 +1,4 @@
 import merge from 'deepmerge'
-import sortOn from 'sort-on'
 import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
@@ -106,7 +105,9 @@ export function processQuery(
             .getDenormalized(resources.map(({ id }) => id))
             .andThen(normalizeResources)
         )
-        .map(({ result, entities }) => {
+        .map(async ({ result, entities }) => {
+          const { default: sortOn } = await import('sort-on')
+
           const entityResources = result.map((id) => {
             const { resources = {} } = entities
             const resource = resources[id]!
