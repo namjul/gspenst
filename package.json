@@ -75,7 +75,7 @@
       "^.+\\.[t|j]sx?$": "babel-jest"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!(fnv1a|dot-prop|sort-on)/)"
+      "node_modules/(?!(fnv1a|dot-prop|sort-on|filter-obj)/)"
     ],
     "watchPlugins": [
       "jest-watch-typeahead/filename",
