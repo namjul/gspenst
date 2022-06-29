@@ -7,7 +7,7 @@
   "scripts": {
     "build": "preconstruct build",
     "clean": "rimraf packages/*/dist",
-    "lint": "eslint_d . --ext .ts,.tsx",
+    "lint": "eslint . --ext .ts,.tsx",
     "prepare": "husky install && preconstruct dev",
     "test": "jest",
     "typecheck": "npm run typecheck --workspaces",
@@ -16,7 +16,7 @@
   "lint-staged": {
     "*.{ts,tsx,md,json,mdx}": "prettier --write",
     "*.{ts,tsx}": [
-      "eslint_d --cache",
+      "eslint --cache",
       "jest --bail --findRelatedTests"
     ]
   },
@@ -93,8 +93,8 @@
     "@types/jest": "^27.4.1",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
+    "eslint": "^8.17.0",
     "eslint-config-kentcdodds": "^20.2.0",
-    "eslint_d": "^12.0.0",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "jest-watch-typeahead": "^1.0.0",
