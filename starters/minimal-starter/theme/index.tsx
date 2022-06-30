@@ -1,15 +1,19 @@
+import dynamic from 'next/dynamic'
 import type { PageProps } from '@gspenst/next'
 
+const DynamicReactJson = dynamic(import('react-json-view'), { ssr: false })
+
 const Page = (props: PageProps) => {
+  console.log(props)
   return (
     <div>
       From `minimal-starter/theme`
-      <pre>{JSON.stringify(props, null, 2)}</pre>
+      <DynamicReactJson src={props} />
     </div>
   )
 }
 
 export default (config: null | {}) => {
-  JSON.stringify(config, null, 2)
+  console.log(JSON.stringify(config, null, 2))
   return Page
 }
