@@ -31,7 +31,7 @@ import { findMainResource } from './helpers/findMainResource'
 //         [name: string]: unknown
 //       }
 //       pagination?: Pagination
-//       route: string
+//       path: string
 //     }
 //   | { context: 'internal' }
 
@@ -79,7 +79,7 @@ async function entryController(
           data: {},
           entities,
           templates: getTemplateHierarchy(routingContext),
-          route: routingContext.request.path,
+          path: routingContext.request.path,
         })
       }
       return err(Errors.absurd('Could not find main resource'))
@@ -128,7 +128,7 @@ async function channelController(
         resource: mainResourceResult.value,
         data,
         entities,
-        route: routingContext.request.path,
+        path: routingContext.request.path,
       })
     })
   })
@@ -170,7 +170,7 @@ async function collectionController(
         templates: getTemplateHierarchy(routingContext),
         data,
         entities,
-        route: routingContext.request.path,
+        path: routingContext.request.path,
       })
     })
   })
@@ -201,7 +201,7 @@ async function customController(
           templates: getTemplateHierarchy(routingContext),
           data,
           entities,
-          route: routingContext.request.path,
+          path: routingContext.request.path,
         })
       }
     )

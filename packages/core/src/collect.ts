@@ -89,7 +89,7 @@ function collectResourceNodes() {
   })
 }
 
-function createUrlPathname(
+function createResourcePath(
   routesConfig: RoutesConfig,
   resourceNode: ResourceNode
 ) {
@@ -138,27 +138,27 @@ function createInternalResource(
   routesConfig: RoutesConfig,
   resourceNode: ResourceNode
 ) {
-  const urlPathname = createUrlPathname(routesConfig, resourceNode)
-  if (urlPathname.isErr()) {
-    return err(urlPathname.error)
+  const resourcePath = createResourcePath(routesConfig, resourceNode)
+  if (resourcePath.isErr()) {
+    return err(resourcePath.error)
   }
 
   const { __typename } = resourceNode
   switch (__typename) {
     case 'Post': {
-      return createResource(resourceNode, urlPathname.value)
+      return createResource(resourceNode, resourcePath.value)
     }
     case 'Page': {
-      return createResource(resourceNode, urlPathname.value)
+      return createResource(resourceNode, resourcePath.value)
     }
     case 'Author': {
-      return createResource(resourceNode, urlPathname.value)
+      return createResource(resourceNode, resourcePath.value)
     }
     case 'Tag': {
-      return createResource(resourceNode, urlPathname.value)
+      return createResource(resourceNode, resourcePath.value)
     }
     case 'Config': {
-      return createResource(resourceNode, urlPathname.value)
+      return createResource(resourceNode, resourcePath.value)
     }
     default:
       return absurd(__typename)
@@ -278,7 +278,7 @@ export function collect(
                   // the actual url will be add below
                   return createPost({
                     ...postResourceResult.value,
-                    urlPathname: '/placeholder',
+                    path: '/placeholder',
                   })
                 }
                 case 'page': {
@@ -332,9 +332,9 @@ export function collect(
               )
             })
 
-            let urlPathname = resource.urlPathname
+            let resourcePath = resource.path
 
-            // calculate urlPathname
+            // calculate resourcePath
             if (resource.resourceType === 'post') {
               // find owning collection
               const collectionRouteConfig = getCollections(routesConfig).find(
@@ -357,13 +357,13 @@ export function collect(
                 if (permalinkResult.isErr()) {
                   return err(permalinkResult.error)
                 }
-                urlPathname = permalinkResult.value
+                resourcePath = permalinkResult.value
               }
             }
 
             return ok({
               ...resource,
-              urlPathname,
+              path: resourcePath,
               filters: [...new Set(matchingFilter)],
             })
           })

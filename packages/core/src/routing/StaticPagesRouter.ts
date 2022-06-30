@@ -62,7 +62,7 @@ class StaticPagesRouter extends ParentRouter {
       ) {
         return []
       }
-      return resource.urlPathname ?? []
+      return resource.path ?? []
     })
   }
 }

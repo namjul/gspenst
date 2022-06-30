@@ -1,5 +1,5 @@
 import type { Result } from '../shared/kernel'
-import { idSchema, slugSchema, urlSchema, ok, err, z } from '../shared/kernel'
+import { idSchema, slugSchema, pathSchema, ok, err, z } from '../shared/kernel'
 import { parse } from '../helpers/parser'
 import {
   GetPostDocument,
@@ -71,7 +71,7 @@ export const dynamicVariablesSchema = z.object({
 
 const locatorResourceBaseSchema = z
   .object({
-    urlPathname: urlSchema.optional(),
+    path: pathSchema.optional(),
     filters: z.array(z.string()).nullable(),
   })
   .merge(dynamicVariablesSchema)
@@ -258,7 +258,7 @@ export type ResourceNode = LocatorResourceNode | ConfigResourceNode
 
 export function createResource(
   node: ResourceNode,
-  urlPathname: string | undefined,
+  path: string | undefined,
   filters: string[] = []
 ): Result<Resource> {
   const isLocator = node.__typename !== 'Config'
@@ -288,7 +288,7 @@ export function createResource(
   const locatorResource = isLocator
     ? {
         ...dynamicVariables,
-        urlPathname,
+        path,
         filters,
         ...(isPost || isPage
           ? {
@@ -384,13 +384,13 @@ function extractRelations(node: LocatorResourceNode) {
 
 export type RoutingMapping = Record<
   LocatorResource['filepath'],
-  LocatorResource['urlPathname']
+  LocatorResource['path']
 >
 export function createRoutingMapping(locatorResources: LocatorResource[]) {
   return locatorResources.reduce<RoutingMapping>((acc, resource) => {
     return {
       ...acc,
-      [resource.filepath]: resource.urlPathname,
+      [resource.filepath]: resource.path,
     }
   }, {})
 }

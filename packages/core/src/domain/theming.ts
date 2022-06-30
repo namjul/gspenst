@@ -1,4 +1,4 @@
-import { z, idSchema } from '../shared/kernel'
+import { z, idSchema, pathSchema } from '../shared/kernel'
 import { configSchema } from './config'
 import { postNormalizedSchema } from './post'
 import { pageNormalizedSchema } from './page'
@@ -59,7 +59,7 @@ export type Entities = z.infer<typeof entitiesSchema>
 const themeContextSchema = z
   .object({
     templates: z.array(z.string()),
-    route: z.string(),
+    path: pathSchema,
     data: z.record(dataSchema),
     context: z.array(z.string()).nullable(),
     resource: resourceSchema,

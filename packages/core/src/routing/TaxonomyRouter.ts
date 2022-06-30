@@ -105,9 +105,9 @@ class TaxonomyRouter extends ParentRouter {
           _resource.filters?.includes(this.#replaceFilter(resource.slug))
       )
 
-      const { urlPathname } = resource
+      const { path: resourcePath } = resource
 
-      if (urlPathname) {
+      if (resourcePath) {
         const pagesPathnames = Array.from(
           {
             length:
@@ -115,10 +115,10 @@ class TaxonomyRouter extends ParentRouter {
               (this.config.limit === 'all' ? 1 : this.config.limit),
           },
           (_, i) => {
-            return path.join(urlPathname, 'page', String(i + 1))
+            return path.join(resourcePath, 'page', String(i + 1))
           }
         )
-        return [urlPathname, ...pagesPathnames]
+        return [resourcePath, ...pagesPathnames]
       }
 
       return []

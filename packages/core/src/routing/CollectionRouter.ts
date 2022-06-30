@@ -132,7 +132,7 @@ class CollectionRouter extends ParentRouter {
 
           if (!this.postSet.has(resource.id)) {
             this.postSet.add(resource.id)
-            return resource.urlPathname ?? []
+            return resource.path ?? []
           }
           return []
         })

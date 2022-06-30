@@ -1,4 +1,4 @@
-import { idSchema, urlSchema, dateSchema, z } from '../shared/kernel'
+import { idSchema, pathSchema, dateSchema, z } from '../shared/kernel'
 import type { Result } from '../shared/kernel'
 import { parse } from '../helpers/parser'
 import type { TagResource } from './resource'
@@ -10,7 +10,7 @@ export const tagSchema = z
     name: z.string(),
     date: dateSchema,
     slug: z.string(),
-    url: urlSchema,
+    url: pathSchema,
   })
   .strict()
 
@@ -19,7 +19,7 @@ tagSchema.describe('tagSchema')
 export type Tag = z.infer<typeof tagSchema>
 
 export function createTag(tagResource: TagResource): Result<Tag> {
-  const { tinaData, urlPathname } = tagResource
+  const { tinaData, path } = tagResource
   const {
     tag: { __typename, _sys, ...tag },
   } = tinaData.data
@@ -27,6 +27,6 @@ export function createTag(tagResource: TagResource): Result<Tag> {
   return parse(tagSchema, {
     type: 'tag',
     ...tag,
-    url: urlPathname ?? `/${tagResource.id}`,
+    url: path ?? `/${tagResource.id}`,
   })
 }

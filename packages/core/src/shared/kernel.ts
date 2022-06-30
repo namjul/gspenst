@@ -56,7 +56,7 @@ export const dateSchema = z.string().refine(
 
 export const slugSchema = z.string().transform((value) => slugify(value))
 
-export const urlSchema = z.string().regex(/^\/([^?/]+)/)
+export const pathSchema = z.string().regex(/^\/([^?/]+)/)
 
 const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()])
 type Json = z.infer<typeof literalSchema> | { [key: string]: Json } | Json[]

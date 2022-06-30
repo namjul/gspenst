@@ -1,4 +1,4 @@
-import { idSchema, dateSchema, urlSchema, z, combine } from '../shared/kernel'
+import { idSchema, dateSchema, pathSchema, z, combine } from '../shared/kernel'
 import type { Result } from '../shared/kernel'
 import { isNumber } from '../shared/utils'
 import { parse } from '../helpers/parser'
@@ -20,7 +20,7 @@ export const postSchema = z
     title: z.string(),
     excerpt: z.custom().optional(),
     content: z.custom(),
-    url: urlSchema,
+    url: pathSchema,
     primary_tag: tagSchema.optional(),
     primary_author: authorSchema.optional(),
     tags: z.array(tagSchema),
@@ -44,7 +44,7 @@ export type PostNormalized = z.infer<typeof postNormalizedSchema>
 export function createPost(
   resource: PostResource | PageResource
 ): Result<Post> {
-  const { tinaData, relationships, urlPathname, resourceType } = resource
+  const { tinaData, relationships, path, resourceType } = resource
 
   const { __typename, _sys, ...post } =
     resourceType === 'post' ? tinaData.data.post : tinaData.data.page
@@ -86,7 +86,7 @@ export function createPost(
     const specialAttributes = {
       ...(primary_tag && { primary_tag }),
       ...(primary_author && { primary_author }),
-      url: urlPathname ?? `/${resource.id}`,
+      url: path ?? `/${resource.id}`,
     }
 
     return parse(postSchema, {

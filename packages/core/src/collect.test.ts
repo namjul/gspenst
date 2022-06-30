@@ -65,7 +65,7 @@ describe('collect', () => {
         filename: '3th-post',
         filepath: 'content/posts/3th-post.mdx',
         relativePath: '3th-post.mdx',
-        urlPathname: '/post/3th-post/2021/',
+        path: '/post/3th-post/2021/',
         filters: [
           "tags:'tag-1'",
           "authors:'pedro'",
@@ -87,7 +87,7 @@ describe('collect', () => {
         filename: 'tag-2',
         filepath: 'content/tags/tag-2.mdx',
         relativePath: 'tag-2.mdx',
-        urlPathname: '/tag/tag-2',
+        path: '/tag/tag-2',
         filters: ["date:>'2015-07-20'"],
         id: 1071642883,
         slug: 'tag-2',
