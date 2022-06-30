@@ -1,6 +1,4 @@
 import type * as React from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
-import type { FallbackProps } from 'react-error-boundary'
 import { useTina } from 'tinacms/dist/edit-state'
 import type { NextPage } from 'next'
 import { isValidElementType } from 'react-is'
@@ -15,16 +13,6 @@ type ThemeComponent = React.ComponentType<PageProps>
 export type ContainerProps = {
   pageProps: PageProps
   Component: ThemeComponent
-}
-
-function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
-  return (
-    <div role="alert">
-      <p>Something went wrong:</p>
-      <pre>{error.message}</pre>
-      <button onClick={resetErrorBoundary}>Try again</button>
-    </div>
-  )
 }
 
 const Container = ({ pageProps, Component }: ContainerProps) => {
@@ -62,11 +50,7 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
   //   }
   // })() // Immediately-invoked Function Expression
 
-  return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <Component {..._pageProps} />
-    </ErrorBoundary>
-  )
+  return <Component {..._pageProps} />
 }
 
 export type NextPageProps = {
