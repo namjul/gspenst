@@ -1,5 +1,5 @@
 import TinaCMS, { defineConfig } from 'tinacms'
-import { client } from '@gspenst/core/client'
+import { client } from '@gspenst/core/shared'
 import type { ClientConfig } from './types'
 
 const TinaProvider = ({

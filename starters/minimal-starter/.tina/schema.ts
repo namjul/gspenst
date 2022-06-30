@@ -1,4 +1,4 @@
-import { createSchema } from '@gspenst/core/client'
+import { createSchema } from '@gspenst/core/shared'
 import type { TinaTemplate, TinaField } from '@gspenst/core'
 
 const testimonialBlockSchema: TinaTemplate = {
