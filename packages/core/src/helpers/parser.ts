@@ -13,6 +13,6 @@ export const parse = <T extends z.ZodTypeAny>(
   if (parsed.success) {
     return ok(parsed.data)
   } else {
-    return err(Errors.parse(parsed.error, schema))
+    return err(Errors.parse(parsed.error, schema.description))
   }
 }
