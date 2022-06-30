@@ -20,7 +20,7 @@ export const postSchema = z
     title: z.string(),
     excerpt: z.custom().optional(),
     content: z.custom(),
-    url: pathSchema,
+    path: pathSchema,
     primary_tag: tagSchema.optional(),
     primary_author: authorSchema.optional(),
     tags: z.array(tagSchema),
@@ -86,7 +86,7 @@ export function createPost(
     const specialAttributes = {
       ...(primary_tag && { primary_tag }),
       ...(primary_author && { primary_author }),
-      url: path ?? `/${resource.id}`,
+      path: path ?? `/${resource.id}`,
     }
 
     return parse(postSchema, {

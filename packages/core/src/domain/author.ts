@@ -10,7 +10,7 @@ export const authorSchema = z
     name: z.string(),
     date: dateSchema,
     slug: z.string(),
-    url: pathSchema,
+    path: pathSchema,
   })
   .strict()
 
@@ -27,6 +27,6 @@ export function createAuthor(authorResource: AuthorResource): Result<Author> {
   return parse(authorSchema, {
     type: 'author',
     ...author,
-    url: path ?? `/${authorResource.id}`,
+    path: path ?? `/${authorResource.id}`,
   })
 }

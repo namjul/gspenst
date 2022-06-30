@@ -10,7 +10,7 @@ export const tagSchema = z
     name: z.string(),
     date: dateSchema,
     slug: z.string(),
-    url: pathSchema,
+    path: pathSchema,
   })
   .strict()
 
@@ -27,6 +27,6 @@ export function createTag(tagResource: TagResource): Result<Tag> {
   return parse(tagSchema, {
     type: 'tag',
     ...tag,
-    url: path ?? `/${tagResource.id}`,
+    path: path ?? `/${tagResource.id}`,
   })
 }
