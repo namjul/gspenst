@@ -4,6 +4,7 @@ import type { Split, Result, Entries, Option } from '../shared/kernel'
 import * as Errors from '../errors'
 import { isString /*, isObject*/ } from '../shared/utils'
 import { parse } from '../helpers/parser'
+import defaultRoutes from '../defaultRoutes'
 import {
   locatorResourceTypeSchema,
   dynamicVariablesSchema,
@@ -288,6 +289,10 @@ export function parseRoutes(input: unknown) {
     })
   }
   return combineWithAllErrors(resultList)
+}
+
+export function parseRoutesWithDefaults(input: unknown) {
+  return parseRoutes({ ...defaultRoutes, ...(input as any) })
 }
 
 export function getRoutes(routesConfig: RoutesConfig) {

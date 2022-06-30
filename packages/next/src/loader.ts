@@ -7,7 +7,6 @@ import {
   parseRoutes,
   createRoutingMapping,
   Errors,
-  defaultRoutes,
   repository,
 } from '@gspenst/core'
 import { findContentDir, filterLocatorResources } from './utils'
@@ -68,10 +67,7 @@ async function loader(
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const routesConfigResult = parseRoutes({
-    ...defaultRoutes,
-    ...(yaml.load(source) as object),
-  })
+  const routesConfigResult = parseRoutes(yaml.load(source))
 
   if (routesConfigResult.isErr()) {
     context.emitError(Errors.format(routesConfigResult.error))
