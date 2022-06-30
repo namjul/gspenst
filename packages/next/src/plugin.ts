@@ -22,8 +22,6 @@ export class GspenstPlugin extends EventEmitter {
   constructor(isServer: boolean) {
     super()
 
-    console.log('GspenstPlugin constructor')
-
     this.isServer = isServer
 
     process.on('exit', () => {
