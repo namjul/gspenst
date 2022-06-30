@@ -51,7 +51,7 @@
   "preconstruct": {
     "entrypoints": [
       "index.ts",
-      "client.ts"
+      "server.ts"
     ]
   }
 }

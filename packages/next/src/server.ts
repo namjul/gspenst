@@ -1,6 +1,7 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import type { RoutesConfig, LocatorResource, ThemeContext } from '@gspenst/core'
-import { controller, routerManager, Errors } from '@gspenst/core'
+import { Errors } from '@gspenst/core'
+import { controller, routerManager } from '@gspenst/core/server'
 import { log } from './logger'
 
 export const getStaticPaths =
