@@ -4,8 +4,6 @@
   "main": "dist/gspenst-next.cjs.js",
   "module": "dist/gspenst-next.esm.js",
   "scripts": {
-    "gen": "tinacms schema:compile && tinacms schema:types",
-    "test:tina": "tinacms audit",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -13,8 +11,8 @@
     "@preconstruct/next": "^4.0.0",
     "debug": "^4.3.3",
     "js-yaml": "^4.1.0",
-    "next-transpile-modules": "^9.0.0",
     "react-is": ">=16.13.1",
+    "redux": "^4.2.0",
     "tinacms": "^0.68.7"
   },
   "devDependencies": {
