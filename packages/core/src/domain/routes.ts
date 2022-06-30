@@ -259,6 +259,8 @@ const routesSchema = z
   })
   .strict()
 
+routesSchema.describe('routesSchema')
+
 export type RoutesConfig = z.output<typeof routesSchema>
 
 export function parseRoutes(input: unknown) {

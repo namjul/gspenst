@@ -8,6 +8,8 @@ export const pageSchema = postSchema.merge(
   z.object({ type: z.literal('page') })
 )
 
+pageSchema.describe('pageSchema')
+
 export type Page = z.infer<typeof pageSchema>
 
 export const pageNormalizedSchema = postNormalizedSchema

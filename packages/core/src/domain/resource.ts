@@ -231,12 +231,16 @@ export const resourceSchema = z.discriminatedUnion('resourceType', [
   tagResourceSchema,
 ])
 
+resourceSchema.describe('resourceSchema')
+
 export const locatorResourceSchema = z.discriminatedUnion('resourceType', [
   postResourceSchema,
   pageResourceSchema,
   authorResourceSchema,
   tagResourceSchema,
 ])
+
+locatorResourceSchema.describe('locatorResourceSchema')
 
 export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>

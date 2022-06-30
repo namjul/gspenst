@@ -84,4 +84,6 @@ const routingContextSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('internal') }),
 ])
 
+routingContextSchema.describe('routingContextSchema')
+
 export type RoutingContext = z.infer<typeof routingContextSchema>

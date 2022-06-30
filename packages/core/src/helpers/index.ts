@@ -97,25 +97,31 @@ export function makeNqlFilter(filter: string) {
 }
 
 export const safeJsonParse = fromThrowable(JSON.parse, (error: unknown) =>
-  error instanceof Error ? Errors.parse(error) : Errors.other('JSON.parse')
+  error instanceof Error
+    ? Errors.parse(error, 'JSON.parse')
+    : Errors.other('JSON.parse')
 )
 
 export const safeJsonStringify = fromThrowable(
   JSON.stringify,
   (error: unknown) =>
     error instanceof Error
-      ? Errors.parse(error)
+      ? Errors.parse(error, 'JSON.stringify')
       : Errors.other('JSON.stringify')
 )
 
 export const safeGraphqlParse = fromThrowable(graphql.parse, (error: unknown) =>
-  error instanceof Error ? Errors.parse(error) : Errors.other('graphql.parse')
+  error instanceof Error
+    ? Errors.parse(error, 'graphql.parse')
+    : Errors.other('graphql.parse')
 )
 
 export const safeGraphqlStringify = fromThrowable(
   graphql.print,
   (error: unknown) =>
-    error instanceof Error ? Errors.parse(error) : Errors.other('graphql.print')
+    error instanceof Error
+      ? Errors.parse(error, 'graphql.print')
+      : Errors.other('graphql.print')
 )
 
 export const normalize = fromThrowable(_normalize, (error) =>

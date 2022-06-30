@@ -14,6 +14,8 @@ export const tagSchema = z
   })
   .strict()
 
+tagSchema.describe('tagSchema')
+
 export type Tag = z.infer<typeof tagSchema>
 
 export function createTag(tagResource: TagResource): Result<Tag> {

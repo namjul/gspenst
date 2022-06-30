@@ -4,7 +4,7 @@ export type GspenstError =
   | { type: 'Other'; error: Error | undefined; context?: string }
   | { type: 'Validation'; message: string; help?: string | undefined }
   | { type: 'NotFound'; context: string | undefined }
-  | { type: 'Parse'; error: Error }
+  | { type: 'Parse'; error: Error; description: string | undefined }
   | { type: 'Absurd'; message: string | undefined }
 
 export const other = (context: string, error?: Error): GspenstError => ({
@@ -18,9 +18,13 @@ export const absurd = (message: string): GspenstError => ({
   message,
 })
 
-export const parse = <T extends Error>(error: T): GspenstError => ({
+export const parse = <T extends Error>(
+  error: T,
+  description: string | undefined
+): GspenstError => ({
   type: 'Parse',
   error,
+  description,
 })
 
 export const validation = ({
@@ -59,7 +63,9 @@ export function format(errors: GspenstError | GspenstError[]) {
       case 'NotFound':
         return `${error.type}: ${error.context}`
       case 'Parse':
-        return `${error.type}: cause: ${error.error.message} ${error.error.stack}`
+        return `${error.type}: cause: ${error.error.message} ${
+          error.error.stack
+        }: description: ${error.description ?? 'NA'}`
       case 'Absurd':
         return `${error.type}: ${error.message}`
       default:

@@ -28,6 +28,8 @@ export const postSchema = z
   })
   .strict()
 
+postSchema.describe('postSchema')
+
 export type Post = z.infer<typeof postSchema>
 
 export const postNormalizedSchema = postSchema.merge(

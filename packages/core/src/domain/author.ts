@@ -14,6 +14,8 @@ export const authorSchema = z
   })
   .strict()
 
+authorSchema.describe('authorSchema')
+
 export type Author = z.infer<typeof authorSchema>
 
 export function createAuthor(authorResource: AuthorResource): Result<Author> {

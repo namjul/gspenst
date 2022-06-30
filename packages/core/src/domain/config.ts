@@ -11,6 +11,8 @@ export const configSchema = z
   })
   .strict()
 
+configSchema.describe('configSchema')
+
 export type Config = z.infer<typeof configSchema>
 
 export function createConfig(configResource: ConfigResource): Result<Config> {
