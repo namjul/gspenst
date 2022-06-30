@@ -1,5 +1,6 @@
 import { createClient } from 'tinacms/dist/client'
 import { tinaClientId, tinaReadonlyTokens, nodeEnvironment } from '../env'
+import { queries } from '../../.tina/__generated__/types'
 
 const branch = 'main'
 const apiURL =
@@ -10,6 +11,7 @@ const apiURL =
 // TODO use queries from generated types
 // See: https://tina.io/docs/graphql/read-only-tokens/#making-requests-with-the-tina-client
 export const client = createClient({
+  queries,
   url: apiURL,
   ...(tinaReadonlyTokens && { token: tinaReadonlyTokens }),
 })
