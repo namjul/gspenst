@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import type { ChildProcess } from 'child_process'
 import path from 'path'
 import type { Compiler } from 'webpack'
-import { startTinaServer } from '@gspenst/core/server'
+import { startTinaServer } from 'gspenst/server'
 import pkg from '../package.json'
 
 // api lookup: https://webpack.js.org/api/plugins/

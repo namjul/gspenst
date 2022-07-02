@@ -370,6 +370,9 @@ const posts: { [name: string]: GetPostQuery } = {
       tags: [
         {
           ...tags['tag-2.mdx'],
+          __typename: 'PostTags' as const,
+        },
+        {
           ...tags['tag-1.mdx'],
           __typename: 'PostTags' as const,
         },
@@ -377,6 +380,9 @@ const posts: { [name: string]: GetPostQuery } = {
       authors: [
         {
           ...authors['napoleon.mdx'],
+          __typename: 'PostAuthors' as const,
+        },
+        {
           ...authors['pedro.mdx'],
           __typename: 'PostAuthors' as const,
         },

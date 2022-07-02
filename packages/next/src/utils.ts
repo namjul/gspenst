@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs'
-import type { Resource, LocatorResource } from '@gspenst/core'
+import type { Resource, LocatorResource } from 'gspenst'
 
 export const existsSync = (f: string): boolean => {
   try {

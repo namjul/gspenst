@@ -66,6 +66,7 @@ async function entryController(
       const mainResource = resources?.[id]
 
       if (mainResource) {
+        // TODO confify target resource in entities and only provide in resource the id
         const mainResourceResult = confifyTinaData(configResource, mainResource)
 
         if (mainResourceResult.isErr()) {
@@ -85,6 +86,7 @@ async function entryController(
   })
 }
 
+// TODO same as collectionController so reduncancy
 async function channelController(
   routingContext: ChannelRoutingContext,
   dataLoaders: DataLoaders
@@ -122,8 +124,8 @@ async function channelController(
 
       return ok({
         context: getContext(routingContext),
-        templates: getTemplateHierarchy(routingContext),
         resource: mainResourceResult.value,
+        templates: getTemplateHierarchy(routingContext),
         data,
         entities,
       })

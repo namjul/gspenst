@@ -1,8 +1,8 @@
 {
-  "name": "@gspenst/core",
+  "name": "gspenst",
   "version": "0.0.1",
-  "main": "dist/gspenst-core.cjs.js",
-  "module": "dist/gspenst-core.esm.js",
+  "main": "dist/gspenst.cjs.js",
+  "module": "dist/gspenst.esm.js",
   "scripts": {
     "gen": "tinacms schema:compile && tinacms schema:types",
     "gen2": "tinacms schema:compile --experimentalData && tinacms schema:types --experimentalData",

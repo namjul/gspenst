@@ -63,6 +63,7 @@ class TaxonomyRouter extends ParentRouter {
       slug: params.slug,
     }
     return {
+      // TODO why is this not `entry`
       type: 'channel' as const,
       name: this.taxonomyKey,
       request: {

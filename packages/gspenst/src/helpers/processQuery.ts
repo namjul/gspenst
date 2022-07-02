@@ -74,6 +74,7 @@ export function processQuery(
                   )
                 )
               }
+
               const queryOutcomeRead: QueryOutcomeRead = {
                 type,
                 resourceType: query.resourceType,
@@ -223,6 +224,7 @@ export function processData(
               }
             }),
           },
+          // TODO maybe confify here
           entities: merge(acc.entities, entities),
         }
       },

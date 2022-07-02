@@ -94,6 +94,7 @@ export function confifyTinaData(
       return safeGraphqlStringify(value)
     })
     .map((query) => {
+      // TODO maybe should not me modified, keep it immutable
       resource.tinaData.data.config = configResource.tinaData.data.config
       resource.tinaData.query = query
       return resource

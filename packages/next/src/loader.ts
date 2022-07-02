@@ -3,8 +3,8 @@
 import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderContext } from 'webpack'
-import { parseRoutes, createRoutingMapping, Errors } from '@gspenst/core'
-import { repository } from '@gspenst/core/server'
+import { parseRoutes, createRoutingMapping, Errors } from 'gspenst'
+import { repository } from 'gspenst/server'
 import { findContentDir, filterLocatorResources } from './utils'
 import { log } from './logger'
 
