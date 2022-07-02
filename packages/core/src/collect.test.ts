@@ -37,11 +37,6 @@ describe('collect', () => {
           filter: 'primary_tag:tag-2',
           limit: 5,
         },
-        '/bla/': {
-          permalink: '/bla/:slug/',
-          filter: 'tags:tag-1',
-          limit: 5,
-        },
       },
       taxonomies: {
         tag: {
@@ -70,7 +65,6 @@ describe('collect', () => {
           "tags:'tag-1'",
           "authors:'pedro'",
           'primary_tag:tag-1',
-          'tags:tag-1',
         ],
         slug: '3th-post',
         year: 2021,
@@ -99,5 +93,23 @@ describe('collect', () => {
         resourceType: 'tag',
       })
     )
+  })
+
+  test('unique collections', async () => {
+    const routesConfig = {
+      collections: {
+        '/': {
+          permalink: '/post/:slug/',
+          limit: 5,
+        },
+        '/podcast/': {
+          permalink: '/podcast/',
+          limit: 5,
+          filter: 'primary_tag:tag-2',
+        },
+      },
+    }
+    const collectResult = await collect(routesConfig)
+    expect(collectResult.isErr()).toBe(true)
   })
 })

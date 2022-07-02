@@ -18,9 +18,10 @@ import { createAuthor } from './domain/author'
 import { createTag } from './domain/tag'
 import * as api from './api'
 import { makeNqlFilter, compilePermalink } from './helpers'
-import { do_, absurd } from './shared/utils'
+import { do_, absurd, isString } from './shared/utils'
 import { createLogger } from './logger'
 import { denormalizeResource } from './helpers/normalize'
+import * as Errors from './errors'
 
 const log = createLogger('collect')
 
@@ -178,18 +179,37 @@ export function collect(
       )
 
       return combine(resourceResultList).andThen((resources) => {
-        const resourceFilters = [
-          ...getRoutes(routesConfig),
-          ...getCollections(routesConfig),
+        const resourcesFilters = [
+          ...getRoutes(routesConfig).map((x) => [false, x] as const),
+          ...getCollections(routesConfig).map((x) => [true, x] as const),
         ].reduce<{
-          post: string[]
+          post: Array<
+            | { controller: 'channel'; filter: string; name: string }
+            | {
+                controller: 'collection'
+                filter: string | undefined
+                name: string
+              }
+          >
           page: string[]
           author: string[]
           tag: string[]
         }>(
-          (acc, [_, routeConfig]) => {
-            if ('filter' in routeConfig && routeConfig.filter) {
-              acc.post.push(routeConfig.filter)
+          (acc, [partOfCollection, [name, routeConfig]]) => {
+            if (partOfCollection) {
+              acc.post.push({
+                controller: 'collection',
+                filter: routeConfig.filter,
+                name,
+              })
+            } else if ('filter' in routeConfig && routeConfig.filter) {
+              acc.post.push({
+                controller:
+                  ('controller' in routeConfig && routeConfig.controller) ||
+                  'collection',
+                filter: routeConfig.filter,
+                name,
+              })
             }
             if ('data' in routeConfig) {
               Object.values(routeConfig.data?.query ?? {})
@@ -199,9 +219,17 @@ export function collect(
                 )
                 .forEach((dataQueryBrowse) => {
                   if (dataQueryBrowse.filter) {
-                    acc[dataQueryBrowse.resourceType].push(
-                      dataQueryBrowse.filter
-                    )
+                    if (dataQueryBrowse.resourceType === 'post') {
+                      acc[dataQueryBrowse.resourceType].push({
+                        controller: 'channel',
+                        filter: dataQueryBrowse.filter,
+                        name,
+                      })
+                    } else {
+                      acc[dataQueryBrowse.resourceType].push(
+                        dataQueryBrowse.filter
+                      )
+                    }
                   }
                 })
             }
@@ -218,7 +246,14 @@ export function collect(
                   const taxonomyRoute =
                     routesConfig.taxonomies?.[resource.resourceType]
                   return taxonomyRoute
-                    ? taxonomyRoute.filter.replace(/%s/g, resource.slug)
+                    ? {
+                        controller: 'channel' as const,
+                        filter: taxonomyRoute.filter.replace(
+                          /%s/g,
+                          resource.slug
+                        ),
+                        name: resource.resourceType,
+                      }
                     : []
                 }
                 return []
@@ -309,15 +344,50 @@ export function collect(
 
             // calculate matching filters
             const matchingFilter = do_(() => {
-              return resourceFilters[resource.resourceType].filter(
-                (routeFilter) => {
-                  const nqlFilter = makeNqlFilter(routeFilter)
-                  const nqlFilterResult = nqlFilter(entryResult.value)
-                  if (nqlFilterResult.isErr()) {
-                    return false
-                  }
-                  return nqlFilterResult.value
+              const resourceFilters = [
+                ...resourcesFilters[resource.resourceType],
+              ].filter((routeFilter) => {
+                const nqlFilterValue = isString(routeFilter)
+                  ? routeFilter
+                  : routeFilter.filter
+                if (!nqlFilterValue) {
+                  return true
                 }
+                const nqlFilter = makeNqlFilter(nqlFilterValue)
+                const nqlFilterResult = nqlFilter(entryResult.value)
+                if (nqlFilterResult.isErr()) {
+                  return false
+                }
+                return nqlFilterResult.value
+              })
+
+              const collectionResourceFilters = resourceFilters.flatMap(
+                (resourceFilter) => {
+                  return !isString(resourceFilter) &&
+                    resourceFilter.controller === 'collection'
+                    ? resourceFilter
+                    : []
+                }
+              )
+              if (collectionResourceFilters.length > 1) {
+                return err(
+                  Errors.validation({
+                    message: 'Collections must be unique',
+                    help: `${
+                      resource.filepath
+                    } contained in multiple collections ${collectionResourceFilters.map(
+                      ({ name }) => name
+                    )}`,
+                  })
+                )
+              }
+
+              return ok(
+                resourceFilters.flatMap((resourceFilter) => {
+                  return isString(resourceFilter)
+                    ? resourceFilter
+                    : resourceFilter.filter ?? []
+                })
               )
             })
 
@@ -350,12 +420,14 @@ export function collect(
               }
             }
 
-            console.log('matchingFilter', matchingFilter)
+            if (matchingFilter.isErr()) {
+              return matchingFilter
+            }
+
             return ok({
               ...resource,
               path: resourcePath,
-              // TODO error if post is part of multiple collections
-              filters: [...new Set(matchingFilter)],
+              filters: [...new Set(matchingFilter.value)],
             })
           })
         )
