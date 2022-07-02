@@ -3,13 +3,20 @@
   "version": "0.0.1",
   "main": "dist/gspenst-next.cjs.js",
   "module": "dist/gspenst-next.esm.js",
+  "files": [
+    "dist",
+    "loader",
+    "client",
+    "server",
+    "componentRegistry"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "gspenst": "^0.0.1",
     "@preconstruct/next": "^4.0.0",
     "debug": "^4.3.3",
+    "gspenst": "^0.0.1",
     "js-yaml": "^4.1.0",
     "react-is": ">=16.13.1",
     "redux": "^4.2.0",

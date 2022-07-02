@@ -1,5 +1,6 @@
 {
   "name": "@gspenst/root",
+  "version": "0.0.0",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -9,6 +10,7 @@
     "clean": "rimraf packages/*/dist",
     "lint": "eslint . --ext .ts,.tsx",
     "prepare": "husky install && preconstruct dev",
+    "publish": "npm run build && npm publish --access public --workspace gspenst --workspace @gspenst/next",
     "test": "jest",
     "typecheck": "npm run typecheck --workspaces",
     "watch": "preconstruct watch"

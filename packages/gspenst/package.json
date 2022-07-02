@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "main": "dist/gspenst.cjs.js",
   "module": "dist/gspenst.esm.js",
+  "files": [
+    "dist",
+    "server"
+  ],
   "scripts": {
     "gen": "tinacms schema:compile && tinacms schema:types",
     "gen2": "tinacms schema:compile --experimentalData && tinacms schema:types --experimentalData",
