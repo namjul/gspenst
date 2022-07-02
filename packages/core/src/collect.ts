@@ -1,4 +1,5 @@
 import { ok, err, combine } from './shared/kernel'
+import type { ResultAsync, Result } from './shared/kernel'
 import * as db from './db'
 import type {
   Resource,
@@ -15,7 +16,6 @@ import { createPost } from './domain/post'
 import { createPage } from './domain/page'
 import { createAuthor } from './domain/author'
 import { createTag } from './domain/tag'
-import type { ResultAsync } from './shared/kernel'
 import * as api from './api'
 import { makeNqlFilter, compilePermalink } from './helpers'
 import { do_, absurd } from './shared/utils'
@@ -134,60 +134,50 @@ function createResourcePath(
   }
 }
 
-function createInternalResource(
-  routesConfig: RoutesConfig,
-  resourceNode: ResourceNode
-) {
-  const resourcePath = createResourcePath(routesConfig, resourceNode)
-  if (resourcePath.isErr()) {
-    return err(resourcePath.error)
-  }
-
-  const { __typename } = resourceNode
-  switch (__typename) {
-    case 'Post': {
-      return createResource(resourceNode, resourcePath.value)
-    }
-    case 'Page': {
-      return createResource(resourceNode, resourcePath.value)
-    }
-    case 'Author': {
-      return createResource(resourceNode, resourcePath.value)
-    }
-    case 'Tag': {
-      return createResource(resourceNode, resourcePath.value)
-    }
-    case 'Config': {
-      return createResource(resourceNode, resourcePath.value)
-    }
-    default:
-      return absurd(__typename)
-  }
-}
-
 export function collect(
   routesConfig: RoutesConfig = {}
 ): ResultAsync<Resource[]> {
   log('start')
   const result = collectResourceNodes()
     .andThen((resourceNodes) => {
-      const resourceResultList = resourceNodes.reduce<
-        ReturnType<typeof createInternalResource>[]
-      >((acc, current) => {
-        const resourceItem = createInternalResource(routesConfig, current)
+      const resourceResultList = resourceNodes.reduce<Result<Resource>[]>(
+        (acc, current) => {
+          const resourcePath = createResourcePath(routesConfig, current)
+          if (resourcePath.isErr()) {
+            acc.push(resourcePath)
+          } else {
+            const resourceItem = do_(() => {
+              const { __typename } = current
+              switch (__typename) {
+                case 'Post': {
+                  return createResource(current, resourcePath.value)
+                }
+                case 'Page': {
+                  return createResource(current, resourcePath.value)
+                }
+                case 'Author': {
+                  return createResource(current, resourcePath.value)
+                }
+                case 'Tag': {
+                  return createResource(current, resourcePath.value)
+                }
+                case 'Config': {
+                  return createResource(current, resourcePath.value)
+                }
+                default:
+                  return absurd(__typename)
+              }
+            })
 
-        if (resourceItem.isErr()) {
-          acc.push(err(resourceItem.error))
+            acc.push(resourceItem)
+          }
+
           return acc
-        }
-
-        acc.push(resourceItem)
-
-        return acc
-      }, [])
+        },
+        []
+      )
 
       return combine(resourceResultList).andThen((resources) => {
-
         const resourceFilters = [
           ...getRoutes(routesConfig),
           ...getCollections(routesConfig),
@@ -360,9 +350,11 @@ export function collect(
               }
             }
 
+            console.log('matchingFilter', matchingFilter)
             return ok({
               ...resource,
               path: resourcePath,
+              // TODO error if post is part of multiple collections
               filters: [...new Set(matchingFilter)],
             })
           })
