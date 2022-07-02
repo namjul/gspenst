@@ -26,21 +26,24 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
 
 const repository = {
   collect(routesConfig: RoutesConfig = {}): RepoResultAsync<Resource[]> {
-    return collect(routesConfig).andThen((resources) => {
-      const p = resources.map((resource) => {
+    return collect(routesConfig).andThen((resources) => this.setAll(resources))
+  },
+
+  set(resource: Resource) {
+    return combine([
+      db.set(String(resource.id), resource),
+      db.set('meta', { type: 'meta', updated_at: new Date().getTime() }),
+    ])
+  },
+
+  setAll(resources: Resource[]) {
+    return combine(
+      resources.map((resource) => {
         return this.set(resource).map(() => {
           return resource
         })
       })
-      return combine(p)
-    })
-  },
-
-  set(entity: Resource) {
-    return combine([
-      db.set(String(entity.id), entity),
-      db.set('meta', { type: 'meta', updated_at: new Date().getTime() }),
-    ])
+    )
   },
 
   sinceLastUpdate(date: Date) {
