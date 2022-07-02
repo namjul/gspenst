@@ -78,14 +78,16 @@ class StaticRoutesRouter extends ParentRouter {
             : true)
       )
 
+      const pages = Math.ceil(
+        postResources.length /
+          (this.config.limit === 'all' ? 1 : this.config.limit)
+      )
+
       return [
         mainRoute,
         ...Array.from(
           {
-            length: Math.floor(
-              postResources.length /
-                (this.config.limit === 'all' ? 1 : this.config.limit)
-            ),
+            length: pages,
           },
           (_, i) => path.join(mainRoute, 'page', String(i + 1))
         ),

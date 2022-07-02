@@ -117,6 +117,12 @@ class CollectionRouter extends ParentRouter {
           ? resource.filters?.includes(this.config.filter)
           : true)
     )
+
+    const pages = Math.ceil(
+      postResources.length /
+        (this.config.limit === 'all' ? 1 : this.config.limit)
+    )
+
     const paths = [this.getRoute()]
       .concat(
         postResources.flatMap((resource) => {
@@ -140,9 +146,7 @@ class CollectionRouter extends ParentRouter {
       .concat(
         ...Array.from(
           {
-            length:
-              postResources.length /
-              (this.config.limit === 'all' ? 1 : this.config.limit),
+            length: pages,
           },
           (_, i) => {
             return path.join(this.getRoute(), 'page', String(i + 1))
