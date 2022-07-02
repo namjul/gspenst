@@ -187,21 +187,6 @@ export function collect(
       }, [])
 
       return combine(resourceResultList).andThen((resources) => {
-        const collectionFilters = [
-          ...resources.flatMap((resource) => {
-            if (
-              resource.resourceType === 'tag' ||
-              resource.resourceType === 'author'
-            ) {
-              const taxonomyRoute =
-                routesConfig.taxonomies?.[resource.resourceType]
-              return taxonomyRoute
-                ? taxonomyRoute.filter.replace(/%s/g, resource.slug)
-                : []
-            }
-            return []
-          }),
-        ]
 
         const resourceFilters = [
           ...getRoutes(routesConfig),
@@ -234,7 +219,21 @@ export function collect(
             return acc
           },
           {
-            post: collectionFilters,
+            post: [
+              ...resources.flatMap((resource) => {
+                if (
+                  resource.resourceType === 'tag' ||
+                  resource.resourceType === 'author'
+                ) {
+                  const taxonomyRoute =
+                    routesConfig.taxonomies?.[resource.resourceType]
+                  return taxonomyRoute
+                    ? taxonomyRoute.filter.replace(/%s/g, resource.slug)
+                    : []
+                }
+                return []
+              }),
+            ],
             page: [],
             author: [],
             tag: [],
