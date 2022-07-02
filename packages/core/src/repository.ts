@@ -119,7 +119,7 @@ const repository = {
         )
       })
       .map(({ resources = [] }) => {
-        if (ids.length === 1) {
+        if (!Array.isArray(id)) {
           return resources[0]
         }
         return resources
