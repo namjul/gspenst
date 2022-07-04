@@ -1,7 +1,7 @@
 // @ts-expect-error -- no type declarations available
 
 import withLayout from 'nextra-theme-blog'
-import type { Root } from '@gspenst/core'
+import type { Root } from 'gspenst'
 import type { PageProps } from '@gspenst/next'
 import getComponent from '@gspenst/next/componentRegistry'
 import { useMDXComponents } from '@mdx-js/react'

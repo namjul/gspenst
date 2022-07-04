@@ -5,7 +5,10 @@
   "module": "dist/gspenst.esm.js",
   "files": [
     "dist",
-    "server"
+    "server",
+    "react",
+    "TinaProvider",
+    "Admin"
   ],
   "scripts": {
     "gen": "tinacms schema:compile && tinacms schema:types",
@@ -32,6 +35,7 @@
     "neverthrow": "^4.3.1",
     "normalizr": "^3.6.2",
     "path-to-regexp": "^6.2.0",
+    "react-is": ">=16.13.1",
     "sort-on": "^5.0.0",
     "tinacms": "^0.68.7",
     "zod": "^3.17.3"
@@ -46,7 +50,10 @@
   "preconstruct": {
     "entrypoints": [
       "index.ts",
-      "server.ts"
+      "server.ts",
+      "react.tsx",
+      "TinaProvider.tsx",
+      "Admin.tsx"
     ]
   }
 }

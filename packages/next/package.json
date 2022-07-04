@@ -17,10 +17,7 @@
     "@preconstruct/next": "^4.0.0",
     "debug": "^4.3.3",
     "gspenst": "^0.0.1",
-    "js-yaml": "^4.1.0",
-    "react-is": ">=16.13.1",
-    "redux": "^4.2.0",
-    "tinacms": "^0.68.7"
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",
@@ -37,7 +34,6 @@
     "entrypoints": [
       "index.ts",
       "loader.ts",
-      "client.tsx",
       "server.ts",
       "componentRegistry.ts"
     ]

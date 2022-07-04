@@ -1,17 +1,17 @@
 import type * as React from 'react'
-import { useTina } from 'tinacms/dist/edit-state'
-import type { NextPage } from 'next'
+import { TinaEditProvider, useTina } from 'tinacms/dist/edit-state'
+import type { TinaCloudSchema } from 'tinacms'
 import { isValidElementType } from 'react-is'
-import type { ThemeContext } from 'gspenst'
-import DynamicTinaProvider from './TinaDynamicProvider'
-import getComponent from './componentRegistry'
+import type { ThemeContext } from './domain/theming'
 // import getHeaders from './helpers/getHeaders'
-import type { PageProps, ClientConfig } from './types'
+import { createRoutingMapping } from './domain/resource'
 
-type ThemeComponent = React.ComponentType<PageProps>
+export type ThemeComponentProps = Exclude<ThemeContext, { context: 'internal' }>
+type ThemeComponent = React.ComponentType<ThemeComponentProps>
+export type GspenstPage<T> = (config: T) => ThemeComponent
 
 export type ContainerProps = {
-  pageProps: PageProps
+  pageProps: ThemeComponentProps
   Component: ThemeComponent
 }
 
@@ -23,7 +23,7 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
     throw new Error('Theme must export HOC.')
   }
 
-  const { data, isLoading } = useTina({
+  const { data /*, isLoading*/ } = useTina({
     query: tinaData.query,
     variables: tinaData.variables,
     data: tinaData.data,
@@ -34,8 +34,8 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
     resource: { ...resource, tinaData: { ...resource.tinaData, data } },
   } as ContainerProps['pageProps']
 
-  console.log('pageProps: ', _pageProps)
-  console.log('client#isLoading: ', isLoading)
+  // console.log('pageProps: ', _pageProps)
+  // console.log('client#isLoading: ', isLoading)
 
   // overwrite with dynamic value from tina
   // pageProps.data.entry.data = data
@@ -53,14 +53,24 @@ const Container = ({ pageProps, Component }: ContainerProps) => {
   return <Component {..._pageProps} />
 }
 
-export type NextPageProps = {
+export type PageProps = {
   pageProps: ThemeContext
   Component: ThemeComponent
-  config: ClientConfig
+  // Inspiration:
+  // https://docs.stackbit.com/how-to-guides/components/add-component/#register_the_component
+  // https://github.com/stackbit-themes/starter-nextjs-theme/blob/main/src/components/components-registry.ts
+  // https://nextjs.org/docs/advanced-features/dynamic-import
+  getComponent: (
+    name: 'Admin' | 'TinaProvider'
+  ) => React.ComponentType<any> | undefined
+  config: {
+    tinaSchema: TinaCloudSchema
+    routingMapping: ReturnType<typeof createRoutingMapping>
+  }
 }
 
-const Page: NextPage<NextPageProps> = ({ pageProps, Component, config }) => {
-  console.log('config', config)
+const Page = ({ pageProps, getComponent, Component, config }: PageProps) => {
+  // console.log('config', config)
   // console.log('PageProps(next): ', pageProps)
   let component
 
@@ -73,7 +83,19 @@ const Page: NextPage<NextPageProps> = ({ pageProps, Component, config }) => {
     component = <Container pageProps={pageProps} Component={Component} />
   }
 
-  return <DynamicTinaProvider config={config}>{component}</DynamicTinaProvider>
+  const TinaProvider = getComponent('TinaProvider')
+
+  if (!TinaProvider) {
+    throw new Error('Missing TinaProvider')
+  }
+
+  return (
+    <TinaEditProvider
+      editMode={<TinaProvider config={config}>{component}</TinaProvider>}
+    >
+      {component}
+    </TinaEditProvider>
+  )
 }
 
 export default Page

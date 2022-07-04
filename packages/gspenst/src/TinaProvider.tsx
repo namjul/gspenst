@@ -1,13 +1,16 @@
 import TinaCMS, { defineConfig } from 'tinacms'
-import { client } from 'gspenst'
-import type { ClientConfig } from './types'
+import type { TinaCloudSchema } from 'tinacms'
+import { client } from './shared/client'
+import { createRoutingMapping } from './domain/resource'
 
-const TinaProvider = ({
-  config,
-  children,
-}: React.PropsWithChildren<{
-  config: ClientConfig
-}>) => {
+export type TinaProviderProps = React.PropsWithChildren<{
+  config: {
+    tinaSchema: TinaCloudSchema
+    routingMapping: ReturnType<typeof createRoutingMapping>
+  }
+}>
+
+const TinaProvider = ({ config, children }: TinaProviderProps) => {
   const tinaConfig = defineConfig({
     client,
     schema: config.tinaSchema,
