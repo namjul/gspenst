@@ -1,0 +1,4 @@
+{
+  "main": "dist/gspenst-components-Admin.cjs.js",
+  "module": "dist/gspenst-components-Admin.esm.js"
+}

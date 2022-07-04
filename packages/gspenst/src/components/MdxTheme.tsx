@@ -1,6 +1,6 @@
 import { TinaMarkdown } from 'tinacms/dist/rich-text'
 import type { TinaMarkdownContent, Components } from 'tinacms/dist/rich-text'
-import type { Root } from './shared/kernel'
+import type { Root } from '../shared/kernel'
 
 const MDXTheme = ({
   content,

@@ -1,4 +1,0 @@
-{
-  "main": "dist/gspenst-Admin.cjs.js",
-  "module": "dist/gspenst-Admin.esm.js"
-}

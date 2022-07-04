@@ -1,0 +1,4 @@
+{
+  "main": "dist/gspenst-components-TinaProvider.cjs.js",
+  "module": "dist/gspenst-components-TinaProvider.esm.js"
+}

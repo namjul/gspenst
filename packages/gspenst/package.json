@@ -7,8 +7,7 @@
     "dist",
     "server",
     "react",
-    "TinaProvider",
-    "Admin"
+    "components"
   ],
   "scripts": {
     "gen": "tinacms schema:compile && tinacms schema:types",
@@ -52,8 +51,8 @@
       "index.ts",
       "server.ts",
       "react.tsx",
-      "TinaProvider.tsx",
-      "Admin.tsx"
+      "components/TinaProvider.tsx",
+      "components/Admin.tsx"
     ]
   }
 }
