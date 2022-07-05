@@ -32,7 +32,10 @@ export function createSchema(
       required: true,
     },
     {
-      type: 'rich-text',
+      type: 'string',
+      ui: {
+        component: 'textarea',
+      },
       label: 'Excerpt',
       name: 'excerpt',
       templates,
