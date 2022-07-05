@@ -1,5 +1,5 @@
-import { createSchema } from '@gspenst/core/shared'
-import type { TinaTemplate, TinaField } from '@gspenst/core'
+import { createSchema } from 'gspenst'
+import type { TinaTemplate, TinaField } from 'gspenst'
 
 const testimonialBlockSchema: TinaTemplate = {
   name: 'BlockQuote',
@@ -33,4 +33,14 @@ const ctaBlockSchema: TinaTemplate = {
   ],
 }
 
-export default createSchema([testimonialBlockSchema, ctaBlockSchema])
+const fields: TinaField[] = [
+  {
+    type: 'boolean',
+    label: 'Dark Mode',
+    name: 'darkMode',
+  },
+]
+
+const templates: TinaTemplate[] = [testimonialBlockSchema, ctaBlockSchema]
+
+export default createSchema(templates, fields)
