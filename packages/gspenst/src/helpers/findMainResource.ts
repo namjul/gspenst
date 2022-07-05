@@ -5,9 +5,11 @@ export function findMainResource(
   data: Record<string, Data>,
   entities: Entities
 ): LocatorResource | undefined {
-  return Object.values(data)
-    .reverse()
-    .flatMap<LocatorResource>((dataSchema) => {
+  const entries = Object.entries(data).reverse()
+  const mainIndex = entries.findIndex(([key]) => key === 'main')
+
+  return entries
+    .flatMap<LocatorResource>(([_, dataSchema]) => {
       if (dataSchema.type === 'read') {
         const resource = entities.resources?.[dataSchema.resource]
         if (resource?.resourceType !== 'config') {
@@ -16,5 +18,5 @@ export function findMainResource(
       }
       return []
     })
-    .at(0)
+    .at(mainIndex > -1 ? mainIndex : 0)
 }
