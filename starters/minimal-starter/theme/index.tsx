@@ -1,19 +1,26 @@
 import dynamic from 'next/dynamic'
-import type { PageProps } from '@gspenst/next'
+import type { ThemeComponentProps } from 'gspenst/react'
 
 const DynamicReactJson = dynamic(import('react-json-view'), { ssr: false })
 
-const Page = (props: PageProps) => {
-  console.log(props)
-  return (
-    <div>
-      From `minimal-starter/theme`
-      <DynamicReactJson src={props} />
-    </div>
-  )
-}
+type ThemeConfig = {}
 
-export default (config: null | {}) => {
-  console.log(JSON.stringify(config, null, 2))
+const createLayout = (config: ThemeConfig) => {
+  const Page = (props: ThemeComponentProps) => {
+    // useData('main')
+    // usePost() -> useData('main')
+    // usePosts() -> useData('posts')
+    //
+    return (
+      <div>
+        {config ? <DynamicReactJson src={config} /> : null}
+        From `minimal-starter/theme`
+        <DynamicReactJson src={props} />
+      </div>
+    )
+  }
+
   return Page
 }
+
+export default createLayout

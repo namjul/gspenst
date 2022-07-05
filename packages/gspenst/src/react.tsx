@@ -8,7 +8,6 @@ import { createRoutingMapping } from './domain/resource'
 
 export type ThemeComponentProps = Exclude<ThemeContext, { context: 'internal' }>
 type ThemeComponent = React.ComponentType<ThemeComponentProps>
-export type GspenstPage<T> = (config: T) => ThemeComponent
 
 export type ContainerProps = {
   pageProps: ThemeComponentProps
