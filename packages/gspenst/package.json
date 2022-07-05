@@ -6,7 +6,7 @@
   "files": [
     "dist",
     "server",
-    "react",
+    "data",
     "components"
   ],
   "scripts": {
@@ -46,11 +46,14 @@
     "mock-fs": "^5.1.1",
     "type-fest": "^2.8.0"
   },
+  "peerDependencies": {
+    "react": ">=16.13.1"
+  },
   "preconstruct": {
     "entrypoints": [
       "index.ts",
       "server.ts",
-      "react.tsx",
+      "data.ts",
       "components/TinaProvider.tsx",
       "components/Admin.tsx"
     ]

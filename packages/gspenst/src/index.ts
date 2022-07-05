@@ -6,7 +6,7 @@ export type { Page } from './domain/page'
 export type { Author } from './domain/author'
 export type { Tag } from './domain/tag'
 export type { RoutesConfig } from './domain/routes'
-export type { ThemeContext } from './domain/theming'
+export type { ThemeContext, PageThemeContext } from './domain/theming'
 
 export * as Errors from './errors'
 export { parseRoutesWithDefaults as parseRoutes } from './domain/routes'

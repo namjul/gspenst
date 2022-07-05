@@ -56,7 +56,7 @@ export const entitiesSchema = z
 
 export type Entities = z.infer<typeof entitiesSchema>
 
-const themeContextSchema = z
+const pageThemeContextSchema = z
   .object({
     templates: z.array(z.string()),
     data: z.record(dataSchema),
@@ -66,11 +66,13 @@ const themeContextSchema = z
   })
   .strict()
 
-const internalThemeContext = z.object({
+export type PageThemeContext = z.infer<typeof pageThemeContextSchema>
+
+const internalThemeContextSchema = z.object({
   context: z.literal('internal'),
 })
 
 // TODO rename file to themeContext?
-export const themeContext = z.union([themeContextSchema, internalThemeContext])
+export const themeContextSchema = z.union([pageThemeContextSchema, internalThemeContextSchema])
 
-export type ThemeContext = z.infer<typeof themeContext>
+export type ThemeContext = z.infer<typeof themeContextSchema>

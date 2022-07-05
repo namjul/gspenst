@@ -1,0 +1,4 @@
+{
+  "main": "dist/gspenst-data.cjs.js",
+  "module": "dist/gspenst-data.esm.js"
+}

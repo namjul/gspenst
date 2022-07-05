@@ -91,7 +91,7 @@ async function loader(
 
   const imports = `
 import * as __gspenst_server__ from '@gspenst/next/server'
-import GspenstPage from 'gspenst/react'
+import { withData as __gspenst_withData__ } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import tinaSchema from '${tinaSchemaPath}'
 import __gspenst_withTheme__ from '${themePath}'
@@ -104,12 +104,16 @@ ${
 
   const component = `
 const routingMapping = ${JSON.stringify(routingMapping)}
-const GspenstThemeComponent = __gspenst_withTheme__(${
+const GspenstThemeComponent = __gspenst_withData__({
+  getComponent,
+  Component: __gspenst_withTheme__(${
     themeConfigPath ? '__gspenst_themeConfig__' : 'null'
-  })
+  }),
+  config: { tinaSchema, routingMapping },
+})
 
-export default function GspenstLayout (pageProps) {
-  return <GspenstPage pageProps={pageProps} getComponent={getComponent} Component={GspenstThemeComponent} config={{ tinaSchema, routingMapping }} />
+export default function GspenstLayout (props) {
+  return <GspenstThemeComponent {...props} />
 }`
 
   const dataFetchingFunctions = `
