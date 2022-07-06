@@ -23,7 +23,7 @@ const DataStateContext = createContext<
   { state: State; dispatch: Dispatch } | undefined
 >(undefined)
 
-function dataReducer(state: State, action: Action) {
+function storeReducer(state: State, action: Action) {
   switch (action.type) {
     case 'to-be-defined': {
       return state
@@ -41,7 +41,7 @@ function useGspenstState(
   state: State
   dispatch: Dispatch
 } {
-  const [state, dispatch] = React.useReducer(dataReducer, initialState)
+  const [state, dispatch] = React.useReducer(storeReducer, initialState)
 
   const { tinaData } = state.resource
 
@@ -90,12 +90,16 @@ function DataProvider({
   })
 }
 
-function useData() {
+function useStore() {
   const context = useContext(DataStateContext)
   if (context === undefined) {
     throw new Error('useData must be used within a DataStateContext')
   }
   return context
+}
+
+function useData(key: string) {
+
 }
 
 const withData = ({
@@ -151,4 +155,4 @@ const withData = ({
   }
   return WithData
 }
-export { withData, useData }
+export { withData, useStore }
