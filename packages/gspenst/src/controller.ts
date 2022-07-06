@@ -29,7 +29,7 @@ import { confifyTinaData } from './helpers/confifyTinaData'
 type ControllerResult<T> = Result<T>
 type ControllerResultAsync<T> = ResultAsync<T>
 
-const MAIN_ENTRY = Symbol('__mainEntry__') as unknown as string
+const MAIN_ENTRY = '__gspenst_main_entry__'
 
 async function routeController(
   routingContext:
