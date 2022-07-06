@@ -177,7 +177,7 @@ export function findMainResource(
   data: Record<string, Data>,
   entities: Entities
 ): LocatorResource | undefined {
-  const entries = Object.entries(data).reverse()
+  const entries = Object.entries(data)
   const mainIndex = entries.findIndex(([key]) => key === MAIN_ENTRY)
 
   return entries
