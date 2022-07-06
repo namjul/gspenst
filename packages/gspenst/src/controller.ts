@@ -1,4 +1,3 @@
-// import filterObject from 'filter-obj'
 import { ok, err } from './shared/kernel'
 import type {
   RoutingContext,
@@ -17,7 +16,12 @@ import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared/kernel'
 import * as Errors from './errors'
 import { do_, absurd } from './shared/utils'
-import type { ThemeContext, Entities, Data } from './domain/theming'
+import type {
+  ThemeContext,
+  PageThemeContext,
+  Entities,
+  Data,
+} from './domain/theming'
 import { configId } from './constants'
 import repository from './repository'
 import { confifyTinaData } from './helpers/confifyTinaData'
@@ -34,7 +38,7 @@ async function routeController(
     | EntryRoutingContext
     | CustomRoutingContext,
   dataLoaders: DataLoaders
-): Promise<ControllerResultAsync<ThemeContext>> {
+): Promise<ControllerResultAsync<PageThemeContext>> {
   const dataQueries: Record<string, DataQuery> = {
     ...('data' in routingContext ? routingContext.data : {}),
   }
@@ -60,6 +64,8 @@ async function routeController(
       ...routingContext.request.params,
     }
   }
+
+  const { default: filterObject } = await import('filter-obj')
 
   // const headers = (() => {
   //   const entryData = pageProps.data.entry.data
@@ -95,7 +101,7 @@ async function routeController(
           resource: mainResourceResult.value,
           templates: getTemplateHierarchy(routingContext),
           data,
-          entities,
+          entities: filterObject(entities, ['post', 'page', 'author', 'tag']),
         })
       }
     )
@@ -173,7 +179,7 @@ export function controller(
   })
 }
 
-export function findMainResource(
+function findMainResource(
   data: Record<string, Data>,
   entities: Entities
 ): LocatorResource | undefined {
@@ -183,7 +189,7 @@ export function findMainResource(
   return entries
     .flatMap<LocatorResource>(([_, dataSchema]) => {
       if (dataSchema.type === 'read') {
-        const resource = entities.resource?.[dataSchema.resource]
+        const resource = entities.resource[dataSchema.resource]
         if (resource?.resourceType !== 'config') {
           return resource ?? []
         }

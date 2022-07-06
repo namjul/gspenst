@@ -42,16 +42,23 @@ const dataSchema = z.discriminatedUnion('type', [
 
 export type Data = z.infer<typeof dataSchema>
 
-export const entitiesSchema = z
+export const entriesEntitiesSchema = z
   .object({
-    config: z.record(idSchema, configSchema),
     post: z.record(idSchema, postNormalizedSchema),
     page: z.record(idSchema, pageNormalizedSchema),
     author: z.record(idSchema, authorSchema),
     tag: z.record(idSchema, tagSchema),
+  })
+  .strict()
+
+export type EntryEntities = z.infer<typeof entriesEntitiesSchema>
+
+export const entitiesSchema = z
+  .object({
+    config: z.record(idSchema, configSchema),
     resource: z.record(idSchema, resourceSchema),
   })
-  .partial()
+  .merge(entriesEntitiesSchema)
   .strict()
 
 export type Entities = z.infer<typeof entitiesSchema>
@@ -62,7 +69,7 @@ const pageThemeContextSchema = z
     data: z.record(dataSchema),
     context: z.array(z.string()).nullable(),
     resource: resourceSchema,
-    entities: entitiesSchema,
+    entities: entriesEntitiesSchema,
   })
   .strict()
 

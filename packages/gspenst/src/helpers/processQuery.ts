@@ -63,7 +63,7 @@ export function processQuery(
             .andThen(loadResource)
             .andThen(normalizeResource)
             .andThen(({ result, entities }) => {
-              const resource = entities.resource?.[result]
+              const resource = entities.resource[result]
               if (!resource) {
                 return err(
                   Errors.absurd(
@@ -110,7 +110,7 @@ export function processQuery(
         .andThen(({ result, entities, sortOn }) => {
           const entityResourcesResult = combine(
             result.map((id) => {
-              const resource = entities.resource?.[id]
+              const resource = entities.resource[id]
               if (!resource) {
                 return err(
                   Errors.absurd(
@@ -119,7 +119,7 @@ export function processQuery(
                 )
               }
 
-              const entity = entities[resource.resourceType]?.[id]
+              const entity = entities[resource.resourceType][id]
               return ok({
                 resource,
                 entity,
@@ -241,7 +241,17 @@ export function processData(
           entities: merge(acc.entities, entities),
         }
       },
-      { data: {}, entities: {} }
+      {
+        data: {},
+        entities: {
+          post: {},
+          page: {},
+          author: {},
+          tag: {},
+          config: {},
+          resource: {},
+        },
+      }
     )
   })
 

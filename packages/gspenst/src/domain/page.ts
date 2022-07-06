@@ -11,9 +11,11 @@ export const pageSchema = postSchema.merge(
 
 pageSchema.describe('pageSchema')
 
-export type Page = z.infer<typeof pageSchema>
+export const pageNormalizedSchema = postNormalizedSchema.merge(
+  z.object({ type: z.literal('page') })
+)
 
-export const pageNormalizedSchema = postNormalizedSchema
+export type Page = z.infer<typeof pageSchema>
 
 export type PageNormalized = z.infer<typeof pageNormalizedSchema>
 

@@ -3,6 +3,7 @@ import {
   normalize as _normalize,
   denormalize as _denormalize,
 } from 'normalizr'
+import type { ValueOf } from 'type-fest'
 import type { NormalizedSchema } from 'normalizr'
 import { combine, fromThrowable } from '../shared/kernel'
 import * as Errors from '../errors'
@@ -74,34 +75,19 @@ export function normalizeEntities(data: {
     NormalizedSchema<
       Entities,
       {
-        config?: ID[]
-        post?: ID[]
-        page?: ID[]
-        tag?: ID[]
-        author?: ID[]
-        resource?: ID[]
+        [name in keyof typeof data]?: ID[]
       }
     >
   >
 }
 
-export function denormalizeEntities(
+export function denormalizeEntities<T extends Partial<Entities>>(
   data: {
-    config?: ID[]
-    post?: ID[]
-    page?: ID[]
-    tag?: ID[]
-    author?: ID[]
-    resource?: ID[]
+    [name in keyof T]?: ID[]
   },
-  entities: Entities
+  entities: T
 ): Result<{
-  config?: Config[]
-  post?: Post[]
-  page?: Page[]
-  tag?: Tag[]
-  author?: Author[]
-  resource?: Resource[]
+  [name in keyof T]: NonNullable<ValueOf<T[name]>>[]
 }> {
   return denormalize(data, entitiesSchema, entities)
 }

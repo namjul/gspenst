@@ -44,6 +44,8 @@ export const postNormalizedSchema = postSchema.merge(
   })
 )
 
+postNormalizedSchema.describe('postNormalizedSchema')
+
 export type PostNormalized = z.infer<typeof postNormalizedSchema>
 
 export function createPost(

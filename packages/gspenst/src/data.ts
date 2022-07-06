@@ -98,19 +98,20 @@ function useStore() {
   return context
 }
 
-function useData(key: string) {
+function useData(key: string | undefined = undefined) {
   const { state } = useStore()
 
-  const dataEntry = state.data[key]
-
   const { resources, pagination } = do_(() => {
-    if (key === state.resource.resourceType) {
+    if (key === state.resource.resourceType || key === undefined) {
       return {
         resources: {
           [state.resource.resourceType]: [state.resource.id],
         },
       }
-    } else if (dataEntry) {
+    }
+
+    const dataEntry = state.data[key]
+    if (dataEntry) {
       if (dataEntry.type === 'read') {
         return {
           resources: {
@@ -141,7 +142,7 @@ function useData(key: string) {
   }
 
   return {
-    resources: Object.values(entitiesDenormalizedResult.value),
+    resources: [...Object.values(entitiesDenormalizedResult.value)].flat(),
     pagination,
   }
 }
