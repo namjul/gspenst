@@ -8,6 +8,7 @@ import type {
   CustomRoutingContext,
   Redirect,
 } from './domain/routing'
+import type { LocatorResource } from './domain/resource'
 import type { DataQuery } from './domain/routes'
 import { createLoaders, processData } from './helpers/processQuery'
 import type { DataLoaders } from './helpers/processQuery'
@@ -16,14 +17,15 @@ import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared/kernel'
 import * as Errors from './errors'
 import { do_, absurd } from './shared/utils'
-import type { ThemeContext } from './domain/theming'
+import type { ThemeContext, Entities, Data } from './domain/theming'
 import { configId } from './constants'
 import repository from './repository'
 import { confifyTinaData } from './helpers/confifyTinaData'
-import { findMainResource } from './helpers/findMainResource'
 
 type ControllerResult<T> = Result<T>
 type ControllerResultAsync<T> = ResultAsync<T>
+
+const MAIN_ENTRY = Symbol('__mainEntry__') as unknown as string
 
 async function routeController(
   routingContext:
@@ -52,7 +54,7 @@ async function routeController(
   }
 
   if (routingContext.type === 'entry') {
-    dataQueries.main = {
+    dataQueries[MAIN_ENTRY] = {
       type: 'read',
       resourceType: routingContext.resourceType,
       ...routingContext.request.params,
@@ -169,4 +171,24 @@ export function controller(
       props: err(Errors.notFound('No controller found')),
     }
   })
+}
+
+export function findMainResource(
+  data: Record<string, Data>,
+  entities: Entities
+): LocatorResource | undefined {
+  const entries = Object.entries(data).reverse()
+  const mainIndex = entries.findIndex(([key]) => key === MAIN_ENTRY)
+
+  return entries
+    .flatMap<LocatorResource>(([_, dataSchema]) => {
+      if (dataSchema.type === 'read') {
+        const resource = entities.resources?.[dataSchema.resource]
+        if (resource?.resourceType !== 'config') {
+          return resource ?? []
+        }
+      }
+      return []
+    })
+    .at(mainIndex > -1 ? mainIndex : 0)
 }
