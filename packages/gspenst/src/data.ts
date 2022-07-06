@@ -69,7 +69,7 @@ function useGspenstState(
       ctxEditingLoading: isLoading,
       entities: merge(state.entities, normalizeResourceResult.value.entities, {
         isMergeableObject: (x) => {
-          return 'type' in x || 'resourceType' in x
+          return !('type' in x || 'resourceType' in x)
         },
       }),
     } as State,
