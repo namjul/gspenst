@@ -63,8 +63,7 @@ export function processQuery(
             .andThen(loadResource)
             .andThen(normalizeResource)
             .andThen(({ result, entities }) => {
-              const { resources = {} } = entities
-              const resource = resources[result]
+              const resource = entities.resource?.[result]
               if (!resource) {
                 return err(
                   Errors.absurd(
@@ -102,17 +101,37 @@ export function processQuery(
         .andThen(normalizeResources)
         .map(async ({ result, entities }) => {
           const { default: sortOn } = await import('sort-on')
+          return {
+            result,
+            entities,
+            sortOn,
+          }
+        })
+        .andThen(({ result, entities, sortOn }) => {
+          const entityResourcesResult = combine(
+            result.map((id) => {
+              const resource = entities.resource?.[id]
+              if (!resource) {
+                return err(
+                  Errors.absurd(
+                    `Should not happen: resource ${result} not found`
+                  )
+                )
+              }
 
-          const entityResources = result.map((id) => {
-            const { resources = {} } = entities
-            const resource = resources[id]!
-            const entityType = `${resource.resourceType}s` as const
-            const entity = entities[entityType]![id]
-            return {
-              resource,
-              entity,
-            }
-          })
+              const entity = entities[resource.resourceType]?.[id]
+              return ok({
+                resource,
+                entity,
+              })
+            })
+          )
+
+          if (entityResourcesResult.isErr()) {
+            return err(entityResourcesResult.error)
+          }
+
+          const entityResources = entityResourcesResult.value
 
           const property = query.order?.map((orderValue) => {
             return `${orderValue.order === 'desc' ? '-' : ''}entity.${
@@ -145,7 +164,7 @@ export function processQuery(
 
           const resources = sortedResources.slice(start, end)
 
-          return {
+          return ok({
             type,
             pagination: {
               total,
@@ -158,7 +177,7 @@ export function processQuery(
             resources: resources.map(({ resource }) => resource),
             resourceType: query.resourceType,
             entities,
-          }
+          })
         })
 
     default:

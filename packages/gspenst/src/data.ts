@@ -5,8 +5,8 @@ import type { TinaCloudSchema } from 'tinacms'
 import { isValidElementType } from 'react-is'
 import type { PageThemeContext, ThemeContext } from './domain/theming'
 import type { Resource, RoutingMapping } from './domain/resource'
-import { absurd } from './shared/utils'
-import { normalizeResource } from './helpers/normalize'
+import { absurd, do_ } from './shared/utils'
+import { normalizeResource, denormalizeEntities } from './helpers/normalize'
 import * as Errors from './errors'
 
 type Action = { type: 'to-be-defined' }
@@ -99,7 +99,51 @@ function useStore() {
 }
 
 function useData(key: string) {
+  const { state } = useStore()
 
+  const dataEntry = state.data[key]
+
+  const { resources, pagination } = do_(() => {
+    if (key === state.resource.resourceType) {
+      return {
+        resources: {
+          [state.resource.resourceType]: [state.resource.id],
+        },
+      }
+    } else if (dataEntry) {
+      if (dataEntry.type === 'read') {
+        return {
+          resources: {
+            [dataEntry.resourceType]: [dataEntry.resource],
+          },
+        }
+      }
+
+      return {
+        resources: {
+          [dataEntry.resourceType]: dataEntry.resources,
+        },
+        pagination: dataEntry.pagination,
+      }
+    }
+    return {
+      resources: {},
+    }
+  })
+
+  const entitiesDenormalizedResult = denormalizeEntities(
+    resources,
+    state.entities
+  )
+
+  if (entitiesDenormalizedResult.isErr()) {
+    throw Errors.format(entitiesDenormalizedResult.error)
+  }
+
+  return {
+    resources: Object.values(entitiesDenormalizedResult.value),
+    pagination,
+  }
 }
 
 const withData = ({
@@ -155,4 +199,4 @@ const withData = ({
   }
   return WithData
 }
-export { withData, useStore }
+export { withData, useStore, useData }

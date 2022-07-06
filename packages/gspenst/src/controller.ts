@@ -183,7 +183,7 @@ export function findMainResource(
   return entries
     .flatMap<LocatorResource>(([_, dataSchema]) => {
       if (dataSchema.type === 'read') {
-        const resource = entities.resources?.[dataSchema.resource]
+        const resource = entities.resource?.[dataSchema.resource]
         if (resource?.resourceType !== 'config') {
           return resource ?? []
         }

@@ -44,12 +44,12 @@ export type Data = z.infer<typeof dataSchema>
 
 export const entitiesSchema = z
   .object({
-    configs: z.record(idSchema, configSchema),
-    posts: z.record(idSchema, postNormalizedSchema),
-    pages: z.record(idSchema, pageNormalizedSchema),
-    authors: z.record(idSchema, authorSchema),
-    tags: z.record(idSchema, tagSchema),
-    resources: z.record(idSchema, resourceSchema),
+    config: z.record(idSchema, configSchema),
+    post: z.record(idSchema, postNormalizedSchema),
+    page: z.record(idSchema, pageNormalizedSchema),
+    author: z.record(idSchema, authorSchema),
+    tag: z.record(idSchema, tagSchema),
+    resource: z.record(idSchema, resourceSchema),
   })
   .partial()
   .strict()
@@ -73,6 +73,9 @@ const internalThemeContextSchema = z.object({
 })
 
 // TODO rename file to themeContext?
-export const themeContextSchema = z.union([pageThemeContextSchema, internalThemeContextSchema])
+export const themeContextSchema = z.union([
+  pageThemeContextSchema,
+  internalThemeContextSchema,
+])
 
 export type ThemeContext = z.infer<typeof themeContextSchema>

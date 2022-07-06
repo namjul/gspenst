@@ -1,14 +1,7 @@
 import { ok, err, combine, idSchema } from './shared/kernel'
 import type { ResultAsync, Result } from './shared/kernel'
 import * as db from './db'
-import type {
-  Resource,
-  ResourceNode,
-  PostResource,
-  PageResource,
-  AuthorResource,
-  TagResource,
-} from './domain/resource'
+import type { Resource, ResourceNode } from './domain/resource'
 import type { RoutesConfig, DataQueryBrowse } from './domain/routes'
 import { getCollections, getRoutes } from './domain/routes'
 import { createResource, createDynamicVariables } from './domain/resource'
@@ -20,7 +13,6 @@ import * as api from './api'
 import { makeNqlFilter, compilePermalink } from './helpers'
 import { do_, absurd, isString } from './shared/utils'
 import { createLogger } from './logger'
-import { denormalizeResource } from './helpers/normalize'
 import * as Errors from './errors'
 import { parse } from './helpers/parser'
 
@@ -255,21 +247,6 @@ export function collect(
           }
         )
 
-        const entities = {
-          configs: [],
-          posts: [],
-          pages: [],
-          tags: [],
-          authors: [],
-          resources: resources.reduce<{ [id: string]: Resource }>(
-            (map, resource) => {
-              map[resource.id] = resource
-              return map
-            },
-            {}
-          ),
-        }
-
         return combine(
           resources.flatMap((resource) => {
             if (resource.resourceType === 'config') {
@@ -281,44 +258,16 @@ export function collect(
 
               switch (resourceType) {
                 case 'post': {
-                  const postResourceResult = denormalizeResource<PostResource>(
-                    resource,
-                    entities
-                  )
-                  if (postResourceResult.isErr()) {
-                    return err(postResourceResult.error)
-                  }
-                  return createPost(postResourceResult.value.tinaData.data.post)
+                  return createPost(resource.tinaData.data.post)
                 }
                 case 'page': {
-                  const pageResourceResult = denormalizeResource<PageResource>(
-                    resource,
-                    entities
-                  )
-                  if (pageResourceResult.isErr()) {
-                    return err(pageResourceResult.error)
-                  }
-                  return createPage(pageResourceResult.value.tinaData.data.page)
+                  return createPage(resource.tinaData.data.page)
                 }
                 case 'author': {
-                  const authorResourceResult =
-                    denormalizeResource<AuthorResource>(resource, entities)
-                  if (authorResourceResult.isErr()) {
-                    return err(authorResourceResult.error)
-                  }
-                  return createAuthor(
-                    authorResourceResult.value.tinaData.data.author
-                  )
+                  return createAuthor(resource.tinaData.data.author)
                 }
                 case 'tag': {
-                  const tagResourceResult = denormalizeResource<TagResource>(
-                    resource,
-                    entities
-                  )
-                  if (tagResourceResult.isErr()) {
-                    return err(tagResourceResult.error)
-                  }
-                  return createTag(tagResourceResult.value.tinaData.data.tag)
+                  return createTag(resource.tinaData.data.tag)
                 }
                 default:
                   return absurd(resourceType)
