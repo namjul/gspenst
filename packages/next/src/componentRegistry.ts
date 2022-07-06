@@ -7,7 +7,7 @@ export const components = {
   TinaProvider: dynamic(() => import('gspenst/components/TinaProvider'), {
     ssr: false,
   }),
-  // MdxTheme: dynamic(() => import('gspenst/react')),
+  MdxTheme: dynamic(() => import('gspenst/components/MdxTheme')),
 }
 
 export default function getComponent<

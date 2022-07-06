@@ -55,7 +55,8 @@
       "server.ts",
       "data.ts",
       "components/TinaProvider.tsx",
-      "components/Admin.tsx"
+      "components/Admin.tsx",
+      "components/MdxTheme.tsx"
     ]
   }
 }
