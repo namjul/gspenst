@@ -1,0 +1,4 @@
+{
+  "main": "dist/gspenst-nextra-theme-blog-schema.cjs.js",
+  "module": "dist/gspenst-nextra-theme-blog-schema.esm.js"
+}

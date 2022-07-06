@@ -1,19 +1,26 @@
 // @ts-expect-error -- no type declarations available
 
 import withLayout from 'nextra-theme-blog'
-import type { Root } from 'gspenst'
-import type { PageProps } from '@gspenst/next'
+import type { PageThemeContext, Root } from 'gspenst'
+import { useData } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import { useMDXComponents } from '@mdx-js/react'
+import { BlockQuote } from './components/testimonial'
+import { Cta } from './components/cta'
+import { defaultConfig } from './config'
+import type { NextraBlogTheme } from './config'
 
 const GspenstMdxTheme = getComponent('MdxTheme')
 
-const MdxTheme = (
-  props: React.ComponentProps<NonNullable<typeof GspenstMdxTheme>>
-) => {
+const componentsx = {
+  BlockQuote,
+  Cta,
+}
+
+const MdxTheme = (props: { content: Root | undefined }) => {
   const { wrapper: MDXLayout, ...components } = {
     ...useMDXComponents(),
-    ...props.components,
+    ...componentsx,
   }
 
   if (GspenstMdxTheme) {
@@ -21,7 +28,7 @@ const MdxTheme = (
       // @ts-expect-error --- TODO solve type incompatibility between tinacms `Components` and `@mdx-js/react`'s `MDXComponents`
       <GspenstMdxTheme components={components} content={props.content} />
     )
-    return MDXLayout ? <MDXLayout {...props}>mdxTheme</MDXLayout> : mdxTheme
+    return MDXLayout ? <MDXLayout>mdxTheme</MDXLayout> : mdxTheme
   }
 
   return null
@@ -55,84 +62,48 @@ type PageOpt = {
   hasH1: boolean
 }
 
-type NextraBlogTheme = {
-  readMore?: string
-  footer?: React.ReactNode
-  titleSuffix: string | undefined
-  postFooter: string | undefined
-  head?: ({
-    title,
-    meta,
-  }: {
-    title: string
-    meta: Record<string, any>
-  }) => React.ReactNode
-  cusdis?: {
-    appId: string
-    host?: string
-    lang: string
-  }
-  darkMode?: boolean
-  navs?: {
-    url: string
-    name: string
-  }[]
-}
-
-const defaultConfig = {
-  readMore: 'Read More →',
-  footer: (
-    <small style={{ display: 'block', marginTop: '8rem' }}>
-      CC BY-NC 4.0 2020 © Shu Ding.
-    </small>
-  ),
-  titleSuffix: 'titleSuffix',
-  postFooter: null,
-}
-
-export default (_config: NextraBlogTheme) => {
+const createTheme = (_config: NextraBlogTheme) => {
   const config: NextraBlogTheme = {
     ...defaultConfig,
     ..._config,
   }
 
-  const Comp = (props: PageProps) => {
-    // console.log('PageProps(theme)', props)
-
-    let author, tag, date, body, entry
-
+  const Page = (props: PageThemeContext) => {
     const { context } = props
+    const { resources } = useData()
+    const resource = resources[0]
 
-    switch (context) {
+    if (!resource) {
+      throw new Error('Resource missing')
+    }
+
+    let author, tag, date, content
+
+    const { type } = resource
+
+    switch (type) {
       case 'post':
-        entry = props.data.entry.data.getPostDocument.data
-        author = entry.authors?.[0]?.author?.data.name
-        tag = entry.tags?.[0]?.tag?.data.slug
-        date = entry.date
-        body = entry.body as Root
+      case 'page': {
+        author = resource.primary_author
+        tag = resource.primary_tag
+        date = resource.date
+        content = resource.content as Root
         break
-      case 'page':
-        entry = props.data.entry.data.getPageDocument.data
-        tag = entry.tags?.[0]?.tag?.data.slug
-        date = entry.date
-        body = entry.body as Root
-        break
+      }
       default:
     }
 
     const pageOptions: PageOpt = {
       filename: 'empty',
-      route: props.route,
+      route: resource.path,
       meta: {
-        /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-        type: context || 'post',
-        author: author || 'no author',
-        tag: tag || 'no tag',
-        date: date || 'no date',
-        /* eslint-enable */
+        type: context?.at(0) ?? 'post',
+        author: author?.name ?? 'no author',
+        tag: tag?.name ?? 'no tag',
+        date: date ?? 'no date',
       },
       pageMap: [],
-      titleText: props.headers?.titleText || 'my title', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
+      titleText: /*props.headers?.titleText || */ 'my title', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
       headings: [],
       hasH1: false, // TODO props.data.headers?.hasH1 ?? false,
     }
@@ -158,11 +129,13 @@ export default (_config: NextraBlogTheme) => {
 
     return (
       <NextraThemeBlog>
-        <MdxTheme content={body} />
+        <MdxTheme content={content} />
         <pre>{JSON.stringify(props, null, 2)}</pre>
       </NextraThemeBlog>
     )
   }
 
-  return Comp
+  return Page
 }
+
+export default createTheme

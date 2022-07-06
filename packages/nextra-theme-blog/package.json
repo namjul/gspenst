@@ -3,18 +3,26 @@
   "version": "0.0.1",
   "main": "dist/gspenst-nextra-theme-blog.cjs.js",
   "module": "dist/gspenst-nextra-theme-blog.esm.js",
+  "files": [
+    "dist",
+    "schema"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@gspenst/components": "^0.0.1",
     "@gspenst/next": "^0.0.1",
     "@mdx-js/react": "^2.1.1",
-    "dot-prop": "^7.2.0",
-    "next-themes": "^0.1.1",
+    "gspenst": "^0.0.1",
     "nextra-theme-blog": "2.0.0-alpha.48"
   },
   "peerDependencies": {
     "react": ">=16.13.1"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "index.tsx",
+      "schema.ts"
+    ]
   }
 }
