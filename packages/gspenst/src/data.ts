@@ -1,10 +1,13 @@
+import merge from 'deepmerge'
 import React, { createContext, useContext } from 'react'
 import { TinaEditProvider, useTina } from 'tinacms/dist/edit-state'
 import type { TinaCloudSchema } from 'tinacms'
 import { isValidElementType } from 'react-is'
 import type { PageThemeContext, ThemeContext } from './domain/theming'
-import { createRoutingMapping } from './domain/resource'
+import type { Resource, RoutingMapping } from './domain/resource'
 import { absurd } from './shared/utils'
+import { normalizeResource } from './helpers/normalize'
+import * as Errors from './errors'
 
 type Action = { type: 'to-be-defined' }
 type Dispatch = (action: Action) => void
@@ -27,11 +30,13 @@ function dataReducer(state: State, action: Action) {
   }
 }
 
-function useState(initialState: State): { state: State; dispatch: Dispatch } {
+function useGspenstState(initialState: State): {
+  state: State
+  dispatch: Dispatch
+} {
   const [state, dispatch] = React.useReducer(dataReducer, initialState)
 
-  const { resource } = state
-  const { tinaData } = resource
+  const { tinaData } = state.resource
 
   const { data, isLoading } = useTina({
     query: tinaData.query,
@@ -39,18 +44,30 @@ function useState(initialState: State): { state: State; dispatch: Dispatch } {
     data: tinaData.data,
   })
 
+  const resource = {
+    ...state.resource,
+    tinaData: { ...state.resource.tinaData, data },
+  } as Resource
+
+  const normalizeResourceResult = normalizeResource(resource)
+
+  if (normalizeResourceResult.isErr()) {
+    throw Errors.format(normalizeResourceResult.error)
+  }
+
   return {
     state: {
       ...state,
-      resource: { ...resource, tinaData: { ...resource.tinaData, data } },
+      resource,
       ctxEditingLoading: isLoading,
+      entities: merge(state.entities, normalizeResourceResult.value.entities),
     } as State,
     dispatch,
   }
 }
 
 function DataProvider({ initialState, Component }: DataProviderProps) {
-  const { state, dispatch } = useState(initialState)
+  const { state, dispatch } = useGspenstState(initialState)
 
   // NOTE: you *might* need to memoize this value
   // Learn more in http://kcd.im/optimize-context
@@ -84,7 +101,7 @@ const withData = ({
   ) => React.ComponentType<any> | undefined
   config: {
     tinaSchema: TinaCloudSchema
-    routingMapping: ReturnType<typeof createRoutingMapping>
+    routingMapping: RoutingMapping
   }
   Component: ThemeComponent
 }) => {

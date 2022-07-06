@@ -5,8 +5,6 @@ import type { RoutesConfig } from './domain/routes'
 import type { ID, ResultAsync } from './shared/kernel'
 import * as Errors from './errors'
 import { collect } from './collect'
-import { denormalizeEntities } from './helpers/normalize'
-import { convertArrayToObject } from './shared/utils'
 
 type Meta = { type: 'meta'; updated_at: number }
 
@@ -102,29 +100,6 @@ const repository = {
             )
           )
     })
-  },
-
-  getDenormalized<T extends ID | ID[]>(id: T): GetValue<T> {
-    const ids = [id].flat()
-    const result = this.getAll()
-      .andThen((resources) => {
-        return denormalizeEntities(
-          { resources: ids },
-          {
-            resources: convertArrayToObject<Resource>(
-              resources,
-              'id'
-            ) as Record<ID, Resource>,
-          }
-        )
-      })
-      .map(({ resources = [] }) => {
-        if (!Array.isArray(id)) {
-          return resources[0]
-        }
-        return resources
-      })
-    return result as GetValue<T>
   },
 
   findAll<T extends ResourceType>(resourceType?: T): FindAllValue<T> {

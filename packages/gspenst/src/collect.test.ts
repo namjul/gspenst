@@ -61,11 +61,7 @@ describe('collect', () => {
         filepath: 'content/posts/3th-post.mdx',
         relativePath: '3th-post.mdx',
         path: '/post/3th-post/2021/',
-        filters: [
-          "tags:'tag-1'",
-          "authors:'pedro'",
-          'primary_tag:tag-1',
-        ],
+        filters: ["tags:'tag-1'", "authors:'pedro'", 'primary_tag:tag-1'],
         slug: '3th-post',
         year: 2021,
         month: 3,
@@ -73,7 +69,6 @@ describe('collect', () => {
         primary_tag: 'tag-1',
         primary_author: 'pedro',
         resourceType: 'post',
-        relationships: [2502649434, 2198476025],
       })
     )
     expect(resources.find(({ id }) => id === 1071642883)).toEqual(

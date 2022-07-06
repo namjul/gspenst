@@ -1,6 +1,10 @@
-import { schema } from 'normalizr'
+import {
+  schema,
+  normalize as _normalize,
+  denormalize as _denormalize,
+} from 'normalizr'
 import type { NormalizedSchema } from 'normalizr'
-import { combine, err } from '../shared/kernel'
+import { combine, fromThrowable } from '../shared/kernel'
 import * as Errors from '../errors'
 import type { Resource } from '../domain/resource'
 import type { Post } from '../domain/post'
@@ -9,19 +13,31 @@ import type { Author } from '../domain/author'
 import type { Tag } from '../domain/tag'
 import type { Config } from '../domain/config'
 import type { Result, ID } from '../shared/kernel'
-import { absurd, isNumber } from '../shared/utils'
+import { absurd, do_ } from '../shared/utils'
 import { createPost } from '../domain/post'
 import { createPage } from '../domain/page'
 import { createAuthor } from '../domain/author'
 import { createTag } from '../domain/tag'
 import { createConfig } from '../domain/config'
 import type { Entities } from '../domain/theming'
-import { normalize, denormalize } from './index'
+
+export const normalize = fromThrowable(_normalize, (error) =>
+  Errors.other(
+    '`normalizr#normalize`',
+    error instanceof Error ? error : undefined
+  )
+)
+
+export const denormalize = fromThrowable(_denormalize, (error) =>
+  Errors.other(
+    '`normalizr#denormalize`',
+    error instanceof Error ? error : undefined
+  )
+)
 
 export type Entity = Config | Post | Page | Author | Tag
 
 const resourceEntitySchema = new schema.Entity('resources')
-resourceEntitySchema.define({ relationships: [resourceEntitySchema] })
 
 const tagEntitySchema = new schema.Entity('tags')
 const authorEntitySchema = new schema.Entity('authors')
@@ -158,29 +174,26 @@ export function denormalizeResource<T extends Resource>(
 }
 
 export function resolveResourceData(resource: Resource): Result<Entity> {
-  if ('relationships' in resource) {
-    if (resource.relationships.some((relResource) => isNumber(relResource))) {
-      return err(
-        Errors.other(
-          `Resource at \`${resource.filepath}\` should be denormalized`
-        )
-      )
+  return do_(() => {
+    const { resourceType } = resource
+    switch (resourceType) {
+      case 'post':
+        return createPost(resource.tinaData.data.post)
+      case 'page':
+        return createPage(resource.tinaData.data.page)
+      case 'author':
+        return createAuthor(resource.tinaData.data.author)
+      case 'tag':
+        return createTag(resource.tinaData.data.tag)
+      case 'config':
+        return createConfig(resource.tinaData.data.config)
+      default:
+        return absurd(resourceType)
     }
-  }
-
-  const { resourceType } = resource
-  switch (resourceType) {
-    case 'post':
-      return createPost(resource)
-    case 'page':
-      return createPage(resource)
-    case 'author':
-      return createAuthor(resource)
-    case 'tag':
-      return createTag(resource)
-    case 'config':
-      return createConfig(resource)
-    default:
-      return absurd(resourceType)
-  }
+  }).map((entity) => {
+    if ('path' in entity && 'path' in resource) {
+      entity.path = resource.path
+    }
+    return entity
+  })
 }

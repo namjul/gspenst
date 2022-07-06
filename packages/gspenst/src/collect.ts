@@ -1,4 +1,4 @@
-import { ok, err, combine } from './shared/kernel'
+import { ok, err, combine, idSchema } from './shared/kernel'
 import type { ResultAsync, Result } from './shared/kernel'
 import * as db from './db'
 import type {
@@ -22,6 +22,7 @@ import { do_, absurd, isString } from './shared/utils'
 import { createLogger } from './logger'
 import { denormalizeResource } from './helpers/normalize'
 import * as Errors from './errors'
+import { parse } from './helpers/parser'
 
 const log = createLogger('collect')
 
@@ -96,10 +97,6 @@ function createResourcePath(
 ) {
   const { __typename } = resourceNode
   switch (__typename) {
-    case 'Config':
-    case 'Post': {
-      return ok(undefined)
-    }
     case 'Page': {
       const dynamicVariablesResult = createDynamicVariables(resourceNode)
       if (dynamicVariablesResult.isErr()) {
@@ -128,10 +125,10 @@ function createResourcePath(
           return ok(permalinkResult.value)
         }
       }
-      return ok(undefined)
     }
+    // eslint-disable-next-line no-fallthrough
     default:
-      return absurd(__typename)
+      return parse(idSchema, resourceNode.id).map((id) => `/${id}`)
   }
 }
 
@@ -139,34 +136,27 @@ export function collect(
   routesConfig: RoutesConfig = {}
 ): ResultAsync<Resource[]> {
   log('start')
+  // TODO make configurable so that only a single resource node can be collected
   const result = collectResourceNodes()
     .andThen((resourceNodes) => {
       const resourceResultList = resourceNodes.reduce<Result<Resource>[]>(
         (acc, current) => {
           const resourcePath = createResourcePath(routesConfig, current)
           if (resourcePath.isErr()) {
-            acc.push(resourcePath)
+            acc.push(err(resourcePath.error))
           } else {
-            const resourceItem = do_(() => {
-              const { __typename } = current
-              switch (__typename) {
-                case 'Post': {
-                  return createResource(current, resourcePath.value)
-                }
-                case 'Page': {
-                  return createResource(current, resourcePath.value)
-                }
-                case 'Author': {
-                  return createResource(current, resourcePath.value)
-                }
-                case 'Tag': {
-                  return createResource(current, resourcePath.value)
-                }
-                case 'Config': {
-                  return createResource(current, resourcePath.value)
+            const resourceItem = createResource(current).map((resource) => {
+              const { resourceType } = resource
+              switch (resourceType) {
+                case 'page':
+                case 'author':
+                case 'tag':
+                case 'post': {
+                  resource.path = resourcePath.value
+                  return resource
                 }
                 default:
-                  return absurd(__typename)
+                  return resource
               }
             })
 
@@ -298,12 +288,7 @@ export function collect(
                   if (postResourceResult.isErr()) {
                     return err(postResourceResult.error)
                   }
-                  // adding placeholder url to create valid post
-                  // the actual url will be add below
-                  return createPost({
-                    ...postResourceResult.value,
-                    path: '/placeholder',
-                  })
+                  return createPost(postResourceResult.value.tinaData.data.post)
                 }
                 case 'page': {
                   const pageResourceResult = denormalizeResource<PageResource>(
@@ -313,7 +298,7 @@ export function collect(
                   if (pageResourceResult.isErr()) {
                     return err(pageResourceResult.error)
                   }
-                  return createPage(pageResourceResult.value)
+                  return createPage(pageResourceResult.value.tinaData.data.page)
                 }
                 case 'author': {
                   const authorResourceResult =
@@ -321,7 +306,9 @@ export function collect(
                   if (authorResourceResult.isErr()) {
                     return err(authorResourceResult.error)
                   }
-                  return createAuthor(authorResourceResult.value)
+                  return createAuthor(
+                    authorResourceResult.value.tinaData.data.author
+                  )
                 }
                 case 'tag': {
                   const tagResourceResult = denormalizeResource<TagResource>(
@@ -331,7 +318,7 @@ export function collect(
                   if (tagResourceResult.isErr()) {
                     return err(tagResourceResult.error)
                   }
-                  return createTag(tagResourceResult.value)
+                  return createTag(tagResourceResult.value.tinaData.data.tag)
                 }
                 default:
                   return absurd(resourceType)

@@ -61,9 +61,7 @@ export function processQuery(
           return repository
             .find(removeNullish(dynamicVariables))
             .andThen(loadResource)
-            .andThen((resource) =>
-              repository.getDenormalized(resource.id).andThen(normalizeResource)
-            )
+            .andThen(normalizeResource)
             .andThen(({ result, entities }) => {
               const { resources = {} } = entities
               const resource = resources[result]
@@ -92,7 +90,7 @@ export function processQuery(
           // apply filter
           return resources.flatMap((resource) => {
             if (query.filter) {
-              if (resource.filters?.includes(query.filter)) {
+              if (resource.filters.includes(query.filter)) {
                 return resource
               }
               return []
@@ -101,11 +99,7 @@ export function processQuery(
           })
         })
         .andThen(loadManyResource)
-        .andThen((resources) =>
-          repository
-            .getDenormalized(resources.map(({ id }) => id))
-            .andThen(normalizeResources)
-        )
+        .andThen(normalizeResources)
         .map(async ({ result, entities }) => {
           const { default: sortOn } = await import('sort-on')
 

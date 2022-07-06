@@ -1,15 +1,19 @@
-import { idSchema, dateSchema, pathSchema, z, combine } from '../shared/kernel'
+import {
+  idSchema,
+  dateSchema,
+  pathSchema,
+  z,
+  combine,
+  err,
+} from '../shared/kernel'
 import type { Result } from '../shared/kernel'
-import { isNumber } from '../shared/utils'
 import { parse } from '../helpers/parser'
+import type {
+  PostNodeFragment,
+  PageNodeFragment,
+} from '../../.tina/__generated__/types'
 import { authorSchema, createAuthor } from './author'
 import { tagSchema, createTag } from './tag'
-import type {
-  PostResource,
-  PageResource,
-  TagResource,
-  AuthorResource,
-} from './resource'
 
 export const postSchema = z
   .object({
@@ -42,12 +46,15 @@ export const postNormalizedSchema = postSchema.merge(
 export type PostNormalized = z.infer<typeof postNormalizedSchema>
 
 export function createPost(
-  resource: PostResource | PageResource
+  node: PostNodeFragment | PageNodeFragment
 ): Result<Post> {
-  const { tinaData, relationships, path, resourceType } = resource
+  const { __typename, _sys, id, ...post } = node
 
-  const { __typename, _sys, ...post } =
-    resourceType === 'post' ? tinaData.data.post : tinaData.data.page
+  const idResult = parse(idSchema, node.id)
+
+  if (idResult.isErr()) {
+    return err(idResult.error)
+  }
 
   const rawTags = (post.tags ?? []).flatMap((tag) => {
     return tag?.tag ?? []
@@ -57,26 +64,15 @@ export function createPost(
     return author?.author ?? []
   })
 
-  const tagResources = relationships.filter(
-    (_resource): _resource is TagResource =>
-      !isNumber(_resource) && _resource.resourceType === 'tag'
-  )
-  const authorResources = relationships.filter(
-    (_resource): _resource is AuthorResource =>
-      !isNumber(_resource) && _resource.resourceType === 'author'
-  )
-
   const tagsResult = combine(
-    tagResources.map((tagResource, index) => {
-      tagResource.tinaData.data.tag = rawTags[index]!
-      return createTag(tagResource)
+    rawTags.map((tag) => {
+      return createTag(tag)
     })
   )
 
   const authorsResult = combine(
-    authorResources.map((authorResource, index) => {
-      authorResource.tinaData.data.author = rawAuthors[index]!
-      return createAuthor(authorResource)
+    rawAuthors.map((author) => {
+      return createAuthor(author)
     })
   )
 
@@ -86,10 +82,11 @@ export function createPost(
     const specialAttributes = {
       ...(primary_tag && { primary_tag }),
       ...(primary_author && { primary_author }),
-      path: path ?? `/${resource.id}`,
+      path: '/placeholder',
     }
 
     return parse(postSchema, {
+      id: idResult.value,
       type: 'post',
       ...post,
       tags,

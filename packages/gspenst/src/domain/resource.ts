@@ -16,7 +16,7 @@ import type {
   ThemeConfigNodeFragment as ConfigResourceNode,
 } from '../../.tina/__generated__/types'
 import type { GetTag, GetAuthor, GetPage, GetPost, GetConfig } from '../api'
-import { do_, absurd } from '../shared/utils'
+import { do_ } from '../shared/utils'
 
 export const resourceTypeConfig = z.literal('config')
 export const resourceTypePost = z.literal('post')
@@ -71,8 +71,8 @@ export const dynamicVariablesSchema = z.object({
 
 const locatorResourceBaseSchema = z
   .object({
-    path: pathSchema.optional(),
-    filters: z.array(z.string()).nullable(),
+    path: pathSchema,
+    filters: z.array(z.string()).default([]),
   })
   .merge(dynamicVariablesSchema)
 
@@ -199,9 +199,6 @@ export const postResourceSchema = resourceBaseSchema
   .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
-      relationships: z.array(
-        z.union([idSchema, authorResourceSchema, tagResourceSchema])
-      ),
       resourceType: resourceTypePost,
       tinaData: postTinaDataSchema,
     })
@@ -213,9 +210,6 @@ export const pageResourceSchema = resourceBaseSchema
   .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
-      relationships: z.array(
-        z.union([idSchema, authorResourceSchema, tagResourceSchema])
-      ),
       resourceType: resourceTypePage,
       tinaData: pageTinaDataSchema,
     })
@@ -256,14 +250,8 @@ export type LocatorResourceNode =
 
 export type ResourceNode = LocatorResourceNode | ConfigResourceNode
 
-export function createResource(
-  node: ResourceNode,
-  path: string | undefined,
-  filters: string[] = []
-): Result<Resource> {
+export function createResource(node: ResourceNode): Result<Resource> {
   const isLocator = node.__typename !== 'Config'
-  const isPost = node.__typename !== 'Post'
-  const isPage = node.__typename !== 'Page'
 
   const dynamicVariablesResult = isLocator
     ? createDynamicVariables(node)
@@ -278,33 +266,25 @@ export function createResource(
   const { _sys: { filename, path: filepath, relativePath } = {}, __typename } =
     node
 
+  const idResult = parse(idSchema, node.id)
+
+  if (idResult.isErr()) {
+    return err(idResult.error)
+  }
+
   const baseResource = {
-    id: node.id,
+    id: idResult.value,
     filename,
     filepath,
     relativePath,
   }
 
-  const locatorResource = isLocator
-    ? {
-        ...dynamicVariables,
-        path,
-        filters,
-        ...(isPost || isPage
-          ? {
-              relationships: extractRelations(node).map(
-                (relNode) => relNode.id
-              ),
-            }
-          : {}),
-      }
-    : {}
-
   const resource = {
     ...baseResource,
-    ...locatorResource,
+    ...dynamicVariables,
     resourceType: __typename.toLowerCase(),
     tinaData: node,
+    path: `/${idResult.value}`,
   }
 
   return parse(resourceSchema, resource)
@@ -357,36 +337,13 @@ export function createDynamicVariables(
   })
 }
 
-function extractRelations(node: LocatorResourceNode) {
-  const { __typename } = node
-  switch (__typename) {
-    case 'Page':
-    case 'Post': {
-      return [...(node.tags ?? []), ...(node.authors ?? [])].flatMap(
-        (childNode) => {
-          if (childNode && 'tag' in childNode) {
-            return childNode.tag ?? []
-          }
-          if (childNode && 'author' in childNode) {
-            return childNode.author ?? []
-          }
-          return []
-        }
-      )
-    }
-    case 'Author':
-    case 'Tag':
-      return []
-    default:
-      return absurd(__typename)
-  }
-}
-
 export type RoutingMapping = Record<
   LocatorResource['filepath'],
   LocatorResource['path']
 >
-export function createRoutingMapping(locatorResources: LocatorResource[]) {
+export function createRoutingMapping(
+  locatorResources: LocatorResource[]
+): RoutingMapping {
   return locatorResources.reduce<RoutingMapping>((acc, resource) => {
     return {
       ...acc,

@@ -1228,3 +1228,4 @@ export const queries = (client: TinaClient) => {
   const requester = generateRequester(client);
   return getSdk(requester);
 };
+
