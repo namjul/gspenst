@@ -13,7 +13,11 @@ type Action = { type: 'to-be-defined' }
 type Dispatch = (action: Action) => void
 type State = PageThemeContext & { ctxEditingLoading?: boolean }
 type ThemeComponent = React.ComponentType<State>
-type DataProviderProps = { initialState: State; Component: ThemeComponent }
+type DataProviderProps = {
+  initialState: State
+  Component: ThemeComponent
+  routingMapping: RoutingMapping
+}
 
 const DataStateContext = createContext<
   { state: State; dispatch: Dispatch } | undefined
@@ -30,7 +34,10 @@ function dataReducer(state: State, action: Action) {
   }
 }
 
-function useGspenstState(initialState: State): {
+function useGspenstState(
+  initialState: State,
+  routingMapping: RoutingMapping
+): {
   state: State
   dispatch: Dispatch
 } {
@@ -49,7 +56,7 @@ function useGspenstState(initialState: State): {
     tinaData: { ...state.resource.tinaData, data },
   } as Resource
 
-  const normalizeResourceResult = normalizeResource(resource)
+  const normalizeResourceResult = normalizeResource(resource, routingMapping)
 
   if (normalizeResourceResult.isErr()) {
     throw Errors.format(normalizeResourceResult.error)
@@ -66,8 +73,12 @@ function useGspenstState(initialState: State): {
   }
 }
 
-function DataProvider({ initialState, Component }: DataProviderProps) {
-  const { state, dispatch } = useGspenstState(initialState)
+function DataProvider({
+  initialState,
+  Component,
+  routingMapping,
+}: DataProviderProps) {
+  const { state, dispatch } = useGspenstState(initialState, routingMapping)
 
   // NOTE: you *might* need to memoize this value
   // Learn more in http://kcd.im/optimize-context
@@ -120,6 +131,7 @@ const withData = ({
       component = React.createElement(DataProvider, {
         initialState: props,
         Component,
+        routingMapping: config.routingMapping,
       })
     }
 

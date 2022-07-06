@@ -33,7 +33,6 @@ export const getStaticProps =
 
     const router = routerManager(routesConfig)
     const routingContext = router.handle(params?.[routingParameter])
-    console.log(routingContext)
     const controllerResult = controller(routingContext)
 
     // TODO return controllerResult or throw

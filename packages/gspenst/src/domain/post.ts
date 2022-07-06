@@ -12,6 +12,7 @@ import type {
   PostNodeFragment,
   PageNodeFragment,
 } from '../../.tina/__generated__/types'
+import type { RoutingMapping } from './resource'
 import { authorSchema, createAuthor } from './author'
 import { tagSchema, createTag } from './tag'
 
@@ -46,7 +47,8 @@ export const postNormalizedSchema = postSchema.merge(
 export type PostNormalized = z.infer<typeof postNormalizedSchema>
 
 export function createPost(
-  node: PostNodeFragment | PageNodeFragment
+  node: PostNodeFragment | PageNodeFragment,
+  routingMapping: RoutingMapping = {}
 ): Result<Post> {
   const { __typename, _sys, id, ...post } = node
 
@@ -66,13 +68,13 @@ export function createPost(
 
   const tagsResult = combine(
     rawTags.map((tag) => {
-      return createTag(tag)
+      return createTag(tag, routingMapping)
     })
   )
 
   const authorsResult = combine(
     rawAuthors.map((author) => {
-      return createAuthor(author)
+      return createAuthor(author, routingMapping)
     })
   )
 
@@ -82,7 +84,7 @@ export function createPost(
     const specialAttributes = {
       ...(primary_tag && { primary_tag }),
       ...(primary_author && { primary_author }),
-      path: '/placeholder',
+      path: routingMapping[node._sys.path] ?? `/${idResult.value}`,
     }
 
     return parse(postSchema, {

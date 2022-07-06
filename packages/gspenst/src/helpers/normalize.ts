@@ -6,7 +6,7 @@ import {
 import type { NormalizedSchema } from 'normalizr'
 import { combine, fromThrowable } from '../shared/kernel'
 import * as Errors from '../errors'
-import type { Resource } from '../domain/resource'
+import type { Resource, RoutingMapping } from '../domain/resource'
 import type { Post } from '../domain/post'
 import type { Page } from '../domain/page'
 import type { Author } from '../domain/author'
@@ -107,8 +107,11 @@ export function denormalizeEntities(
   return denormalize(data, entitiesSchema, entities)
 }
 
-export function normalizeResource(resource: Resource) {
-  return resolveResourceData(resource).andThen((entity) => {
+export function normalizeResource(
+  resource: Resource,
+  routingMapping: RoutingMapping = {}
+) {
+  return resolveResourceData(resource, routingMapping).andThen((entity) => {
     return normalizeEntities({
       [`${resource.resourceType}s`]: [entity],
       resources: [resource],
@@ -121,8 +124,13 @@ export function normalizeResource(resource: Resource) {
   })
 }
 
-export function normalizeResources(resources: Resource[]) {
-  return combine(resources.map(resolveResourceData)).andThen((entityList) => {
+export function normalizeResources(
+  resources: Resource[],
+  routingMapping: RoutingMapping = {}
+) {
+  return combine(
+    resources.map((resource) => resolveResourceData(resource, routingMapping))
+  ).andThen((entityList) => {
     return normalizeEntities(
       entityList.reduce<Required<Parameters<typeof normalizeEntities>[0]>>(
         (acc, entity, index) => {
@@ -173,18 +181,21 @@ export function denormalizeResource<T extends Resource>(
   )
 }
 
-export function resolveResourceData(resource: Resource): Result<Entity> {
+export function resolveResourceData(
+  resource: Resource,
+  routingMapping: RoutingMapping = {}
+): Result<Entity> {
   return do_(() => {
     const { resourceType } = resource
     switch (resourceType) {
       case 'post':
-        return createPost(resource.tinaData.data.post)
+        return createPost(resource.tinaData.data.post, routingMapping)
       case 'page':
-        return createPage(resource.tinaData.data.page)
+        return createPage(resource.tinaData.data.page, routingMapping)
       case 'author':
-        return createAuthor(resource.tinaData.data.author)
+        return createAuthor(resource.tinaData.data.author, routingMapping)
       case 'tag':
-        return createTag(resource.tinaData.data.tag)
+        return createTag(resource.tinaData.data.tag, routingMapping)
       case 'config':
         return createConfig(resource.tinaData.data.config)
       default:
