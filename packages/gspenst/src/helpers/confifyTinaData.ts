@@ -14,7 +14,7 @@ export function confifyTinaData(
     return ok(configResource)
   }
 
-  if (resource.resourceType === 'config') {
+  if (resource.type === 'config') {
     return err(Errors.other('confifyTinaData: Cannot confify config resource.'))
   }
 

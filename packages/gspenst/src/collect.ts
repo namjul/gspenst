@@ -138,8 +138,8 @@ export function collect(
             acc.push(err(resourcePath.error))
           } else {
             const resourceItem = createResource(current).map((resource) => {
-              const { resourceType } = resource
-              switch (resourceType) {
+              const { type } = resource
+              switch (type) {
                 case 'page':
                 case 'author':
                 case 'tag':
@@ -222,11 +222,11 @@ export function collect(
             post: [
               ...resources.flatMap((resource) => {
                 if (
-                  resource.resourceType === 'tag' ||
-                  resource.resourceType === 'author'
+                  resource.type === 'tag' ||
+                  resource.type === 'author'
                 ) {
                   const taxonomyRoute =
-                    routesConfig.taxonomies?.[resource.resourceType]
+                    routesConfig.taxonomies?.[resource.type]
                   return taxonomyRoute
                     ? {
                         controller: 'channel' as const,
@@ -234,7 +234,7 @@ export function collect(
                           /%s/g,
                           resource.slug
                         ),
-                        name: resource.resourceType,
+                        name: resource.type,
                       }
                     : []
                 }
@@ -249,14 +249,14 @@ export function collect(
 
         return combine(
           resources.flatMap((resource) => {
-            if (resource.resourceType === 'config') {
+            if (resource.type === 'config') {
               return ok(resource)
             }
 
             const entryResult = do_(() => {
-              const { resourceType } = resource
+              const { type } = resource
 
-              switch (resourceType) {
+              switch (type) {
                 case 'post': {
                   return createPost(resource.tinaData.data.post)
                 }
@@ -270,7 +270,7 @@ export function collect(
                   return createTag(resource.tinaData.data.tag)
                 }
                 default:
-                  return absurd(resourceType)
+                  return absurd(type)
               }
             })
 
@@ -281,7 +281,7 @@ export function collect(
             // calculate matching filters
             const matchingFilter = do_(() => {
               const resourceFilters = [
-                ...resourcesFilters[resource.resourceType],
+                ...resourcesFilters[resource.type],
               ].filter((routeFilter) => {
                 const nqlFilterValue = isString(routeFilter)
                   ? routeFilter
@@ -330,7 +330,7 @@ export function collect(
             let resourcePath = resource.path
 
             // calculate resourcePath
-            if (resource.resourceType === 'post') {
+            if (resource.type === 'post') {
               // find owning collection
               const collectionRouteConfig = getCollections(routesConfig).find(
                 ([_, collection]) => {

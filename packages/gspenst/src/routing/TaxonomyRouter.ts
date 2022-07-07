@@ -86,14 +86,14 @@ class TaxonomyRouter extends ParentRouter {
 
   resolvePaths(routers: ParentRouter[], resources: Resource[]) {
     const paths = resources.flatMap((resource) => {
-      if (resource.resourceType !== this.taxonomyKey) {
+      if (resource.type !== this.taxonomyKey) {
         return []
       }
 
       if (
         this.respectDominantRouter(
           routers,
-          resource.resourceType,
+          resource.type,
           resource.slug
         )
       ) {
@@ -102,8 +102,8 @@ class TaxonomyRouter extends ParentRouter {
 
       const postResources = resources.filter(
         (_resource) =>
-          _resource.resourceType === 'post' &&
-          _resource.filters?.includes(this.#replaceFilter(resource.slug))
+          _resource.type === 'post' &&
+          _resource.filters.includes(this.#replaceFilter(resource.slug))
       )
 
       const { path: resourcePath } = resource

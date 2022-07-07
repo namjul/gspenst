@@ -19,7 +19,7 @@ type GetValue<T extends ID | ID[]> = T extends ID[]
 type FindAllValue<T extends ResourceType> = RepoResultAsync<
   (T extends null | undefined
     ? Resource
-    : Extract<Resource, { resourceType: T }>)[]
+    : Extract<Resource, { type: T }>)[]
 >
 
 const repository = {
@@ -102,11 +102,11 @@ const repository = {
     })
   },
 
-  findAll<T extends ResourceType>(resourceType?: T): FindAllValue<T> {
+  findAll<T extends ResourceType>(type?: T): FindAllValue<T> {
     return this.getAll().andThen((resources) => {
-      if (resourceType) {
+      if (type) {
         const found = Object.values(resources).filter(
-          this.match({ resourceType })
+          this.match({ type })
         )
         return okAsync(found) as FindAllValue<T>
       }
@@ -117,10 +117,10 @@ const repository = {
   match(partialEntity: Partial<Resource>) {
     return (resource: Resource) => {
       const isResource =
-        'resourceType' in partialEntity && 'resourceType' in resource
+        'type' in partialEntity && 'type' in resource
       return (
         (isResource
-          ? partialEntity.resourceType === resource.resourceType
+          ? partialEntity.type === resource.type
           : true) &&
         Object.entries(partialEntity)
           .map(([key, value]) => {

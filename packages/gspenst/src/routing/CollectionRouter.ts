@@ -112,9 +112,9 @@ class CollectionRouter extends ParentRouter {
   resolvePaths(routers: ParentRouter[], resources: LocatorResource[]) {
     const postResources = resources.filter(
       (resource) =>
-        resource.resourceType === 'post' &&
+        resource.type === 'post' &&
         (this.config.filter
-          ? resource.filters?.includes(this.config.filter)
+          ? resource.filters.includes(this.config.filter)
           : true)
     )
 
@@ -129,7 +129,7 @@ class CollectionRouter extends ParentRouter {
           if (
             this.respectDominantRouter(
               routers,
-              resource.resourceType,
+              resource.type,
               'slug' in resource ? resource.slug : undefined
             )
           ) {
@@ -138,7 +138,7 @@ class CollectionRouter extends ParentRouter {
 
           if (!this.postSet.has(resource.id)) {
             this.postSet.add(resource.id)
-            return resource.path ?? []
+            return resource.path
           }
           return []
         })

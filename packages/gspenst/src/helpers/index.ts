@@ -16,15 +16,15 @@ import { nodeEnvironment } from '../env'
 
 export const filterLocatorResources = (
   resource: Resource
-): resource is LocatorResource => resource.resourceType !== 'config'
+): resource is LocatorResource => resource.type !== 'config'
 
 export const filterTagResources = (
   resource: Resource
-): resource is TagResource => resource.resourceType === 'tag'
+): resource is TagResource => resource.type === 'tag'
 
 export const filterAuthorResources = (
   resource: Resource
-): resource is AuthorResource => resource.resourceType === 'author'
+): resource is AuthorResource => resource.type === 'author'
 
 export const isProductionBuild = nodeEnvironment === 'production'
 

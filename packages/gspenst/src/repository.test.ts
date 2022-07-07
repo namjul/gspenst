@@ -24,7 +24,7 @@ describe('repository', () => {
       id,
       filename: '0th-post',
       filepath: 'content/posts/0th-post.mdx',
-      resourceType: 'post' as const,
+      type: 'post' as const,
       relativePath: '0th-post.mdx',
       slug: '0th-post',
       year: 2021,

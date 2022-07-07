@@ -85,7 +85,7 @@ async function routeController(
         //   //redirect
         // }
 
-        if (configResource.resourceType !== 'config') {
+        if (configResource.type !== 'config') {
           return err(Errors.absurd('Did not fetch config resource'))
         }
 
@@ -190,7 +190,7 @@ function findMainResource(
     .flatMap<LocatorResource>(([_, dataSchema]) => {
       if (dataSchema.type === 'read') {
         const resource = entities.resource[dataSchema.resource]
-        if (resource?.resourceType !== 'config') {
+        if (resource?.type !== 'config') {
           return resource ?? []
         }
       }

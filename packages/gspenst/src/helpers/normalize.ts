@@ -98,7 +98,7 @@ export function normalizeResource(
 ) {
   return resolveResourceData(resource, routingMapping).andThen((entity) => {
     return normalizeEntities({
-      [`${resource.resourceType}`]: [entity],
+      [`${resource.type}`]: [entity],
       resource: [resource],
     }).map(({ entities }) => {
       return {
@@ -122,16 +122,16 @@ export function normalizeResources(
           const resource = resources[index]
           if (resource) {
             acc.resource.push(resource)
-            const { resourceType } = resource
-            if (resourceType === 'post' && entity.type === 'post') {
+            const { type } = resource
+            if (type === 'post' && entity.type === 'post') {
               acc.post.push(entity)
-            } else if (resourceType === 'page' && entity.type === 'page') {
+            } else if (type === 'page' && entity.type === 'page') {
               acc.page.push(entity)
-            } else if (resourceType === 'author' && entity.type === 'author') {
+            } else if (type === 'author' && entity.type === 'author') {
               acc.author.push(entity)
-            } else if (resourceType === 'tag' && entity.type === 'tag') {
+            } else if (type === 'tag' && entity.type === 'tag') {
               acc.tag.push(entity)
-            } else if (resourceType === 'config' && entity.type === 'config') {
+            } else if (type === 'config' && entity.type === 'config') {
               acc.config.push(entity)
             }
           }
@@ -160,8 +160,8 @@ export function resolveResourceData(
   routingMapping: RoutingMapping = {}
 ): Result<Entity> {
   return do_(() => {
-    const { resourceType } = resource
-    switch (resourceType) {
+    const { type } = resource
+    switch (type) {
       case 'post':
         return createPost(resource.tinaData.data.post, routingMapping)
       case 'page':
@@ -173,7 +173,7 @@ export function resolveResourceData(
       case 'config':
         return createConfig(resource.tinaData.data.config)
       default:
-        return absurd(resourceType)
+        return absurd(type)
     }
   }).map((entity) => {
     if ('path' in entity && 'path' in resource) {

@@ -68,8 +68,8 @@ function useGspenstState(
       resource,
       ctxEditingLoading: isLoading,
       entities: merge(state.entities, normalizeResourceResult.value.entities, {
-        isMergeableObject: (x) => {
-          return !('type' in x || 'resourceType' in x)
+        isMergeableObject: (value) => {
+          return !('type' in value)
         },
       }),
     } as State,
@@ -106,10 +106,10 @@ function useData(key: string | undefined = undefined) {
   const { state } = useStore()
 
   const { resources, pagination } = do_(() => {
-    if (key === state.resource.resourceType || key === undefined) {
+    if (key === state.resource.type || key === undefined) {
       return {
         resources: {
-          [state.resource.resourceType]: [state.resource.id],
+          [state.resource.type]: [state.resource.id],
         },
       }
     }

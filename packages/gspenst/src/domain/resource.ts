@@ -166,7 +166,7 @@ const tagTinaDataSchema = tagFragmentSchema.transform(
 
 export const configResourceSchema = resourceBaseSchema.merge(
   z.object({
-    resourceType: resourceTypeConfig,
+    type: resourceTypeConfig,
     tinaData: configTinaDataSchema,
   })
 )
@@ -177,7 +177,7 @@ export const authorResourceSchema = resourceBaseSchema
   .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
-      resourceType: resourceTypeAuthor,
+      type: resourceTypeAuthor,
       tinaData: authorTinaDataSchema,
     })
   )
@@ -188,7 +188,7 @@ export const tagResourceSchema = resourceBaseSchema
   .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
-      resourceType: resourceTypeTag,
+      type: resourceTypeTag,
       tinaData: tagTinaDataSchema,
     })
   )
@@ -199,7 +199,7 @@ export const postResourceSchema = resourceBaseSchema
   .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
-      resourceType: resourceTypePost,
+      type: resourceTypePost,
       tinaData: postTinaDataSchema,
     })
   )
@@ -210,14 +210,14 @@ export const pageResourceSchema = resourceBaseSchema
   .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
-      resourceType: resourceTypePage,
+      type: resourceTypePage,
       tinaData: pageTinaDataSchema,
     })
   )
 
 export type PageResource = z.infer<typeof pageResourceSchema>
 
-export const resourceSchema = z.discriminatedUnion('resourceType', [
+export const resourceSchema = z.discriminatedUnion('type', [
   configResourceSchema,
   postResourceSchema,
   pageResourceSchema,
@@ -227,7 +227,7 @@ export const resourceSchema = z.discriminatedUnion('resourceType', [
 
 resourceSchema.describe('resourceSchema')
 
-export const locatorResourceSchema = z.discriminatedUnion('resourceType', [
+export const locatorResourceSchema = z.discriminatedUnion('type', [
   postResourceSchema,
   pageResourceSchema,
   authorResourceSchema,
@@ -282,7 +282,7 @@ export function createResource(node: ResourceNode): Result<Resource> {
   const resource = {
     ...baseResource,
     ...dynamicVariables,
-    resourceType: __typename.toLowerCase(),
+    type: __typename.toLowerCase(),
     tinaData: node,
     path: `/${idResult.value}`,
   }
@@ -337,10 +337,11 @@ export function createDynamicVariables(
   })
 }
 
-export type RoutingMapping = Record<
-  LocatorResource['filepath'],
-  LocatorResource['path']
->
+type FilePath = LocatorResource['filepath']
+type Path = LocatorResource['path']
+export type RoutingMapping = {
+  [filePath: FilePath]: Path
+}
 export function createRoutingMapping(
   locatorResources: LocatorResource[]
 ): RoutingMapping {

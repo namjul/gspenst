@@ -119,7 +119,7 @@ export function processQuery(
                 )
               }
 
-              const entity = entities[resource.resourceType][id]
+              const entity = entities[resource.type][id]
               return ok({
                 resource,
                 entity,
@@ -281,9 +281,9 @@ function batchLoadFromTina(sem: SemaphoreInterface) {
   return async (resources: ReadonlyArray<Resource>) => {
     return Promise.all(
       resources.map(async (resource) => {
-        const { resourceType, relativePath } = resource
+        const { type, relativePath } = resource
         return sem.runExclusive(async () => {
-          switch (resourceType) {
+          switch (type) {
             case 'page':
               return api.getPage({ relativePath }).map((tinaData) => ({
                 ...resource,
@@ -310,7 +310,7 @@ function batchLoadFromTina(sem: SemaphoreInterface) {
                 tinaData,
               }))
             default:
-              return absurd(resourceType)
+              return absurd(type)
           }
         })
       })

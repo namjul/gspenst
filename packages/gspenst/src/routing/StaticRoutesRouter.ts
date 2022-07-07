@@ -72,9 +72,9 @@ class StaticRoutesRouter extends ParentRouter {
     if ('controller' in this.config && this.config.controller === 'channel') {
       const postResources = resources.filter(
         (resource) =>
-          resource.resourceType === 'post' &&
+          resource.type === 'post' &&
           (this.config.filter
-            ? resource.filters?.includes(this.config.filter)
+            ? resource.filters.includes(this.config.filter)
             : true)
       )
 

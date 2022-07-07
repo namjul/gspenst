@@ -50,19 +50,19 @@ class StaticPagesRouter extends ParentRouter {
 
   resolvePaths(routers: ParentRouter[], resources: Resource[]) {
     return resources.flatMap((resource) => {
-      if (resource.resourceType !== 'page') {
+      if (resource.type !== 'page') {
         return []
       }
       if (
         this.respectDominantRouter(
           routers,
-          resource.resourceType,
+          resource.type,
           resource.slug
         )
       ) {
         return []
       }
-      return resource.path ?? []
+      return resource.path
     })
   }
 }

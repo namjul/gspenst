@@ -21,4 +21,4 @@ export function findContentDir(dir: string = process.cwd()): string {
 
 export const filterLocatorResources = (
   resource: Resource
-): resource is LocatorResource => resource.resourceType !== 'config'
+): resource is LocatorResource => resource.type !== 'config'

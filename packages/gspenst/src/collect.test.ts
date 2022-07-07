@@ -68,7 +68,7 @@ describe('collect', () => {
         day: 3,
         primary_tag: 'tag-1',
         primary_author: 'pedro',
-        resourceType: 'post',
+        type: 'post',
       })
     )
     expect(resources.find(({ id }) => id === 1071642883)).toEqual(
@@ -85,7 +85,7 @@ describe('collect', () => {
         day: 3,
         primary_tag: 'all',
         primary_author: 'all',
-        resourceType: 'tag',
+        type: 'tag',
       })
     )
   })
