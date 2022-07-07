@@ -101,7 +101,14 @@ async function routeController(
           resource: mainResourceResult.value,
           templates: getTemplateHierarchy(routingContext),
           data,
-          entities: filterObject(entities, ['post', 'page', 'author', 'tag']),
+          entities: filterObject(entities, [
+            'post',
+            'page',
+            'author',
+            'tag',
+            'config',
+          ]),
+          route: routingContext.request.path,
         })
       }
     )

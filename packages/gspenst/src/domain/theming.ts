@@ -1,4 +1,4 @@
-import { z, idSchema } from '../shared/kernel'
+import { z, idSchema, pathSchema } from '../shared/kernel'
 import { configSchema } from './config'
 import { postNormalizedSchema } from './post'
 import { pageNormalizedSchema } from './page'
@@ -48,6 +48,7 @@ export const entriesEntitiesSchema = z
     page: z.record(idSchema, pageNormalizedSchema),
     author: z.record(idSchema, authorSchema),
     tag: z.record(idSchema, tagSchema),
+    config: z.record(idSchema, configSchema),
   })
   .strict()
 
@@ -55,7 +56,6 @@ export type EntryEntities = z.infer<typeof entriesEntitiesSchema>
 
 export const entitiesSchema = z
   .object({
-    config: z.record(idSchema, configSchema),
     resource: z.record(idSchema, resourceSchema),
   })
   .merge(entriesEntitiesSchema)
@@ -70,6 +70,7 @@ const pageThemeContextSchema = z
     context: z.array(z.string()).nullable(),
     resource: resourceSchema,
     entities: entriesEntitiesSchema,
+    route: pathSchema,
   })
   .strict()
 
