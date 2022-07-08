@@ -59,7 +59,8 @@ export const slugSchema = z.string().transform((value) => slugify(value))
 export const pathSchema = z.string().regex(/^\/([^?/]+)/)
 
 const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()])
-type Json = z.infer<typeof literalSchema> | { [key: string]: Json } | Json[]
+
+export type Json = z.infer<typeof literalSchema> | { [key: string]: Json } | Json[]
 
 export const jsonSchema: z.ZodType<Json> = z.lazy(() =>
   z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)])

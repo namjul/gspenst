@@ -1,4 +1,5 @@
 import type { TinaField } from 'gspenst'
+import type { ConfigPartsFragment } from '../.tina/__generated__/types';
 
 export type NextraBlogTheme = {
   readMore?: string
@@ -23,6 +24,8 @@ export type NextraBlogTheme = {
     name: string
   }[]
 }
+
+export type TinaConfig = ConfigPartsFragment
 
 export const defaultConfig = {
   readMore: 'Read More →',

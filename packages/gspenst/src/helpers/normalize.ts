@@ -5,7 +5,7 @@ import {
 } from 'normalizr'
 import type { ValueOf } from 'type-fest'
 import type { NormalizedSchema } from 'normalizr'
-import { combine, fromThrowable } from '../shared/kernel'
+import { combine, fromThrowable, z } from '../shared/kernel'
 import * as Errors from '../errors'
 import type { Resource, RoutingMapping } from '../domain/resource'
 import type { Post } from '../domain/post'
@@ -15,11 +15,11 @@ import type { Tag } from '../domain/tag'
 import type { Config } from '../domain/config'
 import type { Result, ID } from '../shared/kernel'
 import { absurd, do_ } from '../shared/utils'
-import { createPost } from '../domain/post'
-import { createPage } from '../domain/page'
-import { createAuthor } from '../domain/author'
-import { createTag } from '../domain/tag'
-import { createConfig } from '../domain/config'
+import { postSchema, createPost } from '../domain/post'
+import { pageSchema, createPage } from '../domain/page'
+import { authorSchema, createAuthor } from '../domain/author'
+import { tagSchema, createTag } from '../domain/tag'
+import { configSchema, createConfig } from '../domain/config'
 import type { Entities } from '../domain/theming'
 
 export const normalize = fromThrowable(_normalize, (error) =>
@@ -36,10 +36,19 @@ export const denormalize = fromThrowable(_denormalize, (error) =>
   )
 )
 
-export type Entity = Config | Post | Page | Author | Tag
+const entitySchema = z.discriminatedUnion('type', [
+  postSchema,
+  pageSchema,
+  authorSchema,
+  tagSchema,
+  configSchema,
+])
+
+export type Entity = z.infer<typeof entitySchema>
 
 const resourceEntitySchema = new schema.Entity('resource')
 
+const configEntitySchema = new schema.Entity('config')
 const tagEntitySchema = new schema.Entity('tag')
 const authorEntitySchema = new schema.Entity('author')
 const postEntitySchema = new schema.Entity('post', {
@@ -61,16 +70,19 @@ const entitiesSchema = {
   tag: [tagEntitySchema],
   author: [authorEntitySchema],
   resource: [resourceEntitySchema],
+  config: [configEntitySchema]
 }
 
-export function normalizeEntities(data: {
+type DenormalizedEntities = {
   config?: Config[]
   post?: Post[]
   page?: Page[]
   tag?: Tag[]
   author?: Author[]
   resource?: Resource[]
-}) {
+}
+
+export function normalizeEntities(data: DenormalizedEntities) {
   return normalize(data, entitiesSchema) as Result<
     NormalizedSchema<
       Entities,
@@ -96,11 +108,43 @@ export function normalizeResource(
   resource: Resource,
   routingMapping: RoutingMapping = {}
 ) {
-  return resolveResourceData(resource, routingMapping).andThen((entity) => {
-    return normalizeEntities({
-      [`${resource.type}`]: [entity],
-      resource: [resource],
-    }).map(({ entities }) => {
+  return resolveResourceData(resource, routingMapping).andThen((entityList) => {
+    const x = {
+      ...entityList.reduce<Required<DenormalizedEntities>>(
+        (acc, current) => {
+          const { type } = current
+          switch (type) {
+            case 'post':
+              acc.post.push(current)
+              break
+            case 'page':
+              acc.page.push(current)
+              break
+            case 'author':
+              acc.author.push(current)
+              break
+            case 'tag':
+              acc.tag.push(current)
+              break
+            case 'config':
+              acc.config.push(current)
+              break
+            default:
+              return absurd(type)
+          }
+          return acc
+        },
+        {
+          config: [],
+          post: [],
+          page: [],
+          tag: [],
+          author: [],
+          resource: [resource],
+        }
+      ),
+    }
+    return normalizeEntities(x).map(({ entities }) => {
       return {
         result: resource.id,
         entities,
@@ -117,23 +161,25 @@ export function normalizeResources(
     resources.map((resource) => resolveResourceData(resource, routingMapping))
   ).andThen((entityList) => {
     return normalizeEntities(
-      entityList.reduce<Required<Parameters<typeof normalizeEntities>[0]>>(
-        (acc, entity, index) => {
+      entityList.reduce<Required<DenormalizedEntities>>(
+        (acc, entities, index) => {
           const resource = resources[index]
           if (resource) {
-            acc.resource.push(resource)
-            const { type } = resource
-            if (type === 'post' && entity.type === 'post') {
-              acc.post.push(entity)
-            } else if (type === 'page' && entity.type === 'page') {
-              acc.page.push(entity)
-            } else if (type === 'author' && entity.type === 'author') {
-              acc.author.push(entity)
-            } else if (type === 'tag' && entity.type === 'tag') {
-              acc.tag.push(entity)
-            } else if (type === 'config' && entity.type === 'config') {
-              acc.config.push(entity)
-            }
+            entities.forEach((entity) => {
+              acc.resource.push(resource)
+              const { type } = resource
+              if (type === 'post' && entity.type === 'post') {
+                acc.post.push(entity)
+              } else if (type === 'page' && entity.type === 'page') {
+                acc.page.push(entity)
+              } else if (type === 'author' && entity.type === 'author') {
+                acc.author.push(entity)
+              } else if (type === 'tag' && entity.type === 'tag') {
+                acc.tag.push(entity)
+              } else if (type === 'config' && entity.type === 'config') {
+                acc.config.push(entity)
+              }
+            })
           }
           return acc
         },
@@ -158,27 +204,36 @@ export function normalizeResources(
 export function resolveResourceData(
   resource: Resource,
   routingMapping: RoutingMapping = {}
-): Result<Entity> {
-  return do_(() => {
+): Result<Entity[]> {
+  const entitiesResultList: Result<Entity>[] = do_(() => {
     const { type } = resource
     switch (type) {
       case 'post':
-        return createPost(resource.tinaData.data.post, routingMapping)
+        return [createPost(resource.tinaData.data.post, routingMapping)]
       case 'page':
-        return createPage(resource.tinaData.data.page, routingMapping)
+        return [createPage(resource.tinaData.data.page, routingMapping)]
       case 'author':
-        return createAuthor(resource.tinaData.data.author, routingMapping)
+        return [createAuthor(resource.tinaData.data.author, routingMapping)]
       case 'tag':
-        return createTag(resource.tinaData.data.tag, routingMapping)
+        return [createTag(resource.tinaData.data.tag, routingMapping)]
       case 'config':
-        return createConfig(resource.tinaData.data.config)
+        return [createConfig(resource.tinaData.data.config)]
       default:
         return absurd(type)
     }
-  }).map((entity) => {
-    if ('path' in entity && 'path' in resource) {
-      entity.path = resource.path
-    }
-    return entity
+  })
+
+  if (resource.tinaData.data.config) {
+    const configEntity = createConfig(resource.tinaData.data.config)
+    entitiesResultList.push(configEntity)
+  }
+
+  return combine(entitiesResultList).map((entities) => {
+    return entities.map((entity) => {
+      if ('path' in entity && 'path' in resource) {
+        entity.path = resource.path
+      }
+      return entity
+    })
   })
 }

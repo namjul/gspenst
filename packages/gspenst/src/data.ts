@@ -6,6 +6,7 @@ import { isValidElementType } from 'react-is'
 import type { PageThemeContext, ThemeContext } from './domain/theming'
 import type { Resource, RoutingMapping } from './domain/resource'
 import { absurd, do_ } from './shared/utils'
+import type { Json } from './shared/kernel'
 import { normalizeResource, denormalizeEntities } from './helpers/normalize'
 import * as Errors from './errors'
 
@@ -151,6 +152,19 @@ function useData(key: string | undefined = undefined) {
   }
 }
 
+function useConfig<T extends Json>() {
+  const { state } = useStore()
+  const configs = Object.values(state.entities.config)
+
+  const config = configs.at(0)
+
+  if (!config) {
+    throw new Error('useConfig could not find a config.')
+  }
+
+  return config.values as T
+}
+
 const withData = ({
   getComponent,
   config,
@@ -204,4 +218,4 @@ const withData = ({
   }
   return WithData
 }
-export { withData, useStore, useData }
+export { withData, useStore, useData, useConfig }

@@ -8,6 +8,7 @@
     "schema"
   ],
   "scripts": {
+    "gen": "tinacms schema:compile && tinacms schema:types",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
