@@ -154,15 +154,13 @@ function useData(key: string | undefined = undefined) {
 
 function useConfig<T extends Json>() {
   const { state } = useStore()
-  const configs = Object.values(state.entities.config)
 
-  const config = configs.at(0)
-
-  if (!config) {
-    throw new Error('useConfig could not find a config.')
+  const config = Object.values(state.entities.config).at(0)
+  if (config) {
+    return config.values as T
   }
 
-  return config.values as T
+  // throw new Error('useConfig could not find a config.')
 }
 
 const withData = ({
