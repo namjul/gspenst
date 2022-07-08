@@ -17,8 +17,13 @@
     "gspenst": "^0.0.1",
     "nextra-theme-blog": "2.0.0-alpha.48"
   },
+  "devDependencies": {
+    "nextra": "2.0.0-alpha.56"
+  },
   "peerDependencies": {
-    "react": ">=16.13.1"
+    "next": ">=9.5.3",
+    "react": ">=16.13.1",
+    "react-dom": ">=16.13.1"
   },
   "preconstruct": {
     "entrypoints": [
