@@ -1,6 +1,6 @@
 import { ok } from '../shared/kernel'
 import type { Result, Option } from '../shared/kernel'
-import { pathToRegexp } from '../helpers'
+import { pathToRegexp } from '../utils'
 import type { RoutingContext, Request } from '../domain/routing'
 import type { Resource } from '../domain/resource'
 import ParentRouter from './ParentRouter'

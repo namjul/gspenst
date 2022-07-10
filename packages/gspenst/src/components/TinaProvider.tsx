@@ -1,7 +1,7 @@
 import TinaCMS, { defineConfig } from 'tinacms'
 import type { TinaCloudSchema } from 'tinacms'
 import { client } from '../shared/client'
-import { createRoutingMapping } from '../domain/resource'
+import { createRoutingMapping } from '../helpers/createRoutingMapping'
 
 export type TinaProviderProps = React.PropsWithChildren<{
   config: {

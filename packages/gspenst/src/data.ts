@@ -4,11 +4,13 @@ import { TinaEditProvider, useTina } from 'tinacms/dist/edit-state'
 import type { TinaCloudSchema } from 'tinacms'
 import { isValidElementType } from 'react-is'
 import type { PageThemeContext, ThemeContext } from './domain/theming'
-import type { Resource, RoutingMapping } from './domain/resource'
+import type { Resource } from './domain/resource'
 import { absurd, do_ } from './shared/utils'
 import type { Json } from './shared/kernel'
 import { normalizeResource, denormalizeEntities } from './helpers/normalize'
 import * as Errors from './errors'
+import type { RoutingMapping } from './helpers/createRoutingMapping';
+// import { getHeaders } from './helpers/getHeaders';
 
 type Action = { type: 'to-be-defined' }
 type Dispatch = (action: Action) => void

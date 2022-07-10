@@ -337,18 +337,18 @@ export function createDynamicVariables(
   })
 }
 
-type FilePath = LocatorResource['filepath']
-type Path = LocatorResource['path']
-export type RoutingMapping = {
-  [filePath: FilePath]: Path
-}
-export function createRoutingMapping(
-  locatorResources: LocatorResource[]
-): RoutingMapping {
-  return locatorResources.reduce<RoutingMapping>((acc, resource) => {
-    return {
-      ...acc,
-      [resource.filepath]: resource.path,
-    }
-  }, {})
-}
+export const filterLocatorResources = (
+  resource: Resource
+): resource is LocatorResource => resource.type !== 'config'
+
+export const filterTagResources = (
+  resource: Resource
+): resource is TagResource => resource.type === 'tag'
+
+export const filterPageResources = (
+  resource: Resource
+): resource is PageResource => resource.type === 'page'
+
+export const filterAuthorResources = (
+  resource: Resource
+): resource is AuthorResource => resource.type === 'author'

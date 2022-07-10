@@ -3,7 +3,7 @@ import type { DefinitionNode, SelectionNode } from 'graphql'
 import { combine, ok, err } from '../shared/kernel'
 import type { Result } from '../shared/kernel'
 import * as Errors from '../errors'
-import { safeGraphqlParse, safeGraphqlStringify } from '../helpers'
+import { safeGraphqlParse, safeGraphqlStringify } from '../utils'
 import type { Resource, ConfigResource } from '../domain/resource'
 
 export function confifyTinaData(

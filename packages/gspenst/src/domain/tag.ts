@@ -2,7 +2,7 @@ import { idSchema, pathSchema, dateSchema, z, err } from '../shared/kernel'
 import type { Result } from '../shared/kernel'
 import { parse } from '../helpers/parser'
 import type { TagNodeFragment } from '../../.tina/__generated__/types'
-import type { RoutingMapping } from './resource'
+import type { RoutingMapping } from '../helpers/createRoutingMapping';
 
 export const tagSchema = z
   .object({

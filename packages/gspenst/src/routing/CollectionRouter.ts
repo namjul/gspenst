@@ -1,6 +1,6 @@
 import path from 'path'
 import type { Key } from 'path-to-regexp'
-import { pathToRegexp } from '../helpers'
+import { pathToRegexp } from '../utils'
 import { ok, combine } from '../shared/kernel'
 import type { Result, Option, ID } from '../shared/kernel'
 import type { RoutingContext, Request } from '../domain/routing'
