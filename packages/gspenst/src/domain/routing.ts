@@ -2,7 +2,7 @@ import { z } from '../shared/kernel'
 import { dynamicVariablesSchema, locatorResourceTypeSchema } from './resource'
 import { queryFilterOptions, dataQuery } from './routes'
 
-// TODO rename to routerContext?
+// TODO rename to routerContext/router? at least remove the word context
 
 const redirectSchema = z.object({
   destination: z.string(),
@@ -22,14 +22,18 @@ const requestSchema = z.object({
 
 export type Request = z.infer<typeof requestSchema>
 
+const baseRoutingContextSchema = z.object({
+  name: z.string().optional(),
+  data: z.record(dataQuery),
+  templates: z.array(z.string()),
+  request: requestSchema,
+})
+
 const collectionRoutingContextSchema = z
   .object({
     type: z.literal('collection'),
-    name: z.string(),
-    data: z.record(dataQuery).optional(),
-    templates: z.array(z.string()),
-    request: requestSchema,
   })
+  .merge(baseRoutingContextSchema)
   .merge(queryFilterOptions)
 
 export type CollectionRoutingContext = z.infer<
@@ -39,30 +43,26 @@ export type CollectionRoutingContext = z.infer<
 const channelRoutingContextSchema = z
   .object({
     type: z.literal('channel'),
-    name: z.string(),
-    data: z.record(dataQuery).optional(),
-    templates: z.array(z.string()),
-    request: requestSchema,
   })
+  .merge(baseRoutingContextSchema)
   .merge(queryFilterOptions)
 
 export type ChannelRoutingContext = z.infer<typeof channelRoutingContextSchema>
 
-const entryRoutingContextSchema = z.object({
-  type: z.literal('entry'),
-  resourceType: locatorResourceTypeSchema,
-  templates: z.array(z.string()),
-  request: requestSchema,
-})
+const entryRoutingContextSchema = z
+  .object({
+    type: z.literal('entry'),
+    resourceType: locatorResourceTypeSchema,
+  })
+  .merge(baseRoutingContextSchema)
 
 export type EntryRoutingContext = z.infer<typeof entryRoutingContextSchema>
 
-const customRoutingContextSchema = z.object({
-  type: z.literal('custom'),
-  data: z.record(dataQuery).optional(),
-  templates: z.array(z.string()),
-  request: requestSchema,
-})
+const customRoutingContextSchema = z
+  .object({
+    type: z.literal('custom'),
+  })
+  .merge(baseRoutingContextSchema)
 
 export type CustomRoutingContext = z.infer<typeof customRoutingContextSchema>
 

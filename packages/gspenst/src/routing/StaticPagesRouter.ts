@@ -44,6 +44,7 @@ class StaticPagesRouter extends ParentRouter {
         path: _path,
         params,
       },
+      data: {},
       templates: [],
     }
   }
@@ -53,13 +54,7 @@ class StaticPagesRouter extends ParentRouter {
       if (resource.type !== 'page') {
         return []
       }
-      if (
-        this.respectDominantRouter(
-          routers,
-          resource.type,
-          resource.slug
-        )
-      ) {
+      if (this.respectDominantRouter(routers, resource.type, resource.slug)) {
         return []
       }
       return resource.path

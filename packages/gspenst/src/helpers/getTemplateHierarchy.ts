@@ -12,7 +12,11 @@ export function getTemplateHierarchy(routingContext: RoutingContext) {
       templateList.push('index')
 
       // CASE: author, tag, custom collection/channel name
-      if ('name' in routingContext && routingContext.name !== 'index') {
+      if (
+        'name' in routingContext &&
+        routingContext.name &&
+        routingContext.name !== 'index'
+      ) {
         templateList.unshift(routingContext.name)
 
         if (routingContext.request.params?.slug) {

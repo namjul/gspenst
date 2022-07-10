@@ -93,7 +93,7 @@ class CollectionRouter extends ParentRouter {
       name: this.routerName,
       request: { path: _path, params: { page } },
       templates: [this.config.template ?? []].flat(),
-      data: this.data?.query,
+      data: this.data?.query ?? {},
       filter: this.config.filter,
       limit: this.config.limit,
       order: this.config.order,
@@ -106,6 +106,7 @@ class CollectionRouter extends ParentRouter {
       resourceType: 'post' as const,
       request: { path: _path, params },
       templates: [this.config.template ?? []].flat(),
+      data: {},
     }
   }
 

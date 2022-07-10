@@ -270,6 +270,7 @@ describe('router contexts', () => {
             },
           },
           templates: [],
+          data: {},
         },
       ])
     )
@@ -350,7 +351,7 @@ describe('router contexts', () => {
           type: 'collection',
           name: 'index',
           limit: 5,
-          data: undefined,
+          data: {},
           templates: [],
           request: {
             path: '/page/1/',
@@ -466,6 +467,7 @@ describe('router contexts', () => {
             path: '/about/team/',
           },
           templates: ['team'],
+          data: {},
         },
         undefined,
         undefined,
@@ -487,6 +489,7 @@ describe('router contexts', () => {
           resourceType: 'post',
           templates: ['index'],
           type: 'entry',
+          data: {},
         },
         undefined,
         undefined,
@@ -522,6 +525,7 @@ describe('router contexts', () => {
           resourceType: 'page',
           templates: [],
           type: 'entry',
+          data: {},
         },
       ])
     )
@@ -539,6 +543,7 @@ describe('router contexts', () => {
           resourceType: 'post',
           templates: ['index'],
           type: 'entry',
+          data: {},
         },
         undefined,
         undefined,
@@ -581,6 +586,7 @@ describe('router contexts', () => {
           resourceType: 'post',
           templates: ['index'],
           type: 'entry',
+          data: {},
         },
         undefined,
         undefined,
@@ -594,6 +600,7 @@ describe('router contexts', () => {
           resourceType: 'page',
           templates: [],
           type: 'entry',
+          data: {},
         },
       ])
     )

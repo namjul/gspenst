@@ -52,7 +52,7 @@ class StaticRoutesRouter extends ParentRouter {
       name: this.routerName,
       templates: [this.config.template ?? []].flat(),
       request: { path: _path, params: { page } },
-      data: this.data?.query,
+      data: this.data?.query ?? {},
       filter: this.config.filter,
       limit: this.config.limit,
       order: this.config.order,
@@ -63,7 +63,7 @@ class StaticRoutesRouter extends ParentRouter {
       type: 'custom' as const,
       templates: [this.config.template ?? []].flat(),
       request: { path: _path },
-      data: this.data?.query,
+      data: this.data?.query ?? {},
     }
   }
 
