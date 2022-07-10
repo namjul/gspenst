@@ -1,7 +1,7 @@
 import { idSchema, jsonSchema, z } from '../shared/kernel'
 import { parse } from '../helpers/parser'
 import type { Result, Json } from '../shared/kernel'
-import type { ThemeConfigNodeFragment   } from '../../.tina/__generated__/types'
+import type { ThemeConfigNodeFragment } from '../../.tina/__generated__/types'
 
 export const configSchema = z
   .object({
@@ -14,7 +14,7 @@ export const configSchema = z
 configSchema.describe('configSchema')
 
 export type Config = z.infer<typeof configSchema>
-export type ConfigResourceNode = ThemeConfigNodeFragment & { values: Json }
+export type ConfigResourceNode = ThemeConfigNodeFragment & { values?: Json }
 
 export function createConfig(node: ConfigResourceNode): Result<Config> {
   return parse(configSchema, {
