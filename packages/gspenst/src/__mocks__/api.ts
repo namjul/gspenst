@@ -5,9 +5,18 @@ import type {
   GetPageQuery,
   GetAuthorQuery,
   GetTagQuery,
-  GetConfigQuery,
 } from '../../.tina/__generated__/types'
-import type { GetTags, GetAuthors, GetPosts, GetPages } from '../api'
+import type {
+  GetTags,
+  GetAuthors,
+  GetPosts,
+  GetPages,
+  GetPost,
+  GetPage,
+  GetAuthor,
+  GetTag,
+  GetConfig,
+} from '../api'
 
 type ApiResultAsync<T> = ResultAsync<T>
 
@@ -427,8 +436,12 @@ export const getPost = ({
   relativePath,
 }: {
   relativePath: string
-}): ApiResultAsync<{ data: GetPostQuery }> => {
-  return okAsync({ data: posts[relativePath]! })
+}): ApiResultAsync<GetPost> => {
+  return okAsync({
+    data: posts[relativePath]!,
+    variables: { relativePath },
+    query: '{ todo }',
+  })
 }
 
 export const getPosts = (): ApiResultAsync<GetPosts> => {
@@ -440,7 +453,7 @@ export const getPosts = (): ApiResultAsync<GetPosts> => {
       },
     },
     variables: {},
-    query: '',
+    query: '{ todo }',
   })
 }
 
@@ -448,8 +461,12 @@ export const getPage = ({
   relativePath,
 }: {
   relativePath: string
-}): ApiResultAsync<{ data: GetPageQuery }> => {
-  return okAsync({ data: pages[relativePath]! })
+}): ApiResultAsync<GetPage> => {
+  return okAsync({
+    data: pages[relativePath]!,
+    variables: { relativePath },
+    query: '{ todo }',
+  })
 }
 
 export const getPages = (): ApiResultAsync<GetPages> => {
@@ -461,16 +478,20 @@ export const getPages = (): ApiResultAsync<GetPages> => {
       },
     },
     variables: {},
-    query: '',
+    query: '{ todo }',
   })
 }
 
 export const getAuthor = ({
   relativePath,
 }: {
-  relativePath: keyof typeof authors
-}): ApiResultAsync<{ data: GetAuthorQuery }> => {
-  return okAsync({ data: authors[relativePath]! })
+  relativePath: string
+}): ApiResultAsync<GetAuthor> => {
+  return okAsync({
+    data: authors[relativePath]!,
+    variables: { relativePath },
+    query: '{}',
+  })
 }
 
 export const getAuthors = (): ApiResultAsync<GetAuthors> => {
@@ -484,16 +505,20 @@ export const getAuthors = (): ApiResultAsync<GetAuthors> => {
       },
     },
     variables: {},
-    query: '',
+    query: '{ todo }',
   })
 }
 
 export const getTag = ({
   relativePath,
 }: {
-  relativePath: keyof typeof tags
-}): ApiResultAsync<{ data: GetTagQuery }> => {
-  return okAsync({ data: tags[relativePath]! })
+  relativePath: string
+}): ApiResultAsync<GetTag> => {
+  return okAsync({
+    data: tags[relativePath]!,
+    variables: { relativePath },
+    query: '{ todo }',
+  })
 }
 
 export const getTags = (): ApiResultAsync<GetTags> => {
@@ -505,11 +530,11 @@ export const getTags = (): ApiResultAsync<GetTags> => {
       },
     },
     variables: {},
-    query: '',
+    query: '{ todo }',
   })
 }
 
-export const getConfig = (): ApiResultAsync<{ data: GetConfigQuery }> => {
+export const getConfig = (): ApiResultAsync<GetConfig> => {
   return okAsync({
     data: {
       config: {
@@ -526,5 +551,7 @@ export const getConfig = (): ApiResultAsync<{ data: GetConfigQuery }> => {
         _values: { _collection: 'config', _template: 'config', darkMode: true },
       },
     },
+    variables: {},
+    query: '{ todo }',
   })
 }
