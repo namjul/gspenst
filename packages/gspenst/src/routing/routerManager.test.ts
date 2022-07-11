@@ -316,7 +316,18 @@ describe('router contexts', () => {
             },
           },
         },
-        undefined,
+        {
+          data: {},
+          request: {
+            params: {
+              slug: 'pedro',
+            },
+            path: '/category-2/pedro/',
+          },
+          resourceType: 'page',
+          templates: [],
+          type: 'entry',
+        },
       ])
     )
   })
@@ -362,7 +373,18 @@ describe('router contexts', () => {
         },
         undefined,
         undefined,
-        undefined,
+        {
+          data: {},
+          request: {
+            params: {
+              slug: '1',
+            },
+            path: '/page/1/',
+          },
+          resourceType: 'page',
+          templates: [],
+          type: 'entry',
+        },
       ])
     )
     expect(router.handle(['author', 'pedro'])).toEqual(
@@ -391,7 +413,18 @@ describe('router contexts', () => {
             },
           },
         },
-        undefined,
+        {
+          data: {},
+          request: {
+            params: {
+              slug: 'pedro',
+            },
+            path: '/author/pedro/',
+          },
+          resourceType: 'page',
+          templates: [],
+          type: 'entry',
+        },
       ])
     )
   })
@@ -472,7 +505,18 @@ describe('router contexts', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        {
+          data: {},
+          request: {
+            params: {
+              slug: 'team',
+            },
+            path: '/about/team/',
+          },
+          resourceType: 'page',
+          templates: [],
+          type: 'entry',
+        },
       ])
     )
     expect(router.handle(['about'])).toEqual(
@@ -569,7 +613,18 @@ describe('router contexts', () => {
             permanent: true,
           },
         },
-        undefined,
+        {
+          data: {},
+          request: {
+            params: {
+              slug: 'pedro',
+            },
+            path: '/author/pedro/',
+          },
+          resourceType: 'page',
+          templates: [],
+          type: 'entry',
+        },
       ])
     )
     expect(router.handle(['5th-post'])).toEqual(

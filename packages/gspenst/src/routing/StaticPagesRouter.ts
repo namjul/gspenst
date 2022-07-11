@@ -9,7 +9,7 @@ class StaticPagesRouter extends ParentRouter {
   routeRegExpResult: Result<RegExp>
   constructor() {
     super('StaticPagesRouter')
-    this.routeRegExpResult = pathToRegexp('/:slug/')
+    this.routeRegExpResult = pathToRegexp('/:slug+')
   }
   handle(
     request: string,
@@ -18,7 +18,8 @@ class StaticPagesRouter extends ParentRouter {
   ) {
     contexts.push(
       this.routeRegExpResult.andThen((routeRegExp) => {
-        const [match, slug] = routeRegExp.exec(request) ?? []
+        const [match, path] = routeRegExp.exec(request) ?? []
+        const slug = path?.split('/').at(-1)
 
         if (match && slug) {
           const router = this.respectDominantRouter(routers, 'page', slug)

@@ -91,11 +91,19 @@ function createResourcePath(
   const { __typename } = resourceNode
   switch (__typename) {
     case 'Page': {
+      const {
+        _sys: { breadcrumbs },
+      } = resourceNode
       const dynamicVariablesResult = createDynamicVariables(resourceNode)
       if (dynamicVariablesResult.isErr()) {
         return err(dynamicVariablesResult.error)
       }
-      return ok(`/${dynamicVariablesResult.value.slug}`)
+      const nestedPath = breadcrumbs.slice(0, -1)
+      return ok(
+        `/${nestedPath.length ? `${nestedPath.join('/')}/` : ''}${
+          dynamicVariablesResult.value.slug
+        }`
+      )
     }
     case 'Tag':
     case 'Author': {
@@ -222,12 +230,8 @@ export function collect(
           {
             post: [
               ...resources.flatMap((resource) => {
-                if (
-                  resource.type === 'tag' ||
-                  resource.type === 'author'
-                ) {
-                  const taxonomyRoute =
-                    routesConfig.taxonomies?.[resource.type]
+                if (resource.type === 'tag' || resource.type === 'author') {
+                  const taxonomyRoute = routesConfig.taxonomies?.[resource.type]
                   return taxonomyRoute
                     ? {
                         controller: 'channel' as const,
