@@ -12,7 +12,7 @@ import type {
   PostNodeFragment,
   PageNodeFragment,
 } from '../../.tina/__generated__/types'
-import type { RoutingMapping } from '../helpers/createRoutingMapping';
+import type { RoutingMapping } from '../helpers/getPageMap'
 import { authorSchema, createAuthor } from './author'
 import { tagSchema, createTag } from './tag'
 

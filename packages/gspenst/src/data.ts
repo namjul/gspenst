@@ -9,7 +9,7 @@ import { absurd, do_ } from './shared/utils'
 import type { Json } from './shared/kernel'
 import { normalizeResource, denormalizeEntities } from './helpers/normalize'
 import * as Errors from './errors'
-import type { RoutingMapping } from './helpers/createRoutingMapping';
+import type { RoutingMapping } from './helpers/getPageMap'
 // import { getHeaders } from './helpers/getHeaders';
 
 type Action = { type: 'to-be-defined' }

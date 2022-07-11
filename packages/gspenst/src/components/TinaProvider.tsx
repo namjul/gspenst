@@ -1,12 +1,12 @@
 import TinaCMS, { defineConfig } from 'tinacms'
 import type { TinaCloudSchema } from 'tinacms'
 import { client } from '../shared/client'
-import { createRoutingMapping } from '../helpers/createRoutingMapping'
+import type { RoutingMapping } from '../helpers/getPageMap'
 
 export type TinaProviderProps = React.PropsWithChildren<{
   config: {
     tinaSchema: TinaCloudSchema
-    routingMapping: ReturnType<typeof createRoutingMapping>
+    routingMapping: RoutingMapping
   }
 }>
 

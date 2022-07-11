@@ -8,7 +8,7 @@ import type { NormalizedSchema } from 'normalizr'
 import { combine, fromThrowable, z } from '../shared/kernel'
 import * as Errors from '../errors'
 import type { Resource } from '../domain/resource'
-import type { RoutingMapping } from '../helpers/createRoutingMapping';
+import type { RoutingMapping } from '../helpers/getPageMap'
 import type { Post } from '../domain/post'
 import type { Page } from '../domain/page'
 import type { Author } from '../domain/author'
@@ -71,7 +71,7 @@ const entitiesSchema = {
   tag: [tagEntitySchema],
   author: [authorEntitySchema],
   resource: [resourceEntitySchema],
-  config: [configEntitySchema]
+  config: [configEntitySchema],
 }
 
 type DenormalizedEntities = {

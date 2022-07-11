@@ -3,7 +3,7 @@
 import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderContext } from 'webpack'
-import { parseRoutes, createRoutingMapping, Errors } from 'gspenst'
+import { parseRoutes, getPageMap, getRoutingMapping, Errors } from 'gspenst'
 import { repository } from 'gspenst/server'
 import { findContentDir, filterLocatorResources } from './utils'
 import { log } from './logger'
@@ -18,10 +18,10 @@ const isProductionBuild = process.env.NODE_ENV === 'production'
 
 const contentDir = path.resolve(findContentDir())
 
-const paramRegExp = /\[\[?\.*(\w*)\]\]?/ // match dynamic routes
+// match dynamic routes
+const paramRegExp = /\[\[?\.*(\w*)\]\]?/
 
 // api lookup: https://webpack.js.org/api/loaders/
-
 async function loader(
   context: LoaderContext<LoaderOptions>,
   source: string
@@ -87,7 +87,8 @@ async function loader(
 
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
-  const routingMapping = createRoutingMapping(locatorResources)
+  const pageMap = getPageMap(resources, routesConfig)
+  const routingMapping = getRoutingMapping(pageMap)
 
   const imports = `
 import * as __gspenst_server__ from '@gspenst/next/server'

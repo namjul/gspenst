@@ -2,7 +2,7 @@ import { idSchema, pathSchema, dateSchema, z, err } from '../shared/kernel'
 import type { Result } from '../shared/kernel'
 import { parse } from '../helpers/parser'
 import type { AuthorNodeFragment } from '../../.tina/__generated__/types'
-import type { RoutingMapping } from '../helpers/createRoutingMapping';
+import type { RoutingMapping } from '../helpers/getPageMap'
 
 export const authorSchema = z
   .object({

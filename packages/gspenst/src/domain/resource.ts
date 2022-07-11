@@ -58,6 +58,7 @@ const resourceBaseSchema = z.object({
   filename: z.string(),
   filepath: z.string(),
   relativePath: z.string(),
+  breadcrumbs: z.array(z.string()),
 })
 
 export const dynamicVariablesSchema = z.object({
@@ -263,8 +264,10 @@ export function createResource(node: ResourceNode): Result<Resource> {
 
   const dynamicVariables = dynamicVariablesResult.value
 
-  const { _sys: { filename, path: filepath, relativePath } = {}, __typename } =
-    node
+  const {
+    _sys: { filename, path: filepath, relativePath, breadcrumbs } = {},
+    __typename,
+  } = node
 
   const idResult = parse(idSchema, node.id)
 
@@ -277,6 +280,7 @@ export function createResource(node: ResourceNode): Result<Resource> {
     filename,
     filepath,
     relativePath,
+    breadcrumbs,
   }
 
   const resource = {
@@ -348,7 +352,3 @@ export const filterTagResources = (
 export const filterPageResources = (
   resource: Resource
 ): resource is PageResource => resource.type === 'page'
-
-export const filterAuthorResources = (
-  resource: Resource
-): resource is AuthorResource => resource.type === 'author'
