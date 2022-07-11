@@ -1,26 +1,22 @@
 // @ts-expect-error -- no type declarations available
-
 import withLayout from 'nextra-theme-blog'
-import type { PageThemeContext, Root } from 'gspenst'
-import { useData } from 'gspenst/data'
+import type { Root } from 'gspenst'
+import type { PageOpt } from 'nextra'
+import { useStore, selectData, selectConfig } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import { useMDXComponents } from '@mdx-js/react'
 import { BlockQuote } from './components/testimonial'
 import { Cta } from './components/cta'
 import { defaultConfig } from './config'
-import type { NextraBlogTheme } from './config'
+import type { TinaConfig, NextraBlogTheme } from './config'
 
 const GspenstMdxTheme = getComponent('MdxTheme')
-
-const componentsx = {
-  BlockQuote,
-  Cta,
-}
 
 const MdxTheme = (props: { content: Root | undefined }) => {
   const { wrapper: MDXLayout, ...components } = {
     ...useMDXComponents(),
-    ...componentsx,
+    BlockQuote,
+    Cta,
   }
 
   if (GspenstMdxTheme) {
@@ -34,44 +30,21 @@ const MdxTheme = (props: { content: Root | undefined }) => {
   return null
 }
 
-type PageMapItem = {
-  name: string
-  route: string
-  locale?: string
-  children?: PageMapItem[]
-  frontMatter?: Record<string, any>
-  meta?: Record<string, any>
-  active?: boolean
-}
-type Heading = {
-  value: string
-}
-type PageOpt = {
-  filename: string
-  route: string
-  meta: {
-    author: string
-    date: string
-    tag: string
-    type: string
-    [key: string]: any
-  }
-  pageMap: PageMapItem[]
-  titleText: string | undefined
-  headings?: Heading[]
-  hasH1: boolean
-}
-
 const createTheme = (_config: NextraBlogTheme) => {
   const config: NextraBlogTheme = {
     ...defaultConfig,
     ..._config,
   }
 
-  const Page = (props: PageThemeContext) => {
-    const { context } = props
-    const { resources } = useData()
+  const Page = () => {
+    const { state } = useStore()
+    const { context, route } = state
+
+    const { resources } = selectData(state)
+    const tinaConfig = selectConfig<TinaConfig>(state)
     const resource = resources[0]
+
+    console.log(tinaConfig)
 
     if (!resource) {
       throw new Error('Resource missing')
@@ -95,7 +68,7 @@ const createTheme = (_config: NextraBlogTheme) => {
 
     const pageOptions: PageOpt = {
       filename: 'empty',
-      route: resource.path,
+      route,
       meta: {
         type: context?.at(0) ?? 'post',
         author: author?.name ?? 'no author',
@@ -130,7 +103,7 @@ const createTheme = (_config: NextraBlogTheme) => {
     return (
       <NextraThemeBlog>
         <MdxTheme content={content} />
-        <pre>{JSON.stringify(props, null, 2)}</pre>
+        <pre>{JSON.stringify(state, null, 2)}</pre>
       </NextraThemeBlog>
     )
   }

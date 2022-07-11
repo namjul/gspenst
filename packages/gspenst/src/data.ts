@@ -15,12 +15,11 @@ import { getRoutingMapping } from './helpers/getPageMap'
 
 type Action = { type: 'to-be-defined' }
 type Dispatch = (action: Action) => void
-type State = {
-  pageThemeContext: PageThemeContext
+type State = PageThemeContext & {
   ctxEditingLoading?: boolean
   pageMap: PageMapItem[]
 }
-type ThemeComponent = React.ComponentType<State>
+type ThemeComponent = React.ComponentType
 type DataProviderProps = {
   initialState: State
   Component: ThemeComponent
@@ -51,8 +50,7 @@ function useGspenstState(
 } {
   const [state, dispatch] = React.useReducer(storeReducer, initialState)
 
-  const { pageThemeContext } = state
-  const { tinaData } = pageThemeContext.resource
+  const { tinaData } = state.resource
 
   const { data, isLoading } = useTina({
     query: tinaData.query,
@@ -61,8 +59,8 @@ function useGspenstState(
   })
 
   const resource = {
-    ...pageThemeContext.resource,
-    tinaData: { ...pageThemeContext.resource.tinaData, data },
+    ...state.resource,
+    tinaData: { ...state.resource.tinaData, data },
   } as Resource
 
   const normalizeResourceResult = normalizeResource(resource, routingMapping)
@@ -74,20 +72,13 @@ function useGspenstState(
   return {
     state: {
       ...state,
-      pageThemeContext: {
-        ...state.pageThemeContext,
-        resource,
-        ctxEditingLoading: isLoading,
-        entities: merge(
-          pageThemeContext.entities,
-          normalizeResourceResult.value.entities,
-          {
-            isMergeableObject: (value) => {
-              return !('type' in value)
-            },
-          }
-        ),
-      },
+      resource,
+      ctxEditingLoading: isLoading,
+      entities: merge(state.entities, normalizeResourceResult.value.entities, {
+        isMergeableObject: (value) => {
+          return !('type' in value)
+        },
+      }),
     } as State,
     dispatch,
   }
@@ -98,6 +89,7 @@ function DataProvider({
   Component,
   routingMapping,
 }: DataProviderProps) {
+  console.log('render')
   const { state, dispatch } = useGspenstState(initialState, routingMapping)
 
   // NOTE: you *might* need to memoize this value
@@ -106,7 +98,7 @@ function DataProvider({
 
   return React.createElement(DataStateContext.Provider, {
     value,
-    children: React.createElement(Component, value.state),
+    children: React.createElement(Component),
   })
 }
 
@@ -118,13 +110,7 @@ function useStore() {
   return context
 }
 
-// TODO use selectors https://redux-toolkit.js.org/api/createEntityAdapter#selector-functions
-
-function useData(key: string | undefined = undefined) {
-  const {
-    state: { pageThemeContext: state },
-  } = useStore()
-
+function selectData(state: State, key: string | undefined = undefined) {
   const { resources, pagination } = do_(() => {
     if (key === state.resource.type || key === undefined) {
       return {
@@ -171,11 +157,7 @@ function useData(key: string | undefined = undefined) {
   }
 }
 
-function useConfig<T extends Json>() {
-  const {
-    state: { pageThemeContext: state },
-  } = useStore()
-
+function selectConfig<T extends Json>(state: State) {
   const config = Object.values(state.entities.config).at(0)
   if (config) {
     return config.values as T
@@ -213,7 +195,7 @@ const withData = ({
         component = React.createElement(Admin)
       }
     } else {
-      const initialState = { pageThemeContext: props, pageMap }
+      const initialState = { ...props, pageMap }
       component = React.createElement(DataProvider, {
         initialState,
         Component,
@@ -238,4 +220,4 @@ const withData = ({
   }
   return WithData
 }
-export { withData, useStore, useData, useConfig }
+export { withData, useStore, selectData, selectConfig }
