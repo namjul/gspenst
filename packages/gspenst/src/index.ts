@@ -10,7 +10,7 @@ export type { ThemeContext, PageThemeContext } from './domain/theming'
 
 export * as Errors from './errors'
 export { parseRoutesWithDefaults as parseRoutes } from './domain/routes'
-export { getPageMap, getRoutingMapping } from './helpers/getPageMap'
+export { getPageMap } from './helpers/getPageMap'
 export { default as getHeaders } from './helpers/getHeaders'
 export { client } from './shared/client'
 export { createSchema } from './schema'

@@ -4,24 +4,26 @@ import { client } from '../shared/client'
 import type { RoutingMapping } from '../helpers/getPageMap'
 
 export type TinaProviderProps = React.PropsWithChildren<{
-  config: {
-    tinaSchema: TinaCloudSchema
-    routingMapping: RoutingMapping
-  }
+  tinaSchema: TinaCloudSchema
+  routingMapping: RoutingMapping
 }>
 
-const TinaProvider = ({ config, children }: TinaProviderProps) => {
+const TinaProvider = ({
+  tinaSchema,
+  routingMapping,
+  children,
+}: TinaProviderProps) => {
   const tinaConfig = defineConfig({
     client,
-    schema: config.tinaSchema,
+    schema: tinaSchema,
     cmsCallback: (cms) => {
       // enable tina admin
       cms.flags.set('tina-admin', true)
 
       // When `tina-admin` is enabled, this plugin configures contextual editing for collections
-      import('tinacms').then(({ RouteMappingPlugin }) => {
-        const RouteMapping = new RouteMappingPlugin((collection, document) => {
-          return config.routingMapping[document._sys.path]
+      void import('tinacms').then(({ RouteMappingPlugin }) => {
+        const RouteMapping = new RouteMappingPlugin((_collection, document) => {
+          return routingMapping[document._sys.path]
         })
         cms.plugins.add(RouteMapping)
       })

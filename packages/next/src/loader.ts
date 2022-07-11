@@ -3,7 +3,7 @@
 import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderContext } from 'webpack'
-import { parseRoutes, getPageMap, getRoutingMapping, Errors } from 'gspenst'
+import { parseRoutes, getPageMap, Errors } from 'gspenst'
 import { repository } from 'gspenst/server'
 import { findContentDir, filterLocatorResources } from './utils'
 import { log } from './logger'
@@ -88,7 +88,6 @@ async function loader(
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
   const pageMap = getPageMap(resources, routesConfig)
-  const routingMapping = getRoutingMapping(pageMap)
 
   const imports = `
 import * as __gspenst_server__ from '@gspenst/next/server'
@@ -104,13 +103,14 @@ ${
 `
 
   const component = `
-const routingMapping = ${JSON.stringify(routingMapping)}
+const pageMap = ${JSON.stringify(pageMap)}
 const GspenstThemeComponent = __gspenst_withData__({
+  tinaSchema,
+  pageMap,
   getComponent,
   Component: __gspenst_withTheme__(${
     themeConfigPath ? '__gspenst_themeConfig__' : 'null'
   }),
-  config: { tinaSchema, routingMapping },
 })
 
 export default function GspenstLayout (props) {

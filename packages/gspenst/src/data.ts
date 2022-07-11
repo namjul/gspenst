@@ -9,12 +9,17 @@ import { absurd, do_ } from './shared/utils'
 import type { Json } from './shared/kernel'
 import { normalizeResource, denormalizeEntities } from './helpers/normalize'
 import * as Errors from './errors'
-import type { RoutingMapping } from './helpers/getPageMap'
+import type { PageMapItem, RoutingMapping } from './helpers/getPageMap'
+import { getRoutingMapping } from './helpers/getPageMap'
 // import { getHeaders } from './helpers/getHeaders';
 
 type Action = { type: 'to-be-defined' }
 type Dispatch = (action: Action) => void
-type State = PageThemeContext & { ctxEditingLoading?: boolean }
+type State = {
+  pageThemeContext: PageThemeContext
+  ctxEditingLoading?: boolean
+  pageMap: PageMapItem[]
+}
 type ThemeComponent = React.ComponentType<State>
 type DataProviderProps = {
   initialState: State
@@ -46,7 +51,8 @@ function useGspenstState(
 } {
   const [state, dispatch] = React.useReducer(storeReducer, initialState)
 
-  const { tinaData } = state.resource
+  const { pageThemeContext } = state
+  const { tinaData } = pageThemeContext.resource
 
   const { data, isLoading } = useTina({
     query: tinaData.query,
@@ -55,8 +61,8 @@ function useGspenstState(
   })
 
   const resource = {
-    ...state.resource,
-    tinaData: { ...state.resource.tinaData, data },
+    ...pageThemeContext.resource,
+    tinaData: { ...pageThemeContext.resource.tinaData, data },
   } as Resource
 
   const normalizeResourceResult = normalizeResource(resource, routingMapping)
@@ -68,13 +74,20 @@ function useGspenstState(
   return {
     state: {
       ...state,
-      resource,
-      ctxEditingLoading: isLoading,
-      entities: merge(state.entities, normalizeResourceResult.value.entities, {
-        isMergeableObject: (value) => {
-          return !('type' in value)
-        },
-      }),
+      pageThemeContext: {
+        ...state.pageThemeContext,
+        resource,
+        ctxEditingLoading: isLoading,
+        entities: merge(
+          pageThemeContext.entities,
+          normalizeResourceResult.value.entities,
+          {
+            isMergeableObject: (value) => {
+              return !('type' in value)
+            },
+          }
+        ),
+      },
     } as State,
     dispatch,
   }
@@ -105,8 +118,12 @@ function useStore() {
   return context
 }
 
+// TODO use selectors https://redux-toolkit.js.org/api/createEntityAdapter#selector-functions
+
 function useData(key: string | undefined = undefined) {
-  const { state } = useStore()
+  const {
+    state: { pageThemeContext: state },
+  } = useStore()
 
   const { resources, pagination } = do_(() => {
     if (key === state.resource.type || key === undefined) {
@@ -155,19 +172,20 @@ function useData(key: string | undefined = undefined) {
 }
 
 function useConfig<T extends Json>() {
-  const { state } = useStore()
+  const {
+    state: { pageThemeContext: state },
+  } = useStore()
 
   const config = Object.values(state.entities.config).at(0)
   if (config) {
     return config.values as T
   }
-
-  // throw new Error('useConfig could not find a config.')
 }
 
 const withData = ({
   getComponent,
-  config,
+  tinaSchema,
+  pageMap,
   Component,
 }: {
   // Inspiration:
@@ -177,15 +195,15 @@ const withData = ({
   getComponent: (
     name: 'Admin' | 'TinaProvider'
   ) => React.ComponentType<any> | undefined
-  config: {
-    tinaSchema: TinaCloudSchema
-    routingMapping: RoutingMapping
-  }
+  tinaSchema: TinaCloudSchema
   Component: ThemeComponent
+  pageMap: PageMapItem[]
 }) => {
   if (!isValidElementType(Component)) {
     throw new Error('Theme must export HOC.')
   }
+
+  const routingMapping = getRoutingMapping(pageMap)
 
   function WithData(props: ThemeContext) {
     let component
@@ -195,10 +213,11 @@ const withData = ({
         component = React.createElement(Admin)
       }
     } else {
+      const initialState = { pageThemeContext: props, pageMap }
       component = React.createElement(DataProvider, {
-        initialState: props,
+        initialState,
         Component,
-        routingMapping: config.routingMapping,
+        routingMapping,
       })
     }
 
@@ -210,7 +229,8 @@ const withData = ({
 
     return React.createElement(TinaEditProvider, {
       editMode: React.createElement(TinaProvider, {
-        config,
+        tinaSchema,
+        routingMapping,
         children: component,
       }),
       children: component,
