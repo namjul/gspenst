@@ -28,6 +28,7 @@ describe('controller', () => {
             },
           },
           templates: [],
+          data: {},
         })
       )
       expect(await result._unsafeUnwrap()).toMatchObject({
@@ -48,6 +49,7 @@ describe('controller', () => {
             },
           },
           templates: [],
+        data: {},
         })
       )
       expect(await result._unsafeUnwrap()).toMatchObject({

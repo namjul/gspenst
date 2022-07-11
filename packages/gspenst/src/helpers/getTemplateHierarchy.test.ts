@@ -93,6 +93,7 @@ describe('computing template hierarchy', () => {
           },
         },
         templates: [],
+        data: {},
       })
     ).toEqual(['post-first-post', 'post'])
     expect(
@@ -106,6 +107,7 @@ describe('computing template hierarchy', () => {
           },
         },
         templates: [],
+        data: {},
       })
     ).toEqual(['page-portfolio', 'page', 'post'])
   })

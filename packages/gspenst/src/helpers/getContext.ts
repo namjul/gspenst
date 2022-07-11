@@ -6,10 +6,10 @@ export function getContext(routingContext: RoutingContext) {
   }
 
   const contextFromName =
-    'name' in routingContext ? [routingContext.name] : null
+    'name' in routingContext && routingContext.name ? [routingContext.name] : null
 
   const contextFromData =
-    'data' in routingContext ? Object.keys(routingContext.data ?? {}) : []
+    'data' in routingContext ? Object.keys(routingContext.data) : []
 
   return contextFromData.length ? contextFromData : contextFromName
 }
