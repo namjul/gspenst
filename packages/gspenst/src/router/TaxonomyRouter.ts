@@ -90,13 +90,7 @@ class TaxonomyRouter extends ParentRouter {
         return []
       }
 
-      if (
-        this.respectDominantRouter(
-          routers,
-          resource.type,
-          resource.slug
-        )
-      ) {
+      if (this.respectDominantRouter(routers, resource.type, resource.slug)) {
         return []
       }
 
