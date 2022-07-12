@@ -1,5 +1,5 @@
 import merge from 'deepmerge'
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useEffect } from 'react'
 import { TinaEditProvider, useTina } from 'tinacms/dist/edit-state'
 import type { TinaCloudSchema } from 'tinacms'
 import { isValidElementType } from 'react-is'
@@ -13,7 +13,7 @@ import type { PageMapItem, RoutingMapping } from './helpers/getPageMap'
 import { getRoutingMapping } from './helpers/getPageMap'
 // import { getHeaders } from './helpers/getHeaders';
 
-type Action = { type: 'to-be-defined' }
+type Action = { type: 'HYDRATE'; payload: State }
 type Dispatch = (action: Action) => void
 type State = PageThemeContext & {
   ctxEditingLoading?: boolean
@@ -21,7 +21,8 @@ type State = PageThemeContext & {
 }
 type ThemeComponent = React.ComponentType
 type DataProviderProps = {
-  initialState: State
+  props: PageThemeContext
+  pageMap: PageMapItem[]
   Component: ThemeComponent
   routingMapping: RoutingMapping
 }
@@ -32,8 +33,8 @@ const DataStateContext = createContext<
 
 function storeReducer(state: State, action: Action) {
   switch (action.type) {
-    case 'to-be-defined': {
-      return state
+    case 'HYDRATE': {
+      return { ...state, ...action.payload }
     }
     default: {
       return absurd(action.type)
@@ -85,11 +86,19 @@ function useGspenstState(
 }
 
 function DataProvider({
-  initialState,
+  props,
+  pageMap,
   Component,
   routingMapping,
 }: DataProviderProps) {
-  const { state, dispatch } = useGspenstState(initialState, routingMapping)
+  const { state, dispatch } = useGspenstState(
+    { ...props, pageMap },
+    routingMapping
+  )
+
+  useEffect(() => {
+    dispatch({ type: 'HYDRATE', payload: { ...props, pageMap } })
+  }, [props, pageMap, dispatch]) // dispatch is unnecessary here but my linter still cries. probably needs to be updated
 
   // NOTE: you *might* need to memoize this value
   // Learn more in http://kcd.im/optimize-context
@@ -193,9 +202,9 @@ const withData = (
         component = React.createElement(Admin)
       }
     } else {
-      const initialState = { ...props, pageMap }
       component = React.createElement(DataProvider, {
-        initialState,
+        props,
+        pageMap,
         Component,
         routingMapping,
       })

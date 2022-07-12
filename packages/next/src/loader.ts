@@ -104,14 +104,15 @@ ${
 
   const component = `
 const pageMap = ${JSON.stringify(pageMap)}
-const GspenstThemeComponent = __gspenst_withData__({
-  tinaSchema,
-  pageMap,
-  getComponent,
-  Component: __gspenst_withTheme__(${
+const GspenstThemeComponent = __gspenst_withData__(
+  __gspenst_withTheme__(${
     themeConfigPath ? '__gspenst_themeConfig__' : 'null'
-  }),
-})
+  }), {
+    tinaSchema,
+    pageMap,
+    getComponent,
+  }
+)
 
 export default function GspenstLayout (props) {
   return <GspenstThemeComponent {...props} />
