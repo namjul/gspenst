@@ -3,9 +3,9 @@
 import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderContext } from 'webpack'
-import { parseRoutes, getPageMap, Errors } from 'gspenst'
-import { repository } from 'gspenst/server'
-import { findContentDir, filterLocatorResources } from './utils'
+import { Errors } from 'gspenst'
+import { init } from 'gspenst/server'
+import { findContentDir } from './utils'
 import { log } from './logger'
 
 export type LoaderOptions = {
@@ -63,34 +63,23 @@ async function loader(
     (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const routesConfigResult = parseRoutes(yaml.load(source))
+  const configResult = await init(yaml.load(source))
 
-  if (routesConfigResult.isErr()) {
-    context.emitError(Errors.format(routesConfigResult.error))
+  if (configResult.isErr()) {
+    context.emitError(Errors.format(configResult.error))
   }
 
-  const routesConfig = routesConfigResult.isOk()
-    ? routesConfigResult.value[0]!
-    : {}
-
-  const collectResult = await repository.collect(routesConfig)
-
-  if (collectResult.isErr()) {
-    context.emitError(Errors.format(collectResult.error))
-  }
-
-  const resources = collectResult.isOk() ? collectResult.value : []
-
-  const locatorResources = resources.filter(filterLocatorResources)
+  const { routesConfig, pageMap, resources } = configResult.isOk()
+    ? configResult.value
+    : { routesConfig: {}, pageMap: [], resources: [] }
 
   const routesConfigStringified = JSON.stringify(routesConfig)
 
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
-  const pageMap = getPageMap(resources, routesConfig)
-
   const imports = `
-import * as __gspenst_server__ from '@gspenst/next/server'
+import { Errors } from 'gspenst'
+import { createWrapper } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import tinaSchema from '${tinaSchemaPath}'
@@ -120,17 +109,40 @@ export default function GspenstLayout (props) {
 
   const dataFetchingFunctions = `
 
-const locatorResources = ${JSON.stringify(locatorResources)}
+const resources = ${JSON.stringify(resources)}
 const routesConfig = ${routesConfigStringified}
 const isStaticExport = !!${staticExport}
 const routingParameter = '${routingParameter}'
+const { getPaths, getProps } = createWrapper({ routesConfig, resources })
 
 export const getStaticPaths = async () => {
-  return __gspenst_server__.getStaticPaths(routesConfig, locatorResources, isStaticExport)()
+  return {
+    paths: getPaths(),
+    fallback: isStaticExport ? false : 'blocking',
+  }
 }
 
-export const getStaticProps = async (context) => {
-  return __gspenst_server__.getStaticProps(routesConfig, routingParameter)(context)
+export const getStaticProps = async ({ params }) => {
+  const propsResult = await getProps(params?.[routingParameter])
+    if (propsResult.isOk()) {
+      const result = await propsResult.value
+      if ('redirect' in result) {
+        return { redirect: result.redirect }
+      }
+
+      if (result.props.isErr()) {
+        if (result.props.error.type === 'NotFound') {
+          return {
+            notFound: true,
+          }
+        }
+        throw Errors.format(result.props.error)
+      }
+
+      return { props: result.props.value }
+    }
+    throw Errors.format(propsResult.error)
+
 }
 `
 

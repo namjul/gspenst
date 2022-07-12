@@ -34,7 +34,6 @@
     "entrypoints": [
       "index.ts",
       "loader.ts",
-      "server.ts",
       "componentRegistry.ts"
     ]
   }

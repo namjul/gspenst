@@ -1,6 +1,5 @@
 import path from 'path'
 import fs from 'fs'
-import type { Resource, LocatorResource } from 'gspenst'
 
 export const existsSync = (f: string): boolean => {
   try {
@@ -18,7 +17,3 @@ export function findContentDir(dir: string = process.cwd()): string {
     "> Couldn't find a `content` directory. Please create one under the project root"
   )
 }
-
-export const filterLocatorResources = (
-  resource: Resource
-): resource is LocatorResource => resource.type !== 'config'

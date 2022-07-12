@@ -9,7 +9,6 @@ export type { RoutesConfig } from './domain/routes'
 export type { ThemeContext, PageThemeContext } from './domain/theming'
 
 export * as Errors from './errors'
-export { parseRoutesWithDefaults as parseRoutes } from './domain/routes'
 export { getPageMap } from './helpers/getPageMap'
 export { default as getHeaders } from './helpers/getHeaders'
 export { client } from './shared/client'
