@@ -61,7 +61,10 @@ function useGspenstState(
 
   const resource = {
     ...state.resource,
-    tinaData: { ...state.resource.tinaData, data },
+    tinaData: {
+      ...state.resource.tinaData,
+      data: { ...state.resource.tinaData.data, ...data },
+    },
   } as Resource
 
   const normalizeResourceResult = normalizeResource(resource, routingMapping)
