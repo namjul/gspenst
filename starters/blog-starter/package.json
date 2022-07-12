@@ -1,5 +1,5 @@
 {
-  "name": "@gspenst/minimal-starter",
+  "name": "@gspenst/blog-starter",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@gspenst/next": "*",
+    "@gspenst/nextra-theme-blog": "*",
     "gspenst": "*",
     "next": "^12.2.0",
     "react": "^17.0.2",
