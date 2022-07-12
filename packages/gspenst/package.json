@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tinacms/cli": "^0.60.19",
+    "@tinacms/cli": "^0.60.28",
     "@tryghost/nql": "^0.9.1",
     "@tryghost/string": "^0.1.23",
     "@tryghost/tpl": "^0.1.14",
@@ -36,7 +36,7 @@
     "path-to-regexp": "^6.2.0",
     "react-is": ">=16.13.1",
     "sort-on": "^5.0.0",
-    "tinacms": "^0.68.7",
+    "tinacms": "^0.68.13",
     "zod": "^3.17.3"
   },
   "devDependencies": {
