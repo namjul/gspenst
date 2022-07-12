@@ -89,7 +89,6 @@ function DataProvider({
   Component,
   routingMapping,
 }: DataProviderProps) {
-  console.log('render')
   const { state, dispatch } = useGspenstState(initialState, routingMapping)
 
   // NOTE: you *might* need to memoize this value
@@ -164,12 +163,7 @@ function selectConfig<T extends Json>(state: State) {
   }
 }
 
-const withData = ({
-  getComponent,
-  tinaSchema,
-  pageMap,
-  Component,
-}: {
+type WithDataOptions = {
   // Inspiration:
   // https://docs.stackbit.com/how-to-guides/components/add-component/#register_the_component
   // https://github.com/stackbit-themes/starter-nextjs-theme/blob/main/src/components/components-registry.ts
@@ -178,16 +172,20 @@ const withData = ({
     name: 'Admin' | 'TinaProvider'
   ) => React.ComponentType<any> | undefined
   tinaSchema: TinaCloudSchema
-  Component: ThemeComponent
   pageMap: PageMapItem[]
-}) => {
+}
+
+const withData = (
+  Component: ThemeComponent,
+  { getComponent, tinaSchema, pageMap }: WithDataOptions
+) => {
   if (!isValidElementType(Component)) {
     throw new Error('Theme must export HOC.')
   }
 
   const routingMapping = getRoutingMapping(pageMap)
 
-  function WithData(props: ThemeContext) {
+  function HOC(props: ThemeContext) {
     let component
     if (props.context === 'internal') {
       const Admin = getComponent('Admin')
@@ -218,6 +216,12 @@ const withData = ({
       children: component,
     })
   }
-  return WithData
+
+  HOC.displayName = `withData(${
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    Component.displayName || Component.name || 'Component'
+  })`
+
+  return HOC
 }
 export { withData, useStore, selectData, selectConfig }
