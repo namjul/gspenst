@@ -1,10 +1,24 @@
 import withPreconstruct from '@preconstruct/next'
 import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
+import { parseEnv, z, Errors } from 'gspenst'
 import { log } from './logger'
 import type { LoaderOptions } from './loader'
 import { GspenstPlugin } from './plugin'
-import { staticExport } from './env'
+
+const envResult = parseEnv(process.env, {
+  GSPENST_STATIC_EXPORT: z.string().optional(),
+})
+
+if (envResult.isErr()) {
+  console.error(
+    '❌ Invalid environment variables:\n',
+    Errors.format(envResult.error)
+  )
+  process.exit(1)
+}
+
+const env = envResult.value
 
 const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 const yamlExtensions = ['yml', 'yaml']
@@ -54,7 +68,7 @@ export default (...args: [string | LoaderOptions, string]) =>
             {
               loader: '@gspenst/next/loader',
               options: {
-                staticExport,
+                staticExport: env.GSPENST_STATIC_EXPORT,
                 ...options,
                 isServer: context.isServer,
               },

@@ -1,4 +1,5 @@
-import { absurd as _absurd } from './shared/utils'
+import { z } from './shared/kernel'
+import { do_, absurd as absurd_ } from './shared/utils'
 
 export type GspenstError =
   | { type: 'Other'; error: Error | undefined; context?: string }
@@ -62,14 +63,32 @@ export function format(errors: GspenstError | GspenstError[]) {
         }`
       case 'NotFound':
         return `${error.type}: ${error.context}`
-      case 'Parse':
-        return `${error.type}: cause: ${error.error.message} ${
+      case 'Parse': {
+        const cause = do_(() => {
+          if (error.error instanceof z.ZodError<any[]>) {
+            return Object.entries(error.error.format()).flatMap(
+              ([name, value]) => {
+                if ('_errors' in value) {
+                  //@ts-expect-error --- Property '_errors' does not exist on type 'string[]'.
+                  const x = value._errors as string[]
+                  return `${name}: ${x.join(', ')}\n`
+                }
+                return []
+              }
+            )
+          }
+
+          return error.error.message
+        })
+
+        return `${error.type}: cause: ${cause} ${
           error.error.stack
         }: description: ${error.description ?? 'NA'}`
+      }
       case 'Absurd':
         return `${error.type}: ${error.message}`
       default:
-        return _absurd(type)
+        return absurd_(type)
     }
   }
 

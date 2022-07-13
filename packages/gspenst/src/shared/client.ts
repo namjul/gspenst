@@ -1,15 +1,16 @@
 import { createClient } from 'tinacms/dist/client'
-import { tinaClientId, tinaReadonlyTokens, nodeEnvironment } from '../env'
 import { queries } from '../../.tina/__generated__/types'
 
 const branch = 'main'
 const apiURL =
-  nodeEnvironment === 'production'
-    ? `https://content.tinajs.io/content/${tinaClientId}/github/${branch}`
+  process.env.NODE_ENV === 'production'
+    ? `https://content.tinajs.io/content/${process.env.NEXT_PUBLIC_TINA_CLIENT_ID}/github/${branch}`
     : 'http://localhost:4001/graphql'
 
 export const client = createClient({
   queries,
   url: apiURL,
-  ...(tinaReadonlyTokens && { token: tinaReadonlyTokens }),
+  ...(process.env.NEXT_PUBLIC_TINA_READONLY_TOKEN && {
+    token: process.env.NEXT_PUBLIC_TINA_READONLY_TOKEN,
+  }),
 })

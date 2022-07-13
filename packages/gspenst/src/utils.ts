@@ -5,10 +5,6 @@ import type { Result } from './shared/kernel'
 import type { DynamicVariables } from './domain/resource'
 import * as Errors from './errors'
 
-import { nodeEnvironment } from './env'
-
-export const isProductionBuild = nodeEnvironment === 'production'
-
 export const pathToRegexp = fromThrowable(_pathToRegexp, (error) =>
   Errors.other('`path-to-regexp`', error instanceof Error ? error : undefined)
 )
