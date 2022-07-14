@@ -287,27 +287,27 @@ function batchLoadFromTina(sem: SemaphoreInterface) {
             case 'page':
               return api.getPage({ relativePath }).map((tinaData) => ({
                 ...resource,
-                tinaData,
+                tinaData: tinaData.data,
               }))
             case 'post':
               return api.getPost({ relativePath }).map((tinaData) => ({
                 ...resource,
-                tinaData,
+                tinaData: tinaData.data,
               }))
             case 'author':
               return api.getAuthor({ relativePath }).map((tinaData) => ({
                 ...resource,
-                tinaData,
+                tinaData: tinaData.data,
               }))
             case 'tag':
               return api.getTag({ relativePath }).map((tinaData) => ({
                 ...resource,
-                tinaData,
+                tinaData: tinaData.data,
               }))
             case 'config':
               return api.getConfig().map((tinaData) => ({
                 ...resource,
-                tinaData,
+                tinaData: tinaData.data,
               }))
             default:
               return absurd(type)

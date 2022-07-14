@@ -1,6 +1,13 @@
 import type { Result } from '../shared/kernel'
 import { idSchema, slugSchema, pathSchema, ok, err, z } from '../shared/kernel'
 import { parse } from '../helpers/parser'
+import type {
+  PostNodeFragment,
+  PageNodeFragment,
+  AuthorNodeFragment,
+  TagNodeFragment,
+  ThemeConfigNodeFragment,
+} from '../../.tina/__generated__/types'
 import {
   GetPostDocument,
   GetPageDocument,
@@ -8,15 +15,168 @@ import {
   GetTagDocument,
   GetConfigDocument,
 } from '../../.tina/__generated__/types'
-import type {
-  PostNodeFragment,
-  PageNodeFragment,
-  AuthorNodeFragment,
-  TagNodeFragment,
-  ThemeConfigNodeFragment as ConfigResourceNode,
-} from '../../.tina/__generated__/types'
-import type { GetTag, GetAuthor, GetPage, GetPost, GetConfig } from '../api'
-import { do_ } from '../shared/utils'
+import type { Entity } from '../api'
+import { absurd, do_ } from '../shared/utils'
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+const isConfigNode = (value: any): value is ThemeConfigNodeFragment =>
+  '__typename' in value && value.__typename === 'Config'
+const isPostNode = (value: any): value is PostNodeFragment =>
+  '__typename' in value && value.__typename === 'Post'
+const isPageNode = (value: any): value is PostNodeFragment =>
+  '__typename' in value && value.__typename === 'Page'
+const isTagNode = (value: any): value is TagNodeFragment =>
+  '__typename' in value && value.__typename === 'Tag'
+const isAuthorNode = (value: any): value is AuthorNodeFragment =>
+  '__typename' in value && value.__typename === 'Author'
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */
+
+const configFragmentSchema = z.custom<ThemeConfigNodeFragment>((value: any) =>
+  isConfigNode(value)
+)
+
+export const configTinaDataSchema = z
+  .preprocess(
+    (value) => {
+      return {
+        data: {
+          config: value,
+        },
+        query: GetConfigDocument,
+        variables: {},
+      }
+    },
+    z.object({
+      data: z.object({
+        config: configFragmentSchema,
+      }),
+      query: z.string(),
+      variables: z.object({}),
+    })
+  )
+  .describe('configTinaDataSchema')
+
+const postFragmentSchema = z.custom<PostNodeFragment>((value: any) =>
+  isPostNode(value)
+)
+
+export const postTinaDataSchema = z
+  .preprocess(
+    (value) => {
+      return {
+        data: {
+          post: value,
+        },
+        query: GetPostDocument,
+        variables: {
+          relativePath: isPostNode(value) ? value._sys.relativePath : undefined,
+        },
+      }
+    },
+    z.object({
+      data: z.object({
+        config: configFragmentSchema.optional(),
+        post: postFragmentSchema,
+      }),
+      query: z.string(),
+      variables: z.object({
+        relativePath: z.string(),
+      }),
+    })
+  )
+  .describe('postTinaDataSchema')
+
+const pageFragmentSchema = z.custom<PageNodeFragment>((value: any) =>
+  isPageNode(value)
+)
+
+export const pageTinaDataSchema = z
+  .preprocess(
+    (value) => {
+      return {
+        data: {
+          page: value,
+        },
+        query: GetPageDocument,
+        variables: {
+          relativePath: isPageNode(value) ? value._sys.relativePath : undefined,
+        },
+      }
+    },
+    z.object({
+      data: z.object({
+        config: configFragmentSchema.optional(),
+        page: pageFragmentSchema,
+      }),
+      query: z.string(),
+      variables: z.object({
+        relativePath: z.string(),
+      }),
+    })
+  )
+  .describe('pageTinaDataSchema')
+
+const tagFragmentSchema = z.custom<TagNodeFragment>((value: any) =>
+  isTagNode(value)
+)
+
+export const tagTinaDataSchema = z
+  .preprocess(
+    (value) => {
+      return {
+        data: {
+          tag: value,
+        },
+        query: GetTagDocument,
+        variables: {
+          relativePath: isTagNode(value) ? value._sys.relativePath : undefined,
+        },
+      }
+    },
+    z.object({
+      data: z.object({
+        config: configFragmentSchema.optional(),
+        tag: tagFragmentSchema,
+      }),
+      query: z.string(),
+      variables: z.object({
+        relativePath: z.string(),
+      }),
+    })
+  )
+  .describe('tagTinaDataSchema')
+
+const authorFragmentSchema = z.custom<AuthorNodeFragment>((value: any) =>
+  isAuthorNode(value)
+)
+
+export const authorTinaDataSchema = z
+  .preprocess(
+    (value) => {
+      return {
+        data: {
+          author: value,
+        },
+        query: GetAuthorDocument,
+        variables: {
+          relativePath: isAuthorNode(value)
+            ? value._sys.relativePath
+            : undefined,
+        },
+      }
+    },
+    z.object({
+      data: z.object({
+        config: configFragmentSchema.optional(),
+        author: authorFragmentSchema,
+      }),
+      query: z.string(),
+      variables: z.object({
+        relativePath: z.string(),
+      }),
+    })
+  )
+  .describe('authorTinaDataSchema')
 
 export const resourceTypeConfig = z.literal('config')
 export const resourceTypePost = z.literal('post')
@@ -77,94 +237,6 @@ const locatorResourceBaseSchema = z
   })
   .merge(dynamicVariablesSchema)
 
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-const themeConfigFragmentSchema = z.custom<ConfigResourceNode>(
-  (value: any) => '__typename' in value && value.__typename === 'Config'
-)
-const postFragmentSchema = z.custom<PostNodeFragment>(
-  (value: any) => '__typename' in value && value.__typename === 'Post'
-)
-const pageFragmentSchema = z.custom<PageNodeFragment>(
-  (value: any) => '__typename' in value && value.__typename === 'Page'
-)
-const tagFragmentSchema = z.custom<TagNodeFragment>(
-  (value: any) => '__typename' in value && value.__typename === 'Tag'
-)
-const authorFragmentSchema = z.custom<AuthorNodeFragment>(
-  (value: any) => '__typename' in value && value.__typename === 'Author'
-)
-/* eslint-enable @typescript-eslint/no-unsafe-member-access */
-
-type Confify<T> = T & { data: { config?: ConfigResourceNode } }
-
-const configTinaDataSchema = themeConfigFragmentSchema.transform(
-  (themeConfigFragment): GetConfig => {
-    return {
-      data: {
-        config: themeConfigFragment,
-      },
-      query: GetConfigDocument,
-      variables: {},
-    }
-  }
-)
-
-const postTinaDataSchema = postFragmentSchema.transform(
-  (postFragment): Confify<GetPost> => {
-    return {
-      data: {
-        post: postFragment,
-      },
-      query: GetPostDocument,
-      variables: {
-        relativePath: postFragment._sys.relativePath,
-      },
-    }
-  }
-)
-
-const pageTinaDataSchema = pageFragmentSchema.transform(
-  (pageFragment): Confify<GetPage> => {
-    return {
-      data: {
-        page: pageFragment,
-      },
-      query: GetPageDocument,
-      variables: {
-        relativePath: pageFragment._sys.relativePath,
-      },
-    }
-  }
-)
-
-const authorTinaDataSchema = authorFragmentSchema.transform(
-  (authorFragment): Confify<GetAuthor> => {
-    return {
-      data: {
-        author: authorFragment,
-      },
-      query: GetAuthorDocument,
-      variables: {
-        relativePath: authorFragment._sys.relativePath,
-      },
-    }
-  }
-)
-
-const tagTinaDataSchema = tagFragmentSchema.transform(
-  (tagFragment): Confify<GetTag> => {
-    return {
-      data: {
-        tag: tagFragment,
-      },
-      query: GetTagDocument,
-      variables: {
-        relativePath: tagFragment._sys.relativePath,
-      },
-    }
-  }
-)
-
 export const configResourceSchema = resourceBaseSchema.merge(
   z.object({
     type: resourceTypeConfig,
@@ -218,24 +290,24 @@ export const pageResourceSchema = resourceBaseSchema
 
 export type PageResource = z.infer<typeof pageResourceSchema>
 
-export const resourceSchema = z.discriminatedUnion('type', [
-  configResourceSchema,
-  postResourceSchema,
-  pageResourceSchema,
-  authorResourceSchema,
-  tagResourceSchema,
-])
+export const resourceSchema = z
+  .discriminatedUnion('type', [
+    configResourceSchema,
+    postResourceSchema,
+    pageResourceSchema,
+    authorResourceSchema,
+    tagResourceSchema,
+  ])
+  .describe('resourceSchema')
 
-resourceSchema.describe('resourceSchema')
-
-export const locatorResourceSchema = z.discriminatedUnion('type', [
-  postResourceSchema,
-  pageResourceSchema,
-  authorResourceSchema,
-  tagResourceSchema,
-])
-
-locatorResourceSchema.describe('locatorResourceSchema')
+export const locatorResourceSchema = z
+  .discriminatedUnion('type', [
+    postResourceSchema,
+    pageResourceSchema,
+    authorResourceSchema,
+    tagResourceSchema,
+  ])
+  .describe('locatorResourceSchema')
 
 export type ResourceType = z.infer<typeof resourceTypeSchema>
 export type Resource = z.infer<typeof resourceSchema>
@@ -243,20 +315,26 @@ export type LocatorResourceType = z.infer<typeof locatorResourceTypeSchema>
 export type LocatorResource = z.infer<typeof locatorResourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
-export type LocatorResourceNode =
-  | PostNodeFragment
-  | PageNodeFragment
-  | AuthorNodeFragment
-  | TagNodeFragment
+export function createResource({ type, data }: Entity): Result<Resource> {
+  const node = do_(() => {
+    switch (type) {
+      case 'post':
+        return data.data.post
+      case 'page':
+        return data.data.page
+      case 'author':
+        return data.data.author
+      case 'tag':
+        return data.data.tag
+      case 'config':
+        return data.data.config
+      default:
+        absurd(type, 'createResource')
+    }
+  })
 
-export type ResourceNode = LocatorResourceNode | ConfigResourceNode
-
-export function createResource(node: ResourceNode): Result<Resource> {
-  const isLocator = node.__typename !== 'Config'
-
-  const dynamicVariablesResult = isLocator
-    ? createDynamicVariables(node)
-    : ok({})
+  const dynamicVariablesResult =
+    node.__typename === 'Config' ? ok({}) : createDynamicVariables(node)
 
   if (dynamicVariablesResult.isErr()) {
     return err(dynamicVariablesResult.error)
@@ -293,6 +371,12 @@ export function createResource(node: ResourceNode): Result<Resource> {
 
   return parse(resourceSchema, resource)
 }
+
+export type LocatorResourceNode =
+  | PostNodeFragment
+  | PageNodeFragment
+  | AuthorNodeFragment
+  | TagNodeFragment
 
 export function createDynamicVariables(
   node: Partial<LocatorResourceNode>

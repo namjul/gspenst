@@ -1,22 +1,12 @@
 import type { ResultAsync } from '../shared/kernel'
-import { okAsync } from '../shared/kernel'
+import { combine, okAsync } from '../shared/kernel'
 import type {
   GetPostQuery,
   GetPageQuery,
   GetAuthorQuery,
   GetTagQuery,
 } from '../../.tina/__generated__/types'
-import type {
-  GetTags,
-  GetAuthors,
-  GetPosts,
-  GetPages,
-  GetPost,
-  GetPage,
-  GetAuthor,
-  GetTag,
-  GetConfig,
-} from '../api'
+import type { Post, Page, Author, Tag, Config } from '../api'
 
 type ApiResultAsync<T> = ResultAsync<T>
 
@@ -436,122 +426,109 @@ export const getPost = ({
   relativePath,
 }: {
   relativePath: string
-}): ApiResultAsync<GetPost> => {
+}): ApiResultAsync<Post> => {
   return okAsync({
-    data: posts[relativePath]!,
-    variables: { relativePath },
-    query: '{ todo }',
+    type: 'post',
+    data: {
+      data: posts[relativePath]!,
+      variables: { relativePath },
+      query: '{ todo }',
+    },
   })
 }
 
-export const getPosts = (): ApiResultAsync<GetPosts> => {
-  return okAsync({
-    data: {
-      postConnection: {
-        totalCount: Object.values(posts).length,
-        edges: Object.values(posts).map(({ post }) => ({ node: post })),
-      },
-    },
-    variables: {},
-    query: '{ todo }',
-  })
+export const getPosts = (): ApiResultAsync<Post[]> => {
+  return combine(
+    Object.keys(posts).map((key) => getPost({ relativePath: key }))
+  )
 }
 
 export const getPage = ({
   relativePath,
 }: {
   relativePath: string
-}): ApiResultAsync<GetPage> => {
+}): ApiResultAsync<Page> => {
   return okAsync({
-    data: pages[relativePath]!,
-    variables: { relativePath },
-    query: '{ todo }',
+    type: 'page',
+    data: {
+      data: pages[relativePath]!,
+      variables: { relativePath },
+      query: '{ todo }',
+    },
   })
 }
 
-export const getPages = (): ApiResultAsync<GetPages> => {
-  return okAsync({
-    data: {
-      pageConnection: {
-        totalCount: Object.values(pages).length,
-        edges: Object.values(pages).map(({ page }) => ({ node: page })),
-      },
-    },
-    variables: {},
-    query: '{ todo }',
-  })
+export const getPages = (): ApiResultAsync<Page[]> => {
+  return combine(
+    Object.keys(pages).map((key) => getPage({ relativePath: key }))
+  )
 }
 
 export const getAuthor = ({
   relativePath,
 }: {
   relativePath: string
-}): ApiResultAsync<GetAuthor> => {
+}): ApiResultAsync<Author> => {
   return okAsync({
-    data: authors[relativePath]!,
-    variables: { relativePath },
-    query: '{}',
+    type: 'author',
+    data: {
+      data: authors[relativePath]!,
+      variables: { relativePath },
+      query: '{}',
+    },
   })
 }
 
-export const getAuthors = (): ApiResultAsync<GetAuthors> => {
-  return okAsync({
-    data: {
-      authorConnection: {
-        totalCount: Object.values(authors).length,
-        edges: Object.values(authors).map(({ author }) => ({
-          node: author,
-        })),
-      },
-    },
-    variables: {},
-    query: '{ todo }',
-  })
+export const getAuthors = (): ApiResultAsync<Author[]> => {
+  return combine(
+    Object.keys(authors).map((key) => getAuthor({ relativePath: key }))
+  )
 }
 
 export const getTag = ({
   relativePath,
 }: {
   relativePath: string
-}): ApiResultAsync<GetTag> => {
+}): ApiResultAsync<Tag> => {
   return okAsync({
-    data: tags[relativePath]!,
-    variables: { relativePath },
-    query: '{ todo }',
-  })
-}
-
-export const getTags = (): ApiResultAsync<GetTags> => {
-  return okAsync({
+    type: 'tag',
     data: {
-      tagConnection: {
-        totalCount: Object.values(tags).length,
-        edges: Object.values(tags).map(({ tag }) => ({ node: tag })),
-      },
+      data: tags[relativePath]!,
+      variables: { relativePath },
+      query: '{ todo }',
     },
-    variables: {},
-    query: '{ todo }',
   })
 }
 
-export const getConfig = (): ApiResultAsync<GetConfig> => {
+export const getTags = (): ApiResultAsync<Tag[]> => {
+  return combine(Object.keys(tags).map((key) => getTag({ relativePath: key })))
+}
+
+export const getConfig = (): ApiResultAsync<Config> => {
   return okAsync({
+    type: 'config',
     data: {
-      config: {
-        __typename: 'Config',
-        _sys: {
-          filename: 'index',
-          basename: 'index.json',
-          breadcrumbs: ['index'],
-          path: 'content/config/index.json',
-          relativePath: 'index.json',
-          extension: '.json',
+      data: {
+        config: {
+          __typename: 'Config',
+          _sys: {
+            filename: 'index',
+            basename: 'index.json',
+            breadcrumbs: ['index'],
+            path: 'content/config/index.json',
+            relativePath: 'index.json',
+            extension: '.json',
+          },
+          id: 'content/config/index.json',
+          _values: {
+            _collection: 'config',
+            _template: 'config',
+            darkMode: true,
+          },
         },
-        id: 'content/config/index.json',
-        _values: { _collection: 'config', _template: 'config', darkMode: true },
       },
+      variables: {},
+      query: '{ todo }',
     },
-    variables: {},
-    query: '{ todo }',
   })
 }

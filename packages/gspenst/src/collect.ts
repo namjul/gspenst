@@ -1,10 +1,10 @@
 import { ok, err, combine, idSchema } from './shared/kernel'
 import type { ResultAsync, Result } from './shared/kernel'
 import * as db from './db'
-import type { Resource, ResourceNode } from './domain/resource'
+import type { Resource } from './domain/resource'
 import type { RoutesConfig, DataQueryBrowse } from './domain/routes'
 import { getCollections, getRoutes } from './domain/routes'
-import { createResource, createDynamicVariables } from './domain/resource'
+import { createResource } from './domain/resource'
 import { createPost } from './domain/post'
 import { createPage } from './domain/page'
 import { createAuthor } from './domain/author'
@@ -19,155 +19,67 @@ import { parse } from './helpers/parser'
 
 const log = createLogger('collect')
 
-function collectResourceNodes() {
-  return combine([
+export function collect(
+  routesConfig: RoutesConfig = {}
+): ResultAsync<Resource[]> {
+  log('start')
+  // TODO make configurable so that only a single resource node can be collected
+  const result = combine([
     db.clear(),
     api.getConfig(),
     api.getTags(),
     api.getAuthors(),
     api.getPosts(),
     api.getPages(),
-  ]).map((results) => {
-    return results.flatMap<ResourceNode>((collectionResources) => {
-      if (collectionResources === 'OK') {
-        return []
-      }
-
-      return (
-        do_(() => {
-          if ('config' in collectionResources.data) {
-            return collectionResources.data.config
-          }
-          if ('postConnection' in collectionResources.data) {
-            return collectionResources.data.postConnection.edges?.flatMap(
-              (collectionEdge) => {
-                if (collectionEdge?.node) {
-                  return collectionEdge.node
-                }
-                return []
-              }
-            )
-          }
-          if ('pageConnection' in collectionResources.data) {
-            return collectionResources.data.pageConnection.edges?.flatMap(
-              (collectionEdge) => {
-                if (collectionEdge?.node) {
-                  return collectionEdge.node
-                }
-                return []
-              }
-            )
-          }
-          if ('authorConnection' in collectionResources.data) {
-            return collectionResources.data.authorConnection.edges?.flatMap(
-              (collectionEdge) => {
-                if (collectionEdge?.node) {
-                  return collectionEdge.node
-                }
-                return []
-              }
-            )
-          }
-          if ('tagConnection' in collectionResources.data) {
-            return collectionResources.data.tagConnection.edges?.flatMap(
-              (collectionEdge) => {
-                if (collectionEdge?.node) {
-                  return collectionEdge.node
-                }
-                return []
-              }
-            )
-          }
-        }) ?? []
-      )
-    })
-  })
-}
-
-function createResourcePath(
-  routesConfig: RoutesConfig,
-  resourceNode: ResourceNode
-) {
-  const { __typename } = resourceNode
-  switch (__typename) {
-    case 'Page': {
-      const {
-        _sys: { breadcrumbs },
-      } = resourceNode
-      const dynamicVariablesResult = createDynamicVariables(resourceNode)
-      if (dynamicVariablesResult.isErr()) {
-        return err(dynamicVariablesResult.error)
-      }
-      const nestedPath = breadcrumbs.slice(0, -1)
-      return ok(
-        `/${nestedPath.length ? `${nestedPath.join('/')}/` : ''}${
-          dynamicVariablesResult.value.slug
-        }`
-      )
-    }
-    case 'Tag':
-    case 'Author': {
-      const dynamicVariablesResult = createDynamicVariables(resourceNode)
-      if (dynamicVariablesResult.isErr()) {
-        return err(dynamicVariablesResult.error)
-      }
-      const taxonomyEntry =
-        resourceNode.__typename === 'Author'
-          ? routesConfig.taxonomies?.author
-          : routesConfig.taxonomies?.tag
-      if (taxonomyEntry) {
-        const permalinkResult = compilePermalink(
-          taxonomyEntry.permalink,
-          dynamicVariablesResult.value
-        )
-        if (permalinkResult.isErr()) {
-          return err(permalinkResult.error)
-        } else {
-          return ok(permalinkResult.value)
-        }
-      }
-    }
-    // eslint-disable-next-line no-fallthrough
-    default:
-      return parse(idSchema, resourceNode.id).map((id) => `/${id}`)
-  }
-}
-
-export function collect(
-  routesConfig: RoutesConfig = {}
-): ResultAsync<Resource[]> {
-  log('start')
-  // TODO make configurable so that only a single resource node can be collected
-  const result = collectResourceNodes()
+  ])
     .andThen((resourceNodes) => {
-      const resourceResultList = resourceNodes.reduce<Result<Resource>[]>(
-        (acc, current) => {
-          const resourcePath = createResourcePath(routesConfig, current)
-          if (resourcePath.isErr()) {
-            acc.push(err(resourcePath.error))
-          } else {
-            const resourceItem = createResource(current).map((resource) => {
-              const { type } = resource
-              switch (type) {
-                case 'page':
-                case 'author':
-                case 'tag':
-                case 'post': {
-                  resource.path = resourcePath.value
-                  return resource
-                }
-                default:
-                  return resource
-              }
-            })
-
-            acc.push(resourceItem)
+      const resourceResultList = resourceNodes
+        .flat()
+        .reduce<Result<Resource>[]>((acc, current) => {
+          if (current === 'OK') {
+            return acc
           }
+          const resourceItem = createResource(current).andThen((resource) => {
+            // TODO maybe use router to handle path
+            const { type } = resource
+            switch (type) {
+              case 'page': {
+                const { breadcrumbs } = resource
+                const nestedPath = breadcrumbs.slice(0, -1)
+                resource.path = `/${
+                  nestedPath.length ? `${nestedPath.join('/')}/` : ''
+                }${resource.slug}`
+                return ok(resource)
+              }
+              case 'author':
+              case 'tag': {
+                const taxonomyEntry = routesConfig.taxonomies?.[type]
+                if (taxonomyEntry) {
+                  return compilePermalink(
+                    taxonomyEntry.permalink,
+                    resource
+                  ).map((permalink) => ({
+                    ...resource,
+                    path: permalink,
+                  }))
+                }
+              }
+              // eslint-disable-next-line no-fallthrough
+              case 'config': {
+                return ok(resource)
+              }
+              default:
+                return parse(idSchema, resource.id).map((id) => ({
+                  ...resource,
+                  path: `/${id}`,
+                }))
+            }
+          })
+
+          acc.push(resourceItem)
 
           return acc
-        },
-        []
-      )
+        }, [])
 
       return combine(resourceResultList).andThen((resources) => {
         const resourcesFilters = [
@@ -275,7 +187,7 @@ export function collect(
                   return createTag(resource.tinaData.data.tag)
                 }
                 default:
-                  return absurd(type)
+                  return absurd(type, 'collect')
               }
             })
 

@@ -81,9 +81,11 @@ export function format(errors: GspenstError | GspenstError[]) {
           return error.error.message
         })
 
-        return `${error.type}: cause: ${cause} ${
-          error.error.stack
-        }: description: ${error.description ?? 'NA'}`
+        return `❌ ${error.type}:
+cause: ${cause}
+errorStack: ${error.error.stack}
+description: ${error.description ?? 'NA'}
+`
       }
       case 'Absurd':
         return `${error.type}: ${error.message}`
