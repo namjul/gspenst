@@ -9,8 +9,7 @@ const commonFields: TinaField[] = [
     name: 'date',
     required: true,
     ui: {
-      dateFormat: 'MMMM DD YYYY',
-      timeFormat: 'hh:mm A',
+      dateFormat: 'YYYY MM DD',
     },
   },
   {
