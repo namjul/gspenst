@@ -3,7 +3,7 @@ import type { TinaTemplate, TinaField } from 'gspenst'
 
 const fields: TinaField[] = [
   {
-    type: 'boolean',
+    type: 'boolean' as const,
     label: 'Dark Mode',
     name: 'darkMode',
   },

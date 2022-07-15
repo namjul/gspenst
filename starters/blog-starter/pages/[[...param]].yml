@@ -1,36 +1,14 @@
 routes:
-  /team2/about/:
-    template: team
-    controller: channel
-    filter: primary_tag:-tag-1
-    # limit: 3
-    order: slug asc
-
-    data:
-      # about1: page.about
-      # about2: page.about
-      # about3: page.about
-      # pedro: author.pedro
-      post8: post.8th-post
-  /team1/about/:
-    template: team
-    data:
-      post8:
-        resourceType: post
-        type: read
-        slug: 9th-post
-        redirect: true
 collections:
   /:
-    permalink: /post/{slug}/
+    permalink: /post/{slug}
+    limit: all
     filter: primary_tag:tag-1
-  /podcast/:
-    permalink: /podcast/{slug}/
+  /team:
+    permalink: /team/{slug}
+    template: team
+    limit: all
     filter: primary_tag:tag-2
-    # data:
-    #   about1: page.about
-    #   about2: page.about
-    #   about3: page.about
 taxonomies:
   tag: /tags/{slug}/
   author: /authors/{slug}/
