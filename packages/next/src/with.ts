@@ -1,3 +1,5 @@
+import path from 'path'
+import fse from 'fs-extra'
 import withPreconstruct from '@preconstruct/next'
 import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
@@ -19,6 +21,15 @@ if (envResult.isErr()) {
 }
 
 const env = envResult.value
+
+const mediaDir = path.join(
+  process.cwd(),
+  env.NEXT_PUBLIC_TINA_PUBLIC_DIR,
+  env.NEXT_PUBLIC_TINA_MEDIA_ROOT
+)
+
+// make sure that uploads folder exist
+void fse.ensureDir(mediaDir)
 
 const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
 const yamlExtensions = ['yml', 'yaml']

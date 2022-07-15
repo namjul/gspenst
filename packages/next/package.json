@@ -16,6 +16,7 @@
   "dependencies": {
     "@preconstruct/next": "^4.0.0",
     "debug": "^4.3.3",
+    "fs-extra": "^10.0.0",
     "gspenst": "^0.0.1",
     "js-yaml": "^4.1.0"
   },

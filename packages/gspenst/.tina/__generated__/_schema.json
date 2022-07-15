@@ -244,5 +244,8 @@
       ],
       "namespace": ["tag"]
     }
-  ]
+  ],
+  "config": {
+    "media": { "tina": { "publicFolder": "public", "mediaRoot": "uploads" } }
+  }
 }

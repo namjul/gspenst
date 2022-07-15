@@ -1,5 +1,6 @@
 import { defineSchema } from 'tinacms'
 import type { TinaCollection, TinaTemplate, TinaField } from 'tinacms'
+import { env } from './domain/env'
 
 const commonFields: TinaField[] = [
   {
@@ -142,6 +143,18 @@ export function createSchema(
   }
 
   return defineSchema({
+    config: {
+      media: {
+        tina: {
+          publicFolder:
+            process.env.NEXT_PUBLIC_TINA_PUBLIC_DIR ??
+            env.NEXT_PUBLIC_TINA_PUBLIC_DIR,
+          mediaRoot:
+            process.env.NEXT_PUBLIC_TINA_MEDIA_ROOT ??
+            env.NEXT_PUBLIC_TINA_MEDIA_ROOT,
+        },
+      },
+    },
     collections: [
       configCollection,
       pageCollection,
