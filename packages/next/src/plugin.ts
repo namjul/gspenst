@@ -9,7 +9,7 @@ import pkg from '../package.json'
 // example: https://github.com/shellscape/webpack-plugin-serve/blob/master/lib/index.js
 
 const key = `${pkg.name}:plugin`
-const state: { starting?: Promise<ChildProcess> } = {}
+const state: { starting?: Promise<ChildProcess | undefined> } = {}
 
 export class GspenstPlugin extends EventEmitter {
   isServer: boolean
@@ -48,7 +48,7 @@ export class GspenstPlugin extends EventEmitter {
   async start() {
     if (!state.starting) {
       // ensure we're only trying to start the server once
-      state.starting = startTinaServer.bind(this)()
+      state.starting = startTinaServer.bind(this)({ onlyCheck: true })
     }
 
     // wait for the server to startup

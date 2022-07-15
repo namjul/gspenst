@@ -16,7 +16,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tinacms/cli": "^0.60.28",
     "@tryghost/nql": "^0.9.1",
     "@tryghost/string": "^0.1.23",
     "@tryghost/tpl": "^0.1.14",
@@ -47,6 +46,7 @@
     "type-fest": "^2.8.0"
   },
   "peerDependencies": {
+    "@tinacms/cli": "^0.60.28",
     "react": ">=16.13.1"
   },
   "preconstruct": {

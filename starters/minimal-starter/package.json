@@ -3,16 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "tinacms server:start -c \"next build\"",
     "debug": "NODE_OPTIONS='--inspect' next dev",
-    "dev": "next dev",
+    "dev": "tinacms server:start -c \"next dev\"",
     "export": "GSPENST_STATIC_EXPORT=true npm run build && next export",
     "lint": "next lint",
-    "start": "next start",
+    "start": "tinacms server:start -c \"next start\"",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@gspenst/next": "*",
+    "@tinacms/cli": "^0.60.28",
     "gspenst": "*",
     "next": "^12.2.0",
     "react": "^17.0.2",
