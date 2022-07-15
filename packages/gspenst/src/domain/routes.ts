@@ -253,9 +253,10 @@ const routesSchema = z
           route
         )
       )
+      .nullable()
       .optional(),
-    collections: z.record(collection).optional(),
-    taxonomies: taxonomies.optional(),
+    collections: z.record(collection).nullable().optional(),
+    taxonomies: taxonomies.nullable().optional(),
   })
   .strict()
 
