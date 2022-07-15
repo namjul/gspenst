@@ -23,11 +23,11 @@ class CollectionRouter extends ParentRouter {
     this.postSet = postStack
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
     this.routeRegExpResult = pathToRegexp(
-      path.join(`/${this.route}`, '{page/:page(\\d+)}?'),
+      `${this.trimRoute(this.route)}{page/:page(\\d+)}?`,
       this.keysRoute
     )
     this.permalinkRegExpResult = pathToRegexp(
-      this.config.permalink,
+      this.trimRoute(this.config.permalink),
       this.keysPermalink
     )
   }

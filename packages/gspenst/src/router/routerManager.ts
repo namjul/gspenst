@@ -64,8 +64,8 @@ export const routerManager = (routesConfig: RoutesConfig) => {
       params: string[] | string = []
     ): Result<Option<RoutingContext>> | Result<Option<RoutingContext>[]> {
       if (params) {
-        const request = `/${[params].flat().join('/')}/`
-        const requestSlugified = `/${[params].flat().map(slugify).join('/')}/`
+        const request = `/${[params].flat().join('/')}`
+        const requestSlugified = `/${[params].flat().map(slugify).join('/')}`
         if (request !== requestSlugified) {
           return ok(router.createRedirectContext(requestSlugified))
         }

@@ -19,7 +19,7 @@ class TaxonomyRouter extends ParentRouter {
     this.taxonomyKey = key
     this.config = config
     this.permalinkRegExpResult = pathToRegexp(
-      path.join(`/${this.config.permalink}`, '{page/:page(\\d+)}?'),
+      `${this.trimRoute(this.config.permalink)}{page/:page(\\d+)}?`,
       this.keys
     )
   }

@@ -264,7 +264,7 @@ describe('router contexts', () => {
           type: 'entry',
           resourceType: 'page',
           request: {
-            path: '/about/',
+            path: '/about',
             params: {
               slug: 'about',
             },
@@ -310,7 +310,7 @@ describe('router contexts', () => {
           limit: 5,
           order: undefined,
           request: {
-            path: '/category-2/pedro/',
+            path: '/category-2/pedro',
             params: {
               slug: 'pedro',
             },
@@ -322,7 +322,7 @@ describe('router contexts', () => {
             params: {
               slug: 'pedro',
             },
-            path: '/category-2/pedro/',
+            path: '/category-2/pedro',
           },
           resourceType: 'page',
           templates: [],
@@ -365,7 +365,7 @@ describe('router contexts', () => {
           data: {},
           templates: [],
           request: {
-            path: '/page/1/',
+            path: '/page/1',
             params: {
               page: 1,
             },
@@ -379,7 +379,7 @@ describe('router contexts', () => {
             params: {
               slug: '1',
             },
-            path: '/page/1/',
+            path: '/page/1',
           },
           resourceType: 'page',
           templates: [],
@@ -407,7 +407,7 @@ describe('router contexts', () => {
           limit: 5,
           order: undefined,
           request: {
-            path: '/author/pedro/',
+            path: '/author/pedro',
             params: {
               slug: 'pedro',
             },
@@ -419,7 +419,7 @@ describe('router contexts', () => {
             params: {
               slug: 'pedro',
             },
-            path: '/author/pedro/',
+            path: '/author/pedro',
           },
           resourceType: 'page',
           templates: [],
@@ -431,7 +431,7 @@ describe('router contexts', () => {
   test('redirect route', () => {
     const router = routerManager({
       routes: {
-        '/about/team': {
+        '/about/team/': {
           template: 'team',
           limit: 5,
           data: {
@@ -497,7 +497,7 @@ describe('router contexts', () => {
         {
           type: 'custom',
           request: {
-            path: '/about/team/',
+            path: '/about/team',
           },
           templates: ['team'],
           data: {},
@@ -511,7 +511,7 @@ describe('router contexts', () => {
             params: {
               slug: 'team',
             },
-            path: '/about/team/',
+            path: '/about/team',
           },
           resourceType: 'page',
           templates: [],
@@ -525,7 +525,7 @@ describe('router contexts', () => {
         undefined,
         {
           request: {
-            path: '/about/',
+            path: '/about',
             params: {
               slug: 'about',
             },
@@ -540,7 +540,7 @@ describe('router contexts', () => {
         {
           type: 'redirect',
           redirect: {
-            destination: '/about/team',
+            destination: '/about/team/',
             permanent: true,
           },
         },
@@ -553,7 +553,7 @@ describe('router contexts', () => {
         {
           type: 'redirect',
           redirect: {
-            destination: '/about/team',
+            destination: '/about/team/',
             permanent: true,
           },
         },
@@ -561,7 +561,7 @@ describe('router contexts', () => {
         undefined,
         {
           request: {
-            path: '/4th-post/',
+            path: '/4th-post',
             params: {
               slug: '4th-post',
             },
@@ -579,7 +579,7 @@ describe('router contexts', () => {
         undefined,
         {
           request: {
-            path: '/home/',
+            path: '/home',
             params: {
               slug: 'home',
             },
@@ -609,7 +609,7 @@ describe('router contexts', () => {
         {
           type: 'redirect',
           redirect: {
-            destination: '/about/team',
+            destination: '/about/team/',
             permanent: true,
           },
         },
@@ -619,7 +619,7 @@ describe('router contexts', () => {
             params: {
               slug: 'pedro',
             },
-            path: '/author/pedro/',
+            path: '/author/pedro',
           },
           resourceType: 'page',
           templates: [],
@@ -633,7 +633,7 @@ describe('router contexts', () => {
         undefined,
         {
           request: {
-            path: '/5th-post/',
+            path: '/5th-post',
             params: {
               slug: '5th-post',
             },
@@ -647,7 +647,7 @@ describe('router contexts', () => {
         undefined,
         {
           request: {
-            path: '/5th-post/',
+            path: '/5th-post',
             params: {
               slug: '5th-post',
             },

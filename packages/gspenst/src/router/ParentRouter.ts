@@ -98,6 +98,10 @@ class ParentRouter {
   ): string[] {
     return []
   }
+
+  trimRoute(route: string) {
+    return `/${route.split('/').filter(Boolean).join('/')}`
+  }
 }
 
 export default ParentRouter

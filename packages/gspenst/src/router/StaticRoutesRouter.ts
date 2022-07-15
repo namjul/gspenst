@@ -18,7 +18,7 @@ class StaticRoutesRouter extends ParentRouter {
     this.route = mainRoute
     this.config = config
     this.routeRegExpResult = pathToRegexp(
-      path.join(`/${this.route}`, '{page/:page(\\d+)}?'),
+      `${this.trimRoute(this.route)}{page/:page(\\d+)}?`,
       this.keys
     )
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
