@@ -1,5 +1,5 @@
 import type { TinaField } from 'gspenst'
-import type { ConfigPartsFragment } from '../.tina/__generated__/types';
+import type { ConfigPartsFragment } from '../.tina/__generated__/types'
 
 export type NextraBlogTheme = {
   readMore?: string
@@ -30,9 +30,7 @@ export type TinaConfig = ConfigPartsFragment
 export const defaultConfig = {
   readMore: 'Read More →',
   footer: (
-    <small style={{ display: 'block', marginTop: '8rem' }}>
-      CC BY-NC 4.0 2020 © Shu Ding.
-    </small>
+    <small style={{ display: 'block', marginTop: '8rem' }}>my footer</small>
   ),
   titleSuffix: 'titleSuffix',
   postFooter: null,

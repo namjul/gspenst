@@ -41,70 +41,141 @@ const createTheme = (_config: NextraBlogTheme) => {
     const { context, route } = state
 
     const { resources } = selectData(state)
-    const tinaConfig = selectConfig<TinaConfig>(state)
+    const { resources: postResources } = selectData(state, 'posts')
+    const ignoredtinaConfig = selectConfig<TinaConfig>(state)
     const resource = resources[0]
-
-    console.log(tinaConfig)
 
     if (!resource) {
       throw new Error('Resource missing')
     }
 
-    let author, tag, date, content
-
-    const { type } = resource
-
-    switch (type) {
-      case 'post':
-      case 'page': {
-        author = resource.primary_author
-        tag = resource.primary_tag
-        date = resource.date
-        content = resource.content as Root
-        break
+    const entryResource = (() => {
+      const { type } = resource
+      switch (type) {
+        case 'post':
+        case 'page': {
+          return resource
+        }
+        default:
+          return undefined
       }
-      default:
-    }
+    })()
+
+    const postsPageMap = postResources.flatMap((post) =>
+      post.type === 'post'
+        ? {
+            name: post.title,
+            route: post.path,
+            frontMatter: {
+              type: 'post',
+              date: post.date,
+              description: post.excerpt,
+            },
+          }
+        : []
+    )
+
+    const indexPageMap = state.pageMap.flatMap((page) => {
+      if (['collection', 'channel', 'custom'].includes(page.type)) {
+        return {
+          name: page.name,
+          route: page.route,
+          frontMatter: {
+            type: 'posts',
+          },
+        }
+      }
+      return []
+    })
 
     const pageOptions: PageOpt = {
       filename: 'empty',
       route,
       meta: {
-        type: context?.at(0) ?? 'post',
-        author: author?.name ?? 'no author',
-        tag: tag?.name ?? 'no tag',
-        date: date ?? 'no date',
+        type: (() => {
+          if (context?.includes('index')) {
+            return 'posts'
+          }
+          return context?.at(0) ?? 'post'
+        })(),
+        ...(entryResource
+          ? {
+              author: entryResource.primary_author?.name ?? 'no author',
+              tag: entryResource.primary_tag?.name ?? 'no author',
+              date: entryResource.date,
+            }
+          : {}),
       },
-      pageMap: [],
-      titleText: /*props.headers?.titleText || */ 'my title', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
-      headings: [],
-      hasH1: false, // TODO props.data.headers?.hasH1 ?? false,
+      pageMap: [
+        ...indexPageMap,
+        ...postsPageMap,
+        ...state.pageMap.flatMap((page) => {
+          if (page.resourceType === 'page') {
+            return {
+              name: page.name,
+              route: page.route,
+              frontMatter: { type: page.resourceType },
+            }
+          }
+          return []
+        }),
+      ],
+      titleText: entryResource?.title ?? entryResource?.slug ?? null,
+      headings:
+        entryResource?.headings.map((heading) => {
+          const depth = (() => {
+            const { type } = heading
+            switch (type) {
+              case 'h1':
+                return 1
+              case 'h2':
+                return 2
+              case 'h3':
+                return 3
+              case 'h4':
+                return 4
+              case 'h5':
+                return 5
+              case 'h6':
+                return 6
+              default:
+                return 1
+            }
+          })()
+          return {
+            type: 'heading',
+            children: heading.children, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+            depth,
+            value: heading.value,
+          }
+        }) ?? [],
+      hasH1: entryResource?.hasH1 ?? false,
     }
 
-    // if (props.context === 'page') {
-    //   const data = props.data.entry?.data.getPageDocument.data ?? {}
-    //   pageOptions.titleText = data.title ?? ''
-    //   body = data.body
-    // } else if (props.context === 'index') {
-    //   const pageMap: PageMapItem[] = props.data.posts.map((post, index) => {
-    //     return {
-    //       name: 'posts' + index,
-    //       route: '/something' + index,
-    //       frontMatter: { type: 'post' },
-    //     }
-    // })
-    //   pageOptions.pageMap = pageMap
-    //   pageOptions.meta.type = 'posts'
-    // }
+    console.log(state, pageOptions)
 
     // eslint-disable-next-line
-    const NextraThemeBlog = withLayout(pageOptions, config)
+    const NextraThemeBlog = withLayout(
+      pageOptions,
+      config
+    ) as React.ComponentType & {
+      getLayout?: (page: React.ReactNode) => React.ReactNode
+    }
 
-    return (
-      <NextraThemeBlog>
-        <MdxTheme content={content} />
+    const getLayout =
+      NextraThemeBlog.getLayout ?? ((page: React.ReactNode) => page)
+
+    return getLayout(
+      <>
+        <NextraThemeBlog>
+          {entryResource?.content ? (
+            <MdxTheme content={entryResource.content} />
+          ) : (
+            ''
+          )}
+        </NextraThemeBlog>
         <pre>{JSON.stringify(state, null, 2)}</pre>
-      </NextraThemeBlog>
+      </>
     )
   }
 
