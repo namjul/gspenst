@@ -49,7 +49,7 @@ describe('controller', () => {
             },
           },
           templates: [],
-        data: {},
+          data: {},
         })
       )
       expect(await result._unsafeUnwrap()).toMatchObject({
@@ -109,7 +109,7 @@ describe('controller', () => {
       )
       expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
-          context: ['page'],
+          context: ['page', 'index'],
           data: {
             page: { resource: {} },
           },
@@ -145,7 +145,7 @@ describe('controller', () => {
       )
       expect(await result._unsafeUnwrap()).toMatchObject({
         props: ok({
-          context: ['page'],
+          context: ['page', 'index'],
           data: {
             page: { resource: {} },
           },

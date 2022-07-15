@@ -1,6 +1,11 @@
 import { filterLocatorResources, filterPageResources } from '../domain/resource'
-import type { Resource, LocatorResource } from '../domain/resource'
+import type {
+  Resource,
+  LocatorResource,
+  LocatorResourceType,
+} from '../domain/resource'
 import type { RoutesConfig } from '../domain/routes'
+import type { RouteType } from '../domain/routing'
 
 type FilePath = LocatorResource['filepath']
 type Path = LocatorResource['path']
@@ -9,11 +14,12 @@ export type RoutingMapping = {
 }
 
 export type PageMapItem = {
-  type?: 'entry' | 'collection' | 'channel' | 'custom'
+  type: RouteType
   name: string
   route: string
   filepath?: string
   children?: PageMapItem[]
+  resourceType?: LocatorResourceType
   // locale?: string
   // timestamp?: number
   // frontMatter?: Record<string, any>
@@ -25,9 +31,11 @@ function getLocatorResources(resources: Resource[] = []): PageMapItem[] {
   return resources.flatMap((resource) => {
     if (filterLocatorResources(resource)) {
       return {
+        type: 'entry',
         name: resource.filename,
         route: resource.path,
         filepath: resource.filepath,
+        resourceType: resource.type,
         children: filterPageResources(resource)
           ? getLocatorResources(
               resources.filter(({ breadcrumbs, id }) => {
@@ -54,11 +62,17 @@ export function getPageMap(
 ): PageMapItem[] {
   const result: PageMapItem[] = []
   Object.keys(routesConfig.routes ?? {}).forEach((route) => {
-    result.push({ name: route.split('/').join(''), route, children: [] })
+    result.push({
+      type: 'custom',
+      name: route.split('/').join(''),
+      route,
+      children: [],
+    })
   })
 
   Object.keys(routesConfig.collections ?? {}).forEach((route) => {
     result.push({
+      type: 'collection',
       name: route.split('/').join('') || 'index',
       route,
       children: [],

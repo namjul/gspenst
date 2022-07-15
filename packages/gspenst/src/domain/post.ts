@@ -6,13 +6,14 @@ import {
   combine,
   err,
 } from '../shared/kernel'
-import type { Result } from '../shared/kernel'
+import type { Result, Root } from '../shared/kernel'
 import { parse } from '../helpers/parser'
 import type {
   PostNodeFragment,
   PageNodeFragment,
 } from '../../.tina/__generated__/types'
 import type { RoutingMapping } from '../helpers/getPageMap'
+import { getHeaders } from '../helpers/getHeaders'
 import { authorSchema, createAuthor } from './author'
 import { tagSchema, createTag } from './tag'
 
@@ -24,7 +25,11 @@ export const postSchema = z
     slug: z.string(),
     title: z.string(),
     excerpt: z.custom().optional(),
-    content: z.custom(),
+    content: z.custom<Root>(),
+    headings: z.array(
+      z.object({ value: z.string(), type: z.string(), children: z.custom() })
+    ),
+    hasH1: z.boolean(),
     path: pathSchema,
     primary_tag: tagSchema.optional(),
     primary_author: authorSchema.optional(),
@@ -89,10 +94,15 @@ export function createPost(
       path: routingMapping[node._sys.path] ?? `/${idResult.value}`,
     }
 
+    const { headings, titleText, hasH1 } = getHeaders(post.content as Root)
+
     return parse(postSchema, {
       id: idResult.value,
       type: 'post',
       ...post,
+      headings,
+      title: titleText ?? post.title,
+      hasH1,
       tags,
       authors,
       ...specialAttributes,

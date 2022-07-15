@@ -19,6 +19,12 @@ function visit<T extends Node | Parent>(
   }
   if ('children' in node) {
     node.children.forEach((n) => visit(n, handler))
+    for (let i = 0, len = node.children.length; i < len; i++) {
+      const childNode = node.children[i]
+      if (childNode) {
+        visit(childNode, handler)
+      }
+    }
   }
 }
 
@@ -35,12 +41,12 @@ function getFlattenedValue(node: Parent): string {
 }
 
 export type HeadingsReturn = {
-  headings: Array<{ value: string; type: string; children: any }>
+  headings: Array<{ value: string } & Heading>
   titleText?: string
   hasH1: boolean
 }
 
-export default function headings(tree: Root): HeadingsReturn {
+export function getHeaders(tree: Root): HeadingsReturn {
   const headingMeta: HeadingsReturn = {
     hasH1: false,
     headings: [],

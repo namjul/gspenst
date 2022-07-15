@@ -2,6 +2,33 @@ import { z } from '../shared/kernel'
 import { dynamicVariablesSchema, locatorResourceTypeSchema } from './resource'
 import { queryFilterOptions, dataQuery } from './routes'
 
+export const routeTypeEntry = z.literal('entry')
+export const routeTypeChannel = z.literal('channel')
+export const routeTypeCollection = z.literal('collection')
+export const routeTypeCustom = z.literal('custom')
+export const routeTypeRedirect = z.literal('redirect')
+export const routeTypeInternal = z.literal('internal')
+
+export const routeTypes = [
+  routeTypeEntry.value,
+  routeTypeChannel.value,
+  routeTypeCollection.value,
+  routeTypeCustom.value,
+  routeTypeRedirect.value,
+  routeTypeInternal.value,
+]
+
+export const routeTypesSchema = z.union([
+  routeTypeEntry,
+  routeTypeChannel,
+  routeTypeCollection,
+  routeTypeCustom,
+  routeTypeRedirect,
+  routeTypeInternal,
+])
+
+export type RouteType = z.infer<typeof routeTypesSchema>
+
 // TODO rename to routerContext/router? at least remove the word context
 
 const redirectSchema = z.object({
@@ -31,7 +58,7 @@ const baseRoutingContextSchema = z.object({
 
 const collectionRoutingContextSchema = z
   .object({
-    type: z.literal('collection'),
+    type: routeTypeCollection,
   })
   .merge(baseRoutingContextSchema)
   .merge(queryFilterOptions)
@@ -42,7 +69,7 @@ export type CollectionRoutingContext = z.infer<
 
 const channelRoutingContextSchema = z
   .object({
-    type: z.literal('channel'),
+    type: routeTypeChannel,
   })
   .merge(baseRoutingContextSchema)
   .merge(queryFilterOptions)
@@ -51,7 +78,7 @@ export type ChannelRoutingContext = z.infer<typeof channelRoutingContextSchema>
 
 const entryRoutingContextSchema = z
   .object({
-    type: z.literal('entry'),
+    type: routeTypeEntry,
     resourceType: locatorResourceTypeSchema,
   })
   .merge(baseRoutingContextSchema)
@@ -60,14 +87,14 @@ export type EntryRoutingContext = z.infer<typeof entryRoutingContextSchema>
 
 const customRoutingContextSchema = z
   .object({
-    type: z.literal('custom'),
+    type: routeTypeCustom,
   })
   .merge(baseRoutingContextSchema)
 
 export type CustomRoutingContext = z.infer<typeof customRoutingContextSchema>
 
 const redirectRoutingContextSchema = z.object({
-  type: z.literal('redirect'),
+  type: routeTypeRedirect,
   redirect: redirectSchema,
 })
 
@@ -81,7 +108,7 @@ const routingContextSchema = z.discriminatedUnion('type', [
   entryRoutingContextSchema,
   customRoutingContextSchema,
   redirectRoutingContextSchema,
-  z.object({ type: z.literal('internal') }),
+  z.object({ type: routeTypeInternal }),
 ])
 
 routingContextSchema.describe('routingContextSchema')

@@ -1,15 +1,23 @@
 import type { RoutingContext } from '../domain/routing'
 
 export function getContext(routingContext: RoutingContext) {
-  if (routingContext.type === 'entry') {
-    return [routingContext.resourceType]
-  }
+  const contextType =
+    routingContext.type === 'entry'
+      ? [routingContext.resourceType]
+      : ['channel', 'collection'].includes(routingContext.type)
+      ? ['index']
+      : []
 
   const contextFromName =
-    'name' in routingContext && routingContext.name ? [routingContext.name] : null
+    'name' in routingContext && routingContext.name ? [routingContext.name] : []
 
   const contextFromData =
     'data' in routingContext ? Object.keys(routingContext.data) : []
 
-  return contextFromData.length ? contextFromData : contextFromName
+  return [
+    ...new Set([
+      ...(contextFromData.length ? contextFromData : contextFromName),
+      ...contextType,
+    ]),
+  ]
 }
