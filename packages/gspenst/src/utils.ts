@@ -1,9 +1,17 @@
+import { Repository } from '@napi-rs/simple-git'
 import * as graphql from 'graphql'
 import { compile, pathToRegexp as _pathToRegexp } from 'path-to-regexp' // TODO use https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API#pattern_syntax
 import { fromThrowable } from './shared/kernel'
 import type { Result } from './shared/kernel'
 import type { DynamicVariables } from './domain/resource'
 import * as Errors from './errors'
+
+export const gitDiscover = fromThrowable(Repository.discover, (error) =>
+  Errors.other(
+    '`@napi-rs/simple-git`',
+    error instanceof Error ? error : undefined
+  )
+)
 
 export const pathToRegexp = fromThrowable(_pathToRegexp, (error) =>
   Errors.other('`path-to-regexp`', error instanceof Error ? error : undefined)

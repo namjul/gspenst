@@ -15,7 +15,7 @@ import {
   GetTagDocument,
   GetConfigDocument,
 } from '../../.tina/__generated__/types'
-import type { Entity } from '../api'
+import * as api from '../api'
 import { absurd, do_ } from '../shared/utils'
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -219,6 +219,7 @@ const resourceBaseSchema = z.object({
   filepath: z.string(),
   relativePath: z.string(),
   breadcrumbs: z.array(z.string()),
+  timestamp: z.number().optional(),
 })
 
 export const dynamicVariablesSchema = z.object({
@@ -315,8 +316,11 @@ export type LocatorResourceType = z.infer<typeof locatorResourceTypeSchema>
 export type LocatorResource = z.infer<typeof locatorResourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
-export function createResource({ type, data }: Entity): Result<Resource> {
+export function createResource(entity: api.Entity): Result<Resource> {
+  const timestamp = 'timestamp' in entity ? entity.timestamp : undefined
+
   const node = do_(() => {
+    const { type, data } = entity
     switch (type) {
       case 'post':
         return data.data.post
@@ -359,6 +363,7 @@ export function createResource({ type, data }: Entity): Result<Resource> {
     filepath,
     relativePath,
     breadcrumbs,
+    timestamp,
   }
 
   const resource = {

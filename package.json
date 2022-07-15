@@ -36,6 +36,12 @@
       "kentcdodds/jsx-a11y"
     ],
     "rules": {
+      "@typescript-eslint/unbound-method": [
+        "error",
+        {
+          "ignoreStatic": true
+        }
+      ],
       "react/jsx-uses-react": "off",
       "react/react-in-jsx-scope": "off"
     },

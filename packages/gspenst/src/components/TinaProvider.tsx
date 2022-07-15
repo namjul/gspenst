@@ -1,6 +1,7 @@
 import TinaCMS, { defineConfig } from 'tinacms'
 import type { TinaCloudSchema } from 'tinacms'
 import { client } from '../shared/client'
+import { configStringId } from '../constants'
 import type { RoutingMapping } from '../helpers/getPageMap'
 
 export type TinaProviderProps = React.PropsWithChildren<{
@@ -31,7 +32,7 @@ const TinaProvider = ({
       return cms
     },
     formifyCallback: ({ formConfig, createForm, createGlobalForm }) => {
-      if (formConfig.id === 'content/config/index.json') {
+      if (formConfig.id === configStringId) {
         return createGlobalForm(formConfig)
       }
 

@@ -16,6 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@napi-rs/simple-git": "^0.1.8",
     "@tryghost/nql": "^0.9.1",
     "@tryghost/string": "^0.1.23",
     "@tryghost/tpl": "^0.1.14",
