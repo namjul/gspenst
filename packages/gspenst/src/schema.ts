@@ -51,13 +51,19 @@ const commonFields: TinaField[] = [
         meta: ValidateMeta
       ) => {
         if (!value || (!meta.initial && !meta.modified)) {
+          const filename =
+            'filename' in allValues ? allValues.filename : undefined
           const title = 'title' in allValues ? allValues.title : undefined
-          const slug = title ? slugify(title) : undefined
+          const name = 'name' in allValues ? allValues.name : undefined
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+          const soonToBeSlug = name || title || filename
+          // const relativePath = 'name' in allValues ? allValues.name : undefined
+          const slug = soonToBeSlug ? slugify(soonToBeSlug) : undefined
           if (slug) {
             allValues[meta.name] = slug
             return undefined
           }
-          if (meta.modified) {
+          if (meta.dirty) {
             return 'Required'
           }
           return true
