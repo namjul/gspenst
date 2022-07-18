@@ -1,4 +1,5 @@
 import { defineSchema, DateFieldPlugin } from 'tinacms'
+import { slugify } from '@tryghost/string'
 import type { TinaCollection, TinaTemplate, TinaField } from 'tinacms'
 import { env } from './domain/env'
 
@@ -38,10 +39,31 @@ const commonFields: TinaField[] = [
       },
     },
   },
+  // @ts-expect-error --- `validate type does not allow boolean return,`
   {
     type: 'string',
     label: 'Slug',
     name: 'slug',
+    ui: {
+      validate: (
+        value,
+        allValues: { [name: string]: string },
+        meta: ValidateMeta
+      ) => {
+        if (!value || (!meta.initial && !meta.modified)) {
+          const title = 'title' in allValues ? allValues.title : undefined
+          const slug = title ? slugify(title) : undefined
+          if (slug) {
+            allValues[meta.name] = slug
+            return undefined
+          }
+          if (meta.modified) {
+            return 'Required'
+          }
+          return true
+        }
+      },
+    },
   },
 ]
 
