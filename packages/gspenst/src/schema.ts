@@ -1,15 +1,41 @@
-import { defineSchema } from 'tinacms'
+import { defineSchema, DateFieldPlugin } from 'tinacms'
 import type { TinaCollection, TinaTemplate, TinaField } from 'tinacms'
 import { env } from './domain/env'
 
+type ValidateMeta = {
+  value: string
+  initial: string
+  modified: boolean
+  dirty: boolean
+  name: string
+  data: { tinaField: TinaField }
+}
+
+const dateFormat = 'YYYY MM DD'
 const commonFields: TinaField[] = [
   {
     type: 'datetime',
     label: 'Posted Date',
     name: 'date',
-    required: true,
     ui: {
-      dateFormat: 'YYYY MM DD',
+      dateFormat,
+      validate: (
+        value,
+        allValues: { [name: string]: string },
+        meta: ValidateMeta
+      ) => {
+        if (!value) {
+          if (!meta.initial) {
+            allValues[meta.name] = DateFieldPlugin.format(value, 'date', {
+              dateFormat,
+            })
+          }
+          if (meta.dirty) {
+            return 'Required'
+          }
+          return true
+        }
+      },
     },
   },
   {
