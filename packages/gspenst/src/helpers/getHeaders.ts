@@ -40,14 +40,12 @@ function getFlattenedValue(node: Parent): string {
     .join('')
 }
 
-export type HeadingsReturn = {
+export function getHeaders(tree: Root): {
   headings: Array<{ value: string } & Heading>
   titleText?: string
   hasH1: boolean
-}
-
-export function getHeaders(tree: Root): HeadingsReturn {
-  const headingMeta: HeadingsReturn = {
+} {
+  const headingMeta: ReturnType<typeof getHeaders> = {
     hasH1: false,
     headings: [],
   }
