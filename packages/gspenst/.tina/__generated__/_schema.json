@@ -32,7 +32,6 @@
           "type": "datetime",
           "label": "Posted Date",
           "name": "date",
-          "required": true,
           "ui": { "dateFormat": "YYYY MM DD" },
           "namespace": ["page", "date"]
         },
@@ -40,14 +39,13 @@
           "type": "string",
           "label": "Slug",
           "name": "slug",
-          "required": true,
+          "ui": {},
           "namespace": ["page", "slug"]
         },
         {
           "type": "string",
           "label": "Title",
           "name": "title",
-          "required": true,
           "namespace": ["page", "title"]
         },
         {
@@ -96,14 +94,13 @@
           "name": "content",
           "templates": [],
           "isBody": true,
-          "required": true,
           "namespace": ["page", "content"]
         }
       ],
       "namespace": ["page"]
     },
     {
-      "label": "Blog Posts",
+      "label": "Posts",
       "name": "post",
       "path": "content/posts",
       "format": "mdx",
@@ -112,7 +109,6 @@
           "type": "datetime",
           "label": "Posted Date",
           "name": "date",
-          "required": true,
           "ui": { "dateFormat": "YYYY MM DD" },
           "namespace": ["post", "date"]
         },
@@ -120,14 +116,13 @@
           "type": "string",
           "label": "Slug",
           "name": "slug",
-          "required": true,
+          "ui": {},
           "namespace": ["post", "slug"]
         },
         {
           "type": "string",
           "label": "Title",
           "name": "title",
-          "required": true,
           "namespace": ["post", "title"]
         },
         {
@@ -176,7 +171,6 @@
           "name": "content",
           "templates": [],
           "isBody": true,
-          "required": true,
           "namespace": ["post", "content"]
         }
       ],
@@ -192,14 +186,12 @@
           "type": "string",
           "label": "Name",
           "name": "name",
-          "required": true,
           "namespace": ["author", "name"]
         },
         {
           "type": "datetime",
           "label": "Posted Date",
           "name": "date",
-          "required": true,
           "ui": { "dateFormat": "YYYY MM DD" },
           "namespace": ["author", "date"]
         },
@@ -207,7 +199,7 @@
           "type": "string",
           "label": "Slug",
           "name": "slug",
-          "required": true,
+          "ui": {},
           "namespace": ["author", "slug"]
         }
       ],
@@ -223,14 +215,12 @@
           "type": "string",
           "label": "Name",
           "name": "name",
-          "required": true,
           "namespace": ["tag", "name"]
         },
         {
           "type": "datetime",
           "label": "Posted Date",
           "name": "date",
-          "required": true,
           "ui": { "dateFormat": "YYYY MM DD" },
           "namespace": ["tag", "date"]
         },
@@ -238,7 +228,7 @@
           "type": "string",
           "label": "Slug",
           "name": "slug",
-          "required": true,
+          "ui": {},
           "namespace": ["tag", "slug"]
         }
       ],

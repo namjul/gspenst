@@ -42,7 +42,6 @@ const commonFields: TinaField[] = [
     type: 'string',
     label: 'Slug',
     name: 'slug',
-    required: true,
   },
 ]
 
@@ -55,7 +54,6 @@ export function createSchema(
       type: 'string',
       label: 'Title',
       name: 'title',
-      required: true,
     },
     {
       type: 'string',
@@ -100,7 +98,6 @@ export function createSchema(
       name: 'content',
       templates,
       isBody: true,
-      required: true,
     },
   ]
 
@@ -145,7 +142,6 @@ export function createSchema(
         type: 'string',
         label: 'Name',
         name: 'name',
-        required: true,
       },
       ...commonFields,
     ],
@@ -161,7 +157,6 @@ export function createSchema(
         type: 'string',
         label: 'Name',
         name: 'name',
-        required: true,
       },
       ...commonFields,
     ],

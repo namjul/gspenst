@@ -242,13 +242,13 @@ export type PageTags = {
 export type Page = Node &
   Document & {
     __typename?: 'Page'
-    date: Scalars['String']
-    slug: Scalars['String']
-    title: Scalars['String']
+    date?: Maybe<Scalars['String']>
+    slug?: Maybe<Scalars['String']>
+    title?: Maybe<Scalars['String']>
     excerpt?: Maybe<Scalars['String']>
     authors?: Maybe<Array<Maybe<PageAuthors>>>
     tags?: Maybe<Array<Maybe<PageTags>>>
-    content: Scalars['JSON']
+    content?: Maybe<Scalars['JSON']>
     id: Scalars['ID']
     _sys: SystemInfo
     _values: Scalars['JSON']
@@ -284,13 +284,13 @@ export type PostTags = {
 export type Post = Node &
   Document & {
     __typename?: 'Post'
-    date: Scalars['String']
-    slug: Scalars['String']
-    title: Scalars['String']
+    date?: Maybe<Scalars['String']>
+    slug?: Maybe<Scalars['String']>
+    title?: Maybe<Scalars['String']>
     excerpt?: Maybe<Scalars['String']>
     authors?: Maybe<Array<Maybe<PostAuthors>>>
     tags?: Maybe<Array<Maybe<PostTags>>>
-    content: Scalars['JSON']
+    content?: Maybe<Scalars['JSON']>
     id: Scalars['ID']
     _sys: SystemInfo
     _values: Scalars['JSON']
@@ -312,9 +312,9 @@ export type PostConnection = Connection & {
 export type Author = Node &
   Document & {
     __typename?: 'Author'
-    name: Scalars['String']
-    date: Scalars['String']
-    slug: Scalars['String']
+    name?: Maybe<Scalars['String']>
+    date?: Maybe<Scalars['String']>
+    slug?: Maybe<Scalars['String']>
     id: Scalars['ID']
     _sys: SystemInfo
     _values: Scalars['JSON']
@@ -336,9 +336,9 @@ export type AuthorConnection = Connection & {
 export type Tag = Node &
   Document & {
     __typename?: 'Tag'
-    name: Scalars['String']
-    date: Scalars['String']
-    slug: Scalars['String']
+    name?: Maybe<Scalars['String']>
+    date?: Maybe<Scalars['String']>
+    slug?: Maybe<Scalars['String']>
     id: Scalars['ID']
     _sys: SystemInfo
     _values: Scalars['JSON']
@@ -526,11 +526,11 @@ export type ThemeConfigNodeFragment = {
 export type PostNodeFragment = {
   __typename: 'Post'
   id: string
-  date: string
-  slug: string
-  title: string
+  date?: string | null
+  slug?: string | null
+  title?: string | null
   excerpt?: string | null
-  content: any
+  content?: any | null
   _sys: {
     __typename?: 'SystemInfo'
     filename: string
@@ -545,9 +545,9 @@ export type PostNodeFragment = {
     tag?: {
       __typename: 'Tag'
       id: string
-      name: string
-      date: string
-      slug: string
+      name?: string | null
+      date?: string | null
+      slug?: string | null
       _sys: {
         __typename?: 'SystemInfo'
         filename: string
@@ -564,9 +564,9 @@ export type PostNodeFragment = {
     author?: {
       __typename: 'Author'
       id: string
-      name: string
-      date: string
-      slug: string
+      name?: string | null
+      date?: string | null
+      slug?: string | null
       _sys: {
         __typename?: 'SystemInfo'
         filename: string
@@ -583,11 +583,11 @@ export type PostNodeFragment = {
 export type PageNodeFragment = {
   __typename: 'Page'
   id: string
-  date: string
-  slug: string
-  title: string
+  date?: string | null
+  slug?: string | null
+  title?: string | null
   excerpt?: string | null
-  content: any
+  content?: any | null
   _sys: {
     __typename?: 'SystemInfo'
     filename: string
@@ -602,9 +602,9 @@ export type PageNodeFragment = {
     tag?: {
       __typename: 'Tag'
       id: string
-      name: string
-      date: string
-      slug: string
+      name?: string | null
+      date?: string | null
+      slug?: string | null
       _sys: {
         __typename?: 'SystemInfo'
         filename: string
@@ -621,9 +621,9 @@ export type PageNodeFragment = {
     author?: {
       __typename: 'Author'
       id: string
-      name: string
-      date: string
-      slug: string
+      name?: string | null
+      date?: string | null
+      slug?: string | null
       _sys: {
         __typename?: 'SystemInfo'
         filename: string
@@ -640,9 +640,9 @@ export type PageNodeFragment = {
 export type AuthorNodeFragment = {
   __typename: 'Author'
   id: string
-  name: string
-  date: string
-  slug: string
+  name?: string | null
+  date?: string | null
+  slug?: string | null
   _sys: {
     __typename?: 'SystemInfo'
     filename: string
@@ -657,9 +657,9 @@ export type AuthorNodeFragment = {
 export type TagNodeFragment = {
   __typename: 'Tag'
   id: string
-  name: string
-  date: string
-  slug: string
+  name?: string | null
+  date?: string | null
+  slug?: string | null
   _sys: {
     __typename?: 'SystemInfo'
     filename: string
@@ -700,11 +700,11 @@ export type GetPostQuery = {
   post: {
     __typename: 'Post'
     id: string
-    date: string
-    slug: string
-    title: string
+    date?: string | null
+    slug?: string | null
+    title?: string | null
     excerpt?: string | null
-    content: any
+    content?: any | null
     _sys: {
       __typename?: 'SystemInfo'
       filename: string
@@ -719,9 +719,9 @@ export type GetPostQuery = {
       tag?: {
         __typename: 'Tag'
         id: string
-        name: string
-        date: string
-        slug: string
+        name?: string | null
+        date?: string | null
+        slug?: string | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -738,9 +738,9 @@ export type GetPostQuery = {
       author?: {
         __typename: 'Author'
         id: string
-        name: string
-        date: string
-        slug: string
+        name?: string | null
+        date?: string | null
+        slug?: string | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -767,11 +767,11 @@ export type GetPostsQuery = {
       node?: {
         __typename: 'Post'
         id: string
-        date: string
-        slug: string
-        title: string
+        date?: string | null
+        slug?: string | null
+        title?: string | null
         excerpt?: string | null
-        content: any
+        content?: any | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -786,9 +786,9 @@ export type GetPostsQuery = {
           tag?: {
             __typename: 'Tag'
             id: string
-            name: string
-            date: string
-            slug: string
+            name?: string | null
+            date?: string | null
+            slug?: string | null
             _sys: {
               __typename?: 'SystemInfo'
               filename: string
@@ -805,9 +805,9 @@ export type GetPostsQuery = {
           author?: {
             __typename: 'Author'
             id: string
-            name: string
-            date: string
-            slug: string
+            name?: string | null
+            date?: string | null
+            slug?: string | null
             _sys: {
               __typename?: 'SystemInfo'
               filename: string
@@ -833,11 +833,11 @@ export type GetPageQuery = {
   page: {
     __typename: 'Page'
     id: string
-    date: string
-    slug: string
-    title: string
+    date?: string | null
+    slug?: string | null
+    title?: string | null
     excerpt?: string | null
-    content: any
+    content?: any | null
     _sys: {
       __typename?: 'SystemInfo'
       filename: string
@@ -852,9 +852,9 @@ export type GetPageQuery = {
       tag?: {
         __typename: 'Tag'
         id: string
-        name: string
-        date: string
-        slug: string
+        name?: string | null
+        date?: string | null
+        slug?: string | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -871,9 +871,9 @@ export type GetPageQuery = {
       author?: {
         __typename: 'Author'
         id: string
-        name: string
-        date: string
-        slug: string
+        name?: string | null
+        date?: string | null
+        slug?: string | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -900,11 +900,11 @@ export type GetPagesQuery = {
       node?: {
         __typename: 'Page'
         id: string
-        date: string
-        slug: string
-        title: string
+        date?: string | null
+        slug?: string | null
+        title?: string | null
         excerpt?: string | null
-        content: any
+        content?: any | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -919,9 +919,9 @@ export type GetPagesQuery = {
           tag?: {
             __typename: 'Tag'
             id: string
-            name: string
-            date: string
-            slug: string
+            name?: string | null
+            date?: string | null
+            slug?: string | null
             _sys: {
               __typename?: 'SystemInfo'
               filename: string
@@ -938,9 +938,9 @@ export type GetPagesQuery = {
           author?: {
             __typename: 'Author'
             id: string
-            name: string
-            date: string
-            slug: string
+            name?: string | null
+            date?: string | null
+            slug?: string | null
             _sys: {
               __typename?: 'SystemInfo'
               filename: string
@@ -966,9 +966,9 @@ export type GetAuthorQuery = {
   author: {
     __typename: 'Author'
     id: string
-    name: string
-    date: string
-    slug: string
+    name?: string | null
+    date?: string | null
+    slug?: string | null
     _sys: {
       __typename?: 'SystemInfo'
       filename: string
@@ -993,9 +993,9 @@ export type GetAuthorsQuery = {
       node?: {
         __typename: 'Author'
         id: string
-        name: string
-        date: string
-        slug: string
+        name?: string | null
+        date?: string | null
+        slug?: string | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -1019,9 +1019,9 @@ export type GetTagQuery = {
   tag: {
     __typename: 'Tag'
     id: string
-    name: string
-    date: string
-    slug: string
+    name?: string | null
+    date?: string | null
+    slug?: string | null
     _sys: {
       __typename?: 'SystemInfo'
       filename: string
@@ -1046,9 +1046,9 @@ export type GetTagsQuery = {
       node?: {
         __typename: 'Tag'
         id: string
-        name: string
-        date: string
-        slug: string
+        name?: string | null
+        date?: string | null
+        slug?: string | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -1070,11 +1070,11 @@ export type ConfigPartsFragment = {
 
 export type PagePartsFragment = {
   __typename?: 'Page'
-  date: string
-  slug: string
-  title: string
+  date?: string | null
+  slug?: string | null
+  title?: string | null
   excerpt?: string | null
-  content: any
+  content?: any | null
   authors?: Array<{
     __typename: 'PageAuthors'
     author?: { __typename?: 'Author'; id: string } | null
@@ -1087,11 +1087,11 @@ export type PagePartsFragment = {
 
 export type PostPartsFragment = {
   __typename?: 'Post'
-  date: string
-  slug: string
-  title: string
+  date?: string | null
+  slug?: string | null
+  title?: string | null
   excerpt?: string | null
-  content: any
+  content?: any | null
   authors?: Array<{
     __typename: 'PostAuthors'
     author?: { __typename?: 'Author'; id: string } | null
@@ -1104,16 +1104,16 @@ export type PostPartsFragment = {
 
 export type AuthorPartsFragment = {
   __typename?: 'Author'
-  name: string
-  date: string
-  slug: string
+  name?: string | null
+  date?: string | null
+  slug?: string | null
 }
 
 export type TagPartsFragment = {
   __typename?: 'Tag'
-  name: string
-  date: string
-  slug: string
+  name?: string | null
+  date?: string | null
+  slug?: string | null
 }
 
 export type ConfigQueryVariables = Exact<{
@@ -1180,11 +1180,11 @@ export type PageQuery = {
   page: {
     __typename?: 'Page'
     id: string
-    date: string
-    slug: string
-    title: string
+    date?: string | null
+    slug?: string | null
+    title?: string | null
     excerpt?: string | null
-    content: any
+    content?: any | null
     _sys: {
       __typename?: 'SystemInfo'
       filename: string
@@ -1223,11 +1223,11 @@ export type PageConnectionQuery = {
       node?: {
         __typename?: 'Page'
         id: string
-        date: string
-        slug: string
-        title: string
+        date?: string | null
+        slug?: string | null
+        title?: string | null
         excerpt?: string | null
-        content: any
+        content?: any | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -1259,11 +1259,11 @@ export type PostQuery = {
   post: {
     __typename?: 'Post'
     id: string
-    date: string
-    slug: string
-    title: string
+    date?: string | null
+    slug?: string | null
+    title?: string | null
     excerpt?: string | null
-    content: any
+    content?: any | null
     _sys: {
       __typename?: 'SystemInfo'
       filename: string
@@ -1302,11 +1302,11 @@ export type PostConnectionQuery = {
       node?: {
         __typename?: 'Post'
         id: string
-        date: string
-        slug: string
-        title: string
+        date?: string | null
+        slug?: string | null
+        title?: string | null
         excerpt?: string | null
-        content: any
+        content?: any | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -1338,9 +1338,9 @@ export type AuthorQuery = {
   author: {
     __typename?: 'Author'
     id: string
-    name: string
-    date: string
-    slug: string
+    name?: string | null
+    date?: string | null
+    slug?: string | null
     _sys: {
       __typename?: 'SystemInfo'
       filename: string
@@ -1371,9 +1371,9 @@ export type AuthorConnectionQuery = {
       node?: {
         __typename?: 'Author'
         id: string
-        name: string
-        date: string
-        slug: string
+        name?: string | null
+        date?: string | null
+        slug?: string | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string
@@ -1397,9 +1397,9 @@ export type TagQuery = {
   tag: {
     __typename?: 'Tag'
     id: string
-    name: string
-    date: string
-    slug: string
+    name?: string | null
+    date?: string | null
+    slug?: string | null
     _sys: {
       __typename?: 'SystemInfo'
       filename: string
@@ -1430,9 +1430,9 @@ export type TagConnectionQuery = {
       node?: {
         __typename?: 'Tag'
         id: string
-        name: string
-        date: string
-        slug: string
+        name?: string | null
+        date?: string | null
+        slug?: string | null
         _sys: {
           __typename?: 'SystemInfo'
           filename: string

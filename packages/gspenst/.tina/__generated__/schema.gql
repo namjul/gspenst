@@ -116,13 +116,13 @@ type PageTags {
 }
 
 type Page implements Node & Document {
-  date: String!
-  slug: String!
-  title: String!
+  date: String
+  slug: String
+  title: String
   excerpt: String
   authors: [PageAuthors]
   tags: [PageTags]
-  content: JSON!
+  content: JSON
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
@@ -152,13 +152,13 @@ type PostTags {
 }
 
 type Post implements Node & Document {
-  date: String!
-  slug: String!
-  title: String!
+  date: String
+  slug: String
+  title: String
   excerpt: String
   authors: [PostAuthors]
   tags: [PostTags]
-  content: JSON!
+  content: JSON
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
@@ -176,9 +176,9 @@ type PostConnection implements Connection {
 }
 
 type Author implements Node & Document {
-  name: String!
-  date: String!
-  slug: String!
+  name: String
+  date: String
+  slug: String
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
@@ -196,9 +196,9 @@ type AuthorConnection implements Connection {
 }
 
 type Tag implements Node & Document {
-  name: String!
-  date: String!
-  slug: String!
+  name: String
+  date: String
+  slug: String
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
