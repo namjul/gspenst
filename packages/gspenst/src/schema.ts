@@ -147,7 +147,7 @@ export function createSchema(
   }
 
   const postCollection: TinaCollection = {
-    label: 'Blog Posts',
+    label: 'Posts',
     name: 'post',
     path: 'content/posts',
     format: 'mdx',
