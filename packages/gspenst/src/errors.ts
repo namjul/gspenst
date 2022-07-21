@@ -65,7 +65,7 @@ export function format(errors: GspenstError | GspenstError[]) {
         return `${error.type}: ${error.context}`
       case 'Parse': {
         const cause = do_(() => {
-          if (error.error instanceof z.ZodError<any[]>) {
+          if (error.error instanceof z.ZodError) {
             return Object.entries(error.error.format()).flatMap(
               ([name, value]) => {
                 if ('_errors' in value) {
