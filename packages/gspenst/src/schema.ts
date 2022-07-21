@@ -160,19 +160,35 @@ export function createSchema(
     fields: [...commonFields, ...postFields],
   }
 
+  const taxonomyFields = (type: 'author' | 'tag'): TinaField[] => [
+    // @ts-expect-error --- `validate type does not allow boolean return,`
+    {
+      type: 'string',
+      label: 'Name',
+      name: 'name',
+      ui: {
+        validate: (
+          value,
+          _allValues: { [name: string]: string },
+          meta: ValidateMeta
+        ) => {
+          if (!value) {
+            if (meta.dirty) {
+              return `You must specify a name for the ${type}.`
+            }
+            return true
+          }
+        },
+      },
+    },
+  ]
+
   const authorCollection: TinaCollection = {
     label: 'Authors',
     name: 'author',
     path: 'content/authors',
     format: 'md',
-    fields: [
-      {
-        type: 'string',
-        label: 'Name',
-        name: 'name',
-      },
-      ...commonFields,
-    ],
+    fields: [...taxonomyFields('author'), ...commonFields],
   }
 
   const tagCollection: TinaCollection = {
@@ -180,14 +196,7 @@ export function createSchema(
     name: 'tag',
     path: 'content/tags',
     format: 'md',
-    fields: [
-      {
-        type: 'string',
-        label: 'Name',
-        name: 'name',
-      },
-      ...commonFields,
-    ],
+    fields: [...taxonomyFields('tag'), ...commonFields],
   }
 
   return defineSchema({
