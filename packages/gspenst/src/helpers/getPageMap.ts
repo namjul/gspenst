@@ -82,23 +82,6 @@ export function getPageMap(
   const pageResources = getLocatorResources(resources)
 
   return [...result, ...pageResources]
-
-  // const activeRouteLocale = getLocaleFromFilename(currentResourcePath)
-  // const pageItem = fileMap[currentResourcePath]
-  // const metaPath = path.dirname(currentResourcePath)
-  // const metaExtension = activeRouteLocale ? `${activeRouteLocale}.json` : `json`
-  // const pageMeta =
-  //   fileMap[`${metaPath}/meta.${metaExtension}`]?.meta?.[pageItem.name]
-  // const title =
-  //   (typeof pageMeta === 'string' ? pageMeta : pageMeta?.title) || pageItem.name
-  // if (activeRouteLocale) {
-  //   return [
-  //     filterRouteLocale(pageMaps, activeRouteLocale, defaultLocale),
-  //     fileMap[currentResourcePath].route,
-  //     title
-  //   ]
-  // }
-  // return [pageMaps, fileMap[currentResourcePath].route, title]
 }
 
 export function getRoutingMapping(pageMap: PageMapItem[] = []): RoutingMapping {
