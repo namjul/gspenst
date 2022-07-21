@@ -9,7 +9,23 @@ import type { LoaderOptions } from './loader'
 import { GspenstPlugin } from './plugin'
 
 const envResult = parseEnv(process.env, {
-  GSPENST_STATIC_EXPORT: z.string().optional(),
+  GSPENST_STATIC_EXPORT: z
+    .preprocess(
+      (value) => {
+        const value_ = String(value).toLowerCase()
+        if (value_ === 'true') {
+          return true
+        }
+        if (value_ === 'false') {
+          return false
+        }
+        return value
+      },
+      z.boolean({
+        invalid_type_error: "GSPENST_STATIC_EXPORT must be a 'true' or 'false'",
+      })
+    )
+    .default(false),
 })
 
 if (envResult.isErr()) {
