@@ -12,13 +12,14 @@ function isHeading(node: Node): node is Heading {
 
 function visit<T extends Node | Parent>(
   node: T,
-  handler: (node: Heading) => void
+  tester: <TT extends Node | Parent>(node: TT) => boolean,
+  handler: <TTT extends Node | Parent>(node: TTT) => void
 ) {
-  if (isHeading(node)) {
+  if (tester(node)) {
     handler(node)
   }
   if ('children' in node) {
-    node.children.forEach((n) => visit(n, handler))
+    node.children.forEach((n) => visit(n, tester, handler))
   }
 }
 
@@ -44,23 +45,25 @@ export function getHeaders(tree: Root): {
     headings: [],
   }
 
-  visit(tree, (node) => {
-    const heading = {
-      ...node,
-      value: getFlattenedValue(node),
-    }
+  visit(tree, isHeading, (node) => {
+    if (isHeading(node)) {
+      const heading = {
+        ...node,
+        value: getFlattenedValue(node),
+      }
 
-    if (node.type === 'h1') {
-      headingMeta.hasH1 = true
-      if (Array.isArray(node.children) && node.children.length === 1) {
-        const child = node.children[0]
-        if (child?.type === 'text') {
-          headingMeta.titleText = child.text
+      if (node.type === 'h1') {
+        headingMeta.hasH1 = true
+        if (Array.isArray(node.children) && node.children.length === 1) {
+          const child = node.children[0]
+          if (child?.type === 'text') {
+            headingMeta.titleText = child.text
+          }
         }
       }
-    }
 
-    headingMeta.headings.push(heading)
+      headingMeta.headings.push(heading)
+    }
   })
 
   return headingMeta
