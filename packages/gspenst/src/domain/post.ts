@@ -23,9 +23,9 @@ export const postSchema = z
     type: z.literal('post'),
     date: dateSchema,
     slug: z.string(),
-    title: z.string(),
-    excerpt: z.custom().optional(),
-    content: z.custom<Root>(),
+    title: z.string().nullable(),
+    excerpt: z.string().nullable(),
+    content: z.custom<Root>(), // TODO define zod parser for content
     headings: z.array(
       z.object({ value: z.string(), type: z.string(), children: z.custom() })
     ),
@@ -100,8 +100,8 @@ export function createPost(
       id: idResult.value,
       type: 'post',
       ...post,
-      headings,
       title: titleText ?? post.title,
+      headings,
       hasH1,
       tags,
       authors,

@@ -98,7 +98,7 @@ const posts: { [name: string]: GetPostQuery } = {
       },
       id: `content/posts/0th-post.mdx`,
       title: '0th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '0th-post',
       date: '2021-07-03T20:30:00.000Z',
       content: {
@@ -120,7 +120,7 @@ const posts: { [name: string]: GetPostQuery } = {
       },
       id: `content/posts/1th-post.mdx`,
       title: '1th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '1th-post',
       date: '2021-01-03T20:30:00.000Z',
       content: {
@@ -142,7 +142,7 @@ const posts: { [name: string]: GetPostQuery } = {
       },
       id: `content/posts/2th-post.mdx`,
       title: '2th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '2th-post',
       date: '2021-02-03T20:30:00.000Z',
       content: {
@@ -164,7 +164,7 @@ const posts: { [name: string]: GetPostQuery } = {
       },
       id: `content/posts/3th-post.mdx`,
       title: '3th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '3th-post',
       date: '2021-03-03T20:30:00.000Z',
       content: {
@@ -198,7 +198,7 @@ const posts: { [name: string]: GetPostQuery } = {
       },
       id: `content/posts/4th-post.mdx`,
       title: '4th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '4th-post',
       date: '2021-07-03T20:30:00.000Z',
       content: {
@@ -232,7 +232,7 @@ const posts: { [name: string]: GetPostQuery } = {
       },
       id: `content/posts/5th-post.mdx`,
       title: '5th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '5th-post',
       date: '2021-07-03T20:30:00.000Z',
       content: {
@@ -254,7 +254,7 @@ const posts: { [name: string]: GetPostQuery } = {
       },
       id: `content/posts/6th-post.mdx`,
       title: '6th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '6th-post',
       date: '2021-07-03T20:30:00.000Z',
       content: {
@@ -296,7 +296,7 @@ const posts: { [name: string]: GetPostQuery } = {
         },
       ],
       title: '7th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '7th-post',
       date: '2021-07-03T20:30:00.000Z',
       content: {
@@ -318,7 +318,7 @@ const posts: { [name: string]: GetPostQuery } = {
       },
       id: `content/posts/8th-post.mdx`,
       title: '8th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '8th-post',
       date: '2021-07-03T20:30:00.000Z',
       content: {
@@ -340,7 +340,7 @@ const posts: { [name: string]: GetPostQuery } = {
       },
       id: `content/posts/9th-post.mdx`,
       title: '9th Post',
-      excerpt: '',
+      excerpt: null,
       slug: '9th-post',
       date: '2021-07-03T20:30:00.000Z',
       content: {
@@ -365,6 +365,7 @@ const pages: { [name: string]: GetPageQuery } = {
         extension: '.mdx',
       },
       title: 'about',
+      excerpt: null,
       slug: 'about',
       date: '2021-07-03T20:30:00.000Z',
       tags: null,
@@ -388,7 +389,7 @@ const pages: { [name: string]: GetPageQuery } = {
       },
       id: `content/pages/home.mdx`,
       title: 'Home',
-      excerpt: '',
+      excerpt: null,
       slug: 'home',
       date: '2021-07-03T20:30:00.000Z',
       content: {
@@ -414,6 +415,7 @@ const pages: { [name: string]: GetPageQuery } = {
       date: '2021-07-03T20:30:00.000Z',
       tags: null,
       authors: null,
+      excerpt: null,
       content: {
         type: 'root',
         children: [],
