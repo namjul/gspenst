@@ -18,7 +18,6 @@
   "dependencies": {
     "@napi-rs/simple-git": "^0.1.8",
     "@tryghost/nql": "^0.9.1",
-    "@tryghost/tpl": "^0.1.14",
     "async-mutex": "^0.3.2",
     "cross-spawn": "^7.0.3",
     "dataloader": "^2.1.0",
