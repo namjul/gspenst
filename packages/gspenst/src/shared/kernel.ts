@@ -3,7 +3,7 @@
 
 import { z } from 'zod'
 import stringHash from 'fnv1a'
-import { slugify } from '@tryghost/string'
+import slugify from 'slugify'
 import type { Ok, Err, ResultAsync as NeverthrowResultAsync } from 'neverthrow'
 import {
   LiteralUnion,
@@ -60,7 +60,10 @@ export const pathSchema = z.string().regex(/^\/([^?/]+)/)
 
 const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()])
 
-export type Json = z.infer<typeof literalSchema> | { [key: string]: Json } | Json[]
+export type Json =
+  | z.infer<typeof literalSchema>
+  | { [key: string]: Json }
+  | Json[]
 
 export const jsonSchema: z.ZodType<Json> = z.lazy(() =>
   z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)])

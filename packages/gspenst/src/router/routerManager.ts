@@ -1,4 +1,4 @@
-import { slugify } from '@tryghost/string'
+import slugify from 'slugify'
 import { ok, combine } from '../shared/kernel'
 import type { Result, Option, ID } from '../shared/kernel'
 import type { RoutesConfig } from '../domain/routes'

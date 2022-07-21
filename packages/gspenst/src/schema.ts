@@ -1,5 +1,5 @@
 import { defineSchema, DateFieldPlugin } from 'tinacms'
-import { slugify } from '@tryghost/string'
+import slugify from 'slugify'
 import type { TinaCollection, TinaTemplate, TinaField } from 'tinacms'
 import { env } from './domain/env'
 
