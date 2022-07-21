@@ -64,12 +64,13 @@ const createTheme = (_config: NextraBlogTheme) => {
     const postsPageMap = postResources.flatMap((post) =>
       post.type === 'post'
         ? {
-            name: post.title,
+            name: post.title || post.slug || 'Untitled', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
             route: post.path,
             frontMatter: {
               type: 'post',
               date: post.date,
               description: post.excerpt,
+              title: post.title,
             },
           }
         : []
@@ -88,6 +89,8 @@ const createTheme = (_config: NextraBlogTheme) => {
       return []
     })
 
+    const hasH1 = !!entryResource?.hasH1
+
     const pageOptions: PageOpt = {
       filename: 'empty',
       route,
@@ -100,6 +103,7 @@ const createTheme = (_config: NextraBlogTheme) => {
         })(),
         ...(entryResource
           ? {
+              title: entryResource.title,
               author: entryResource.primary_author?.name ?? 'no author',
               tag: entryResource.primary_tag?.name ?? 'no author',
               date: entryResource.date,
@@ -120,7 +124,7 @@ const createTheme = (_config: NextraBlogTheme) => {
           return []
         }),
       ],
-      titleText: entryResource?.title ?? entryResource?.slug ?? null,
+      titleText: hasH1 ? null : entryResource?.title ?? null,
       headings:
         entryResource?.headings.map((heading) => {
           const depth = (() => {
@@ -149,7 +153,7 @@ const createTheme = (_config: NextraBlogTheme) => {
             value: heading.value,
           }
         }) ?? [],
-      hasH1: entryResource?.hasH1 ?? false,
+      hasH1,
     }
 
     console.log(state, pageOptions)
