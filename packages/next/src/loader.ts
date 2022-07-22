@@ -111,7 +111,7 @@ export default function GspenstLayout (props) {
 
 const resources = ${JSON.stringify(resources)}
 const routesConfig = ${routesConfigStringified}
-const isStaticExport = !!${staticExport}
+const isStaticExport = ${staticExport}
 const routingParameter = '${routingParameter}'
 const { getPaths, getProps } = createWrapper({ routesConfig, resources })
 
