@@ -186,6 +186,7 @@
           "type": "string",
           "label": "Name",
           "name": "name",
+          "ui": {},
           "namespace": ["author", "name"]
         },
         {
@@ -215,6 +216,7 @@
           "type": "string",
           "label": "Name",
           "name": "name",
+          "ui": {},
           "namespace": ["tag", "name"]
         },
         {
