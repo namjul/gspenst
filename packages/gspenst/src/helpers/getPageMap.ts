@@ -1,4 +1,7 @@
-import { filterLocatorResources, filterPageResources } from '../domain/resource'
+import {
+  filterLocatorResources,
+  filterPageResources,
+} from '../helpers/resource'
 import type {
   Resource,
   LocatorResource,

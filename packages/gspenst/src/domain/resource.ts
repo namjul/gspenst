@@ -429,15 +429,3 @@ export function createDynamicVariables(
     primary_author,
   })
 }
-
-export const filterLocatorResources = (
-  resource: Resource
-): resource is LocatorResource => resource.type !== 'config'
-
-export const filterTagResources = (
-  resource: Resource
-): resource is TagResource => resource.type === 'tag'
-
-export const filterPageResources = (
-  resource: Resource
-): resource is PageResource => resource.type === 'page'

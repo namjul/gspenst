@@ -1,6 +1,6 @@
 import type { RoutesConfig } from './domain/routes'
 import type { LocatorResource } from './domain/resource'
-import { filterLocatorResources } from './domain/resource'
+import { filterLocatorResources } from './helpers/resource'
 import repository from './repository'
 import { routerManager } from './router'
 import { controller } from './controller'

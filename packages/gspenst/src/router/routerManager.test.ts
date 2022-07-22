@@ -2,7 +2,7 @@ import { ok } from '../shared/kernel'
 import repository from '../repository'
 import { parseRoutes } from '../domain/routes'
 import defaultRoutes from '../defaultRoutes'
-import { filterLocatorResources } from '../domain/resource'
+import { filterLocatorResources } from '../helpers/resource'
 import { routerManager } from './routerManager'
 
 jest.mock('../api')
