@@ -3,8 +3,10 @@
 import path from 'path'
 import yaml from 'js-yaml'
 import type { LoaderContext } from 'webpack'
+import type { TinaCloudSchema } from 'tinacms'
 import { Errors } from 'gspenst'
 import { init } from 'gspenst/server'
+import * as tsImport from 'ts-import'
 import { findContentDir } from './utils'
 import { log } from './logger'
 
@@ -77,12 +79,14 @@ async function loader(
 
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  const tinaSchema = tsImport.loadSync(tinaSchemaPath) as TinaCloudSchema
+
   const imports = `
 import { Errors } from 'gspenst'
 import { createWrapper } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
-import tinaSchema from '${tinaSchemaPath}'
 import __gspenst_withTheme__ from '${themePath}'
 ${
   themeConfigPath
@@ -93,6 +97,7 @@ ${
 
   const component = `
 const pageMap = ${JSON.stringify(pageMap)}
+const tinaSchema = ${JSON.stringify(tinaSchema)}
 const GspenstThemeComponent = __gspenst_withData__(
   __gspenst_withTheme__(${
     themeConfigPath ? '__gspenst_themeConfig__' : 'null'
