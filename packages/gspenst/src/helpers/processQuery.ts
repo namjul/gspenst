@@ -318,6 +318,7 @@ async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
 
 function batchLoadFromTina(sem: SemaphoreInterface) {
   return async (resources: ReadonlyArray<Resource>) => {
+    // TODO batch load resources
     return Promise.all(
       resources.map(async (resource) => {
         const { type, relativePath } = resource
