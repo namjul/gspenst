@@ -67,16 +67,6 @@ async function routeController(
 
   const { default: filterObject } = await import('filter-obj')
 
-  // const headers = (() => {
-  //   const entryData = pageProps.data.entry.data
-  //   if ('getPostDocument' in entryData) {
-  //     return getHeaders(entryData.getPostDocument.data.body as Root)
-  //   }
-  //   if ('getPageDocument' in entryData) {
-  //     return getHeaders(entryData.getPageDocument.data.body as Root)
-  //   }
-  // })()
-
   return repository.find({ id: configId }).andThen((configResource) => {
     return processData(dataLoaders, dataQueries).andThen(
       ({ data, entities }) => {

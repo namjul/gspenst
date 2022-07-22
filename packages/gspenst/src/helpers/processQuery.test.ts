@@ -29,7 +29,6 @@ describe('processQuery', () => {
         resourceType: 'post',
         type: 'read',
         slug: '7th-post',
-        // id: `content/posts/7th-post.mdx`,
         redirect: false,
       } as const
       const result = (await processQuery(dataLoaders, query))._unsafeUnwrap()
@@ -48,7 +47,7 @@ describe('processQuery', () => {
       expect(result).toHaveProperty('resources')
       expect(result).toHaveProperty('pagination')
       expect(result).toHaveProperty('pagination.total', 10)
-      expect(result).toHaveProperty('resources[0].tinaData')
+      expect(result).toHaveProperty('resources[0]', 57892423)
     })
 
     test('all', async () => {
@@ -94,7 +93,7 @@ describe('processQuery', () => {
 
       const result = (await processQuery(dataLoaders, query))._unsafeUnwrap()
       expect(result.resources).toHaveLength(3)
-      expect(result).toHaveProperty('resources[0].slug', '1th-post')
+      expect(result).toHaveProperty('resources[0]', 2502485806)
     })
   })
 })

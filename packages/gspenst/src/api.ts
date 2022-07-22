@@ -44,7 +44,7 @@ export type Config = {
   data: GetConfig
   timestamp: number | undefined
 }
-export type Entity = Page | Post | Author | Tag | Config
+export type ApiEntity = Page | Post | Author | Tag | Config
 
 const gitRepoResult = gitDiscover(process.cwd()).map((repository) => {
   // repository.path() returns the `/path/to/repo/.git`, we need the parent directory of it

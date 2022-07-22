@@ -15,7 +15,7 @@ import {
   GetTagDocument,
   GetConfigDocument,
 } from '../../.tina/__generated__/types'
-import type { Entity } from '../api'
+import type { ApiEntity } from '../api'
 import { absurd, do_ } from '../shared/utils'
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -316,7 +316,7 @@ export type LocatorResourceType = z.infer<typeof locatorResourceTypeSchema>
 export type LocatorResource = z.infer<typeof locatorResourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
 
-export function createResource(entity: Entity): Result<Resource> {
+export function createResource(entity: ApiEntity): Result<Resource> {
   const timestamp = 'timestamp' in entity ? entity.timestamp : undefined
 
   const node = do_(() => {

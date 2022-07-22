@@ -13,7 +13,11 @@ import repository from '../repository'
 import * as api from '../api'
 import * as Errors from '../errors'
 import { parse } from './parser'
-import { normalizeResource, normalizeResources } from './normalize'
+import {
+  normalizeResource,
+  normalizeResources,
+  resolveResourceData,
+} from './normalize'
 
 export type QueryOutcomeRead = {
   type: 'read'
@@ -26,7 +30,7 @@ export type QueryOutcomeBrowse = {
   type: 'browse'
   resourceType: ResourceType
   pagination: Pagination
-  resources: Resource[]
+  resources: ID[]
   entities: Entities
 }
 
@@ -82,12 +86,24 @@ export function processQuery(
             })
         }
       )
-    case 'browse':
+    case 'browse': {
+      const limit = query.limit
+      const page = limit === 'all' ? 1 : query.page ?? 1
+
       return repository
         .findAll(query.resourceType)
-        .map((resources) => {
-          // apply filter
-          return resources.flatMap((resource) => {
+        .map(async (resources) => {
+          const { default: sortOn } = await import('sort-on')
+          const { default: filterObject } = await import('filter-obj')
+          return {
+            resources,
+            sortOn,
+            filterObject,
+          }
+        })
+        .andThen(({ resources, sortOn }) => {
+          // 1. apply filter
+          const filteredResources = resources.flatMap((resource) => {
             if (query.filter) {
               if (resource.filters.includes(query.filter)) {
                 return resource
@@ -96,18 +112,58 @@ export function processQuery(
             }
             return resource
           })
+
+          return combine(
+            filteredResources.map((resource) => resolveResourceData(resource))
+          )
+            .map((x) => x.flat())
+            .map((entityList) => {
+              const property = query.order?.map((orderValue) => {
+                return `${orderValue.order === 'desc' ? '-' : ''}${
+                  orderValue.field
+                }`
+              })
+              // 2. apply sorting
+              return property ? sortOn(entityList, property) : entityList
+            })
+            .map((sortedEntityList) => {
+              return sortedEntityList.flatMap((entity) => {
+                return (
+                  filteredResources.find(
+                    (resource) => resource.id === entity.id
+                  ) ?? []
+                )
+              })
+            })
+            .map((entityResultList) => {
+              let start = 0
+              let end: number | undefined
+
+              if (limit !== 'all') {
+                start = (page - 1) * limit
+                end = start + limit
+              }
+
+              return {
+                // 3. apply limit
+                resources: entityResultList.slice(start, end),
+                total: entityResultList.length,
+                start,
+                end,
+              }
+            })
         })
-        .andThen(loadManyResource)
-        .andThen(normalizeResources)
-        .map(async ({ result, entities }) => {
-          const { default: sortOn } = await import('sort-on')
-          return {
-            result,
-            entities,
-            sortOn,
-          }
-        })
-        .andThen(({ result, entities, sortOn }) => {
+        .andThen(({ resources, ...rest }) =>
+          loadManyResource(resources).map((loadedResources) => {
+            return { ...rest, resources: loadedResources }
+          })
+        )
+        .andThen(({ resources, ...rest }) =>
+          normalizeResources(resources).map(({ result, entities }) => {
+            return { result, entities, ...rest }
+          })
+        )
+        .andThen(({ result, entities, total, start, end }) => {
           const entityResourcesResult = combine(
             result.map((id) => {
               const resource = entities.resource[id]
@@ -133,36 +189,17 @@ export function processQuery(
 
           const entityResources = entityResourcesResult.value
 
-          const property = query.order?.map((orderValue) => {
-            return `${orderValue.order === 'desc' ? '-' : ''}entity.${
-              orderValue.field
-            }`
-          })
-
-          const sortedResources = property
-            ? sortOn(entityResources, property)
-            : entityResources
-
-          const limit = query.limit
-          const total = sortedResources.length
-          let page = query.page ?? 1
           let pages = 1
-          let start = 0
-          let end
-          let prev = null
-          let next = null
+          let prev: number | null = null
+          let next: number | null = null
 
-          if (limit === 'all') {
-            page = 1
-          } else {
+          if (limit !== 'all') {
             pages = Math.floor(total / limit)
             start = (page - 1) * limit
             end = start + limit
             prev = start > 0 ? page - 1 : null
-            next = end < sortedResources.length ? page + 1 : null
+            next = end < entityResources.length ? page + 1 : null
           }
-
-          const resources = sortedResources.slice(start, end)
 
           return ok({
             type,
@@ -174,11 +211,12 @@ export function processQuery(
               prev,
               next,
             },
-            resources: resources.map(({ resource }) => resource),
+            resources: result,
             resourceType: query.resourceType,
             entities,
           })
         })
+    }
 
     default:
       return absurd(type)
@@ -228,7 +266,7 @@ export function processData(
                   return {
                     type,
                     resourceType,
-                    resources: resources.map(({ id }) => id),
+                    resources,
                     pagination,
                   }
                 }
