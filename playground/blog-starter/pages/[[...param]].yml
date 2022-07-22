@@ -1,0 +1,14 @@
+routes:
+collections:
+  /:
+    permalink: /post/{slug}
+    limit: all
+    filter: tags:-[tag-1, tag-2]
+  /team:
+    permalink: /team/{slug}
+    template: team
+    limit: all
+    filter: tags:[tag-1, tag-2]
+taxonomies:
+  tag: /tags/{slug}/
+  author: /authors/{slug}/

@@ -53,7 +53,41 @@
           "ui": { "component": "textarea" },
           "label": "Excerpt",
           "name": "excerpt",
-          "templates": [],
+          "templates": [
+            {
+              "name": "BlockQuote",
+              "label": "Block Quote",
+              "fields": [
+                {
+                  "name": "quote",
+                  "label": "Quote",
+                  "type": "string",
+                  "ui": { "component": "textarea" },
+                  "namespace": ["page", "excerpt", "BlockQuote", "quote"]
+                },
+                {
+                  "name": "authorName",
+                  "label": "Author",
+                  "type": "string",
+                  "namespace": ["page", "excerpt", "BlockQuote", "authorName"]
+                }
+              ],
+              "namespace": ["page", "excerpt", "BlockQuote"]
+            },
+            {
+              "name": "Cta",
+              "label": "Call to Action",
+              "fields": [
+                {
+                  "type": "string",
+                  "name": "heading",
+                  "label": "Heading",
+                  "namespace": ["page", "excerpt", "Cta", "heading"]
+                }
+              ],
+              "namespace": ["page", "excerpt", "Cta"]
+            }
+          ],
           "namespace": ["page", "excerpt"]
         },
         {
@@ -92,7 +126,41 @@
           "type": "rich-text",
           "label": "Content",
           "name": "content",
-          "templates": [],
+          "templates": [
+            {
+              "name": "BlockQuote",
+              "label": "Block Quote",
+              "fields": [
+                {
+                  "name": "quote",
+                  "label": "Quote",
+                  "type": "string",
+                  "ui": { "component": "textarea" },
+                  "namespace": ["page", "content", "BlockQuote", "quote"]
+                },
+                {
+                  "name": "authorName",
+                  "label": "Author",
+                  "type": "string",
+                  "namespace": ["page", "content", "BlockQuote", "authorName"]
+                }
+              ],
+              "namespace": ["page", "content", "BlockQuote"]
+            },
+            {
+              "name": "Cta",
+              "label": "Call to Action",
+              "fields": [
+                {
+                  "type": "string",
+                  "name": "heading",
+                  "label": "Heading",
+                  "namespace": ["page", "content", "Cta", "heading"]
+                }
+              ],
+              "namespace": ["page", "content", "Cta"]
+            }
+          ],
           "isBody": true,
           "namespace": ["page", "content"]
         }
@@ -130,7 +198,41 @@
           "ui": { "component": "textarea" },
           "label": "Excerpt",
           "name": "excerpt",
-          "templates": [],
+          "templates": [
+            {
+              "name": "BlockQuote",
+              "label": "Block Quote",
+              "fields": [
+                {
+                  "name": "quote",
+                  "label": "Quote",
+                  "type": "string",
+                  "ui": { "component": "textarea" },
+                  "namespace": ["post", "excerpt", "BlockQuote", "quote"]
+                },
+                {
+                  "name": "authorName",
+                  "label": "Author",
+                  "type": "string",
+                  "namespace": ["post", "excerpt", "BlockQuote", "authorName"]
+                }
+              ],
+              "namespace": ["post", "excerpt", "BlockQuote"]
+            },
+            {
+              "name": "Cta",
+              "label": "Call to Action",
+              "fields": [
+                {
+                  "type": "string",
+                  "name": "heading",
+                  "label": "Heading",
+                  "namespace": ["post", "excerpt", "Cta", "heading"]
+                }
+              ],
+              "namespace": ["post", "excerpt", "Cta"]
+            }
+          ],
           "namespace": ["post", "excerpt"]
         },
         {
@@ -169,7 +271,41 @@
           "type": "rich-text",
           "label": "Content",
           "name": "content",
-          "templates": [],
+          "templates": [
+            {
+              "name": "BlockQuote",
+              "label": "Block Quote",
+              "fields": [
+                {
+                  "name": "quote",
+                  "label": "Quote",
+                  "type": "string",
+                  "ui": { "component": "textarea" },
+                  "namespace": ["post", "content", "BlockQuote", "quote"]
+                },
+                {
+                  "name": "authorName",
+                  "label": "Author",
+                  "type": "string",
+                  "namespace": ["post", "content", "BlockQuote", "authorName"]
+                }
+              ],
+              "namespace": ["post", "content", "BlockQuote"]
+            },
+            {
+              "name": "Cta",
+              "label": "Call to Action",
+              "fields": [
+                {
+                  "type": "string",
+                  "name": "heading",
+                  "label": "Heading",
+                  "namespace": ["post", "content", "Cta", "heading"]
+                }
+              ],
+              "namespace": ["post", "content", "Cta"]
+            }
+          ],
           "isBody": true,
           "namespace": ["post", "content"]
         }
