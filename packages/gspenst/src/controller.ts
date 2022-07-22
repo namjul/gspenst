@@ -16,12 +16,8 @@ import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared/kernel'
 import * as Errors from './errors'
 import { do_, absurd } from './shared/utils'
-import type {
-  ThemeContext,
-  PageThemeContext,
-  Entities,
-  Data,
-} from './domain/theming'
+import type { ThemeContext, PageThemeContext, Data } from './domain/theming'
+import type { Entities } from './domain/entity'
 import { configId } from './constants'
 import repository from './repository'
 import { confifyTinaData } from './helpers/confifyTinaData'

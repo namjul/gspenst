@@ -21,7 +21,7 @@ import { pageSchema, createPage } from '../domain/page'
 import { authorSchema, createAuthor } from '../domain/author'
 import { tagSchema, createTag } from '../domain/tag'
 import { configSchema, createConfig } from '../domain/config'
-import type { Entities } from '../domain/theming'
+import type { Entities } from '../domain/entity'
 
 export const normalize = fromThrowable(_normalize, (error) =>
   Errors.other(

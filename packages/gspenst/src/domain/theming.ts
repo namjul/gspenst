@@ -1,11 +1,7 @@
 import { z, idSchema, pathSchema } from '../shared/kernel'
-import { configSchema } from './config'
-import { postNormalizedSchema } from './post'
-import { pageNormalizedSchema } from './page'
-import { authorSchema } from './author'
-import { tagSchema } from './tag'
 import { limitSchema } from './routes'
 import { resourceSchema, resourceTypeSchema } from './resource'
+import { entriesEntitiesSchema } from './entity'
 
 const paginationSchema = z.object({
   page: z.number(), // the current page number
@@ -42,29 +38,9 @@ const dataSchema = z.discriminatedUnion('type', [
 
 export type Data = z.infer<typeof dataSchema>
 
-export const entriesEntitiesSchema = z
-  .object({
-    post: z.record(idSchema, postNormalizedSchema),
-    page: z.record(idSchema, pageNormalizedSchema),
-    author: z.record(idSchema, authorSchema),
-    tag: z.record(idSchema, tagSchema),
-    config: z.record(idSchema, configSchema),
-  })
-  .strict()
-
-export type EntryEntities = z.infer<typeof entriesEntitiesSchema>
-
-export const entitiesSchema = z
-  .object({
-    resource: z.record(idSchema, resourceSchema),
-  })
-  .merge(entriesEntitiesSchema)
-  .strict()
-
-export type Entities = z.infer<typeof entitiesSchema>
-
 const pageThemeContextSchema = z
   .object({
+    // TODO merge context and templates into single field
     templates: z.array(z.string()),
     data: z.record(dataSchema),
     context: z.array(z.string()).nullable(),
