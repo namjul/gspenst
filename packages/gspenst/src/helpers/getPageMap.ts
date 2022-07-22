@@ -87,11 +87,13 @@ export function getPageMap(
   return [...result, ...pageResources]
 }
 
-export function getRoutingMapping(pageMap: PageMapItem[] = []): RoutingMapping {
-  return pageMap.reduce((acc, current) => {
-    if (current.filepath) {
-      return { ...acc, [current.filepath]: current.route }
+export function getRoutingMapping(pageMap: PageMapItem[] = []) {
+  const result: RoutingMapping = {}
+  for (let i = 0, len = pageMap.length; i < len; i++) {
+    const current = pageMap[i]
+    if (current?.filepath) {
+      result[current.filepath] = current.route
     }
-    return acc
-  }, {})
+  }
+  return result
 }
