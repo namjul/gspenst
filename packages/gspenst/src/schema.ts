@@ -27,6 +27,8 @@ const commonFields: TinaField[] = [
       ) => {
         if (!value) {
           if (!meta.initial) {
+            console.log('allValues', allValues)
+            // TODO zod domainSchemas for validation
             allValues[meta.name] = DateFieldPlugin.format(value, 'date', {
               dateFormat,
             })
