@@ -20,6 +20,7 @@ import { absurd, removeNullish, isNumber, do_ } from '../shared/utils'
 import repository from '../repository'
 import * as api from '../api'
 import * as Errors from '../errors'
+import { env } from '../domain/env'
 import { createLogger } from '../logger'
 // import {
 //   isPostResource,
@@ -55,7 +56,8 @@ export type QueryOutcomeBrowse = {
 
 export type QueryOutcome = QueryOutcomeRead | QueryOutcomeBrowse
 
-const REVALIDATE = 20000
+const REVALIDATE_MS =
+  Number(process.env.GSPENT_REVALIDATE ?? env.GSPENT_REVALIDATE) * 1000
 
 const defaultSem = new Semaphore(100)
 
@@ -325,7 +327,7 @@ async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
         .andThen((result) => {
           const [updatedAt, _resource] = result as [number, Resource]
           if (isNumber(updatedAt)) {
-            if (updatedAt > REVALIDATE) {
+            if (updatedAt > REVALIDATE_MS) {
               return ok({ type: 'miss' as const, resource, revalidate: true })
             }
           }
