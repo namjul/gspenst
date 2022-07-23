@@ -39,6 +39,7 @@
     "zod": "^3.17.3"
   },
   "devDependencies": {
+    "@tinacms/cli": "^0.60.28",
     "@types/cross-spawn": "^6.0.2",
     "@types/fs-extra": "^9.0.13",
     "@types/mock-fs": "^4.13.1",
@@ -46,7 +47,6 @@
     "type-fest": "^2.8.0"
   },
   "peerDependencies": {
-    "@tinacms/cli": "^0.60.28",
     "react": ">=16.13.1"
   },
   "preconstruct": {
