@@ -92,7 +92,29 @@
           "type": "rich-text",
           "label": "Content",
           "name": "content",
-          "templates": [],
+          "templates": [
+            {
+              "name": "InternalLink",
+              "label": "Internal Link",
+              "inline": true,
+              "fields": [
+                {
+                  "name": "text",
+                  "label": "Text",
+                  "type": "string",
+                  "namespace": ["page", "content", "InternalLink", "text"]
+                },
+                {
+                  "name": "document",
+                  "label": "Document",
+                  "type": "reference",
+                  "collections": ["post"],
+                  "namespace": ["page", "content", "InternalLink", "document"]
+                }
+              ],
+              "namespace": ["page", "content", "InternalLink"]
+            }
+          ],
           "isBody": true,
           "namespace": ["page", "content"]
         }
@@ -169,7 +191,29 @@
           "type": "rich-text",
           "label": "Content",
           "name": "content",
-          "templates": [],
+          "templates": [
+            {
+              "name": "InternalLink",
+              "label": "Internal Link",
+              "inline": true,
+              "fields": [
+                {
+                  "name": "text",
+                  "label": "Text",
+                  "type": "string",
+                  "namespace": ["post", "content", "InternalLink", "text"]
+                },
+                {
+                  "name": "document",
+                  "label": "Document",
+                  "type": "reference",
+                  "collections": ["post"],
+                  "namespace": ["post", "content", "InternalLink", "document"]
+                }
+              ],
+              "namespace": ["post", "content", "InternalLink"]
+            }
+          ],
           "isBody": true,
           "namespace": ["post", "content"]
         }

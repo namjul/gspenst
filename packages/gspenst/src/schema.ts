@@ -126,7 +126,28 @@ export function createSchema(
       type: 'rich-text',
       label: 'Content',
       name: 'content',
-      templates,
+      templates: [
+        {
+          name: 'unstable_InternalLink',
+          label: 'Internal Link(unstable)',
+          inline: true,
+          fields: [
+            {
+              name: 'text',
+              label: 'Text',
+              type: 'string',
+            },
+            {
+              name: 'document',
+              label: 'Document',
+              type: 'reference',
+              collections: ['post'],
+            },
+          ],
+        },
+
+        ...templates,
+      ],
       isBody: true,
     },
   ]
