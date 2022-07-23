@@ -43,7 +43,7 @@ export const createWrapper = (
   }
 
   const getProps = async (params: string | string[]) => {
-    log('Page [...slug].js getStaticProps')
+    log('Page [...slug].js getStaticProps', params)
     const routingContext = routerManager(config.routesConfig).handle(params)
     return controller(routingContext)
   }
