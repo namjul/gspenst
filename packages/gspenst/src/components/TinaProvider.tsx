@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import TinaCMS, { defineConfig } from 'tinacms'
 import type { TinaCloudSchema } from 'tinacms'
 import { client } from '../shared/client'
@@ -5,15 +6,28 @@ import { configStringId } from '../constants'
 import type { RoutingMapping } from '../helpers/getPageMap'
 
 export type TinaProviderProps = React.PropsWithChildren<{
-  tinaSchema: TinaCloudSchema
+  getTinaSchema: () => Promise<TinaCloudSchema>
   routingMapping: RoutingMapping
 }>
 
 const TinaProvider = ({
-  tinaSchema,
+  getTinaSchema,
   routingMapping,
   children,
 }: TinaProviderProps) => {
+  const [tinaSchema, setTinaSchema] = useState<TinaCloudSchema>()
+
+  useEffect(() => {
+    const get = async () => {
+      setTinaSchema(await getTinaSchema())
+    }
+    void get()
+  }, [getTinaSchema])
+
+  if (!tinaSchema) {
+    return null
+  }
+
   const tinaConfig = defineConfig({
     client,
     schema: tinaSchema,

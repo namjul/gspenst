@@ -176,20 +176,15 @@ function selectConfig<T extends Json>(state: State) {
 }
 
 type WithDataOptions = {
-  // Inspiration:
-  // https://docs.stackbit.com/how-to-guides/components/add-component/#register_the_component
-  // https://github.com/stackbit-themes/starter-nextjs-theme/blob/main/src/components/components-registry.ts
-  // https://nextjs.org/docs/advanced-features/dynamic-import
-  getComponent: (
-    name: 'Admin' | 'TinaProvider'
-  ) => React.ComponentType<any> | undefined
-  tinaSchema: TinaCloudSchema
+  getTinaSchema: () => Promise<TinaCloudSchema>
+  admin: React.ComponentType<any> | undefined
+  tinaProvider: React.ComponentType<any> | undefined
   pageMap: PageMapItem[]
 }
 
 const withData = (
   Component: ThemeComponent,
-  { getComponent, tinaSchema, pageMap }: WithDataOptions
+  { admin, tinaProvider, getTinaSchema, pageMap }: WithDataOptions
 ) => {
   if (!isValidElementType(Component)) {
     throw new Error('Theme must export HOC.')
@@ -200,9 +195,8 @@ const withData = (
   function HOC(props: ThemeContext) {
     let component
     if (props.context === 'internal') {
-      const Admin = getComponent('Admin')
-      if (Admin) {
-        component = React.createElement(Admin)
+      if (admin) {
+        component = React.createElement(admin)
       }
     } else {
       component = React.createElement(DataProvider, {
@@ -213,15 +207,13 @@ const withData = (
       })
     }
 
-    const TinaProvider = getComponent('TinaProvider')
-
-    if (!TinaProvider) {
+    if (!tinaProvider) {
       throw new Error('Missing TinaProvider')
     }
 
     return React.createElement(TinaEditProvider, {
-      editMode: React.createElement(TinaProvider, {
-        tinaSchema,
+      editMode: React.createElement(tinaProvider, {
+        getTinaSchema,
         routingMapping,
         children: component,
       }),
