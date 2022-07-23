@@ -49,15 +49,23 @@ type Query {
   node(id: String): Node!
   document(collection: String, relativePath: String): DocumentNode!
   config(relativePath: String): Config!
-  configConnection(before: String, after: String, first: Float, last: Float, sort: String): ConfigConnection!
+  configConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: ConfigFilter): ConfigConnection!
   page(relativePath: String): Page!
-  pageConnection(before: String, after: String, first: Float, last: Float, sort: String): PageConnection!
+  pageConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: PageFilter): PageConnection!
   post(relativePath: String): Post!
-  postConnection(before: String, after: String, first: Float, last: Float, sort: String): PostConnection!
+  postConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: PostFilter): PostConnection!
   author(relativePath: String): Author!
-  authorConnection(before: String, after: String, first: Float, last: Float, sort: String): AuthorConnection!
+  authorConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: AuthorFilter): AuthorConnection!
   tag(relativePath: String): Tag!
-  tagConnection(before: String, after: String, first: Float, last: Float, sort: String): TagConnection!
+  tagConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: TagFilter): TagConnection!
+}
+
+input DocumentFilter {
+  config: ConfigFilter
+  page: PageFilter
+  post: PostFilter
+  author: AuthorFilter
+  tag: TagFilter
 }
 
 type DocumentConnectionEdges {
@@ -80,7 +88,7 @@ type Collection {
   matches: String
   templates: [JSON]
   fields: [JSON]
-  documents(before: String, after: String, first: Float, last: Float, sort: String): DocumentConnection!
+  documents(before: String, after: String, first: Float, last: Float, sort: String, filter: DocumentFilter): DocumentConnection!
 }
 
 union DocumentNode = Config | Page | Post | Author | Tag
@@ -90,6 +98,15 @@ type Config implements Node & Document {
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
+}
+
+input BooleanFilter {
+  eq: Boolean
+  exists: Boolean
+}
+
+input ConfigFilter {
+  darkMode: BooleanFilter
 }
 
 type ConfigConnectionEdges {
@@ -128,6 +145,60 @@ type Page implements Node & Document {
   _values: JSON!
 }
 
+input DatetimeFilter {
+  after: String
+  before: String
+  eq: String
+  exists: Boolean
+  in: [String]
+}
+
+input StringFilter {
+  startsWith: String
+  eq: String
+  exists: Boolean
+  in: [String]
+}
+
+input PageAuthorsAuthorFilter {
+  author: AuthorFilter
+}
+
+input PageAuthorsFilter {
+  author: PageAuthorsAuthorFilter
+}
+
+input PageTagsTagFilter {
+  tag: TagFilter
+}
+
+input PageTagsFilter {
+  tag: PageTagsTagFilter
+}
+
+input PageContentUnstable_InternalLinkDocumentFilter {
+  post: PostFilter
+}
+
+input PageContentUnstable_InternalLinkFilter {
+  text: StringFilter
+  document: PageContentUnstable_InternalLinkDocumentFilter
+}
+
+input PageContentFilter {
+  unstable_InternalLink: PageContentUnstable_InternalLinkFilter
+}
+
+input PageFilter {
+  date: DatetimeFilter
+  slug: StringFilter
+  title: StringFilter
+  excerpt: StringFilter
+  authors: PageAuthorsFilter
+  tags: PageTagsFilter
+  content: PageContentFilter
+}
+
 type PageConnectionEdges {
   cursor: String!
   node: Page
@@ -164,6 +235,45 @@ type Post implements Node & Document {
   _values: JSON!
 }
 
+input PostAuthorsAuthorFilter {
+  author: AuthorFilter
+}
+
+input PostAuthorsFilter {
+  author: PostAuthorsAuthorFilter
+}
+
+input PostTagsTagFilter {
+  tag: TagFilter
+}
+
+input PostTagsFilter {
+  tag: PostTagsTagFilter
+}
+
+input PostContentUnstable_InternalLinkDocumentFilter {
+  post: PostFilter
+}
+
+input PostContentUnstable_InternalLinkFilter {
+  text: StringFilter
+  document: PostContentUnstable_InternalLinkDocumentFilter
+}
+
+input PostContentFilter {
+  unstable_InternalLink: PostContentUnstable_InternalLinkFilter
+}
+
+input PostFilter {
+  date: DatetimeFilter
+  slug: StringFilter
+  title: StringFilter
+  excerpt: StringFilter
+  authors: PostAuthorsFilter
+  tags: PostTagsFilter
+  content: PostContentFilter
+}
+
 type PostConnectionEdges {
   cursor: String!
   node: Post
@@ -184,6 +294,12 @@ type Author implements Node & Document {
   _values: JSON!
 }
 
+input AuthorFilter {
+  name: StringFilter
+  date: DatetimeFilter
+  slug: StringFilter
+}
+
 type AuthorConnectionEdges {
   cursor: String!
   node: Author
@@ -202,6 +318,12 @@ type Tag implements Node & Document {
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
+}
+
+input TagFilter {
+  name: StringFilter
+  date: DatetimeFilter
+  slug: StringFilter
 }
 
 type TagConnectionEdges {

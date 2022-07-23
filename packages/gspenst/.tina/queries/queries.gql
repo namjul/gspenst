@@ -10,10 +10,8 @@ query getPost($relativePath: String!) {
   }
 }
 
-# query getPosts($filter: PostFilter) {
-query getPosts {
-  # postConnection(filter: $filter) {
-  postConnection {
+query getPosts($filter: PostFilter) {
+  postConnection(first: 99999, filter: $filter) {
     totalCount
     edges {
       node {
@@ -29,10 +27,8 @@ query getPage($relativePath: String!) {
   }
 }
 
-# query getPages($filter: PageFilter) {
-query getPages {
-  # pageConnection(filter: $filter) {
-  pageConnection {
+query getPages($filter: PageFilter) {
+  pageConnection(first: 99999, filter: $filter) {
     totalCount
     edges {
       node {
@@ -48,10 +44,8 @@ query getAuthor($relativePath: String!) {
   }
 }
 
-# query getAuthors($filter: AuthorFilter) {
-query getAuthors {
-  # authorConnection(filter: $filter) {
-  authorConnection {
+query getAuthors($filter: AuthorFilter) {
+  authorConnection(first: 99999, filter: $filter) {
     totalCount
     edges {
       node {
@@ -67,10 +61,8 @@ query getTag($relativePath: String!) {
   }
 }
 
-# query getTags($filter: TagFilter) {
-query getTags {
-  # tagConnection(filter: $filter) {
-  tagConnection {
+query getTags($filter: TagFilter) {
+  tagConnection(first: 99999, filter: $filter) {
     totalCount
     edges {
       node {

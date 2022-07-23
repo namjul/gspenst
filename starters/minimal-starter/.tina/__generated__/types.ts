@@ -117,6 +117,7 @@ export type QueryConfigConnectionArgs = {
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<ConfigFilter>
 }
 
 export type QueryPageArgs = {
@@ -129,6 +130,7 @@ export type QueryPageConnectionArgs = {
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<PageFilter>
 }
 
 export type QueryPostArgs = {
@@ -141,6 +143,7 @@ export type QueryPostConnectionArgs = {
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<PostFilter>
 }
 
 export type QueryAuthorArgs = {
@@ -153,6 +156,7 @@ export type QueryAuthorConnectionArgs = {
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<AuthorFilter>
 }
 
 export type QueryTagArgs = {
@@ -165,6 +169,15 @@ export type QueryTagConnectionArgs = {
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<TagFilter>
+}
+
+export type DocumentFilter = {
+  config?: InputMaybe<ConfigFilter>
+  page?: InputMaybe<PageFilter>
+  post?: InputMaybe<PostFilter>
+  author?: InputMaybe<AuthorFilter>
+  tag?: InputMaybe<TagFilter>
 }
 
 export type DocumentConnectionEdges = {
@@ -199,6 +212,7 @@ export type CollectionDocumentsArgs = {
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<DocumentFilter>
 }
 
 export type DocumentNode = Config | Page | Post | Author | Tag
@@ -211,6 +225,15 @@ export type Config = Node &
     _sys: SystemInfo
     _values: Scalars['JSON']
   }
+
+export type BooleanFilter = {
+  eq?: InputMaybe<Scalars['Boolean']>
+  exists?: InputMaybe<Scalars['Boolean']>
+}
+
+export type ConfigFilter = {
+  darkMode?: InputMaybe<BooleanFilter>
+}
 
 export type ConfigConnectionEdges = {
   __typename?: 'ConfigConnectionEdges'
@@ -254,6 +277,60 @@ export type Page = Node &
     _values: Scalars['JSON']
   }
 
+export type DatetimeFilter = {
+  after?: InputMaybe<Scalars['String']>
+  before?: InputMaybe<Scalars['String']>
+  eq?: InputMaybe<Scalars['String']>
+  exists?: InputMaybe<Scalars['Boolean']>
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
+}
+
+export type StringFilter = {
+  startsWith?: InputMaybe<Scalars['String']>
+  eq?: InputMaybe<Scalars['String']>
+  exists?: InputMaybe<Scalars['Boolean']>
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
+}
+
+export type PageAuthorsAuthorFilter = {
+  author?: InputMaybe<AuthorFilter>
+}
+
+export type PageAuthorsFilter = {
+  author?: InputMaybe<PageAuthorsAuthorFilter>
+}
+
+export type PageTagsTagFilter = {
+  tag?: InputMaybe<TagFilter>
+}
+
+export type PageTagsFilter = {
+  tag?: InputMaybe<PageTagsTagFilter>
+}
+
+export type PageContentUnstable_InternalLinkDocumentFilter = {
+  post?: InputMaybe<PostFilter>
+}
+
+export type PageContentUnstable_InternalLinkFilter = {
+  text?: InputMaybe<StringFilter>
+  document?: InputMaybe<PageContentUnstable_InternalLinkDocumentFilter>
+}
+
+export type PageContentFilter = {
+  unstable_InternalLink?: InputMaybe<PageContentUnstable_InternalLinkFilter>
+}
+
+export type PageFilter = {
+  date?: InputMaybe<DatetimeFilter>
+  slug?: InputMaybe<StringFilter>
+  title?: InputMaybe<StringFilter>
+  excerpt?: InputMaybe<StringFilter>
+  authors?: InputMaybe<PageAuthorsFilter>
+  tags?: InputMaybe<PageTagsFilter>
+  content?: InputMaybe<PageContentFilter>
+}
+
 export type PageConnectionEdges = {
   __typename?: 'PageConnectionEdges'
   cursor: Scalars['String']
@@ -296,6 +373,45 @@ export type Post = Node &
     _values: Scalars['JSON']
   }
 
+export type PostAuthorsAuthorFilter = {
+  author?: InputMaybe<AuthorFilter>
+}
+
+export type PostAuthorsFilter = {
+  author?: InputMaybe<PostAuthorsAuthorFilter>
+}
+
+export type PostTagsTagFilter = {
+  tag?: InputMaybe<TagFilter>
+}
+
+export type PostTagsFilter = {
+  tag?: InputMaybe<PostTagsTagFilter>
+}
+
+export type PostContentUnstable_InternalLinkDocumentFilter = {
+  post?: InputMaybe<PostFilter>
+}
+
+export type PostContentUnstable_InternalLinkFilter = {
+  text?: InputMaybe<StringFilter>
+  document?: InputMaybe<PostContentUnstable_InternalLinkDocumentFilter>
+}
+
+export type PostContentFilter = {
+  unstable_InternalLink?: InputMaybe<PostContentUnstable_InternalLinkFilter>
+}
+
+export type PostFilter = {
+  date?: InputMaybe<DatetimeFilter>
+  slug?: InputMaybe<StringFilter>
+  title?: InputMaybe<StringFilter>
+  excerpt?: InputMaybe<StringFilter>
+  authors?: InputMaybe<PostAuthorsFilter>
+  tags?: InputMaybe<PostTagsFilter>
+  content?: InputMaybe<PostContentFilter>
+}
+
 export type PostConnectionEdges = {
   __typename?: 'PostConnectionEdges'
   cursor: Scalars['String']
@@ -320,6 +436,12 @@ export type Author = Node &
     _values: Scalars['JSON']
   }
 
+export type AuthorFilter = {
+  name?: InputMaybe<StringFilter>
+  date?: InputMaybe<DatetimeFilter>
+  slug?: InputMaybe<StringFilter>
+}
+
 export type AuthorConnectionEdges = {
   __typename?: 'AuthorConnectionEdges'
   cursor: Scalars['String']
@@ -343,6 +465,12 @@ export type Tag = Node &
     _sys: SystemInfo
     _values: Scalars['JSON']
   }
+
+export type TagFilter = {
+  name?: InputMaybe<StringFilter>
+  date?: InputMaybe<DatetimeFilter>
+  slug?: InputMaybe<StringFilter>
+}
 
 export type TagConnectionEdges = {
   __typename?: 'TagConnectionEdges'
@@ -589,6 +717,7 @@ export type ConfigConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<ConfigFilter>
 }>
 
 export type ConfigConnectionQuery = {
@@ -656,6 +785,7 @@ export type PageConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<PageFilter>
 }>
 
 export type PageConnectionQuery = {
@@ -735,6 +865,7 @@ export type PostConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<PostFilter>
 }>
 
 export type PostConnectionQuery = {
@@ -804,6 +935,7 @@ export type AuthorConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<AuthorFilter>
 }>
 
 export type AuthorConnectionQuery = {
@@ -863,6 +995,7 @@ export type TagConnectionQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Float']>
   last?: InputMaybe<Scalars['Float']>
   sort?: InputMaybe<Scalars['String']>
+  filter?: InputMaybe<TagFilter>
 }>
 
 export type TagConnectionQuery = {
@@ -987,6 +1120,7 @@ export const ConfigConnectionDocument = gql`
     $first: Float
     $last: Float
     $sort: String
+    $filter: ConfigFilter
   ) {
     configConnection(
       before: $before
@@ -994,6 +1128,7 @@ export const ConfigConnectionDocument = gql`
       first: $first
       last: $last
       sort: $sort
+      filter: $filter
     ) {
       totalCount
       edges {
@@ -1042,6 +1177,7 @@ export const PageConnectionDocument = gql`
     $first: Float
     $last: Float
     $sort: String
+    $filter: PageFilter
   ) {
     pageConnection(
       before: $before
@@ -1049,6 +1185,7 @@ export const PageConnectionDocument = gql`
       first: $first
       last: $last
       sort: $sort
+      filter: $filter
     ) {
       totalCount
       edges {
@@ -1097,6 +1234,7 @@ export const PostConnectionDocument = gql`
     $first: Float
     $last: Float
     $sort: String
+    $filter: PostFilter
   ) {
     postConnection(
       before: $before
@@ -1104,6 +1242,7 @@ export const PostConnectionDocument = gql`
       first: $first
       last: $last
       sort: $sort
+      filter: $filter
     ) {
       totalCount
       edges {
@@ -1152,6 +1291,7 @@ export const AuthorConnectionDocument = gql`
     $first: Float
     $last: Float
     $sort: String
+    $filter: AuthorFilter
   ) {
     authorConnection(
       before: $before
@@ -1159,6 +1299,7 @@ export const AuthorConnectionDocument = gql`
       first: $first
       last: $last
       sort: $sort
+      filter: $filter
     ) {
       totalCount
       edges {
@@ -1207,6 +1348,7 @@ export const TagConnectionDocument = gql`
     $first: Float
     $last: Float
     $sort: String
+    $filter: TagFilter
   ) {
     tagConnection(
       before: $before
@@ -1214,6 +1356,7 @@ export const TagConnectionDocument = gql`
       first: $first
       last: $last
       sort: $sort
+      filter: $filter
     ) {
       totalCount
       edges {

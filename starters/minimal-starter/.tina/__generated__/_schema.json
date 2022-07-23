@@ -5,7 +5,7 @@
     "minor": "61",
     "patch": "3"
   },
-  "meta": {},
+  "meta": { "flags": ["experimentalData"] },
   "collections": [
     {
       "label": "Config",
@@ -92,7 +92,39 @@
           "type": "rich-text",
           "label": "Content",
           "name": "content",
-          "templates": [],
+          "templates": [
+            {
+              "name": "unstable_InternalLink",
+              "label": "Internal Link(unstable)",
+              "inline": true,
+              "fields": [
+                {
+                  "name": "text",
+                  "label": "Text",
+                  "type": "string",
+                  "namespace": [
+                    "page",
+                    "content",
+                    "unstable_InternalLink",
+                    "text"
+                  ]
+                },
+                {
+                  "name": "document",
+                  "label": "Document",
+                  "type": "reference",
+                  "collections": ["post"],
+                  "namespace": [
+                    "page",
+                    "content",
+                    "unstable_InternalLink",
+                    "document"
+                  ]
+                }
+              ],
+              "namespace": ["page", "content", "unstable_InternalLink"]
+            }
+          ],
           "isBody": true,
           "namespace": ["page", "content"]
         }
@@ -169,7 +201,39 @@
           "type": "rich-text",
           "label": "Content",
           "name": "content",
-          "templates": [],
+          "templates": [
+            {
+              "name": "unstable_InternalLink",
+              "label": "Internal Link(unstable)",
+              "inline": true,
+              "fields": [
+                {
+                  "name": "text",
+                  "label": "Text",
+                  "type": "string",
+                  "namespace": [
+                    "post",
+                    "content",
+                    "unstable_InternalLink",
+                    "text"
+                  ]
+                },
+                {
+                  "name": "document",
+                  "label": "Document",
+                  "type": "reference",
+                  "collections": ["post"],
+                  "namespace": [
+                    "post",
+                    "content",
+                    "unstable_InternalLink",
+                    "document"
+                  ]
+                }
+              ],
+              "namespace": ["post", "content", "unstable_InternalLink"]
+            }
+          ],
           "isBody": true,
           "namespace": ["post", "content"]
         }

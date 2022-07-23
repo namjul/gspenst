@@ -1,5 +1,11 @@
 import path from 'path'
-import type { ThemeConfigNodeFragment as ConfigResourceNode } from '../.tina/__generated__/types'
+import type {
+  PostFilter,
+  PageFilter,
+  AuthorFilter,
+  TagFilter,
+  ThemeConfigNodeFragment as ConfigResourceNode,
+} from '../.tina/__generated__/types'
 import { getSdk } from '../.tina/__generated__/types'
 import { z, fromPromise, combine, ok } from './shared/kernel'
 import * as Errors from './errors'
@@ -236,7 +242,7 @@ export function getPage(variables: {
 }
 
 export function getPages(variables?: {
-  // filter: PageFilter
+  filter?: PageFilter
 }): ApiResultAsync<Page[]> {
   return fromPromise(sdk.getPages(variables), (error: unknown) =>
     Errors.other('Api#getPages', error instanceof Error ? error : undefined)
@@ -276,7 +282,7 @@ export function getPost(variables: {
 }
 
 export function getPosts(variables?: {
-  // filter: PostFilter
+  filter?: PostFilter
 }): ApiResultAsync<Post[]> {
   return fromPromise(sdk.getPosts(variables), (error: unknown) =>
     Errors.other('Api#getPosts', error instanceof Error ? error : undefined)
@@ -316,7 +322,7 @@ export function getAuthor(variables: {
 }
 
 export function getAuthors(variables?: {
-  // filter: AuthorFilter
+  filter?: AuthorFilter
 }): ApiResultAsync<Author[]> {
   return fromPromise(sdk.getAuthors(variables), (error: unknown) =>
     Errors.other('Api#getAuthors', error instanceof Error ? error : undefined)
@@ -356,7 +362,7 @@ export function getTag(variables: {
 }
 
 export function getTags(variables?: {
-  // filter: AuthorFilter
+  filter?: TagFilter
 }): ApiResultAsync<Tag[]> {
   return fromPromise(sdk.getTags(variables), (error: unknown) =>
     Errors.other('Api#getTags', error instanceof Error ? error : undefined)

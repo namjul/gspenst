@@ -2,7 +2,14 @@ import merge from 'deepmerge'
 import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
-import { combine, ok, err, fromPromise } from '../shared/kernel'
+import {
+  combine,
+  ok,
+  err,
+  okAsync,
+  errAsync,
+  fromPromise,
+} from '../shared/kernel'
 import { dynamicVariablesSchema } from '../domain/resource'
 import type { DataQuery } from '../domain/routes'
 import type { Resource, ResourceType } from '../domain/resource'
@@ -13,12 +20,23 @@ import { absurd, removeNullish, isNumber, do_ } from '../shared/utils'
 import repository from '../repository'
 import * as api from '../api'
 import * as Errors from '../errors'
+import { createLogger } from '../logger'
+import {
+  isPostResource,
+  isPageResource,
+  isAuthorResource,
+  isTagResource,
+} from './resource'
 import { parse } from './parser'
 import {
   normalizeResource,
   normalizeResources,
   resolveResourceData,
 } from './normalize'
+
+const uniqid = Date.now()
+
+const log = createLogger(`processQuery:${uniqid}`)
 
 export type QueryOutcomeRead = {
   type: 'read'
@@ -37,7 +55,7 @@ export type QueryOutcomeBrowse = {
 
 export type QueryOutcome = QueryOutcomeRead | QueryOutcomeBrowse
 
-const REVALIDATE = 60
+const REVALIDATE = 20000
 
 const defaultSem = new Semaphore(100)
 
@@ -300,58 +318,201 @@ export function processData(
 async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
   return Promise.all(
     resources.map(async (resource) => {
-      return combine([
+      const x = combine([
         repository.sinceLastUpdate(new Date()),
         repository.get(resource.id),
-      ]).andThen((result) => {
-        const [updatedAt, _resource] = result as [number, Resource]
-        if (isNumber(updatedAt)) {
-          if (updatedAt > REVALIDATE) {
-            return err(Errors.other('Revlidate resource'))
+      ])
+        .andThen((result) => {
+          const [updatedAt, _resource] = result as [number, Resource]
+          if (isNumber(updatedAt)) {
+            if (updatedAt > REVALIDATE) {
+              return ok({ type: 'miss' as const, resource, revalidate: true })
+            }
           }
-        }
-        return ok(_resource)
-      })
+          return ok({ type: 'hit' as const, resource: _resource })
+        })
+        .unwrapOr({ type: 'miss' as const, resource, revalidate: false })
+      return x
     })
   )
 }
 
 function batchLoadFromTina(sem: SemaphoreInterface) {
-  return async (resources: ReadonlyArray<Resource>) => {
-    // TODO batch load resources
+  // TODO use ResultAsync<Resource[]>
+  return async (resources: ReadonlyArray<Resource>): Promise<Result<Resource>[]> => {
+    log(
+      'load',
+      resources.map((resource) => resource.relativePath)
+    )
+    const batchResult = await sem.runExclusive(async () => {
+      if (resources.every(isPostResource)) {
+        return api
+          .getPosts({
+            filter: {
+              slug: {
+                in: resources.flatMap(
+                  ({ tinaData }) => tinaData.data.post.slug ?? []
+                ),
+              },
+            },
+          })
+          .map((apiPostList) => {
+            return resources.map((resource) => {
+              const apiPost = apiPostList.find((_apiPost) => {
+                return (
+                  _apiPost.data.data.post.slug ===
+                  resource.tinaData.data.post.slug
+                )
+              })
+
+              if (apiPost) {
+                return ok({
+                  ...resource,
+                  tinaData: apiPost.data,
+                })
+              }
+              return err(Errors.absurd('batchLoadFromTina'))
+            })
+          })
+          .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
+      }
+
+      if (resources.every(isPageResource)) {
+        return api
+          .getPages({
+            filter: {
+              slug: {
+                in: resources.flatMap(
+                  ({ tinaData }) => tinaData.data.page.slug ?? []
+                ),
+              },
+            },
+          })
+          .map((apiPageList) => {
+            return resources.map((resource) => {
+              const apiPage = apiPageList.find((_apiPage) => {
+                return (
+                  _apiPage.data.data.page.slug ===
+                  resource.tinaData.data.page.slug
+                )
+              })
+
+              if (apiPage) {
+                return ok({
+                  ...resource,
+                  tinaData: apiPage.data,
+                })
+              }
+              return err(Errors.absurd('batchLoadFromTina'))
+            })
+          })
+          .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
+      }
+
+      if (resources.every(isAuthorResource)) {
+        return api
+          .getAuthors({
+            filter: {
+              slug: {
+                in: resources.flatMap(
+                  ({ tinaData }) => tinaData.data.author.slug ?? []
+                ),
+              },
+            },
+          })
+          .map((apiAuthorList) => {
+            return resources.map((resource) => {
+              const apiAuthor = apiAuthorList.find((_apiAuthor) => {
+                return (
+                  _apiAuthor.data.data.author.slug ===
+                  resource.tinaData.data.author.slug
+                )
+              })
+
+              if (apiAuthor) {
+                return ok({
+                  ...resource,
+                  tinaData: apiAuthor.data,
+                })
+              }
+              return err(Errors.absurd('batchLoadFromTina'))
+            })
+          })
+          .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
+      }
+
+      if (resources.every(isTagResource)) {
+        return api
+          .getTags({
+            filter: {
+              slug: {
+                in: resources.flatMap(
+                  ({ tinaData }) => tinaData.data.tag.slug ?? []
+                ),
+              },
+            },
+          })
+          .map((apiTagList) => {
+            return resources.map((resource) => {
+              const apiTag = apiTagList.find((_apiTag) => {
+                return (
+                  _apiTag.data.data.tag.slug === resource.tinaData.data.tag.slug
+                )
+              })
+
+              if (apiTag) {
+                return ok({
+                  ...resource,
+                  tinaData: apiTag.data,
+                })
+              }
+              return err(Errors.absurd('batchLoadFromTina'))
+            })
+          })
+          .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
+      }
+    })
+
+    if (batchResult) {
+      return batchResult
+    }
+
     return Promise.all(
       resources.map(async (resource) => {
-        const { type, relativePath } = resource
         return sem.runExclusive(async () => {
-          switch (type) {
-            case 'page':
-              return api.getPage({ relativePath }).map((tinaData) => ({
-                ...resource,
-                tinaData: tinaData.data,
-              }))
-            case 'post':
-              return api.getPost({ relativePath }).map((tinaData) => ({
-                ...resource,
-                tinaData: tinaData.data,
-              }))
-            case 'author':
-              return api.getAuthor({ relativePath }).map((tinaData) => ({
-                ...resource,
-                tinaData: tinaData.data,
-              }))
-            case 'tag':
-              return api.getTag({ relativePath }).map((tinaData) => ({
-                ...resource,
-                tinaData: tinaData.data,
-              }))
-            case 'config':
-              return api.getConfig().map((tinaData) => ({
-                ...resource,
-                tinaData: tinaData.data,
-              }))
-            default:
-              return absurd(type)
-          }
+          const x = do_(() => {
+            const { type, relativePath } = resource
+            switch (type) {
+              case 'page':
+                return api.getPage({ relativePath }).map((apiPage) => ({
+                  ...resource,
+                  tinaData: apiPage.data,
+                }))
+              case 'post':
+                return api.getPost({ relativePath }).map((apiPost) => ({
+                  ...resource,
+                  tinaData: apiPost.data,
+                }))
+              case 'author':
+                return api.getAuthor({ relativePath }).map((apiAuthor) => ({
+                  ...resource,
+                  tinaData: apiAuthor.data,
+                }))
+              case 'tag':
+                return api.getTag({ relativePath }).map((apiTag) => ({
+                  ...resource,
+                  tinaData: apiTag.data,
+                }))
+              case 'config':
+                return api.getConfig().map((apiConfig) => ({
+                  ...resource,
+                  tinaData: apiConfig.data,
+                }))
+              default:
+                return absurd(type)
+            }
+          })
+          return x
         })
       })
     )
@@ -359,12 +520,14 @@ function batchLoadFromTina(sem: SemaphoreInterface) {
 }
 
 export function createLoaders(sem: SemaphoreInterface = defaultSem) {
-  const fastResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
-    batchLoadFromRedis,
-    {
-      cacheKeyFn: (resource) => resource.id,
-    }
-  )
+  const fastResourceLoader = new DataLoader<
+    Resource,
+    | { type: 'hit'; resource: Resource }
+    | { type: 'miss'; resource: Resource; revalidate: boolean },
+    ID
+  >(batchLoadFromRedis, {
+    cacheKeyFn: (resource) => resource.id,
+  })
 
   const slowResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
     batchLoadFromTina(sem),
@@ -373,33 +536,73 @@ export function createLoaders(sem: SemaphoreInterface = defaultSem) {
     }
   )
 
-  const loadResource = (resource: Resource) => {
-    return fromPromise(fastResourceLoader.load(resource), (error: unknown) =>
-      Errors.other(
-        `loadResource ${JSON.stringify(error, null, 2)}`,
-        error instanceof Error ? error : undefined
-      )
-    )
-      .andThen((x) => x)
-      .orElse(() => {
-        return fromPromise(
-          slowResourceLoader.load(resource),
-          (error: unknown) =>
-            Errors.other(
-              `loadResource ${JSON.stringify(error, null, 2)}`,
-              error instanceof Error ? error : undefined
-            )
+  const loadManyResource = (resources: Resource[]) => {
+    return fromPromise(
+      fastResourceLoader.loadMany(resources),
+      (error: unknown) =>
+        Errors.other(
+          `loadManyResource ${JSON.stringify(error, null, 2)}`,
+          error instanceof Error ? error : undefined
         )
-          .andThen((x) => x)
-          .andThen((_resource) => {
-            return repository.set(_resource).map(() => _resource)
-          })
-      })
+    ).andThen((dataLoaderResult) => {
+      return combine(
+        dataLoaderResult.map((resourceResultOrError) => {
+          if (resourceResultOrError instanceof Error) {
+            return errAsync(
+              Errors.other(
+                `loadResource ${JSON.stringify(
+                  resourceResultOrError,
+                  null,
+                  2
+                )}`,
+                resourceResultOrError instanceof Error
+                  ? resourceResultOrError
+                  : undefined
+              )
+            )
+          }
+          const { type, resource } = resourceResultOrError
+          log(
+            type,
+            resource.relativePath,
+            type === 'miss' ? resourceResultOrError.revalidate : undefined
+          )
+          if (type === 'miss') {
+            return fromPromise(
+              slowResourceLoader.load(resource),
+              (error: unknown) =>
+                Errors.other(
+                  `loadManyResource ${JSON.stringify(error, null, 2)}`,
+                  error instanceof Error ? error : undefined
+                )
+            )
+              .andThen(x => x)
+              .andThen((_resource) => {
+                return repository.set(_resource).map(() => _resource)
+              })
+              .map((_resource) => {
+                log('Found from Tina: ', _resource.relativePath)
+                return _resource
+              })
+          }
+
+          log('Found from Redis: ', resource.relativePath)
+          return okAsync(resource)
+        })
+      )
+    })
   }
 
-  const loadManyResource = (resources: Resource[]) => {
-    return combine(resources.map(loadResource))
+  const loadResource = (resource: Resource) => {
+    return loadManyResource([resource]).andThen((resources) => {
+      const _resource = resources.at(0)
+      if (_resource) {
+        return ok(_resource)
+      }
+      return err(Errors.absurd('loadResource'))
+    })
   }
+
   return {
     loadResource,
     loadManyResource,

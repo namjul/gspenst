@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "analyze": "ANALYZE=true npm run build",
-    "build": "tinacms server:start -c \"next build\"",
+    "build": "tinacms server:start -c \"next build\" --experimentalData",
     "debug": "NODE_OPTIONS='--inspect' next dev",
-    "dev": "tinacms server:start -c \"next dev\"",
+    "dev": "tinacms server:start -c \"next dev\" --experimentalData",
     "export": "GSPENST_STATIC_EXPORT=true npm run build && next export",
     "lint": "next lint",
     "start": "tinacms server:start -c \"next start\"",

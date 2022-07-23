@@ -479,6 +479,14 @@
                 "kind": "NamedType",
                 "name": { "kind": "Name", "value": "String" }
               }
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": { "kind": "Name", "value": "filter" },
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "ConfigFilter" }
+              }
             }
           ],
           "type": {
@@ -552,6 +560,14 @@
               "type": {
                 "kind": "NamedType",
                 "name": { "kind": "Name", "value": "String" }
+              }
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": { "kind": "Name", "value": "filter" },
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "PageFilter" }
               }
             }
           ],
@@ -627,6 +643,14 @@
                 "kind": "NamedType",
                 "name": { "kind": "Name", "value": "String" }
               }
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": { "kind": "Name", "value": "filter" },
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "PostFilter" }
+              }
             }
           ],
           "type": {
@@ -700,6 +724,14 @@
               "type": {
                 "kind": "NamedType",
                 "name": { "kind": "Name", "value": "String" }
+              }
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": { "kind": "Name", "value": "filter" },
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "AuthorFilter" }
               }
             }
           ],
@@ -775,6 +807,14 @@
                 "kind": "NamedType",
                 "name": { "kind": "Name", "value": "String" }
               }
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": { "kind": "Name", "value": "filter" },
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "TagFilter" }
+              }
             }
           ],
           "type": {
@@ -783,6 +823,52 @@
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "TagConnection" }
             }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "DocumentFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "config" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "ConfigFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "page" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PageFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "post" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PostFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "author" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "AuthorFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "tag" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "TagFilter" }
           }
         }
       ]
@@ -1001,6 +1087,14 @@
                 "kind": "NamedType",
                 "name": { "kind": "Name", "value": "String" }
               }
+            },
+            {
+              "kind": "InputValueDefinition",
+              "name": { "kind": "Name", "value": "filter" },
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "DocumentFilter" }
+              }
             }
           ],
           "type": {
@@ -1077,6 +1171,42 @@
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "JSON" }
             }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "BooleanFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "eq" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Boolean" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "exists" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Boolean" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "ConfigFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "darkMode" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "BooleanFilter" }
           }
         }
       ]
@@ -1326,6 +1456,276 @@
       ]
     },
     {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "DatetimeFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "after" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "String" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "before" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "String" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "eq" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "String" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "exists" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Boolean" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "in" },
+          "type": {
+            "kind": "ListType",
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "StringFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "startsWith" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "String" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "eq" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "String" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "exists" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Boolean" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "in" },
+          "type": {
+            "kind": "ListType",
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PageAuthorsAuthorFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "author" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "AuthorFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PageAuthorsFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "author" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PageAuthorsAuthorFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PageTagsTagFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "tag" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "TagFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PageTagsFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "tag" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PageTagsTagFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
+        "value": "PageContentUnstable_InternalLinkDocumentFilter"
+      },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "post" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PostFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
+        "value": "PageContentUnstable_InternalLinkFilter"
+      },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "text" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "document" },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "PageContentUnstable_InternalLinkDocumentFilter"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PageContentFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "unstable_InternalLink" },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "PageContentUnstable_InternalLinkFilter"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PageFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "date" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "DatetimeFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "slug" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "title" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "excerpt" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "authors" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PageAuthorsFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "tags" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PageTagsFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "content" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PageContentFilter" }
+          }
+        }
+      ]
+    },
+    {
       "kind": "ObjectTypeDefinition",
       "interfaces": [],
       "directives": [],
@@ -1570,6 +1970,186 @@
       ]
     },
     {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PostAuthorsAuthorFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "author" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "AuthorFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PostAuthorsFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "author" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PostAuthorsAuthorFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PostTagsTagFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "tag" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "TagFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PostTagsFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "tag" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PostTagsTagFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
+        "value": "PostContentUnstable_InternalLinkDocumentFilter"
+      },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "post" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PostFilter" }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
+        "value": "PostContentUnstable_InternalLinkFilter"
+      },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "text" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "document" },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "PostContentUnstable_InternalLinkDocumentFilter"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PostContentFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "unstable_InternalLink" },
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "PostContentUnstable_InternalLinkFilter"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "PostFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "date" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "DatetimeFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "slug" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "title" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "excerpt" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "authors" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PostAuthorsFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "tags" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PostTagsFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "content" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "PostContentFilter" }
+          }
+        }
+      ]
+    },
+    {
       "kind": "ObjectTypeDefinition",
       "interfaces": [],
       "directives": [],
@@ -1722,6 +2302,36 @@
       ]
     },
     {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "AuthorFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "name" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "date" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "DatetimeFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "slug" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        }
+      ]
+    },
+    {
       "kind": "ObjectTypeDefinition",
       "interfaces": [],
       "directives": [],
@@ -1869,6 +2479,36 @@
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "JSON" }
             }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "InputObjectTypeDefinition",
+      "name": { "kind": "Name", "value": "TagFilter" },
+      "fields": [
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "name" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "date" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "DatetimeFilter" }
+          }
+        },
+        {
+          "kind": "InputValueDefinition",
+          "name": { "kind": "Name", "value": "slug" },
+          "type": {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "StringFilter" }
           }
         }
       ]
