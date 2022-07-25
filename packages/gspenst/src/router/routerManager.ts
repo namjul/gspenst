@@ -57,7 +57,7 @@ export const routerManager = (routesConfig: RoutesConfig) => {
   routers.push(staticPagesRouter)
 
   // mount routers into a chain of responsibilities
-  routers.reduce((acc, _router) => acc.mount(_router))
+  routers.reduce((acc, _router) => acc.mountRouter(_router))
 
   return {
     handle(
@@ -72,7 +72,11 @@ export const routerManager = (routesConfig: RoutesConfig) => {
         if (request !== requestSlugified) {
           return ok(router.createRedirectContext(requestSlugified))
         }
-        return combine(router.handle(request, [], routers))
+        return combine(router.handle(request, [], routers)).map(
+          (routingContexts) => {
+            return routingContexts.filter(Boolean)
+          }
+        )
       }
       return ok(undefined)
     },

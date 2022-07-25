@@ -3,22 +3,52 @@ import type { Result, Option } from '../shared/kernel'
 import type { RoutingContext } from '../domain/routing'
 import type { Data } from '../domain/routes'
 import type { LocatorResourceType, LocatorResource } from '../domain/resource'
+import { ok, combine } from '../shared/kernel'
+import { pathToRegexp } from '../utils'
 import { paramsSchema } from '../domain/routing'
 import { parse } from '../helpers/parser'
+
+export type Route = {
+  regExp: RegExp
+  keys: Key[]
+  callback: (
+    match: { match: string; matches: string[]; keys: Key[] },
+    routers: ParentRouter[]
+  ) => Result<Option<RoutingContext>>
+}
 
 class ParentRouter {
   name: string
   nextRouter?: ParentRouter
   route?: string
+  routes: Result<Route>[] = []
   data?: Data | undefined
+
   constructor(name: string, data?: Data) {
     this.name = name
     this.data = data
   }
 
-  mount(router: ParentRouter) {
+  mountRouter(router: ParentRouter) {
     this.nextRouter = router
     return router
+  }
+
+  mountRoute(path: string, callback: Route['callback']) {
+    const keys: Key[] = []
+    this.routes.push(
+      pathToRegexp(this.trimRoute(path), keys).map((regExp) => ({
+        regExp,
+        keys,
+        callback,
+      }))
+    )
+  }
+
+  handleRequest(
+    _regExpexecArray: RegExpExecArray
+  ): Result<Option<RoutingContext>> {
+    return ok(undefined)
   }
 
   handle(
@@ -26,6 +56,26 @@ class ParentRouter {
     contexts: Result<Option<RoutingContext>>[],
     routers: ParentRouter[]
   ): Result<Option<RoutingContext>>[] {
+    contexts.push(
+      combine(this.routes).andThen((routes) => {
+        const routingContextResults = routes.flatMap((route) => {
+          const [match, ...matches] = route.regExp.exec(request) ?? []
+          if (match) {
+            return [
+              route.callback({ match, matches, keys: route.keys }, routers),
+            ]
+          }
+          return []
+        })
+
+        const first = routingContextResults.at(0)
+        if (first) {
+          return first
+        }
+        return ok(undefined)
+      })
+    )
+
     if (this.nextRouter) {
       return this.nextRouter.handle(request, contexts, routers)
     }
@@ -88,7 +138,6 @@ class ParentRouter {
   }
 
   getRoute() {
-    // return urlUtils.createUrl(this.route)
     return this.route ?? '/'
   }
 

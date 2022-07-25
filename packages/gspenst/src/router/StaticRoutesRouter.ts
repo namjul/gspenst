@@ -1,15 +1,11 @@
 import path from 'path'
 import type { Key } from 'path-to-regexp'
 import { ok } from '../shared/kernel'
-import type { Result, Option } from '../shared/kernel'
-import { pathToRegexp } from '../utils'
-import type { RoutingContext } from '../domain/routing'
 import type { Route } from '../domain/routes'
 import type { Resource } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class StaticRoutesRouter extends ParentRouter {
-  routeRegExpResult: Result<RegExp>
   config: Route
   routerName: string
   keys: Key[] = []
@@ -17,35 +13,24 @@ class StaticRoutesRouter extends ParentRouter {
     super('StaticRoutesRouter', config.data)
     this.route = mainRoute
     this.config = config
-    this.routeRegExpResult = pathToRegexp(
-      `${this.trimRoute(this.route)}{page/:page(\\d+)}?`,
-      this.keys
-    )
+
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
-  }
-  handle(
-    request: string,
-    contexts: Result<Option<RoutingContext>>[],
-    routers: ParentRouter[]
-  ) {
-    contexts.push(
-      this.routeRegExpResult.andThen((regExp) => {
-        const [match, page] = regExp.exec(request) ?? []
 
-        if (match) {
-          if (this.config.controller === 'channel') {
-            return ok(
-              this.#createChannelContext(match, page ? Number(page) : undefined)
-            )
-          }
-          return ok(this.#createStaticRouteContext(match))
+    this.mountRoute(
+      `${this.trimRoute(this.route)}{page/:page(\\d+)}?`,
+      ({ match, matches }) => {
+        const page = matches[0]
+
+        if (this.config.controller === 'channel') {
+          return ok(
+            this.#createChannelContext(match, page ? Number(page) : undefined)
+          )
         }
-        return ok(undefined)
-      })
+        return ok(this.#createStaticRouteContext(match))
+      }
     )
-
-    return super.handle(request, contexts, routers)
   }
+
   #createChannelContext(_path: string, page?: number) {
     return {
       type: 'channel' as const,

@@ -1,17 +1,14 @@
 import path from 'path'
 import type { Key } from 'path-to-regexp'
-import { pathToRegexp } from '../utils'
-import { ok, combine } from '../shared/kernel'
-import type { Result, Option, ID } from '../shared/kernel'
-import type { RoutingContext, Request } from '../domain/routing'
+import { ok } from '../shared/kernel'
+import type { ID } from '../shared/kernel'
+import type { Request } from '../domain/routing'
 import type { Collection } from '../domain/routes'
 import type { LocatorResource } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class CollectionRouter extends ParentRouter {
   routerName: string
-  routeRegExpResult: Result<RegExp>
-  permalinkRegExpResult: Result<RegExp>
   config: Collection
   keysRoute: Key[] = []
   keysPermalink: Key[] = []
@@ -22,69 +19,41 @@ class CollectionRouter extends ParentRouter {
     this.config = config
     this.postSet = postStack
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
-    this.routeRegExpResult = pathToRegexp(
+
+    this.mountRoute(
       `${this.trimRoute(this.route)}{page/:page(\\d+)}?`,
-      this.keysRoute
+      ({ match, matches }) => {
+        const page = matches[0]
+        return ok(
+          this.#createEntriesContext(match, page ? Number(page) : undefined)
+        )
+      }
     )
-    this.permalinkRegExpResult = pathToRegexp(
-      this.trimRoute(this.config.permalink),
-      this.keysPermalink
-    )
-  }
-  handle(
-    request: string,
-    contexts: Result<Option<RoutingContext>>[],
-    routers: ParentRouter[]
-  ) {
-    contexts.push(
-      combine([this.routeRegExpResult, this.permalinkRegExpResult]).andThen(
-        ([routesRegExp, permalinkRegExp]) => {
-          if (routesRegExp) {
-            const [routeMatch, page] = routesRegExp.exec(request) ?? []
 
-            if (routeMatch) {
-              return ok(
-                this.#createEntriesContext(
-                  routeMatch,
-                  page ? Number(page) : undefined
-                )
-              )
+    this.mountRoute(
+      this.config.permalink,
+      ({ match, matches, keys }, routers) => {
+        if (matches.length) {
+          const paramsResult = this.extractParams(matches, keys)
+
+          if (paramsResult.isOk()) {
+            const params = paramsResult.value
+            const router = this.respectDominantRouter(
+              routers,
+              'post',
+              params.slug
+            )
+
+            if (router) {
+              return ok(this.createRedirectContext(router))
+            } else {
+              return ok(this.#createEntryContext(match, params))
             }
           }
-
-          if (permalinkRegExp) {
-            const [permalinkMatch, ...paramKeys] =
-              permalinkRegExp.exec(request) ?? []
-
-            if (permalinkMatch && paramKeys.length) {
-              const paramsResult = this.extractParams(
-                paramKeys,
-                this.keysPermalink
-              )
-
-              if (paramsResult.isOk()) {
-                const params = paramsResult.value
-                const router = this.respectDominantRouter(
-                  routers,
-                  'post',
-                  params.slug
-                )
-
-                if (router) {
-                  return ok(this.createRedirectContext(router))
-                } else {
-                  return ok(this.#createEntryContext(permalinkMatch, params))
-                }
-              }
-            }
-          }
-
-          return ok(undefined)
         }
-      )
+        return ok(undefined)
+      }
     )
-
-    return super.handle(request, contexts, routers)
   }
 
   #createEntriesContext(_path: string, page?: number) {

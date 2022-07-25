@@ -259,7 +259,6 @@ describe('router contexts', () => {
     const router = routerManager({})
     expect(router.handle('about')).toEqual(
       ok([
-        undefined,
         {
           type: 'entry',
           resourceType: 'page',
@@ -293,8 +292,6 @@ describe('router contexts', () => {
     })
     expect(router.handle(['category-2', 'pedro'])).toEqual(
       ok([
-        undefined,
-        undefined,
         {
           type: 'channel',
           name: 'author',
@@ -357,7 +354,6 @@ describe('router contexts', () => {
     })
     expect(router.handle(['page', '1'])).toEqual(
       ok([
-        undefined,
         {
           type: 'collection',
           name: 'index',
@@ -371,8 +367,6 @@ describe('router contexts', () => {
             },
           },
         },
-        undefined,
-        undefined,
         {
           data: {},
           request: {
@@ -389,9 +383,6 @@ describe('router contexts', () => {
     )
     expect(router.handle(['author', 'pedro'])).toEqual(
       ok([
-        undefined,
-        undefined,
-        undefined,
         {
           type: 'channel',
           name: 'author',
@@ -493,7 +484,6 @@ describe('router contexts', () => {
     })
     expect(router.handle(['about', 'team'])).toMatchObject(
       ok([
-        undefined,
         {
           type: 'custom',
           request: {
@@ -502,9 +492,6 @@ describe('router contexts', () => {
           templates: ['team'],
           data: {},
         },
-        undefined,
-        undefined,
-        undefined,
         {
           data: {},
           request: {
@@ -521,8 +508,6 @@ describe('router contexts', () => {
     )
     expect(router.handle(['about'])).toEqual(
       ok([
-        undefined,
-        undefined,
         {
           request: {
             path: '/about',
@@ -535,8 +520,6 @@ describe('router contexts', () => {
           type: 'entry',
           data: {},
         },
-        undefined,
-        undefined,
         {
           type: 'redirect',
           redirect: {
@@ -548,8 +531,6 @@ describe('router contexts', () => {
     )
     expect(router.handle(['4th-post'])).toEqual(
       ok([
-        undefined,
-        undefined,
         {
           type: 'redirect',
           redirect: {
@@ -557,8 +538,6 @@ describe('router contexts', () => {
             permanent: true,
           },
         },
-        undefined,
-        undefined,
         {
           request: {
             path: '/4th-post',
@@ -575,8 +554,6 @@ describe('router contexts', () => {
     )
     expect(router.handle(['home'])).toEqual(
       ok([
-        undefined,
-        undefined,
         {
           request: {
             path: '/home',
@@ -589,8 +566,6 @@ describe('router contexts', () => {
           type: 'entry',
           data: {},
         },
-        undefined,
-        undefined,
         {
           type: 'redirect',
           redirect: {
@@ -602,10 +577,6 @@ describe('router contexts', () => {
     )
     expect(router.handle(['author', 'pedro'])).toEqual(
       ok([
-        undefined,
-        undefined,
-        undefined,
-        undefined,
         {
           type: 'redirect',
           redirect: {
@@ -629,8 +600,6 @@ describe('router contexts', () => {
     )
     expect(router.handle(['5th-post'])).toEqual(
       ok([
-        undefined,
-        undefined,
         {
           request: {
             path: '/5th-post',
@@ -643,8 +612,6 @@ describe('router contexts', () => {
           type: 'entry',
           data: {},
         },
-        undefined,
-        undefined,
         {
           request: {
             path: '/5th-post',

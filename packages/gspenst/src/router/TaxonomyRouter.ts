@@ -1,9 +1,7 @@
 import path from 'path'
 import type { Key } from 'path-to-regexp'
-import { pathToRegexp } from '../utils'
 import { ok } from '../shared/kernel'
-import type { Result, Option } from '../shared/kernel'
-import type { RoutingContext, Request } from '../domain/routing'
+import type { Request } from '../domain/routing'
 import type { Taxonomy } from '../domain/routes'
 import type { Taxonomies } from '../domain/taxonomy'
 import type { Resource } from '../domain/resource'
@@ -12,28 +10,17 @@ import ParentRouter from './ParentRouter'
 class TaxonomyRouter extends ParentRouter {
   taxonomyKey: Taxonomies
   config: Taxonomy
-  permalinkRegExpResult: Result<RegExp>
   keys: Key[] = []
   constructor(key: Taxonomies, config: Taxonomy) {
     super('TaxonomyRouter')
     this.taxonomyKey = key
     this.config = config
-    this.permalinkRegExpResult = pathToRegexp(
-      `${this.trimRoute(this.config.permalink)}{page/:page(\\d+)}?`,
-      this.keys
-    )
-  }
-  handle(
-    request: string,
-    contexts: Result<Option<RoutingContext>>[],
-    routers: ParentRouter[]
-  ) {
-    contexts.push(
-      this.permalinkRegExpResult.andThen((regExp) => {
-        const [match, ...paramKeys] = regExp.exec(request) ?? []
 
-        if (match && paramKeys.length) {
-          const paramsResult = this.extractParams(paramKeys, this.keys)
+    this.mountRoute(
+      `${this.trimRoute(this.config.permalink)}{page/:page(\\d+)}?`,
+      ({ match, matches, keys }, routers) => {
+        if (match && matches.length) {
+          const paramsResult = this.extractParams(matches, keys)
 
           if (paramsResult.isOk()) {
             const params = paramsResult.value
@@ -50,10 +37,8 @@ class TaxonomyRouter extends ParentRouter {
           }
         }
         return ok(undefined)
-      })
+      }
     )
-
-    return super.handle(request, contexts, routers)
   }
 
   #createContext(_path: string, params: Request['params'] = {}) {
