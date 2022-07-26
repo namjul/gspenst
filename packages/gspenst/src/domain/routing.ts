@@ -1,4 +1,5 @@
 import { z } from '../shared/kernel'
+import { isString } from '../shared/utils'
 import { dynamicVariablesSchema, locatorResourceTypeSchema } from './resource'
 import { queryFilterOptions, dataQuery } from './routes'
 
@@ -39,7 +40,18 @@ const redirectSchema = z.object({
 export type Redirect = z.infer<typeof redirectSchema>
 
 export const paramsSchema = dynamicVariablesSchema
-  .merge(z.object({ page: z.number().optional() }))
+  .merge(
+    z.object({
+      page: z
+        .preprocess((value) => {
+          if (isString(value)) {
+            return Number(value)
+          }
+          return value
+        }, z.number())
+        .optional(),
+    })
+  )
   .partial()
 
 const requestSchema = z.object({

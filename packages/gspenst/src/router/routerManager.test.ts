@@ -418,6 +418,45 @@ describe('router contexts', () => {
         },
       ])
     )
+
+    expect(router.handle(['author', 'pedro', 'page', '1'])).toEqual(
+      ok([
+        {
+          type: 'channel',
+          name: 'author',
+          data: {
+            author: {
+              resourceType: 'tag',
+              slug: 'pedro',
+              type: 'read',
+            },
+          },
+          templates: [],
+          filter: "authors:'pedro'",
+          limit: 5,
+          order: undefined,
+          request: {
+            path: '/author/pedro/page/1',
+            params: {
+              slug: 'pedro',
+              page: 1,
+            },
+          },
+        },
+        {
+          data: {},
+          request: {
+            params: {
+              slug: '1',
+            },
+            path: '/author/pedro/page/1',
+          },
+          resourceType: 'page',
+          templates: [],
+          type: 'entry',
+        },
+      ])
+    )
   })
   test('redirect route', () => {
     const router = routerManager({

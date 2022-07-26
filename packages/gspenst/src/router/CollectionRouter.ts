@@ -5,6 +5,7 @@ import type { ID } from '../shared/kernel'
 import type { Request } from '../domain/routing'
 import type { Collection } from '../domain/routes'
 import type { LocatorResource } from '../domain/resource'
+import type { RouteCb } from './ParentRouter'
 import ParentRouter from './ParentRouter'
 
 class CollectionRouter extends ParentRouter {
@@ -20,40 +21,32 @@ class CollectionRouter extends ParentRouter {
     this.postSet = postStack
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
 
-    this.mountRoute(
-      `${this.trimRoute(this.route)}{page/:page(\\d+)}?`,
-      ({ match, matches }) => {
-        const page = matches[0]
-        return ok(
-          this.#createEntriesContext(match, page ? Number(page) : undefined)
-        )
-      }
-    )
+    this.mountRoute(this.route, this.#handleRoute)
 
     this.mountRoute(
-      this.config.permalink,
-      ({ match, matches, keys }, routers) => {
-        if (matches.length) {
-          const paramsResult = this.extractParams(matches, keys)
-
-          if (paramsResult.isOk()) {
-            const params = paramsResult.value
-            const router = this.respectDominantRouter(
-              routers,
-              'post',
-              params.slug
-            )
-
-            if (router) {
-              return ok(this.createRedirectContext(router))
-            } else {
-              return ok(this.#createEntryContext(match, params))
-            }
-          }
-        }
-        return ok(undefined)
-      }
+      `${this.trimRoute(this.route)}/page/:page(\\d+)`,
+      this.#handleRoute
     )
+
+    this.mountRoute(this.config.permalink, this.#handleRoute)
+  }
+
+  #handleRoute: RouteCb = ({ match, matches, keys }, routers) => {
+    const paramsResult = this.extractParams(matches, keys)
+
+    if (paramsResult.isOk()) {
+      const params = paramsResult.value
+      const router = this.respectDominantRouter(routers, 'post', params.slug)
+
+      if (router) {
+        return ok(this.createRedirectContext(router))
+      } else if (params.slug) {
+        return ok(this.#createEntryContext(match, params))
+      } else {
+        return ok(this.#createEntriesContext(match, params.page))
+      }
+    }
+    return ok(undefined)
   }
 
   #createEntriesContext(_path: string, page?: number) {

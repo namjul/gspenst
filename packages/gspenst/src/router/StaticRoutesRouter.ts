@@ -3,6 +3,7 @@ import type { Key } from 'path-to-regexp'
 import { ok } from '../shared/kernel'
 import type { Route } from '../domain/routes'
 import type { Resource } from '../domain/resource'
+import type { RouteCb } from './ParentRouter'
 import ParentRouter from './ParentRouter'
 
 class StaticRoutesRouter extends ParentRouter {
@@ -16,19 +17,23 @@ class StaticRoutesRouter extends ParentRouter {
 
     this.routerName = mainRoute === '/' ? 'index' : mainRoute.replace(/\//g, '')
 
+    this.mountRoute(this.route, this.#handleRoute)
     this.mountRoute(
-      `${this.trimRoute(this.route)}{page/:page(\\d+)}?`,
-      ({ match, matches }) => {
-        const page = matches[0]
-
-        if (this.config.controller === 'channel') {
-          return ok(
-            this.#createChannelContext(match, page ? Number(page) : undefined)
-          )
-        }
-        return ok(this.#createStaticRouteContext(match))
-      }
+      `${this.trimRoute(this.route)}/page/:page(\\d+)`,
+      this.#handleRoute
     )
+  }
+
+  #handleRoute: RouteCb = ({ match, matches, keys }) => {
+    const paramsResult = this.extractParams(matches, keys)
+    if (paramsResult.isOk()) {
+      const params = paramsResult.value
+      if (this.config.controller === 'channel') {
+        return ok(this.#createChannelContext(match, params.page))
+      }
+      return ok(this.#createStaticRouteContext(match))
+    }
+    return ok(undefined)
   }
 
   #createChannelContext(_path: string, page?: number) {

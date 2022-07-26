@@ -8,21 +8,24 @@ import { pathToRegexp } from '../utils'
 import { paramsSchema } from '../domain/routing'
 import { parse } from '../helpers/parser'
 
+export type RouteCb = (
+  match: { match: string; matches: string[]; keys: Key[] },
+  routers: ParentRouter[]
+) => Result<Option<RoutingContext>>
+
 export type Route = {
   regExp: RegExp
+  path: string
   keys: Key[]
-  callback: (
-    match: { match: string; matches: string[]; keys: Key[] },
-    routers: ParentRouter[]
-  ) => Result<Option<RoutingContext>>
+  callback: RouteCb
 }
 
 class ParentRouter {
   name: string
-  nextRouter?: ParentRouter
   route?: string
-  routes: Result<Route>[] = []
   data?: Data | undefined
+  #nextRouter?: ParentRouter
+  #routes: Result<Route>[] = []
 
   constructor(name: string, data?: Data) {
     this.name = name
@@ -30,14 +33,15 @@ class ParentRouter {
   }
 
   mountRouter(router: ParentRouter) {
-    this.nextRouter = router
+    this.#nextRouter = router
     return router
   }
 
   mountRoute(path: string, callback: Route['callback']) {
     const keys: Key[] = []
-    this.routes.push(
+    this.#routes.push(
       pathToRegexp(this.trimRoute(path), keys).map((regExp) => ({
+        path,
         regExp,
         keys,
         callback,
@@ -57,7 +61,7 @@ class ParentRouter {
     routers: ParentRouter[]
   ): Result<Option<RoutingContext>>[] {
     contexts.push(
-      combine(this.routes).andThen((routes) => {
+      combine(this.#routes).andThen((routes) => {
         const routingContextResults = routes.flatMap((route) => {
           const [match, ...matches] = route.regExp.exec(request) ?? []
           if (match) {
@@ -76,8 +80,8 @@ class ParentRouter {
       })
     )
 
-    if (this.nextRouter) {
-      return this.nextRouter.handle(request, contexts, routers)
+    if (this.#nextRouter) {
+      return this.#nextRouter.handle(request, contexts, routers)
     }
 
     return contexts

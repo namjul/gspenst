@@ -5,6 +5,7 @@ import type { Request } from '../domain/routing'
 import type { Taxonomy } from '../domain/routes'
 import type { Taxonomies } from '../domain/taxonomy'
 import type { Resource } from '../domain/resource'
+import type { RouteCb } from './ParentRouter'
 import ParentRouter from './ParentRouter'
 
 class TaxonomyRouter extends ParentRouter {
@@ -17,28 +18,35 @@ class TaxonomyRouter extends ParentRouter {
     this.config = config
 
     this.mountRoute(
-      `${this.trimRoute(this.config.permalink)}{page/:page(\\d+)}?`,
-      ({ match, matches, keys }, routers) => {
-        if (match && matches.length) {
-          const paramsResult = this.extractParams(matches, keys)
-
-          if (paramsResult.isOk()) {
-            const params = paramsResult.value
-            const router = this.respectDominantRouter(
-              routers,
-              this.taxonomyKey,
-              params.slug
-            )
-            if (router) {
-              return ok(this.createRedirectContext(router))
-            } else {
-              return ok(this.#createContext(match, params))
-            }
-          }
-        }
-        return ok(undefined)
-      }
+      `${this.trimRoute(this.config.permalink)}/page/:page(\\d+)`,
+      this.#handleRoute
     )
+
+    this.mountRoute(this.config.permalink, this.#handleRoute)
+  }
+
+  /**
+   * handles:
+   *  - `/tags/:slug`
+   *  - `/tags/:slug/page/:page`
+   */
+  #handleRoute: RouteCb = ({ match, matches, keys }, routers) => {
+    const paramsResult = this.extractParams(matches, keys)
+
+    if (paramsResult.isOk()) {
+      const params = paramsResult.value
+      const router = this.respectDominantRouter(
+        routers,
+        this.taxonomyKey,
+        params.slug
+      )
+      if (router) {
+        return ok(this.createRedirectContext(router))
+      } else {
+        return ok(this.#createContext(match, params))
+      }
+    }
+    return ok(undefined)
   }
 
   #createContext(_path: string, params: Request['params'] = {}) {
@@ -48,7 +56,6 @@ class TaxonomyRouter extends ParentRouter {
       slug: params.slug,
     }
     return {
-      // TODO why is this not `entry`
       type: 'channel' as const,
       name: this.taxonomyKey,
       request: {
