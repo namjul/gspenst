@@ -128,25 +128,24 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async ({ params }) => {
   const propsResult = await getProps(params?.[routingParameter])
-    if (propsResult.isOk()) {
-      const result = await propsResult.value
-      if ('redirect' in result) {
-        return { redirect: result.redirect }
-      }
-
-      if (result.props.isErr()) {
-        if (result.props.error.type === 'NotFound') {
-          return {
-            notFound: true,
-          }
-        }
-        throw Errors.format(result.props.error)
-      }
-
-      return { props: result.props.value, revalidate: Number(process.env.GSPENT_REVALIDATE) || 10 }
+  if (propsResult.isOk()) {
+    const result = await propsResult.value
+    if ('redirect' in result) {
+      return { redirect: result.redirect }
     }
-    throw Errors.format(propsResult.error)
 
+    if (result.props.isErr()) {
+      if (result.props.error.type === 'NotFound') {
+        return {
+          notFound: true,
+        }
+      }
+      throw Errors.format(result.props.error)
+    }
+
+    return { props: result.props.value, revalidate: Number(process.env.GSPENT_REVALIDATE) || 10 }
+  }
+  throw Errors.format(propsResult.error)
 }
 `
 

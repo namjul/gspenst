@@ -81,9 +81,21 @@ class CollectionRouter extends ParentRouter {
           : true)
     )
 
-    const pages = Math.ceil(
-      postResources.length /
-        (this.config.limit === 'all' ? 1 : this.config.limit)
+    const pages =
+      postResources.length > 0
+        ? Math.ceil(
+            postResources.length /
+              (this.config.limit === 'all'
+                ? postResources.length
+                : this.config.limit)
+          )
+        : 0
+
+    console.log(
+      'CollectionRouter#resolvePaths#pages',
+      postResources.length,
+      this.config.limit,
+      pages
     )
 
     const paths = [this.getRoute()]
