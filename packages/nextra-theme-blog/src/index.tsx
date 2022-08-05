@@ -105,7 +105,7 @@ const createTheme = (_config: NextraBlogTheme) => {
           ? {
               title: entryResource.title,
               author: entryResource.primary_author?.name ?? 'no author',
-              tag: entryResource.primary_tag?.name ?? 'no author',
+              tag: entryResource.primary_tag?.name ?? 'no tag',
               date: entryResource.date,
             }
           : {}),
