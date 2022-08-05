@@ -16,7 +16,7 @@ import {
   GetConfigDocument,
 } from '../../.tina/__generated__/types'
 import type { ApiEntity } from '../api'
-import { absurd, do_ } from '../shared/utils'
+import { assertUnreachable, do_ } from '../shared/utils'
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 const isConfigNode = (value: any): value is ThemeConfigNodeFragment =>
@@ -333,7 +333,7 @@ export function createResource(entity: ApiEntity): Result<Resource> {
       case 'config':
         return data.data.config
       default:
-        absurd(type, 'createResource')
+        assertUnreachable(type, 'createResource')
     }
   })
 

@@ -12,7 +12,7 @@ import { createTag } from './domain/tag'
 import * as api from './api'
 import { compilePermalink } from './utils'
 import { makeNqlFilter } from './helpers/nqlFilter'
-import { do_, absurd, isString } from './shared/utils'
+import { do_, assertUnreachable, isString } from './shared/utils'
 import { createLogger } from './logger'
 import * as Errors from './errors'
 import { parse } from './helpers/parser'
@@ -187,7 +187,7 @@ export function collect(
                   return createTag(resource.tinaData.data.tag)
                 }
                 default:
-                  return absurd(type, 'collect')
+                  return assertUnreachable(type, 'collect')
               }
             })
 

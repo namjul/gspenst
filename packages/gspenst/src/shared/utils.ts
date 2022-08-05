@@ -29,7 +29,7 @@ export function ensureString(value: unknown): asserts value is string {
 
 export const do_ = <T>(f: () => T): T => f()
 
-export function absurd(_: never, context?: string): never {
+export function assertUnreachable(_: never, context?: string): never {
   throw new Error(`absurd ${context}`)
 }
 

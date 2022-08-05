@@ -1,5 +1,5 @@
 import { z } from './shared/kernel'
-import { do_, absurd as absurd_ } from './shared/utils'
+import { do_, assertUnreachable as absurd_ } from './shared/utils'
 
 export type GspenstError =
   | { type: 'Other'; error: Error | undefined; context?: string }

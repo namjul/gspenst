@@ -1,5 +1,5 @@
 import type { RoutingContext } from '../domain/routing'
-import { absurd } from '../shared/utils'
+import { assertUnreachable } from '../shared/utils'
 
 export function getTemplateHierarchy(routingContext: RoutingContext) {
   const { type } = routingContext
@@ -56,6 +56,6 @@ export function getTemplateHierarchy(routingContext: RoutingContext) {
       throw new Error('Should not reach this part.')
 
     default:
-      return absurd(type)
+      return assertUnreachable(type)
   }
 }

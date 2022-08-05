@@ -16,7 +16,12 @@ import type { Resource, ResourceType } from '../domain/resource'
 import type { Pagination, Data } from '../domain/theming'
 import type { Entities } from '../domain/entity'
 import type { Result, ResultAsync, ID } from '../shared/kernel'
-import { absurd, removeNullish, isNumber, do_ } from '../shared/utils'
+import {
+  assertUnreachable,
+  removeNullish,
+  isNumber,
+  do_,
+} from '../shared/utils'
 import repository from '../repository'
 import * as api from '../api'
 import * as Errors from '../errors'
@@ -240,7 +245,7 @@ export function processQuery(
     }
 
     default:
-      return absurd(type)
+      return assertUnreachable(type)
   }
 }
 
@@ -292,7 +297,7 @@ export function processData(
                   }
                 }
                 default:
-                  return absurd(type)
+                  return assertUnreachable(type)
               }
             }),
           },
@@ -513,7 +518,7 @@ function batchLoadFromTina(sem: SemaphoreInterface) {
                   tinaData: apiConfig.data,
                 }))
               default:
-                return absurd(type)
+                return assertUnreachable(type)
             }
           })
           return x

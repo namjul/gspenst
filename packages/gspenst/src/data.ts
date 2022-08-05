@@ -5,7 +5,7 @@ import type { TinaCloudSchema } from 'tinacms'
 import { isValidElementType } from 'react-is'
 import type { PageThemeContext, ThemeContext } from './domain/theming'
 import type { Resource } from './domain/resource'
-import { absurd, do_ } from './shared/utils'
+import { assertUnreachable, do_ } from './shared/utils'
 import type { Json } from './shared/kernel'
 import { normalizeResource, denormalizeEntities } from './helpers/normalize'
 import * as Errors from './errors'
@@ -37,7 +37,7 @@ function storeReducer(state: State, action: Action) {
       return { ...state, ...action.payload }
     }
     default: {
-      return absurd(action.type)
+      return assertUnreachable(action.type)
     }
   }
 }

@@ -15,7 +15,7 @@ import type { Author } from '../domain/author'
 import type { Tag } from '../domain/tag'
 import type { Config } from '../domain/config'
 import type { Result, ID } from '../shared/kernel'
-import { absurd, do_ } from '../shared/utils'
+import { assertUnreachable, do_ } from '../shared/utils'
 import { postSchema, createPost } from '../domain/post'
 import { pageSchema, createPage } from '../domain/page'
 import { authorSchema, createAuthor } from '../domain/author'
@@ -131,7 +131,7 @@ export function normalizeResource(
               acc.config.push(current)
               break
             default:
-              return absurd(type)
+              return assertUnreachable(type)
           }
           return acc
         },
@@ -220,7 +220,7 @@ export function resolveResourceData(
       case 'config':
         return [createConfig(resource.tinaData.data.config)]
       default:
-        return absurd(type)
+        return assertUnreachable(type)
     }
   })
 

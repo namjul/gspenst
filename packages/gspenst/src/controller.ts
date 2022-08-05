@@ -15,7 +15,7 @@ import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import type { Result, ResultAsync, Option } from './shared/kernel'
 import * as Errors from './errors'
-import { do_, absurd } from './shared/utils'
+import { do_, assertUnreachable } from './shared/utils'
 import type { ThemeContext, PageThemeContext, Data } from './domain/theming'
 import type { Entities } from './domain/entity'
 import { configId } from './constants'
@@ -143,7 +143,7 @@ export function controller(
               redirect: context.redirect,
             }
           default:
-            return absurd(type)
+            return assertUnreachable(type)
         }
       })
 
