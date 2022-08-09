@@ -143,7 +143,7 @@ export const getStaticProps = async ({ params }) => {
       throw Errors.format(result.props.error)
     }
 
-    return { props: result.props.value, revalidate: Number(process.env.GSPENT_REVALIDATE) || 10 }
+    return { props: result.props.value, revalidate: Number(process.env.GSPENST_REVALIDATE) || 10 }
   }
   throw Errors.format(propsResult.error)
 }

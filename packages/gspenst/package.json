@@ -10,8 +10,7 @@
     "components"
   ],
   "scripts": {
-    "gen": "tinacms schema:compile && tinacms schema:types",
-    "gen2": "tinacms schema:compile --experimentalData && tinacms schema:types --experimentalData",
+    "build:tinacms": "tinacms build",
     "test:tina": "tinacms audit",
     "typecheck": "tsc --noEmit"
   },
@@ -35,11 +34,11 @@
     "react-is": ">=16.13.1",
     "slugify": "^1.6.5",
     "sort-on": "^5.0.0",
-    "tinacms": "^0.68.13",
+    "tinacms": "^0.68.14",
     "zod": "^3.17.3"
   },
   "devDependencies": {
-    "@tinacms/cli": "^0.60.28",
+    "@tinacms/cli": "^0.61.0",
     "@types/cross-spawn": "^6.0.2",
     "@types/fs-extra": "^9.0.13",
     "@types/mock-fs": "^4.13.1",

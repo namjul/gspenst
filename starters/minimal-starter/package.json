@@ -3,22 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "tinacms server:start -c \"next build\" --experimentalData",
-    "debug": "NODE_OPTIONS='--inspect' next dev",
-    "dev": "tinacms server:start -c \"next dev\" --experimentalData",
+    "build": "GSPENST_REVALIDATE='60000' tinacms build && next build",
+    "dev": "tinacms dev -c \"next dev\"",
     "export": "GSPENST_STATIC_EXPORT=true npm run build && next export",
     "lint": "next lint",
-    "start": "tinacms server:start -c \"next start\"",
+    "start": "tinacms build && next start",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@gspenst/next": "*",
-    "@tinacms/cli": "^0.60.28",
+    "@tinacms/cli": "^0.61",
     "gspenst": "*",
     "next": "^12.2.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-json-view": "^1.21.3"
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@types/react": "17.0.20",

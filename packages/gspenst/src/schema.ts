@@ -2,6 +2,7 @@ import { defineSchema, DateFieldPlugin } from 'tinacms'
 import slugify from 'slugify'
 import type { TinaCollection, TinaTemplate, TinaField } from 'tinacms'
 import { env } from './domain/env'
+import { tinaConfig } from './shared/client'
 
 type ValidateMeta = {
   value: string
@@ -224,6 +225,7 @@ export function createSchema(
 
   return defineSchema({
     config: {
+      ...tinaConfig,
       media: {
         tina: {
           publicFolder:

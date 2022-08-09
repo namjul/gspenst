@@ -4,9 +4,9 @@ import * as Errors from '../errors'
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).optional(),
-  GSPENT_REVALIDATE: z.string().default('10'), // in seconds
+  GSPENST_REVALIDATE: z.string().default('10'), // in seconds
   NEXT_PUBLIC_TINA_CLIENT_ID: z.string().optional(),
-  NEXT_PUBLIC_TINA_READONLY_TOKEN: z.string().optional(),
+  NEXT_PUBLIC_TINA_TOKEN: z.string().optional(),
   NEXT_PUBLIC_TINA_PUBLIC_DIR: z.string().default('public'),
   NEXT_PUBLIC_TINA_MEDIA_ROOT: z.string().default('uploads'),
 })
@@ -32,9 +32,10 @@ export const parseEnv = <T extends z.ZodRawShape>(
   const actualSchema = envSchema.merge(z.object(schema)).refine(
     (value) => {
       if ('NODE_ENV' in <EnvVars>value) {
-        const { NODE_ENV, NEXT_PUBLIC_TINA_CLIENT_ID } = <EnvVars>value
+        const { NODE_ENV, NEXT_PUBLIC_TINA_CLIENT_ID, NEXT_PUBLIC_TINA_TOKEN } =
+          <EnvVars>value
         if (NODE_ENV === 'production') {
-          return !!NEXT_PUBLIC_TINA_CLIENT_ID
+          return !!NEXT_PUBLIC_TINA_CLIENT_ID && !!NEXT_PUBLIC_TINA_TOKEN
         }
       }
       return true
