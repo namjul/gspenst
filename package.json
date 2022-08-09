@@ -91,6 +91,10 @@
       "jest-watch-typeahead/testname"
     ]
   },
+  "resolutions": {
+    "**/@types/react": "^17.0.38",
+    "**/@types/react-dom": "^17.0.11"
+  },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
