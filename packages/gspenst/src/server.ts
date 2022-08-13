@@ -6,7 +6,9 @@ import { routerManager } from './router'
 import { controller } from './controller'
 import { parseRoutesWithDefaults as parseRoutes } from './domain/routes'
 import { getPageMap } from './helpers/getPageMap'
-import { log } from './logger';
+import { createLogger } from './logger'
+
+const log = createLogger(`server`)
 
 export const init = (routesConfigInput: unknown) => {
   const routesConfigResult = parseRoutes(routesConfigInput)
@@ -37,8 +39,10 @@ export const createWrapper = (
   config: Config = { routesConfig: {}, resources: [] }
 ) => {
   const getPaths = () => {
-    const paths = routerManager(config.routesConfig).resolvePaths(config.resources)
-    log('Page [...slug].js getStaticPaths', paths)
+    const paths = routerManager(config.routesConfig).resolvePaths(
+      config.resources
+    )
+    log('Page [...slug].js getStaticPaths', JSON.stringify(paths, null, 2))
     return paths
   }
 
