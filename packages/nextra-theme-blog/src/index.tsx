@@ -156,8 +156,6 @@ const createTheme = (_config: NextraBlogTheme) => {
       hasH1,
     }
 
-    console.log(state, pageOptions)
-
     // eslint-disable-next-line
     const NextraThemeBlog = withLayout(
       pageOptions,
