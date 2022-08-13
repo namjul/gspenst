@@ -61,8 +61,9 @@ export type QueryOutcomeBrowse = {
 
 export type QueryOutcome = QueryOutcomeRead | QueryOutcomeBrowse
 
-const REVALIDATE_MS =
-  Number(process.env.GSPENST_REVALIDATE ?? env.GSPENST_REVALIDATE) * 1000
+const REVALIDATE_MS = Number(env.GSPENST_REVALIDATE) * 1000
+
+console.log('REVALIDATE_MS', REVALIDATE_MS)
 
 const defaultSem = new Semaphore(100)
 

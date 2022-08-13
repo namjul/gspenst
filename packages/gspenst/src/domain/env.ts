@@ -13,7 +13,14 @@ const envSchema = z.object({
 
 type EnvVars = z.infer<typeof envSchema>
 
-const envResult = parse(envSchema, {})
+const envResult = parse(envSchema, {
+  NODE_ENV: process.env.NODE_ENV,
+  GSPENST_REVALIDATE: process.env.GSPENST_REVALIDATE,
+  NEXT_PUBLIC_TINA_CLIENT_ID: process.env.NEXT_PUBLIC_TINA_CLIENT_ID,
+  NEXT_PUBLIC_TINA_TOKEN: process.env.NEXT_PUBLIC_TINA_TOKEN,
+  NEXT_PUBLIC_TINA_PUBLIC_DIR: process.env.NEXT_PUBLIC_TINA_PUBLIC_DIR,
+  NEXT_PUBLIC_TINA_MEDIA_ROOT: process.env.NEXT_PUBLIC_TINA_MEDIA_ROOT,
+})
 
 if (envResult.isErr()) {
   console.error(

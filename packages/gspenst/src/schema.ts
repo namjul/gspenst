@@ -228,12 +228,8 @@ export function createSchema(
       ...tinaConfig,
       media: {
         tina: {
-          publicFolder:
-            process.env.NEXT_PUBLIC_TINA_PUBLIC_DIR ??
-            env.NEXT_PUBLIC_TINA_PUBLIC_DIR,
-          mediaRoot:
-            process.env.NEXT_PUBLIC_TINA_MEDIA_ROOT ??
-            env.NEXT_PUBLIC_TINA_MEDIA_ROOT,
+          publicFolder: env.NEXT_PUBLIC_TINA_PUBLIC_DIR,
+          mediaRoot: env.NEXT_PUBLIC_TINA_MEDIA_ROOT,
         },
       },
     },
