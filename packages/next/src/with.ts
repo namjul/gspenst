@@ -95,7 +95,6 @@ export default (...args: [string | LoaderOptions, string]) =>
             {
               loader: '@gspenst/next/loader',
               options: {
-                staticExport: env.GSPENST_STATIC_EXPORT,
                 ...options,
                 isServer: context.isServer,
               },

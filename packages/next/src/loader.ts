@@ -11,7 +11,6 @@ import { log } from './logger'
 export type LoaderOptions = {
   theme: string
   themeConfig?: string
-  staticExport?: boolean
 }
 
 const isProductionBuild = process.env.NODE_ENV === 'production'
@@ -31,7 +30,7 @@ async function loader(
   log('Run Loader')
 
   const options = context.getOptions()
-  const { theme, themeConfig, staticExport } = options
+  const { theme, themeConfig } = options
 
   if (!theme) {
     context.emitError(new Error('No Gspenst Theme found.'))
@@ -78,6 +77,7 @@ async function loader(
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
   const imports = `
+import { PHASE_EXPORT } from 'next/constants'
 import { Errors } from 'gspenst'
 import { createWrapper } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
@@ -115,7 +115,7 @@ export default function GspenstLayout (props) {
 
 const resources = ${JSON.stringify(resources)}
 const routesConfig = ${routesConfigStringified}
-const isStaticExport = ${staticExport}
+const isStaticExport = process.env.NEXT_PHASE === PHASE_EXPORT
 const routingParameter = '${routingParameter}'
 const { getPaths, getProps } = createWrapper({ routesConfig, resources })
 
