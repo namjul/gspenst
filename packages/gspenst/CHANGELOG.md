@@ -1,5 +1,11 @@
 # gspenst
 
+## 0.0.5
+
+### Patch Changes
+
+- 8219920: Again release with build assets
+
 ## 0.0.4
 
 ### Patch Changes

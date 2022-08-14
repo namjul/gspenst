@@ -1,5 +1,12 @@
 # @gspenst/theme
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [8219920]
+  - @gspenst/next@0.0.5
+
 ## 0.0.4
 
 ### Patch Changes

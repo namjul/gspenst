@@ -1,5 +1,14 @@
 # @gspenst/nextra-theme-blog
 
+## 0.0.5
+
+### Patch Changes
+
+- 8219920: Again release with build assets
+- Updated dependencies [8219920]
+  - gspenst@0.0.5
+  - @gspenst/next@0.0.5
+
 ## 0.0.4
 
 ### Patch Changes
