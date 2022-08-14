@@ -1,6 +1,6 @@
 {
   "name": "@gspenst/nextra-theme-blog",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/gspenst-nextra-theme-blog.cjs.js",
   "module": "dist/gspenst-nextra-theme-blog.esm.js",
   "files": [
@@ -12,9 +12,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@gspenst/next": "^0.0.3",
+    "@gspenst/next": "^0.0.4",
     "@mdx-js/react": "^2.1.1",
-    "gspenst": "^0.0.3",
+    "gspenst": "^0.0.4",
     "nextra-theme-blog": "2.0.0-alpha.55"
   },
   "devDependencies": {

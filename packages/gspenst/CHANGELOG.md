@@ -1,5 +1,11 @@
 # gspenst
 
+## 0.0.4
+
+### Patch Changes
+
+- b1fd105: Release with build files
+
 ## 0.0.3
 
 ### Patch Changes
