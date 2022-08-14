@@ -23,6 +23,7 @@
     "react-json-view": "^1.21.3"
   },
   "devDependencies": {
-    "@tinacms/cli": "^0.61.1"
+    "@tinacms/cli": "^0.61.1",
+    "eslint-config-next": "12.2.5"
   }
 }
