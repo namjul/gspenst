@@ -16,16 +16,10 @@ import type { Resource, ResourceType } from '../domain/resource'
 import type { Pagination, Data } from '../domain/theming'
 import type { Entities } from '../domain/entity'
 import type { Result, ResultAsync, ID } from '../shared/kernel'
-import {
-  assertUnreachable,
-  removeNullish,
-  isNumber,
-  do_,
-} from '../shared/utils'
+import { assertUnreachable, removeNullish, do_ } from '../shared/utils'
 import repository from '../repository'
 import * as api from '../api'
 import * as Errors from '../errors'
-import { env } from '../domain/env'
 import { createLogger } from '../logger'
 // import {
 //   isPostResource,
@@ -60,10 +54,6 @@ export type QueryOutcomeBrowse = {
 }
 
 export type QueryOutcome = QueryOutcomeRead | QueryOutcomeBrowse
-
-const REVALIDATE_MS = Number(env.GSPENST_REVALIDATE) * 1000
-
-console.log('REVALIDATE_MS', REVALIDATE_MS)
 
 const defaultSem = new Semaphore(100)
 
@@ -323,213 +313,212 @@ export function processData(
   return result
 }
 
-async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
-  return Promise.all(
-    resources.map(async (resource) => {
-      const x = combine([
-        repository.sinceLastUpdate(new Date()),
-        repository.get(resource.id),
-      ])
-        .andThen((result) => {
-          const [updatedAt, _resource] = result as [number, Resource]
-          if (isNumber(updatedAt)) {
-            if (updatedAt > REVALIDATE_MS) {
-              return ok({ type: 'miss' as const, resource, revalidate: true })
-            }
-          }
-          return ok({ type: 'hit' as const, resource: _resource })
-        })
-        .unwrapOr({ type: 'miss' as const, resource, revalidate: false })
-      return x
-    })
-  )
-}
-
-function batchLoadFromTina(sem: SemaphoreInterface) {
-  // TODO use ResultAsync<Resource[]>
-  return async (
-    resources: ReadonlyArray<Resource>
-  ): Promise<Result<Resource>[]> => {
-    log(
-      'load',
-      resources.map((resource) => resource.relativePath)
-    )
-    // const batchResult = await sem.runExclusive(async () => {
-    //   if (resources.every(isPostResource)) {
-    //     return api
-    //       .getPosts({
-    //         filter: {
-    //           slug: {
-    //             in: resources.flatMap(
-    //               ({ tinaData }) => tinaData.data.post.slug ?? []
-    //             ),
-    //           },
-    //         },
-    //       })
-    //       .map((apiPostList) => {
-    //         return resources.map((resource) => {
-    //           const apiPost = apiPostList.find((_apiPost) => {
-    //             return (
-    //               _apiPost.data.data.post.slug ===
-    //               resource.tinaData.data.post.slug
-    //             )
-    //           })
-    //
-    //           if (apiPost) {
-    //             return ok({
-    //               ...resource,
-    //               tinaData: apiPost.data,
-    //             })
-    //           }
-    //           return err(Errors.absurd('batchLoadFromTina'))
-    //         })
-    //       })
-    //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
-    //   }
-    //
-    //   if (resources.every(isPageResource)) {
-    //     return api
-    //       .getPages({
-    //         filter: {
-    //           slug: {
-    //             in: resources.flatMap(
-    //               ({ tinaData }) => tinaData.data.page.slug ?? []
-    //             ),
-    //           },
-    //         },
-    //       })
-    //       .map((apiPageList) => {
-    //         return resources.map((resource) => {
-    //           const apiPage = apiPageList.find((_apiPage) => {
-    //             return (
-    //               _apiPage.data.data.page.slug ===
-    //               resource.tinaData.data.page.slug
-    //             )
-    //           })
-    //
-    //           if (apiPage) {
-    //             return ok({
-    //               ...resource,
-    //               tinaData: apiPage.data,
-    //             })
-    //           }
-    //           return err(Errors.absurd('batchLoadFromTina'))
-    //         })
-    //       })
-    //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
-    //   }
-    //
-    //   if (resources.every(isAuthorResource)) {
-    //     return api
-    //       .getAuthors({
-    //         filter: {
-    //           slug: {
-    //             in: resources.flatMap(
-    //               ({ tinaData }) => tinaData.data.author.slug ?? []
-    //             ),
-    //           },
-    //         },
-    //       })
-    //       .map((apiAuthorList) => {
-    //         return resources.map((resource) => {
-    //           const apiAuthor = apiAuthorList.find((_apiAuthor) => {
-    //             return (
-    //               _apiAuthor.data.data.author.slug ===
-    //               resource.tinaData.data.author.slug
-    //             )
-    //           })
-    //
-    //           if (apiAuthor) {
-    //             return ok({
-    //               ...resource,
-    //               tinaData: apiAuthor.data,
-    //             })
-    //           }
-    //           return err(Errors.absurd('batchLoadFromTina'))
-    //         })
-    //       })
-    //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
-    //   }
-    //
-    //   if (resources.every(isTagResource)) {
-    //     return api
-    //       .getTags({
-    //         filter: {
-    //           slug: {
-    //             in: resources.flatMap(
-    //               ({ tinaData }) => tinaData.data.tag.slug ?? []
-    //             ),
-    //           },
-    //         },
-    //       })
-    //       .map((apiTagList) => {
-    //         return resources.map((resource) => {
-    //           const apiTag = apiTagList.find((_apiTag) => {
-    //             return (
-    //               _apiTag.data.data.tag.slug === resource.tinaData.data.tag.slug
-    //             )
-    //           })
-    //
-    //           if (apiTag) {
-    //             return ok({
-    //               ...resource,
-    //               tinaData: apiTag.data,
-    //             })
-    //           }
-    //           return err(Errors.absurd('batchLoadFromTina'))
-    //         })
-    //       })
-    //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
-    //   }
-    // })
-    //
-    // if (batchResult) {
-    //   return batchResult
-    // }
-
+export function createLoaders(
+  sem: SemaphoreInterface = defaultSem,
+  isBuildPhase: boolean = false
+) {
+  async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
     return Promise.all(
       resources.map(async (resource) => {
-        return sem.runExclusive(async () => {
-          const x = do_(() => {
-            const { type, relativePath } = resource
-            switch (type) {
-              case 'page':
-                return api.getPage({ relativePath }).map((apiPage) => ({
-                  ...resource,
-                  tinaData: apiPage.data,
-                }))
-              case 'post':
-                return api.getPost({ relativePath }).map((apiPost) => ({
-                  ...resource,
-                  tinaData: apiPost.data,
-                }))
-              case 'author':
-                return api.getAuthor({ relativePath }).map((apiAuthor) => ({
-                  ...resource,
-                  tinaData: apiAuthor.data,
-                }))
-              case 'tag':
-                return api.getTag({ relativePath }).map((apiTag) => ({
-                  ...resource,
-                  tinaData: apiTag.data,
-                }))
-              case 'config':
-                return api.getConfig().map((apiConfig) => ({
-                  ...resource,
-                  tinaData: apiConfig.data,
-                }))
-              default:
-                return assertUnreachable(type)
+        const x = repository
+          .get(resource.id)
+          .andThen((_resource) => {
+            console.log('isBuildPhase:', isBuildPhase)
+            if (isBuildPhase) {
+              return ok({ type: 'hit' as const, resource: _resource })
             }
+            return ok({ type: 'miss' as const, resource, revalidate: true })
           })
-          return x
-        })
+          .unwrapOr({ type: 'miss' as const, resource, revalidate: false })
+        return x
       })
     )
   }
-}
 
-export function createLoaders(sem: SemaphoreInterface = defaultSem) {
+  function batchLoadFromTina() {
+    // TODO use ResultAsync<Resource[]>
+    return async (
+      resources: ReadonlyArray<Resource>
+    ): Promise<Result<Resource>[]> => {
+      log(
+        'load',
+        resources.map((resource) => resource.relativePath)
+      )
+      // const batchResult = await sem.runExclusive(async () => {
+      //   if (resources.every(isPostResource)) {
+      //     return api
+      //       .getPosts({
+      //         filter: {
+      //           slug: {
+      //             in: resources.flatMap(
+      //               ({ tinaData }) => tinaData.data.post.slug ?? []
+      //             ),
+      //           },
+      //         },
+      //       })
+      //       .map((apiPostList) => {
+      //         return resources.map((resource) => {
+      //           const apiPost = apiPostList.find((_apiPost) => {
+      //             return (
+      //               _apiPost.data.data.post.slug ===
+      //               resource.tinaData.data.post.slug
+      //             )
+      //           })
+      //
+      //           if (apiPost) {
+      //             return ok({
+      //               ...resource,
+      //               tinaData: apiPost.data,
+      //             })
+      //           }
+      //           return err(Errors.absurd('batchLoadFromTina'))
+      //         })
+      //       })
+      //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
+      //   }
+      //
+      //   if (resources.every(isPageResource)) {
+      //     return api
+      //       .getPages({
+      //         filter: {
+      //           slug: {
+      //             in: resources.flatMap(
+      //               ({ tinaData }) => tinaData.data.page.slug ?? []
+      //             ),
+      //           },
+      //         },
+      //       })
+      //       .map((apiPageList) => {
+      //         return resources.map((resource) => {
+      //           const apiPage = apiPageList.find((_apiPage) => {
+      //             return (
+      //               _apiPage.data.data.page.slug ===
+      //               resource.tinaData.data.page.slug
+      //             )
+      //           })
+      //
+      //           if (apiPage) {
+      //             return ok({
+      //               ...resource,
+      //               tinaData: apiPage.data,
+      //             })
+      //           }
+      //           return err(Errors.absurd('batchLoadFromTina'))
+      //         })
+      //       })
+      //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
+      //   }
+      //
+      //   if (resources.every(isAuthorResource)) {
+      //     return api
+      //       .getAuthors({
+      //         filter: {
+      //           slug: {
+      //             in: resources.flatMap(
+      //               ({ tinaData }) => tinaData.data.author.slug ?? []
+      //             ),
+      //           },
+      //         },
+      //       })
+      //       .map((apiAuthorList) => {
+      //         return resources.map((resource) => {
+      //           const apiAuthor = apiAuthorList.find((_apiAuthor) => {
+      //             return (
+      //               _apiAuthor.data.data.author.slug ===
+      //               resource.tinaData.data.author.slug
+      //             )
+      //           })
+      //
+      //           if (apiAuthor) {
+      //             return ok({
+      //               ...resource,
+      //               tinaData: apiAuthor.data,
+      //             })
+      //           }
+      //           return err(Errors.absurd('batchLoadFromTina'))
+      //         })
+      //       })
+      //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
+      //   }
+      //
+      //   if (resources.every(isTagResource)) {
+      //     return api
+      //       .getTags({
+      //         filter: {
+      //           slug: {
+      //             in: resources.flatMap(
+      //               ({ tinaData }) => tinaData.data.tag.slug ?? []
+      //             ),
+      //           },
+      //         },
+      //       })
+      //       .map((apiTagList) => {
+      //         return resources.map((resource) => {
+      //           const apiTag = apiTagList.find((_apiTag) => {
+      //             return (
+      //               _apiTag.data.data.tag.slug === resource.tinaData.data.tag.slug
+      //             )
+      //           })
+      //
+      //           if (apiTag) {
+      //             return ok({
+      //               ...resource,
+      //               tinaData: apiTag.data,
+      //             })
+      //           }
+      //           return err(Errors.absurd('batchLoadFromTina'))
+      //         })
+      //       })
+      //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
+      //   }
+      // })
+      //
+      // if (batchResult) {
+      //   return batchResult
+      // }
+
+      return Promise.all(
+        resources.map(async (resource) => {
+          return sem.runExclusive(async () => {
+            const x = do_(() => {
+              const { type, relativePath } = resource
+              switch (type) {
+                case 'page':
+                  return api.getPage({ relativePath }).map((apiPage) => ({
+                    ...resource,
+                    tinaData: apiPage.data,
+                  }))
+                case 'post':
+                  return api.getPost({ relativePath }).map((apiPost) => ({
+                    ...resource,
+                    tinaData: apiPost.data,
+                  }))
+                case 'author':
+                  return api.getAuthor({ relativePath }).map((apiAuthor) => ({
+                    ...resource,
+                    tinaData: apiAuthor.data,
+                  }))
+                case 'tag':
+                  return api.getTag({ relativePath }).map((apiTag) => ({
+                    ...resource,
+                    tinaData: apiTag.data,
+                  }))
+                case 'config':
+                  return api.getConfig().map((apiConfig) => ({
+                    ...resource,
+                    tinaData: apiConfig.data,
+                  }))
+                default:
+                  return assertUnreachable(type)
+              }
+            })
+            return x
+          })
+        })
+      )
+    }
+  }
+
   const fastResourceLoader = new DataLoader<
     Resource,
     | { type: 'hit'; resource: Resource }
@@ -540,7 +529,7 @@ export function createLoaders(sem: SemaphoreInterface = defaultSem) {
   })
 
   const slowResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
-    batchLoadFromTina(sem),
+    batchLoadFromTina(),
     {
       cacheKeyFn: (resource) => resource.id,
     }

@@ -77,7 +77,7 @@ async function loader(
   const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
 
   const imports = `
-import { PHASE_EXPORT } from 'next/constants'
+import { PHASE_PRODUCTION_BUILD, PHASE_EXPORT } from 'next/constants'
 import { Errors } from 'gspenst'
 import { createWrapper } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
@@ -117,7 +117,7 @@ const resources = ${JSON.stringify(resources)}
 const routesConfig = ${routesConfigStringified}
 const isStaticExport = process.env.NEXT_PHASE === PHASE_EXPORT
 const routingParameter = '${routingParameter}'
-const { getPaths, getProps } = createWrapper({ routesConfig, resources })
+const { getPaths, getProps } = createWrapper({ routesConfig, resources, isProductionBuild: process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD })
 
 export const getStaticPaths = async () => {
   return {
@@ -143,7 +143,7 @@ export const getStaticProps = async ({ params }) => {
       throw Errors.format(result.props.error)
     }
 
-    return { props: result.props.value, revalidate: Number(process.env.GSPENST_REVALIDATE) || 10 }
+    return { props: result.props.value, revalidate: 10 }
   }
   throw Errors.format(propsResult.error)
 }

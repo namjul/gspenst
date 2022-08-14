@@ -3,30 +3,12 @@ import fse from 'fs-extra'
 import withPreconstruct from '@preconstruct/next'
 import type { Configuration } from 'webpack'
 import type { NextConfig } from 'next'
-import { parseEnv, z, Errors } from 'gspenst'
+import { parseEnv, Errors } from 'gspenst'
 import { log } from './logger'
 import type { LoaderOptions } from './loader'
 import { GspenstPlugin } from './plugin'
 
-const envResult = parseEnv(process.env, {
-  GSPENST_STATIC_EXPORT: z
-    .preprocess(
-      (value) => {
-        const value_ = String(value).toLowerCase()
-        if (value_ === 'true') {
-          return true
-        }
-        if (value_ === 'false') {
-          return false
-        }
-        return value
-      },
-      z.boolean({
-        invalid_type_error: "GSPENST_STATIC_EXPORT must be a 'true' or 'false'",
-      })
-    )
-    .default(false),
-})
+const envResult = parseEnv(process.env, {})
 
 if (envResult.isErr()) {
   console.error(

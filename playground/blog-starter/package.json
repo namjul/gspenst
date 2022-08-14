@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "analyze": "ANALYZE=true npm run build",
-    "build": "GSPENST_REVALIDATE='60000' tinacms build && next build",
+    "build": "tinacms build && next build",
     "debug": "NODE_OPTIONS='--inspect' npm dev",
     "dev": "tinacms dev -c \"next dev\"",
     "export": "GSPENST_STATIC_EXPORT=true npm run build && next export",

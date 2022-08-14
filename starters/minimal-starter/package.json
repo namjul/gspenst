@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "GSPENST_REVALIDATE='60000' tinacms build && next build",
+    "build": "tinacms build && next build",
     "dev": "tinacms dev -c \"next dev\"",
     "export": "GSPENST_STATIC_EXPORT=true npm run build && next export",
     "lint": "next lint",

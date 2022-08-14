@@ -4,6 +4,7 @@ import { filterLocatorResources } from './helpers/resource'
 import repository from './repository'
 import { routerManager } from './router'
 import { controller } from './controller'
+import { createLoaders } from './helpers/processQuery'
 import { parseRoutesWithDefaults as parseRoutes } from './domain/routes'
 import { getPageMap } from './helpers/getPageMap'
 import { createLogger } from './logger'
@@ -33,10 +34,11 @@ export const init = (routesConfigInput: unknown) => {
 type Config = {
   routesConfig: RoutesConfig
   resources: LocatorResource[]
+  isBuildPhase: boolean
 }
 
 export const createWrapper = (
-  config: Config = { routesConfig: {}, resources: [] }
+  config: Config = { routesConfig: {}, resources: [], isBuildPhase: false }
 ) => {
   const getPaths = () => {
     const paths = routerManager(config.routesConfig).resolvePaths(
@@ -49,7 +51,10 @@ export const createWrapper = (
   const getProps = async (params: string | string[]) => {
     log('Page [...slug].js getStaticProps', params)
     const routingContext = routerManager(config.routesConfig).handle(params)
-    return controller(routingContext)
+    return controller(
+      routingContext,
+      createLoaders(undefined, config.isBuildPhase)
+    )
   }
 
   return {
