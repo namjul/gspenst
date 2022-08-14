@@ -323,7 +323,6 @@ export function createLoaders(
         const x = repository
           .get(resource.id)
           .andThen((_resource) => {
-            console.log('isBuildPhase:', isBuildPhase)
             if (isBuildPhase) {
               return ok({ type: 'hit' as const, resource: _resource })
             }
