@@ -74,7 +74,7 @@ async function loader(
 
   const routesConfigStringified = JSON.stringify(routesConfig)
 
-  const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema.ts')
+  const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema')
 
   const imports = `
 import { PHASE_PRODUCTION_BUILD, PHASE_EXPORT } from 'next/constants'

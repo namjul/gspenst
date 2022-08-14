@@ -6,7 +6,7 @@ import type { NextConfig } from 'next'
 import { parseEnv, Errors } from 'gspenst'
 import { log } from './logger'
 import type { LoaderOptions } from './loader'
-import { GspenstPlugin } from './plugin'
+// import { GspenstPlugin } from './plugin'
 
 const envResult = parseEnv(process.env, {})
 
@@ -53,12 +53,12 @@ export default (...args: [string | LoaderOptions, string]) =>
       pageExtensions,
       webpack(config: Configuration, context) {
         log('Initializing next webpack config')
-        const gspenst = new GspenstPlugin(context.isServer)
-        if (config.plugins) {
-          config.plugins.push(gspenst)
-        } else {
-          config.plugins = [gspenst]
-        }
+        // const gspenst = new GspenstPlugin(context.isServer)
+        // if (config.plugins) {
+        //   config.plugins.push(gspenst)
+        // } else {
+        //   config.plugins = [gspenst]
+        // }
 
         // [Prefer `module` over `main`](https://github.com/vercel/next.js/issues/9323#issuecomment-550560435)
         // This solves the Warning: Did not expect server HTML to contain a ...

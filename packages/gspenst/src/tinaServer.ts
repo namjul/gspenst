@@ -12,6 +12,7 @@ export async function startTinaServer(
 ) {
   if (
     !(await fse.pathExists(
+      // TODO allow .tina/schema.{ts,js,tsx} file
       path.resolve(this.projectPath, '.tina', 'schema.ts')
     ))
   ) {
