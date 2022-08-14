@@ -92,6 +92,7 @@ export default (...args: [string | LoaderOptions, string]) =>
       },
       trailingSlash: true,
       reactStrictMode: true,
+      swcMinify: true,
       // experimental: {
       //   externalDir: true, // seems to replace @preconstruc/next https://github.com/preconstruct/preconstruct/issues/444#issuecomment-1029218560
       // },
