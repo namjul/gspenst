@@ -8,13 +8,15 @@
   ],
   "scripts": {
     "build": "preconstruct build",
-    "checkall": "yarn test && yarn lint && yarn typecheck",
+    "checkall": "yarn test && yarn lint && yarn types:check",
     "clean": "rimraf packages/*/dist",
     "lint": "eslint . --ext .ts,.tsx",
     "prepare": "husky install && preconstruct dev",
-    "release": "yarn build && changeset publish",
+    "prerelease": "yarn build",
+    "release": "changeset publish",
     "test": "jest",
-    "typecheck": "yarn typecheck --workspaces",
+    "types:check": "yarn typecheck --workspaces",
+    "version": "changeset version",
     "watch": "preconstruct watch"
   },
   "lint-staged": {
