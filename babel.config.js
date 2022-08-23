@@ -6,6 +6,7 @@ module.exports = {
         targets: {
           esmodules: true, // let nextjs handle/decide transpiliation ECMAScript features
         },
+        // exclude: ['proposal-dynamic-import'],
       },
     ],
     [
