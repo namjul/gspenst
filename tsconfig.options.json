@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     // Basic Options
-    "target": "es6", // Compile to es6 and not below
-    "module": "esnext", // Compile to es modules
+    "target": "es2016",
+    "module": "esnext",
     "strict": true, // Enable all strict type checking options
     "pretty": true, // Enable color and formatting in output to make compiler errors easier to read
     "noEmit": true, // This uses babel for compilation
@@ -20,7 +20,7 @@
     // Typechecking Options
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": true
     // "strictFunctionTypes": true,
     // "strictPropertyInitialization": true,
     // "noFallthroughCasesInSwitch": true,
