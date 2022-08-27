@@ -5,13 +5,7 @@
   "compilerOptions": {
     "typeRoots": ["./node_modules/@types", "./typings"],
     "paths": {
-      "*": ["./typings/*"],
-      // lighthouse currently does not expose types https://github.com/GoogleChrome/lighthouse/issues/1773
-      "lighthouse/lighthouse-core/lib/median-run": [
-        "./typings/lighthouse.d.ts"
-      ],
-      // Emotion typedefs now point to an empty file, which unsets all declarations
-      "@emotion/core": ["./typings/emotion.d.ts"]
+      "*": ["./typings/*"]
     }
   }
 }
