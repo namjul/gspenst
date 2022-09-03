@@ -1,6 +1,6 @@
 {
   "name": "@gspenst/next",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "dist/gspenst-next.cjs.js",
   "module": "dist/gspenst-next.esm.js",
   "files": [
@@ -17,7 +17,7 @@
     "@preconstruct/next": "^4.0.0",
     "debug": "^4.3.3",
     "fs-extra": "^10.0.0",
-    "gspenst": "^0.0.5",
+    "gspenst": "^0.0.6",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {

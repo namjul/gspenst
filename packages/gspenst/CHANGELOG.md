@@ -1,5 +1,11 @@
 # gspenst
 
+## 0.0.6
+
+### Patch Changes
+
+- 7037702: Solve esm modules conflicts by not using esm-only package. This downgrades this packages.
+
 ## 0.0.5
 
 ### Patch Changes
