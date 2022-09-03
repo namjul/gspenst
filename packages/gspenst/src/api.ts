@@ -214,7 +214,7 @@ const getTimestamp = (relativePath: string) => {
       }),
       (error) => {
         return Errors.other(
-          '`@napi-rs/simple-git#getFileLatestModifiedDateAsync`',
+          '`getTimestamp`',
           error instanceof Error ? error : undefined
         )
       }
