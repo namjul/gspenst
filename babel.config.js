@@ -3,9 +3,9 @@ module.exports = {
     [
       '@babel/preset-env',
       {
-        targets: {
-          esmodules: true, // let nextjs handle/decide transpiliation ECMAScript features
-        },
+        // targets: {
+        //   esmodules: true, // let nextjs handle/decide transpiliation ECMAScript features
+        // },
         // exclude: ['proposal-dynamic-import'],
       },
     ],

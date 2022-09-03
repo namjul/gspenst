@@ -2,6 +2,7 @@ import merge from 'deepmerge'
 import DataLoader from 'dataloader'
 import { Semaphore } from 'async-mutex'
 import type { SemaphoreInterface } from 'async-mutex'
+import sortOn from 'sort-on'
 import {
   combine,
   ok,
@@ -109,16 +110,7 @@ export function processQuery(
 
       return repository
         .findAll(query.resourceType)
-        .map(async (resources) => {
-          const { default: sortOn } = await import('sort-on')
-          const { default: filterObject } = await import('filter-obj')
-          return {
-            resources,
-            sortOn,
-            filterObject,
-          }
-        })
-        .andThen(({ resources, sortOn }) => {
+        .andThen((resources) => {
           // 1. apply filter
           const filteredResources = resources.flatMap((resource) => {
             if (query.filter) {

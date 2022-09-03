@@ -1,3 +1,4 @@
+import filterObject from 'filter-obj'
 import { ok, err } from './shared/kernel'
 import type {
   RoutingContext,
@@ -60,8 +61,6 @@ async function routeController(
       ...routingContext.request.params,
     }
   }
-
-  const { default: filterObject } = await import('filter-obj')
 
   return repository.find({ id: configId }).andThen((configResource) => {
     return processData(dataLoaders, dataQueries).andThen(
