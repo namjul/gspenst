@@ -37,30 +37,21 @@ type Config = {
   isBuildPhase: boolean
 }
 
-export const createWrapper = (
-  config: Config = { routesConfig: {}, resources: [], isBuildPhase: false }
-) => {
-  const getPaths = () => {
-    const paths = routerManager(config.routesConfig).resolvePaths(
-      config.resources
-    )
-    log('Page [...slug].js getStaticPaths', JSON.stringify(paths, null, 2))
-    return paths
-  }
+export const getPaths = (config: Config) => {
+  const paths = routerManager(config.routesConfig).resolvePaths(
+    config.resources
+  )
+  log('Page [...slug].js getStaticPaths', JSON.stringify(paths, null, 2))
+  return paths
+}
 
-  const getProps = async (params: string | string[]) => {
-    log('Page [...slug].js getStaticProps', params)
-    const routingContext = routerManager(config.routesConfig).handle(params)
-    return controller(
-      routingContext,
-      createLoaders(undefined, config.isBuildPhase)
-    )
-  }
-
-  return {
-    getPaths,
-    getProps,
-  }
+export const getProps = async (config: Config, params: string | string[]) => {
+  log('Page [...slug].js getStaticProps', params)
+  const routingContext = routerManager(config.routesConfig).handle(params)
+  return controller(
+    routingContext,
+    createLoaders(undefined, config.isBuildPhase)
+  )
 }
 
 export { collect } from './collect'

@@ -79,7 +79,7 @@ async function loader(
   const imports = `
 import { PHASE_PRODUCTION_BUILD, PHASE_EXPORT } from 'next/constants'
 import { Errors } from 'gspenst'
-import { createWrapper } from 'gspenst/server'
+import { getPaths, getProps } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import __gspenst_withTheme__ from '${themePath}'
@@ -115,19 +115,19 @@ export default function GspenstLayout (props) {
 
 const resources = ${JSON.stringify(resources)}
 const routesConfig = ${routesConfigStringified}
-const isStaticExport = process.env.NEXT_PHASE === PHASE_EXPORT
 const routingParameter = '${routingParameter}'
-const { getPaths, getProps } = createWrapper({ routesConfig, resources, isProductionBuild: process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD })
+const isStaticExport = process.env.NEXT_PHASE === PHASE_EXPORT
+const isBuildPhase = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
 
 export const getStaticPaths = async () => {
   return {
-    paths: getPaths(),
+    paths: getPaths({ routesConfig, resources }),
     fallback: isStaticExport ? false : 'blocking',
   }
 }
 
 export const getStaticProps = async ({ params }) => {
-  const propsResult = await getProps(params?.[routingParameter])
+  const propsResult = await getProps({ routesConfig, resources, isBuildPhase }, params?.[routingParameter])
   if (propsResult.isOk()) {
     const result = await propsResult.value
     if ('redirect' in result) {
