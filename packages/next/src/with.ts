@@ -6,6 +6,11 @@ import type { NextConfig } from 'next'
 import { parseEnv, Errors } from 'gspenst'
 import { log } from './logger'
 import type { LoaderOptions } from './loader'
+import {
+  YAML_EXTENSION_REGEX,
+  DEFAULT_EXTENSIONS,
+  YAML_EXTENSIONS,
+} from './constants'
 // import { GspenstPlugin } from './plugin'
 
 const envResult = parseEnv(process.env, {})
@@ -29,11 +34,6 @@ const mediaDir = path.join(
 // make sure that uploads folder exist
 void fse.ensureDir(mediaDir)
 
-const defaultExtensions = ['js', 'jsx', 'ts', 'tsx']
-const yamlExtensions = ['yml', 'yaml']
-// const yamlExtensionTest = /\.(yml|yaml)$/
-const yamlExtensionTest = /\[\[\.\.\.\w+\]\]\.(yml|yaml)$/
-
 export default (...args: [string | LoaderOptions, string]) =>
   (nextConfig: NextConfig = {}): NextConfig => {
     const options =
@@ -43,8 +43,8 @@ export default (...args: [string | LoaderOptions, string]) =>
 
     log('Initializing next config')
 
-    const pageExtensions = nextConfig.pageExtensions ?? [...defaultExtensions]
-    pageExtensions.push(...yamlExtensions)
+    const pageExtensions = nextConfig.pageExtensions ?? [...DEFAULT_EXTENSIONS]
+    pageExtensions.push(...YAML_EXTENSIONS)
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     return withPreconstruct({
@@ -71,7 +71,7 @@ export default (...args: [string | LoaderOptions, string]) =>
         }
 
         config.module?.rules?.push({
-          test: yamlExtensionTest,
+          test: YAML_EXTENSION_REGEX,
           use: [
             context.defaultLoaders.babel,
             {

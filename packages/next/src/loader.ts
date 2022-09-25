@@ -7,18 +7,14 @@ import { Errors } from 'gspenst'
 import { init } from 'gspenst/server'
 import { findContentDir } from './utils'
 import { log } from './logger'
+import { PARAM_REGEX, IS_PRODUCTION } from './constants'
 
 export type LoaderOptions = {
   theme: string
   themeConfig?: string
 }
 
-const isProductionBuild = process.env.NODE_ENV === 'production'
-
 const contentDir = path.resolve(findContentDir())
-
-// match dynamic routes
-const paramRegExp = /\[\[?\.*(\w*)\]\]?/
 
 // api lookup: https://webpack.js.org/api/loaders/
 async function loader(
@@ -50,7 +46,7 @@ async function loader(
     themeConfigPath = path.resolve(themeConfigPath)
   }
 
-  if (!isProductionBuild) {
+  if (!IS_PRODUCTION) {
     // Add the entire directory `content` as the dependency
     // so when manually editing the files pages are rebuild
     context.addContextDependency(contentDir)
@@ -59,7 +55,7 @@ async function loader(
   const { resourcePath } = context
   const filename = resourcePath.slice(resourcePath.lastIndexOf('/') + 1)
   const routingParameter = (
-    (paramRegExp.exec(filename) ?? []) as Array<string | undefined>
+    (PARAM_REGEX.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
   const configResult = await init(yaml.load(source))
