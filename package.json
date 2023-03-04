@@ -11,20 +11,13 @@
     "checkall": "yarn test && yarn lint && yarn types:check",
     "clean": "rimraf packages/*/dist",
     "lint": "eslint . --ext .ts,.tsx",
-    "prepare": "husky install && preconstruct dev",
+    "prepare": "preconstruct dev",
     "prerelease": "yarn build",
     "release": "changeset publish",
     "test": "jest",
     "types:check": "yarn typecheck --workspaces",
     "version": "changeset version",
     "watch": "preconstruct watch"
-  },
-  "lint-staged": {
-    "*.{ts,tsx,md,json,mdx}": "prettier --write",
-    "*.{ts,tsx}": [
-      "eslint --cache",
-      "jest --bail --findRelatedTests"
-    ]
   },
   "prettier": {
     "proseWrap": "never",
@@ -112,7 +105,6 @@
     "@types/react-dom": "^17.0.11",
     "eslint": "^8.17.0",
     "eslint-config-kentcdodds": "^20.2.0",
-    "husky": "^7.0.4",
     "jest": "^27.5.1",
     "jest-watch-typeahead": "^1.0.0",
     "lint-staged": ">=12",
