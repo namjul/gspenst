@@ -70,7 +70,7 @@ async function loader(
 
   const routesConfigStringified = JSON.stringify(routesConfig)
 
-  const tinaSchemaPath = path.resolve(process.cwd(), '.tina', 'schema')
+  // const tinaConfigPath = path.resolve(process.cwd(), '.tina', 'config')
 
   const imports = `
 import { PHASE_PRODUCTION_BUILD, PHASE_EXPORT } from 'next/constants'
@@ -87,18 +87,11 @@ ${
 `
 
   const component = `
-const getTinaSchema = async () => {
-  const { default: tinaSchema } = await import('${tinaSchemaPath}');
-  return tinaSchema
-}
 const pageMap = ${JSON.stringify(pageMap)}
 const GspenstThemeComponent = __gspenst_withData__(
   __gspenst_withTheme__(${
     themeConfigPath ? '__gspenst_themeConfig__' : 'null'
   }), {
-    admin: getComponent('Admin'),
-    tinaProvider: getComponent('TinaProvider'),
-    getTinaSchema,
     pageMap,
   }
 )

@@ -1,13 +1,14 @@
 import { createClient } from 'tinacms/dist/client'
+import { env } from '../domain/env'
 import { queries } from '../../.tina/__generated__/types'
 
 export const tinaConfig = {
-  clientId: process.env.NEXT_PUBLIC_TINA_CLIENT_ID!,
+  clientId: env.NEXT_PUBLIC_TINA_CLIENT_ID,
   branch:
-    process.env.NEXT_PUBLIC_TINA_BRANCH! || // custom branch env override
-    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF! || // Vercel branch env
-    process.env.HEAD!, // Netlify branch env
-  token: process.env.NEXT_PUBLIC_TINA_TOKEN!,
+    process.env.NEXT_PUBLIC_TINA_BRANCH ?? // custom branch env override
+    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? // Vercel branch env
+    process.env.HEAD ?? null, // Netlify branch env
+  token: env.NEXT_PUBLIC_TINA_TOKEN!,
 }
 
 const { branch, clientId, token } = tinaConfig
@@ -22,3 +23,4 @@ export const client = createClient({
   url: apiURL,
   token,
 })
+

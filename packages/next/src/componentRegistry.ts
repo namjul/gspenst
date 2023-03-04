@@ -3,10 +3,6 @@ import { ComponentType } from 'react'
 import type { LiteralUnion } from 'type-fest'
 
 export const components = {
-  Admin: dynamic(() => import('gspenst/components/Admin')),
-  TinaProvider: dynamic(() => import('gspenst/components/TinaProvider'), {
-    ssr: false,
-  }),
   MdxTheme: dynamic(() => import('gspenst/components/MdxTheme')),
 }
 

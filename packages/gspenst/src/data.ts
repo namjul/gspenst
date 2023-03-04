@@ -1,16 +1,14 @@
 import merge from 'deepmerge'
 import React, { createContext, useContext, useEffect } from 'react'
-import { TinaEditProvider, useTina } from 'tinacms/dist/edit-state'
-import type { TinaCloudSchema } from 'tinacms'
+import { useTina } from 'tinacms/dist/react'
 import { isValidElementType } from 'react-is'
-import type { PageThemeContext, ThemeContext } from './domain/theming'
-import type { Resource } from './domain/resource'
+import { type PageThemeContext, type ThemeContext } from './domain/theming'
+import { type Resource } from './domain/resource'
 import { assertUnreachable, do_ } from './shared/utils'
-import type { Json } from './shared/kernel'
+import { type Json } from './shared/kernel'
 import { normalizeResource, denormalizeEntities } from './helpers/normalize'
 import * as Errors from './errors'
-import type { PageMapItem, RoutingMapping } from './helpers/getPageMap'
-import { getRoutingMapping } from './helpers/getPageMap'
+import { getRoutingMapping, type PageMapItem, type RoutingMapping } from './helpers/getPageMap'
 // import { getHeaders } from './helpers/getHeaders';
 
 type Action = { type: 'HYDRATE'; payload: State }
@@ -53,7 +51,7 @@ function useGspenstState(
 
   const { tinaData } = state.resource
 
-  const { data, isLoading } = useTina({
+  const { data } = useTina({
     query: tinaData.query,
     variables: tinaData.variables,
     data: tinaData.data,
@@ -62,8 +60,8 @@ function useGspenstState(
   const resource = {
     ...state.resource,
     tinaData: {
-      ...state.resource.tinaData,
-      data: { ...state.resource.tinaData.data, ...data },
+      ...tinaData,
+      data: { ...tinaData.data, ...data },
     },
   } as Resource
 
@@ -77,7 +75,6 @@ function useGspenstState(
     state: {
       ...state,
       resource,
-      ctxEditingLoading: isLoading,
       entities: merge(state.entities, normalizeResourceResult.value.entities, {
         isMergeableObject: (value) => {
           return !('type' in value)
@@ -176,16 +173,12 @@ function selectConfig<T extends Json>(state: State) {
 }
 
 type WithDataOptions = {
-  getTinaSchema: () => Promise<TinaCloudSchema>
   admin: React.ComponentType<any> | undefined
   tinaProvider: React.ComponentType<any> | undefined
   pageMap: PageMapItem[]
 }
 
-const withData = (
-  Component: ThemeComponent,
-  { admin, tinaProvider, getTinaSchema, pageMap }: WithDataOptions
-) => {
+const withData = (Component: ThemeComponent, { pageMap }: WithDataOptions) => {
   if (!isValidElementType(Component)) {
     throw new Error('Theme must export HOC.')
   }
@@ -193,38 +186,24 @@ const withData = (
   const routingMapping = getRoutingMapping(pageMap)
 
   function HOC(props: ThemeContext) {
-    let component
     if (props.context === 'internal') {
-      if (admin) {
-        component = React.createElement(admin)
-      }
+      console.log(pageMap, props);
+      
+      return React.createElement('div', {}, 'internal')
     } else {
-      component = React.createElement(DataProvider, {
+      return React.createElement(DataProvider, {
         props,
         pageMap,
         Component,
         routingMapping,
       })
     }
-
-    if (!tinaProvider) {
-      throw new Error('Missing TinaProvider')
-    }
-
-    return React.createElement(TinaEditProvider, {
-      editMode: React.createElement(tinaProvider, {
-        getTinaSchema,
-        routingMapping,
-        children: component,
-      }),
-      children: component,
-    })
   }
 
   HOC.displayName = `withData(${
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     Component.displayName || Component.name || 'Component'
-  })`
+    })`
 
   return HOC
 }

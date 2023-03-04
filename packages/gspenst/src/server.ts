@@ -55,5 +55,5 @@ export const getProps = async (config: Config, params: string | string[]) => {
 }
 
 export { collect } from './collect'
-export { startTinaServer } from './tinaServer'
+export { startTinaServer } from './tina-server'
 export { routerManager, controller, repository, parseRoutes }
