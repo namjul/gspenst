@@ -1,5 +1,5 @@
 // @ts-expect-error -- no type declarations available
-import withLayout from 'nextra-theme-blog'
+import withLayout from 'nextra-theme-blog' // TODO replace with custom solution to not depend on it OR replace preconstruct with turbopack
 import type { Root } from 'gspenst'
 import type { PageOpt } from 'nextra'
 import { useStore, selectData, selectConfig } from 'gspenst/data'
