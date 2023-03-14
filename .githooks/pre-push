@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+if [ -n "$VIMRUNTIME" ]; then
+  export FORCE_COLOR=0
+fi
+
+PASS=true
+
+echo "Starting linting..."
+yarn lint:types
+
+if [ $? -eq 1 ]; then
+  PASS=false
+fi
+
+npx prettier -l
+
+if [ $? -eq 1 ]; then
+  PASS=false
+fi
+
+if $PASS; then
+  exit 0
+else
+  exit 1
+fi

@@ -12,7 +12,7 @@
   "scripts": {
     "build:tinacms": "tinacms build",
     "test:tina": "tinacms audit",
-    "typecheck": "tsc --noEmit"
+    "lint:types": "tsc --noEmit"
   },
   "dependencies": {
     "@napi-rs/simple-git": "^0.1.8",

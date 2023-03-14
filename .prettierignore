@@ -1,4 +1,16 @@
 .next
+**/.tina/__generated__/
+**/dist/
+**/out
+**/lib/
+
+*-lock.json
+
+**/*.mdx
+**/*.md
+**/*.json
+
+.yarn
+.pnp.js
+.yarnrc.yml
 node_modules
-*-lock.json # package-lock.json
-__generated__/ # Ignore Tinacms artifacts

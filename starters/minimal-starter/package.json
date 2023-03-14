@@ -8,7 +8,7 @@
     "export": "GSPENST_STATIC_EXPORT=true npm run build && next export",
     "lint": "next lint",
     "start": "tinacms build && next start",
-    "typecheck": "tsc --noEmit"
+    "lint:types": "tsc --noEmit"
   },
   "dependencies": {
     "@gspenst/next": "*",

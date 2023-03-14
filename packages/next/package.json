@@ -11,7 +11,7 @@
     "componentRegistry"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "lint:types": "tsc --noEmit"
   },
   "dependencies": {
     "@preconstruct/next": "^4.0.0",

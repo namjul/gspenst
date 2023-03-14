@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "gen": "tinacms schema:compile && tinacms schema:types",
-    "typecheck": "tsc --noEmit"
+    "lint:types": "tsc --noEmit"
   },
   "dependencies": {
     "@gspenst/next": "^0.0.6",

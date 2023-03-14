@@ -8,14 +8,15 @@
   ],
   "scripts": {
     "build": "preconstruct build",
-    "checkall": "yarn test && yarn lint && yarn types:check",
+    "checkall": "yarn test && yarn lint && yarn lint:types && yarn lint:format",
     "clean": "rimraf packages/*/dist",
     "lint": "eslint . --ext .ts,.tsx",
-    "prepare": "preconstruct dev",
+    "prepare": "git config --local core.hooksPath .githooks || echo 'not in git' && preconstruct dev",
     "prerelease": "yarn build",
     "release": "changeset publish",
     "test": "jest",
-    "types:check": "yarn typecheck --workspaces",
+    "lint:format": "prettier . -l",
+    "lint:types": "yarn workspaces run lint:types",
     "version": "changeset version",
     "watch": "preconstruct watch"
   },
