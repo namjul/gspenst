@@ -1,4 +1,4 @@
-import {  type ResultAsync, fromPromise } from './shared/kernel'
+import { type ResultAsync, fromPromise } from './shared/kernel'
 import redis from './redis'
 import * as Errors from './errors'
 

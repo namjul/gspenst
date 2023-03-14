@@ -1,6 +1,6 @@
 import repository from './repository'
 import { format } from './errors'
-import  { type ID } from './shared/kernel'
+import { type ID } from './shared/kernel'
 
 jest.mock('./api')
 jest.mock('./redis')

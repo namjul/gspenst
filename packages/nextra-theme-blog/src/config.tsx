@@ -1,5 +1,5 @@
-import  { type TinaField } from 'gspenst'
-import  { type ConfigPartsFragment } from '../.tina/__generated__/types'
+import { type TinaField } from 'gspenst'
+import { type ConfigPartsFragment } from '../.tina/__generated__/types'
 
 export type NextraBlogTheme = {
   readMore?: string

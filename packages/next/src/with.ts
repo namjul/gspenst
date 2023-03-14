@@ -1,11 +1,11 @@
 import path from 'path'
 import fse from 'fs-extra'
 import withPreconstruct from '@preconstruct/next'
-import  { type Configuration } from 'webpack'  // eslint-disable-line import/no-extraneous-dependencies
-import  { type NextConfig } from 'next'
+import { type Configuration } from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
+import { type NextConfig } from 'next'
 import { parseEnv, Errors } from 'gspenst'
 import { log } from './logger'
-import  { type LoaderOptions } from './loader'
+import { type LoaderOptions } from './loader'
 import {
   YAML_EXTENSION_REGEX,
   DEFAULT_EXTENSIONS,

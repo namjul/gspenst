@@ -1,5 +1,5 @@
 import stringHash from 'fnv1a'
-import  { type ID } from './shared/kernel'
+import { type ID } from './shared/kernel'
 
 // TODO make configurable
 export const configRelativePath = 'index.json'

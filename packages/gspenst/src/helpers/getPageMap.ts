@@ -2,13 +2,13 @@ import {
   filterLocatorResources,
   filterPageResources,
 } from '../helpers/resource'
-import  {
+import {
   type Resource,
   type LocatorResource,
   type LocatorResourceType,
 } from '../domain/resource'
-import  { type RoutesConfig } from '../domain/routes'
-import  { type RouteType } from '../domain/routing'
+import { type RoutesConfig } from '../domain/routes'
+import { type RouteType } from '../domain/routing'
 
 type FilePath = LocatorResource['filepath']
 type Path = LocatorResource['path']

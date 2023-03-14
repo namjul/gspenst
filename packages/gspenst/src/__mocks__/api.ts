@@ -5,7 +5,13 @@ import {
   type GetAuthorQuery,
   type GetTagQuery,
 } from '../../.tina/__generated__/types'
-import { type Post, type Page, type Author, type Tag, type Config } from '../api'
+import {
+  type Post,
+  type Page,
+  type Author,
+  type Tag,
+  type Config,
+} from '../api'
 
 type ApiResultAsync<T> = ResultAsync<T>
 

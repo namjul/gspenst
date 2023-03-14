@@ -1,4 +1,9 @@
-import  { type Heading, type Node, type Parent, type Root } from '../shared/kernel'
+import {
+  type Heading,
+  type Node,
+  type Parent,
+  type Root,
+} from '../shared/kernel'
 
 export type HeadingMeta = {
   titleText?: string

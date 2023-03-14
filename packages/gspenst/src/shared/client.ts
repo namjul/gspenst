@@ -7,7 +7,8 @@ export const tinaConfig = {
   branch:
     process.env.NEXT_PUBLIC_TINA_BRANCH ?? // custom branch env override
     process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? // Vercel branch env
-    process.env.HEAD ?? null, // Netlify branch env
+    process.env.HEAD ??
+    null, // Netlify branch env
   token: env.NEXT_PUBLIC_TINA_TOKEN!,
 }
 
@@ -23,4 +24,3 @@ export const client = createClient({
   url: apiURL,
   token,
 })
-
