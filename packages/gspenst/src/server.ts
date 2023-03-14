@@ -1,11 +1,13 @@
-import type { RoutesConfig } from './domain/routes'
-import type { LocatorResource } from './domain/resource'
+import {
+  parseRoutesWithDefaults as parseRoutes,
+  type RoutesConfig,
+} from './domain/routes'
+import { type LocatorResource } from './domain/resource'
 import { filterLocatorResources } from './helpers/resource'
 import repository from './repository'
 import { routerManager } from './router'
 import { controller } from './controller'
 import { createLoaders } from './helpers/processQuery'
-import { parseRoutesWithDefaults as parseRoutes } from './domain/routes'
 import { getPageMap } from './helpers/getPageMap'
 import { createLogger } from './logger'
 

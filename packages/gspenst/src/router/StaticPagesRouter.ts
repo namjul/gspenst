@@ -1,8 +1,7 @@
-import { ok } from '../shared/kernel'
-import type { Result } from '../shared/kernel'
+import { type Result, ok } from '../shared/kernel'
 import { pathToRegexp } from '../utils'
-import type { Request } from '../domain/routing'
-import type { Resource } from '../domain/resource'
+import { type Request } from '../domain/routing'
+import { type Resource } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class StaticPagesRouter extends ParentRouter {

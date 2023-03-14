@@ -1,8 +1,13 @@
-import { okAsync, errAsync, combine } from './shared/kernel'
+import {
+  type ID,
+  type ResultAsync,
+  okAsync,
+  errAsync,
+  combine,
+} from './shared/kernel'
 import { createDb } from './db'
-import type { ResourceType, Resource } from './domain/resource'
-import type { RoutesConfig } from './domain/routes'
-import type { ID, ResultAsync } from './shared/kernel'
+import { type ResourceType, type Resource } from './domain/resource'
+import { type RoutesConfig } from './domain/routes'
 import * as Errors from './errors'
 import { collect } from './collect'
 
@@ -17,9 +22,7 @@ type GetValue<T extends ID | ID[]> = T extends ID[]
   : RepoResultAsync<Resource>
 
 type FindAllValue<T extends ResourceType> = RepoResultAsync<
-  (T extends null | undefined
-    ? Resource
-    : Extract<Resource, { type: T }>)[]
+  (T extends null | undefined ? Resource : Extract<Resource, { type: T }>)[]
 >
 
 const repository = {
@@ -105,9 +108,7 @@ const repository = {
   findAll<T extends ResourceType>(type?: T): FindAllValue<T> {
     return this.getAll().andThen((resources) => {
       if (type) {
-        const found = Object.values(resources).filter(
-          this.match({ type })
-        )
+        const found = Object.values(resources).filter(this.match({ type }))
         return okAsync(found) as FindAllValue<T>
       }
       return okAsync(resources) as FindAllValue<T>
@@ -116,12 +117,9 @@ const repository = {
 
   match(partialEntity: Partial<Resource>) {
     return (resource: Resource) => {
-      const isResource =
-        'type' in partialEntity && 'type' in resource
+      const isResource = 'type' in partialEntity && 'type' in resource
       return (
-        (isResource
-          ? partialEntity.type === resource.type
-          : true) &&
+        (isResource ? partialEntity.type === resource.type : true) &&
         Object.entries(partialEntity)
           .map(([key, value]) => {
             return (

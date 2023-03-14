@@ -1,5 +1,4 @@
-import { ok, err, z } from '../shared/kernel'
-import type { Result } from '../shared/kernel'
+import { type Result, ok, err, z } from '../shared/kernel'
 import * as Errors from '../errors'
 
 export type ParseResult<T> = Result<T>

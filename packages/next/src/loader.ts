@@ -2,7 +2,7 @@
 
 import path from 'path'
 import yaml from 'js-yaml'
-import type { LoaderContext } from 'webpack'
+import  { type LoaderContext } from 'webpack'
 import { Errors } from 'gspenst'
 import { init } from 'gspenst/server'
 import { findContentDir } from './utils'

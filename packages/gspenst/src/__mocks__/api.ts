@@ -1,12 +1,11 @@
-import type { ResultAsync } from '../shared/kernel'
-import { combine, okAsync } from '../shared/kernel'
-import type {
-  GetPostQuery,
-  GetPageQuery,
-  GetAuthorQuery,
-  GetTagQuery,
+import { type ResultAsync, combine, okAsync } from '../shared/kernel'
+import {
+  type GetPostQuery,
+  type GetPageQuery,
+  type GetAuthorQuery,
+  type GetTagQuery,
 } from '../../.tina/__generated__/types'
-import type { Post, Page, Author, Tag, Config } from '../api'
+import { type Post, type Page, type Author, type Tag, type Config } from '../api'
 
 type ApiResultAsync<T> = ResultAsync<T>
 

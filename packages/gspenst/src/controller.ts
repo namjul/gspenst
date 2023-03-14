@@ -1,24 +1,36 @@
 import filterObject from 'filter-obj'
-import { ok, err } from './shared/kernel'
-import type {
-  RoutingContext,
-  CollectionRoutingContext,
-  ChannelRoutingContext,
-  EntryRoutingContext,
-  CustomRoutingContext,
-  Redirect,
+import {
+  type Result,
+  type ResultAsync,
+  type Option,
+  ok,
+  err,
+} from './shared/kernel'
+import {
+  type RoutingContext,
+  type CollectionRoutingContext,
+  type ChannelRoutingContext,
+  type EntryRoutingContext,
+  type CustomRoutingContext,
+  type Redirect,
 } from './domain/routing'
-import type { LocatorResource } from './domain/resource'
-import type { DataQuery } from './domain/routes'
-import { createLoaders, processData } from './helpers/processQuery'
-import type { DataLoaders } from './helpers/processQuery'
+import { type LocatorResource } from './domain/resource'
+import { type DataQuery } from './domain/routes'
+import {
+  type DataLoaders,
+  createLoaders,
+  processData,
+} from './helpers/processQuery'
 import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
-import type { Result, ResultAsync, Option } from './shared/kernel'
 import * as Errors from './errors'
 import { do_, assertUnreachable } from './shared/utils'
-import type { ThemeContext, PageThemeContext, Data } from './domain/theming'
-import type { Entities } from './domain/entity'
+import {
+  type ThemeContext,
+  type PageThemeContext,
+  type Data,
+} from './domain/theming'
+import { type Entities } from './domain/entity'
 import { configId } from './constants'
 import repository from './repository'
 import { confifyTinaData } from './helpers/confifyTinaData'

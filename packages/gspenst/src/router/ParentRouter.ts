@@ -1,11 +1,12 @@
-import type { Key } from 'path-to-regexp'
-import type { Result, Option } from '../shared/kernel'
-import type { RoutingContext } from '../domain/routing'
-import type { Data } from '../domain/routes'
-import type { LocatorResourceType, LocatorResource } from '../domain/resource'
-import { ok, combine } from '../shared/kernel'
+import { type Key } from 'path-to-regexp'
+import { ok, combine, type Result, type Option } from '../shared/kernel'
+import { paramsSchema, type RoutingContext } from '../domain/routing'
+import { type Data } from '../domain/routes'
+import {
+  type LocatorResourceType,
+  type LocatorResource,
+} from '../domain/resource'
 import { pathToRegexp } from '../utils'
-import { paramsSchema } from '../domain/routing'
 import { parse } from '../helpers/parser'
 
 export type RouteCb = (

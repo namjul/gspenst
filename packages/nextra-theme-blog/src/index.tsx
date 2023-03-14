@@ -1,14 +1,12 @@
-// @ts-expect-error -- no type declarations available
 import withLayout from 'nextra-theme-blog' // TODO replace with custom solution to not depend on it OR replace preconstruct with turbopack
-import type { Root } from 'gspenst'
-import type { PageOpt } from 'nextra'
+import  { type Root } from 'gspenst'
+import  { type PageOpt } from 'nextra'
 import { useStore, selectData, selectConfig } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import { useMDXComponents } from '@mdx-js/react'
 import { BlockQuote } from './components/testimonial'
 import { Cta } from './components/cta'
-import { defaultConfig } from './config'
-import type { TinaConfig, NextraBlogTheme } from './config'
+import {  type TinaConfig, type NextraBlogTheme ,defaultConfig } from './config'
 
 const GspenstMdxTheme = getComponent('MdxTheme')
 

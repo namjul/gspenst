@@ -1,21 +1,26 @@
-import type { Result } from '../shared/kernel'
-import { idSchema, slugSchema, pathSchema, ok, err, z } from '../shared/kernel'
-import { parse } from '../helpers/parser'
-import type {
-  PostNodeFragment,
-  PageNodeFragment,
-  AuthorNodeFragment,
-  TagNodeFragment,
-  ThemeConfigNodeFragment,
-} from '../../.tina/__generated__/types'
 import {
+  idSchema,
+  slugSchema,
+  pathSchema,
+  ok,
+  err,
+  z,
+  type Result,
+} from '../shared/kernel'
+import { parse } from '../helpers/parser'
+import {
+  type PostNodeFragment,
+  type PageNodeFragment,
+  type AuthorNodeFragment,
+  type TagNodeFragment,
+  type ThemeConfigNodeFragment,
   GetPostDocument,
   GetPageDocument,
   GetAuthorDocument,
   GetTagDocument,
   GetConfigDocument,
 } from '../../.tina/__generated__/types'
-import type { ApiEntity } from '../api'
+import { type ApiEntity } from '../api'
 import { assertUnreachable, do_ } from '../shared/utils'
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */

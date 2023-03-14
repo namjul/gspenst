@@ -1,7 +1,12 @@
-import { idSchema, jsonSchema, z } from '../shared/kernel'
+import {
+  type Result,
+  type Json,
+  idSchema,
+  jsonSchema,
+  z,
+} from '../shared/kernel'
 import { parse } from '../helpers/parser'
-import type { Result, Json } from '../shared/kernel'
-import type { ThemeConfigNodeFragment } from '../../.tina/__generated__/types'
+import { type ThemeConfigNodeFragment } from '../../.tina/__generated__/types'
 
 export const configSchema = z
   .object({

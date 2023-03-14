@@ -1,4 +1,4 @@
-import type { TinaTemplate } from 'gspenst'
+import  { type TinaTemplate } from 'gspenst'
 
 export const Cta = ({ heading }: { heading: string }) => {
   return <div>{heading}</div>

@@ -2,26 +2,26 @@ import {
   schema,
   normalize as _normalize,
   denormalize as _denormalize,
+  type NormalizedSchema,
 } from 'normalizr'
-import type { ValueOf } from 'type-fest'
-import type { NormalizedSchema } from 'normalizr'
-import { combine, fromThrowable, z } from '../shared/kernel'
+import { type ValueOf } from 'type-fest'
+import {
+  type Result,
+  type ID,
+  combine,
+  fromThrowable,
+  z,
+} from '../shared/kernel'
 import * as Errors from '../errors'
-import type { Resource } from '../domain/resource'
-import type { RoutingMapping } from '../helpers/getPageMap'
-import type { Post } from '../domain/post'
-import type { Page } from '../domain/page'
-import type { Author } from '../domain/author'
-import type { Tag } from '../domain/tag'
-import type { Config } from '../domain/config'
-import type { Result, ID } from '../shared/kernel'
+import { type Resource } from '../domain/resource'
+import { type RoutingMapping } from '../helpers/getPageMap'
+import { postSchema, createPost, type Post } from '../domain/post'
+import { pageSchema, createPage, type Page } from '../domain/page'
+import { authorSchema, createAuthor, type Author } from '../domain/author'
+import { tagSchema, createTag, type Tag } from '../domain/tag'
+import { configSchema, createConfig, type Config } from '../domain/config'
 import { assertUnreachable, do_ } from '../shared/utils'
-import { postSchema, createPost } from '../domain/post'
-import { pageSchema, createPage } from '../domain/page'
-import { authorSchema, createAuthor } from '../domain/author'
-import { tagSchema, createTag } from '../domain/tag'
-import { configSchema, createConfig } from '../domain/config'
-import type { Entities } from '../domain/entity'
+import { type Entities } from '../domain/entity'
 
 export const normalize = fromThrowable(_normalize, (error) =>
   Errors.other(

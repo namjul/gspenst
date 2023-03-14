@@ -1,10 +1,9 @@
 import * as graphql from 'graphql'
-import type { DefinitionNode, SelectionNode } from 'graphql'
-import { combine, ok, err } from '../shared/kernel'
-import type { Result } from '../shared/kernel'
+import { type DefinitionNode, type SelectionNode } from 'graphql'
+import { type Result, combine, ok, err } from '../shared/kernel'
 import * as Errors from '../errors'
 import { safeGraphqlParse, safeGraphqlStringify } from '../utils'
-import type { Resource, ConfigResource } from '../domain/resource'
+import { type Resource, type ConfigResource } from '../domain/resource'
 
 export function confifyTinaData(
   configResource: ConfigResource,

@@ -1,10 +1,19 @@
 import slugify from 'slugify'
-import { ok, combine } from '../shared/kernel'
-import type { Result, Option, ID } from '../shared/kernel'
-import type { RoutesConfig } from '../domain/routes'
-import type { RoutingContext } from '../domain/routing'
-import type { LocatorResource } from '../domain/resource'
-import { getRoutes, getCollections, getTaxonomies } from '../domain/routes'
+import {
+  type Result,
+  type Option,
+  type ID,
+  ok,
+  combine,
+} from '../shared/kernel'
+import {
+  getRoutes,
+  getCollections,
+  getTaxonomies,
+  type RoutesConfig,
+} from '../domain/routes'
+import { type RoutingContext } from '../domain/routing'
+import { type LocatorResource } from '../domain/resource'
 
 import AdminRouter from './AdminRouter'
 import StaticPagesRouter from './StaticPagesRouter'

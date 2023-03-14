@@ -5,14 +5,15 @@ import {
   z,
   combine,
   err,
+  type Result,
+  type Root,
 } from '../shared/kernel'
-import type { Result, Root } from '../shared/kernel'
 import { parse } from '../helpers/parser'
-import type {
-  PostNodeFragment,
-  PageNodeFragment,
+import {
+  type PostNodeFragment,
+  type PageNodeFragment,
 } from '../../.tina/__generated__/types'
-import type { RoutingMapping } from '../helpers/getPageMap'
+import { type RoutingMapping } from '../helpers/getPageMap'
 import { getHeaders } from '../helpers/getHeaders'
 import { authorSchema, createAuthor } from './author'
 import { tagSchema, createTag } from './tag'

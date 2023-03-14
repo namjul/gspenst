@@ -1,10 +1,10 @@
-import type {
-  Resource,
-  LocatorResource,
-  AuthorResource,
-  TagResource,
-  PageResource,
-  PostResource,
+import  {
+  type Resource,
+  type LocatorResource,
+  type AuthorResource,
+  type TagResource,
+  type PageResource,
+  type PostResource,
 } from '../domain/resource'
 
 export const filterLocatorResources = (

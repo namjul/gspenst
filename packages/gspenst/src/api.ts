@@ -1,15 +1,21 @@
 import path from 'path'
-import type {
-  PostFilter,
-  PageFilter,
-  AuthorFilter,
-  TagFilter,
-  ThemeConfigNodeFragment as ConfigResourceNode,
+import {
+  type PostFilter,
+  type PageFilter,
+  type AuthorFilter,
+  type TagFilter,
+  type ThemeConfigNodeFragment as ConfigResourceNode,
+  getSdk,
 } from '../.tina/__generated__/types'
-import { getSdk } from '../.tina/__generated__/types'
-import { z, fromPromise, combine, ok } from './shared/kernel'
 import * as Errors from './errors'
-import type { AsyncReturnType, ResultAsync } from './shared/kernel'
+import {
+  type AsyncReturnType,
+  type ResultAsync,
+  z,
+  fromPromise,
+  combine,
+  ok,
+} from './shared/kernel'
 import { client } from './shared/client'
 import { parse } from './helpers/parser'
 import { gitDiscover } from './utils'

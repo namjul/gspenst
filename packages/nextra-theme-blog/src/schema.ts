@@ -1,5 +1,4 @@
-import type { TinaTemplate } from 'gspenst'
-import { createSchema } from 'gspenst'
+import { type TinaTemplate, createSchema } from 'gspenst'
 import { testimonialBlockSchema } from './components/testimonial'
 import { ctaBlockSchema } from './components/cta'
 

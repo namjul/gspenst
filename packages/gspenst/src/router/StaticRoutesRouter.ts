@@ -1,10 +1,9 @@
 import path from 'path'
-import type { Key } from 'path-to-regexp'
+import { type Key } from 'path-to-regexp'
 import { ok } from '../shared/kernel'
-import type { Route } from '../domain/routes'
-import type { Resource } from '../domain/resource'
-import type { RouteCb } from './ParentRouter'
-import ParentRouter from './ParentRouter'
+import { type Route } from '../domain/routes'
+import { type Resource } from '../domain/resource'
+import ParentRouter, { type RouteCb } from './ParentRouter'
 
 class StaticRoutesRouter extends ParentRouter {
   config: Route

@@ -1,4 +1,4 @@
-import type { RoutingContext } from '../domain/routing'
+import  { type RoutingContext } from '../domain/routing'
 
 export function getContext(routingContext: RoutingContext) {
   const contextType =

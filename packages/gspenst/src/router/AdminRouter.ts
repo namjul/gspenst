@@ -1,7 +1,6 @@
-import { ok } from '../shared/kernel'
-import type { Result, Option } from '../shared/kernel'
+import { ok, type Result, type Option } from '../shared/kernel'
 import { pathToRegexp } from '../utils'
-import type { RoutingContext } from '../domain/routing'
+import { type RoutingContext } from '../domain/routing'
 import ParentRouter from './ParentRouter'
 
 class AdminRouter extends ParentRouter {

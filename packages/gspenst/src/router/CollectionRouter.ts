@@ -1,12 +1,10 @@
 import path from 'path'
-import type { Key } from 'path-to-regexp'
-import { ok } from '../shared/kernel'
-import type { ID } from '../shared/kernel'
-import type { Request } from '../domain/routing'
-import type { Collection } from '../domain/routes'
-import type { LocatorResource } from '../domain/resource'
-import type { RouteCb } from './ParentRouter'
-import ParentRouter from './ParentRouter'
+import { type Key } from 'path-to-regexp'
+import { ok, type ID } from '../shared/kernel'
+import { type Request } from '../domain/routing'
+import { type Collection } from '../domain/routes'
+import { type LocatorResource } from '../domain/resource'
+import ParentRouter, { type RouteCb } from './ParentRouter'
 
 class CollectionRouter extends ParentRouter {
   routerName: string

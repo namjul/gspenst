@@ -1,7 +1,6 @@
 import merge from 'deepmerge'
 import DataLoader from 'dataloader'
-import { Semaphore } from 'async-mutex'
-import type { SemaphoreInterface } from 'async-mutex'
+import { type SemaphoreInterface, Semaphore } from 'async-mutex'
 import sortOn from 'sort-on'
 import {
   combine,
@@ -10,13 +9,18 @@ import {
   okAsync,
   errAsync,
   fromPromise,
+  type Result,
+  type ResultAsync,
+  type ID,
 } from '../shared/kernel'
-import { dynamicVariablesSchema } from '../domain/resource'
-import type { DataQuery } from '../domain/routes'
-import type { Resource, ResourceType } from '../domain/resource'
-import type { Pagination, Data } from '../domain/theming'
-import type { Entities } from '../domain/entity'
-import type { Result, ResultAsync, ID } from '../shared/kernel'
+import {
+  type Resource,
+  type ResourceType,
+  dynamicVariablesSchema,
+} from '../domain/resource'
+import { type DataQuery } from '../domain/routes'
+import { type Pagination, type Data } from '../domain/theming'
+import { type Entities } from '../domain/entity'
 import { assertUnreachable, removeNullish, do_ } from '../shared/utils'
 import repository from '../repository'
 import * as api from '../api'

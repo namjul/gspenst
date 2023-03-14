@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { ComponentType } from 'react'
-import type { LiteralUnion } from 'type-fest'
+import  { type LiteralUnion } from 'type-fest'
 
 export const components = {
   MdxTheme: dynamic(() => import('gspenst/components/MdxTheme')),

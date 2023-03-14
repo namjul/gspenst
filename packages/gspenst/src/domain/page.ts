@@ -1,8 +1,7 @@
-import { z } from '../shared/kernel'
+import { z, type Result } from '../shared/kernel'
 import { parse } from '../helpers/parser'
-import type { Result } from '../shared/kernel'
-import type { PageNodeFragment } from '../../.tina/__generated__/types'
-import type { RoutingMapping } from '../helpers/getPageMap'
+import { type PageNodeFragment } from '../../.tina/__generated__/types'
+import { type RoutingMapping } from '../helpers/getPageMap'
 import { postSchema, postNormalizedSchema, createPost } from './post'
 
 export const pageSchema = postSchema.merge(

@@ -1,10 +1,19 @@
-import { ok, err, combine, idSchema } from './shared/kernel'
-import type { ResultAsync, Result } from './shared/kernel'
+import {
+  type ResultAsync,
+  type Result,
+  ok,
+  err,
+  combine,
+  idSchema,
+} from './shared/kernel'
 import * as db from './db'
-import type { Resource } from './domain/resource'
-import type { RoutesConfig, DataQueryBrowse } from './domain/routes'
-import { getCollections, getRoutes } from './domain/routes'
-import { createResource } from './domain/resource'
+import {
+  type RoutesConfig,
+  type DataQueryBrowse,
+  getCollections,
+  getRoutes,
+} from './domain/routes'
+import { createResource, type Resource } from './domain/resource'
 import { createPost } from './domain/post'
 import { createPage } from './domain/page'
 import { createAuthor } from './domain/author'

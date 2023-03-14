@@ -1,4 +1,4 @@
-import type { RoutingContext } from '../domain/routing'
+import  { type RoutingContext } from '../domain/routing'
 import { assertUnreachable } from '../shared/utils'
 
 export function getTemplateHierarchy(routingContext: RoutingContext) {
