@@ -91,12 +91,12 @@ class CollectionRouter extends ParentRouter {
           )
         : 0
 
-    console.log(
-      'CollectionRouter#resolvePaths#pages',
-      postResources.length,
-      this.config.limit,
-      pages
-    )
+    // console.log(
+    //   'CollectionRouter#resolvePaths#pages',
+    //   postResources.length,
+    //   this.config.limit,
+    //   pages
+    // )
 
     const paths = [this.getRoute()]
       .concat(
