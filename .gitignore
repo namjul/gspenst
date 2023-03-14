@@ -2,9 +2,14 @@
 
 # Dependencies
 node_modules
-# Yarn
+
+# package managers
 .pnp/
 .pnp.js
+*-lock.json
+.yarn
+.pnp.js
+.yarnrc.yml
 
 # Optional npm cache directory
 .npm
@@ -23,6 +28,16 @@ node_modules
 
 # production
 dist
+out
+lib
+
+# Tinacms artifacts
+#**/.tina/__generated__/
+__generated__/
+!__generated__/__mocks__
+
+# nextjs
+.next
 
 # Mac files
 .DS_Store
