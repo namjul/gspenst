@@ -1,7 +1,7 @@
 import path from 'path'
 import fse from 'fs-extra'
 import withPreconstruct from '@preconstruct/next'
-import  { type Configuration } from 'webpack'
+import  { type Configuration } from 'webpack'  // eslint-disable-line import/no-extraneous-dependencies
 import  { type NextConfig } from 'next'
 import { parseEnv, Errors } from 'gspenst'
 import { log } from './logger'
