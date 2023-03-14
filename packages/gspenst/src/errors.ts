@@ -1,4 +1,4 @@
-import { z } from './shared/kernel'
+import { z, type Entries } from './shared/kernel'
 import { do_, assertUnreachable as absurd_ } from './shared/utils'
 
 export type GspenstError =
@@ -66,14 +66,10 @@ export function format(errors: GspenstError | GspenstError[]) {
       case 'Parse': {
         const cause = do_(() => {
           if (error.error instanceof z.ZodError) {
-            return Object.entries(error.error.format()).flatMap(
+            const formatedErrors = error.error.format()
+            return (Object.entries(formatedErrors) as Entries<typeof formatedErrors>).flatMap(
               ([name, value]) => {
-                if ('_errors' in value) {
-                  //@ts-expect-error --- Property '_errors' does not exist on type 'string[]'.
-                  const x = value._errors as string[]
-                  return `${name}: ${x.join(', ')}\n`
-                }
-                return []
+                return `${name}: ${value.join(', ')}\n`
               }
             )
           }
