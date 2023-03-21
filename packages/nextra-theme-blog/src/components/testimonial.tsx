@@ -1,4 +1,4 @@
-import { type TinaTemplate } from 'gspenst'
+import { type Template } from 'gspenst'
 
 export const BlockQuote = ({
   quote,
@@ -15,7 +15,7 @@ export const BlockQuote = ({
   )
 }
 
-export const testimonialBlockSchema: TinaTemplate = {
+export const testimonialBlockSchema: Template = {
   name: 'BlockQuote',
   label: 'Block Quote',
   fields: [

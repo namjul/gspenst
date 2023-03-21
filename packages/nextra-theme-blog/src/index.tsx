@@ -1,6 +1,6 @@
-import withLayout from 'nextra-theme-blog' // TODO replace with custom solution to not depend on it OR replace preconstruct with turbopack
+import withLayout from 'nextra-theme-blog'
 import { type Root } from 'gspenst'
-import { type PageOpt } from 'nextra'
+import { type PageOpts, type PageMapItem } from 'nextra'
 import { useStore, selectData, selectConfig } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import { useMDXComponents } from '@mdx-js/react'
@@ -29,7 +29,7 @@ const MdxTheme = (props: { content: Root | undefined }) => {
 }
 
 const createTheme = (_config: NextraBlogTheme) => {
-  const config: NextraBlogTheme = {
+  const themeConfig: NextraBlogTheme = {
     ...defaultConfig,
     ..._config,
   }
@@ -59,9 +59,10 @@ const createTheme = (_config: NextraBlogTheme) => {
       }
     })()
 
-    const postsPageMap = postResources.flatMap((post) =>
+    const postsPageMap: PageMapItem[] = postResources.flatMap((post) =>
       post.type === 'post'
         ? {
+            kind: 'MdxPage',
             name: post.title || post.slug || 'Untitled', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
             route: post.path,
             frontMatter: {
@@ -74,9 +75,10 @@ const createTheme = (_config: NextraBlogTheme) => {
         : []
     )
 
-    const indexPageMap = state.pageMap.flatMap((page) => {
+    const indexPageMap: PageMapItem[] = state.pageMap.flatMap((page) => {
       if (['collection', 'channel', 'custom'].includes(page.type)) {
         return {
+          kind: 'MdxPage',
           name: page.name,
           route: page.route,
           frontMatter: {
@@ -89,10 +91,10 @@ const createTheme = (_config: NextraBlogTheme) => {
 
     const hasH1 = !!entryResource?.hasH1
 
-    const pageOptions: PageOpt = {
-      filename: 'empty',
+    const pageOpts: PageOpts = {
+      filePath: 'empty',
       route,
-      meta: {
+      frontMatter: {
         type: (() => {
           if (context?.includes('index')) {
             return 'posts'
@@ -114,6 +116,7 @@ const createTheme = (_config: NextraBlogTheme) => {
         ...state.pageMap.flatMap((page) => {
           if (page.resourceType === 'page') {
             return {
+              kind: 'MdxPage' as const,
               name: page.name,
               route: page.route,
               frontMatter: { type: page.resourceType },
@@ -122,7 +125,7 @@ const createTheme = (_config: NextraBlogTheme) => {
           return []
         }),
       ],
-      titleText: hasH1 ? null : entryResource?.title ?? null,
+      title: entryResource?.title ?? '',
       headings:
         entryResource?.headings.map((heading) => {
           const depth = (() => {
@@ -145,35 +148,29 @@ const createTheme = (_config: NextraBlogTheme) => {
             }
           })()
           return {
-            type: 'heading',
-            children: heading.children, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
             depth,
             value: heading.value,
+            id: '',
           }
         }) ?? [],
-      hasH1,
+      hasJsxInH1: hasH1,
     }
 
-    // eslint-disable-next-line
-    const NextraThemeBlog = withLayout(
-      pageOptions,
-      config
-    ) as React.ComponentType & {
-      getLayout?: (page: React.ReactNode) => React.ReactNode
-    }
+    const children = entryResource?.content ? (
+      <MdxTheme content={entryResource.content} />
+    ) : (
+      ''
+    )
+    const nextraThemeBlog = withLayout({
+      pageOpts,
+      themeConfig,
+      children,
+      pageProps: {},
+    })
 
-    const getLayout =
-      NextraThemeBlog.getLayout ?? ((page: React.ReactNode) => page)
-
-    return getLayout(
+    return (
       <>
-        <NextraThemeBlog>
-          {entryResource?.content ? (
-            <MdxTheme content={entryResource.content} />
-          ) : (
-            ''
-          )}
-        </NextraThemeBlog>
+        {nextraThemeBlog}
         <pre>{JSON.stringify(state, null, 2)}</pre>
       </>
     )

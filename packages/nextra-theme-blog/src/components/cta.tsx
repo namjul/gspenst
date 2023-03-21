@@ -1,10 +1,10 @@
-import { type TinaTemplate } from 'gspenst'
+import { type Template } from 'gspenst'
 
 export const Cta = ({ heading }: { heading: string }) => {
   return <div>{heading}</div>
 }
 
-export const ctaBlockSchema: TinaTemplate = {
+export const ctaBlockSchema: Template = {
   name: 'Cta',
   label: 'Call to Action',
   fields: [

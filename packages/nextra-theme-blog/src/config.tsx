@@ -1,4 +1,4 @@
-import { type TinaField } from 'gspenst'
+import { type SchemaField } from 'gspenst'
 import { type ConfigPartsFragment } from '../.tina/__generated__/types'
 
 export type NextraBlogTheme = {
@@ -36,7 +36,7 @@ export const defaultConfig = {
   postFooter: null,
 }
 
-export const fields: TinaField[] = [
+export const fields: SchemaField[] = [
   {
     type: 'boolean',
     label: 'Dark Mode',
