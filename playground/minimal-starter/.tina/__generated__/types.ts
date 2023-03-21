@@ -229,19 +229,21 @@ export type DocumentNode = Config | Page | Post | Author | Tag;
 
 export type Config = Node & Document & {
   __typename?: 'Config';
-  darkMode?: Maybe<Scalars['Boolean']>;
+  Placeholder?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   _sys: SystemInfo;
   _values: Scalars['JSON'];
 };
 
-export type BooleanFilter = {
-  eq?: InputMaybe<Scalars['Boolean']>;
+export type StringFilter = {
+  startsWith?: InputMaybe<Scalars['String']>;
+  eq?: InputMaybe<Scalars['String']>;
   exists?: InputMaybe<Scalars['Boolean']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type ConfigFilter = {
-  darkMode?: InputMaybe<BooleanFilter>;
+  Placeholder?: InputMaybe<StringFilter>;
 };
 
 export type ConfigConnectionEdges = {
@@ -288,13 +290,6 @@ export type Page = Node & Document & {
 export type DatetimeFilter = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  eq?: InputMaybe<Scalars['String']>;
-  exists?: InputMaybe<Scalars['Boolean']>;
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-};
-
-export type StringFilter = {
-  startsWith?: InputMaybe<Scalars['String']>;
   eq?: InputMaybe<Scalars['String']>;
   exists?: InputMaybe<Scalars['Boolean']>;
   in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
@@ -519,7 +514,7 @@ export type MutationAddPendingDocumentArgs = {
 export type MutationUpdateDocumentArgs = {
   collection?: InputMaybe<Scalars['String']>;
   relativePath: Scalars['String'];
-  params: DocumentMutation;
+  params: DocumentUpdateMutation;
 };
 
 
@@ -595,6 +590,15 @@ export type MutationCreateTagArgs = {
   params: TagMutation;
 };
 
+export type DocumentUpdateMutation = {
+  config?: InputMaybe<ConfigMutation>;
+  page?: InputMaybe<PageMutation>;
+  post?: InputMaybe<PostMutation>;
+  author?: InputMaybe<AuthorMutation>;
+  tag?: InputMaybe<TagMutation>;
+  relativePath?: InputMaybe<Scalars['String']>;
+};
+
 export type DocumentMutation = {
   config?: InputMaybe<ConfigMutation>;
   page?: InputMaybe<PageMutation>;
@@ -604,7 +608,7 @@ export type DocumentMutation = {
 };
 
 export type ConfigMutation = {
-  darkMode?: InputMaybe<Scalars['Boolean']>;
+  Placeholder?: InputMaybe<Scalars['String']>;
 };
 
 export type PageAuthorsMutation = {
@@ -655,7 +659,7 @@ export type TagMutation = {
   slug?: InputMaybe<Scalars['String']>;
 };
 
-export type ConfigPartsFragment = { __typename?: 'Config', darkMode?: boolean | null };
+export type ConfigPartsFragment = { __typename?: 'Config', Placeholder?: string | null };
 
 export type PagePartsFragment = { __typename?: 'Page', date?: string | null, slug?: string | null, title?: string | null, excerpt?: string | null, content?: any | null, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null };
 
@@ -670,7 +674,7 @@ export type ConfigQueryVariables = Exact<{
 }>;
 
 
-export type ConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type ConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', id: string, Placeholder?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type ConfigConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']>;
@@ -682,7 +686,7 @@ export type ConfigConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ConfigConnectionQuery = { __typename?: 'Query', configConnection: { __typename?: 'ConfigConnection', totalCount: number, edges?: Array<{ __typename?: 'ConfigConnectionEdges', node?: { __typename?: 'Config', id: string, darkMode?: boolean | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type ConfigConnectionQuery = { __typename?: 'Query', configConnection: { __typename?: 'ConfigConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ConfigConnectionEdges', cursor: string, node?: { __typename?: 'Config', id: string, Placeholder?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export type PageQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -701,7 +705,7 @@ export type PageConnectionQueryVariables = Exact<{
 }>;
 
 
-export type PageConnectionQuery = { __typename?: 'Query', pageConnection: { __typename?: 'PageConnection', totalCount: number, edges?: Array<{ __typename?: 'PageConnectionEdges', node?: { __typename?: 'Page', id: string, date?: string | null, slug?: string | null, title?: string | null, excerpt?: string | null, content?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null } | null } | null> | null } };
+export type PageConnectionQuery = { __typename?: 'Query', pageConnection: { __typename?: 'PageConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'PageConnectionEdges', cursor: string, node?: { __typename?: 'Page', id: string, date?: string | null, slug?: string | null, title?: string | null, excerpt?: string | null, content?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, authors?: Array<{ __typename: 'PageAuthors', author?: { __typename?: 'Author', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null, tags?: Array<{ __typename: 'PageTags', tag?: { __typename?: 'Tag', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null } | null } | null> | null } };
 
 export type PostQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -720,7 +724,7 @@ export type PostConnectionQueryVariables = Exact<{
 }>;
 
 
-export type PostConnectionQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, edges?: Array<{ __typename?: 'PostConnectionEdges', node?: { __typename?: 'Post', id: string, date?: string | null, slug?: string | null, title?: string | null, excerpt?: string | null, content?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null } | null } | null> | null } };
+export type PostConnectionQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'PostConnectionEdges', cursor: string, node?: { __typename?: 'Post', id: string, date?: string | null, slug?: string | null, title?: string | null, excerpt?: string | null, content?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string }, authors?: Array<{ __typename: 'PostAuthors', author?: { __typename?: 'Author', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null, tags?: Array<{ __typename: 'PostTags', tag?: { __typename?: 'Tag', name?: string | null, date?: string | null, slug?: string | null, id: string } | null } | null> | null } | null } | null> | null } };
 
 export type AuthorQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -739,7 +743,7 @@ export type AuthorConnectionQueryVariables = Exact<{
 }>;
 
 
-export type AuthorConnectionQuery = { __typename?: 'Query', authorConnection: { __typename?: 'AuthorConnection', totalCount: number, edges?: Array<{ __typename?: 'AuthorConnectionEdges', node?: { __typename?: 'Author', id: string, name?: string | null, date?: string | null, slug?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type AuthorConnectionQuery = { __typename?: 'Query', authorConnection: { __typename?: 'AuthorConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'AuthorConnectionEdges', cursor: string, node?: { __typename?: 'Author', id: string, name?: string | null, date?: string | null, slug?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export type TagQueryVariables = Exact<{
   relativePath: Scalars['String'];
@@ -758,11 +762,11 @@ export type TagConnectionQueryVariables = Exact<{
 }>;
 
 
-export type TagConnectionQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, edges?: Array<{ __typename?: 'TagConnectionEdges', node?: { __typename?: 'Tag', id: string, name?: string | null, date?: string | null, slug?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type TagConnectionQuery = { __typename?: 'Query', tagConnection: { __typename?: 'TagConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'TagConnectionEdges', cursor: string, node?: { __typename?: 'Tag', id: string, name?: string | null, date?: string | null, slug?: string | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export const ConfigPartsFragmentDoc = gql`
     fragment ConfigParts on Config {
-  darkMode
+  Placeholder
 }
     `;
 export const PagePartsFragmentDoc = gql`
@@ -877,8 +881,15 @@ export const ConfigConnectionDocument = gql`
     sort: $sort
     filter: $filter
   ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
     totalCount
     edges {
+      cursor
       node {
         ... on Document {
           _sys {
@@ -925,8 +936,15 @@ export const PageConnectionDocument = gql`
     sort: $sort
     filter: $filter
   ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
     totalCount
     edges {
+      cursor
       node {
         ... on Document {
           _sys {
@@ -973,8 +991,15 @@ export const PostConnectionDocument = gql`
     sort: $sort
     filter: $filter
   ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
     totalCount
     edges {
+      cursor
       node {
         ... on Document {
           _sys {
@@ -1021,8 +1046,15 @@ export const AuthorConnectionDocument = gql`
     sort: $sort
     filter: $filter
   ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
     totalCount
     edges {
+      cursor
       node {
         ... on Document {
           _sys {
@@ -1069,8 +1101,15 @@ export const TagConnectionDocument = gql`
     sort: $sort
     filter: $filter
   ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
     totalCount
     edges {
+      cursor
       node {
         ... on Document {
           _sys {
