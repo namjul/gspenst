@@ -3,7 +3,7 @@ import {
   /*DateFieldPlugin, */
   type Collection,
   // type Template,
-  type SchemaField,
+  type TinaField,
   type Schema,
 } from 'tinacms'
 // import slugify from 'slugify'
@@ -21,7 +21,7 @@ export type {
   Schema
 }
 const dateFormat = 'YYYY MM DD'
-const commonFields: SchemaField[] = [
+const commonFields: TinaField[] = [
   {
     type: 'datetime',
     label: 'Posted Date',
@@ -85,7 +85,7 @@ const commonFields: SchemaField[] = [
 export function defineSchema(): Schema {
 // templates: Template[] = [],
 // themeFields: SchemaField[] = []
-  const postFields: SchemaField[] = [
+  const postFields: TinaField[] = [
     {
       type: 'string',
       label: 'Title',
@@ -190,7 +190,7 @@ export function defineSchema(): Schema {
     fields: [...commonFields, ...postFields],
   }
 
-  const taxonomyFields = (_type: 'author' | 'tag'): SchemaField[] => [
+  const taxonomyFields = (_type: 'author' | 'tag'): TinaField[] => [
     {
       type: 'string',
       label: 'Name',

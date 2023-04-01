@@ -69,7 +69,8 @@ export function format(errors: GspenstError | GspenstError[]) {
             const formatedErrors = error.error.format()
             return (Object.entries(formatedErrors) as Entries<typeof formatedErrors>).flatMap(
               ([name, value]) => {
-                return `${name}: ${value.join(', ')}\n`
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition --- TODO fix
+                return `${name}: ${value.join?.(', ')}\n`
               }
             )
           }

@@ -4,7 +4,7 @@ import * as Errors from '../errors'
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).optional(),
-  NEXT_PUBLIC_TINA_CLIENT_ID: z.string().nullable(),
+  NEXT_PUBLIC_TINA_CLIENT_ID: z.string().optional(),
   NEXT_PUBLIC_TINA_TOKEN: z.string().optional(),
   NEXT_PUBLIC_TINA_PUBLIC_DIR: z.string().default('public'),
   NEXT_PUBLIC_TINA_MEDIA_ROOT: z.string().default('uploads'),

@@ -1,6 +1,16 @@
 import { defineConfig as _defineConfig } from 'tinacms'
+import { env } from './domain/env'
 import { type Schema } from './tina-schema'
-import { tinaConfig } from './shared/client'
+
+export const tinaConfig = {
+  clientId: env.NEXT_PUBLIC_TINA_CLIENT_ID,
+  branch:
+    process.env.NEXT_PUBLIC_TINA_BRANCH ?? // custom branch env override
+    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? // Vercel branch env
+    process.env.HEAD ??
+    null, // Netlify branch env
+  token: env.NEXT_PUBLIC_TINA_TOKEN!,
+}
 
 type Options = { schema: Schema }
 

@@ -10,6 +10,7 @@
     "components"
   ],
   "scripts": {
+    "gen": "tinacms build --local",
     "build:tinacms": "tinacms build",
     "test:tina": "tinacms audit",
     "lint:types": "tsc --noEmit"
@@ -35,11 +36,11 @@
     "slugify": "^1.6.5",
     "sort-on": "^4.0.0",
     "styled-components": "^5.3.5",
-    "tinacms": "^1.2.2",
+    "tinacms": "^1.4.0",
     "zod": "^3.17.3"
   },
   "devDependencies": {
-    "@tinacms/cli": "^1.2.2",
+    "@tinacms/cli": "^1.4.0",
     "@types/cross-spawn": "^6.0.2",
     "@types/fs-extra": "^9.0.13",
     "@types/mock-fs": "^4.13.1",
