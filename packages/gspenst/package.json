@@ -10,8 +10,8 @@
     "components"
   ],
   "scripts": {
-    "dev": "tinacms dev",
-    "test:tina": "tinacms audit",
+    "dev": "tinacms dev --rootPath src",
+    "test:tina": "tinacms audit --rootPath src",
     "lint:types": "tsc --noEmit"
   },
   "dependencies": {
