@@ -3,7 +3,7 @@ import { env } from './domain/env'
 import { type Schema } from './tina-schema'
 
 export const tinaConfig = {
-  clientId: env.NEXT_PUBLIC_TINA_CLIENT_ID,
+  clientId: env.NEXT_PUBLIC_TINA_CLIENT_ID ?? null,
   branch:
     process.env.NEXT_PUBLIC_TINA_BRANCH ?? // custom branch env override
     process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? // Vercel branch env
