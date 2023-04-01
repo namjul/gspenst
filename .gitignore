@@ -31,11 +31,6 @@ dist
 out
 lib
 
-# Tinacms artifacts
-#**/.tina/__generated__/
-__generated__/
-!__generated__/__mocks__
-
 # nextjs
 .next
 
