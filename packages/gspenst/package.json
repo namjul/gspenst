@@ -10,8 +10,7 @@
     "components"
   ],
   "scripts": {
-    "gen": "tinacms build --local",
-    "build:tinacms": "tinacms build",
+    "dev": "tinacms dev",
     "test:tina": "tinacms audit",
     "lint:types": "tsc --noEmit"
   },
