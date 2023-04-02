@@ -1,12 +1,4 @@
 import path from 'path'
-import {
-  type PostFilter,
-  type PageFilter,
-  type AuthorFilter,
-  type TagFilter,
-  type ThemeConfigNodeFragment as ConfigResourceNode,
-  getSdk,
-} from '../.tina/__generated__/types'
 import * as Errors from './errors'
 import {
   type AsyncReturnType,
@@ -26,6 +18,14 @@ import {
   tagTinaDataSchema,
   configTinaDataSchema,
 } from './domain/resource'
+import {
+  type PostFilter,
+  type PageFilter,
+  type AuthorFilter,
+  type TagFilter,
+  type ThemeConfigNodeFragment as ConfigResourceNode,
+  getSdk,
+} from './.tina/__generated__/types'
 
 type ApiResultAsync<T> = ResultAsync<T>
 type Confify<T> = T & { data: { config?: ConfigResourceNode | undefined } }

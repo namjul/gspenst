@@ -7,7 +7,7 @@ import {
   err,
 } from '../shared/kernel'
 import { parse } from '../helpers/parser'
-import { type AuthorNodeFragment } from '../../.tina/__generated__/types'
+import { type AuthorNodeFragment } from '../.tina/__generated__/types'
 import { type RoutingMapping } from '../helpers/getPageMap'
 
 export const authorSchema = z

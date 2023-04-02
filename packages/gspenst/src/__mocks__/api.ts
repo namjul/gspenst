@@ -4,7 +4,7 @@ import {
   type GetPageQuery,
   type GetAuthorQuery,
   type GetTagQuery,
-} from '../../.tina/__generated__/types'
+} from '../.tina/__generated__/types'
 import {
   type Post,
   type Page,

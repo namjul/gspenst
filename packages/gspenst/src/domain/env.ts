@@ -10,8 +10,6 @@ const envSchema = z.object({
   NEXT_PUBLIC_TINA_MEDIA_ROOT: z.string().default('uploads'),
 })
 
-type EnvVars = z.infer<typeof envSchema>
-
 const envResult = parse(envSchema, {
   NODE_ENV: process.env.NODE_ENV,
   NEXT_PUBLIC_TINA_CLIENT_ID: process.env.NEXT_PUBLIC_TINA_CLIENT_ID,
@@ -36,9 +34,8 @@ export const parseEnv = <T extends z.ZodRawShape>(
 ) => {
   const actualSchema = envSchema.merge(z.object(schema)).refine(
     (value) => {
-      if ('NODE_ENV' in <EnvVars>value) {
-        const { NODE_ENV, NEXT_PUBLIC_TINA_CLIENT_ID, NEXT_PUBLIC_TINA_TOKEN } =
-          <EnvVars>value
+      if ('NODE_ENV' in value) {
+        const { NODE_ENV, NEXT_PUBLIC_TINA_CLIENT_ID, NEXT_PUBLIC_TINA_TOKEN } = value
         if (NODE_ENV === 'production') {
           return !!NEXT_PUBLIC_TINA_CLIENT_ID && !!NEXT_PUBLIC_TINA_TOKEN
         }

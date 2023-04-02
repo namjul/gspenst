@@ -12,7 +12,7 @@ import { parse } from '../helpers/parser'
 import {
   type PostNodeFragment,
   type PageNodeFragment,
-} from '../../.tina/__generated__/types'
+} from '../.tina/__generated__/types'
 import { type RoutingMapping } from '../helpers/getPageMap'
 import { getHeaders } from '../helpers/getHeaders'
 import { authorSchema, createAuthor } from './author'

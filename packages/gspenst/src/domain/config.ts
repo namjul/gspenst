@@ -6,7 +6,7 @@ import {
   z,
 } from '../shared/kernel'
 import { parse } from '../helpers/parser'
-import { type ThemeConfigNodeFragment } from '../../.tina/__generated__/types'
+import { type ThemeConfigNodeFragment } from '../.tina/__generated__/types'
 
 export const configSchema = z
   .object({

@@ -19,7 +19,7 @@ import {
   GetAuthorDocument,
   GetTagDocument,
   GetConfigDocument,
-} from '../../.tina/__generated__/types'
+} from '../.tina/__generated__/types'
 import { type ApiEntity } from '../api'
 import { assertUnreachable, do_ } from '../shared/utils'
 

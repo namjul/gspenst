@@ -1,6 +1,6 @@
 import { z, type Result } from '../shared/kernel'
 import { parse } from '../helpers/parser'
-import { type PageNodeFragment } from '../../.tina/__generated__/types'
+import { type PageNodeFragment } from '../.tina/__generated__/types'
 import { type RoutingMapping } from '../helpers/getPageMap'
 import { postSchema, postNormalizedSchema, createPost } from './post'
 
