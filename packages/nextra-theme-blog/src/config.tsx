@@ -1,5 +1,5 @@
 import { type SchemaField } from 'gspenst'
-import { type ConfigPartsFragment } from '../.tina/__generated__/types'
+// import { type ConfigPartsFragment } from '../.tina/__generated__/types'
 
 export type NextraBlogTheme = {
   readMore?: string
@@ -25,7 +25,7 @@ export type NextraBlogTheme = {
   }[]
 }
 
-export type TinaConfig = ConfigPartsFragment
+export type TinaConfig = Record<string, any>
 
 export const defaultConfig = {
   readMore: 'Read More →',
