@@ -13,17 +13,17 @@
     "lint:types": "tsc --noEmit"
   },
   "dependencies": {
+    "react": "*",
+    "react-dom": "*",
+    "next": ">=13",
+    "gspenst": "*",
     "@gspenst/next": "*",
     "@gspenst/nextra-theme-blog": "*",
     "@next/bundle-analyzer": "^12.2.2",
-    "gspenst": "*",
-    "next": "^12.2.0",
-    "next-bundle-analyzer": "^0.6.4",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "next-bundle-analyzer": "^0.6.4"
   },
   "devDependencies": {
-    "@tinacms/cli": "^1.2.2",
+    "@tinacms/cli": "^1.5.2",
     "eslint-config-next": "12.2.5"
   }
 }
