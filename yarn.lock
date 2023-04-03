@@ -2429,7 +2429,7 @@
   resolved "https://registry.npmjs.org/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@preconstruct/cli@^2.3":
+"@preconstruct/cli@^2.4.3":
   version "2.4.3"
   resolved "https://registry.npmjs.org/@preconstruct/cli/-/cli-2.4.3.tgz#4f2e9513d97d819114ce942ab283db72f8b6560e"
   integrity sha512-f9Yrf9T7sbqN8spoa45rWmWIZsK+BKG34iWjWpSDuJ2Lm8mY9Y+dx7RCYqrFQFUA67IC37unCjhdRbYQq+g8Yg==
