@@ -7,7 +7,14 @@ fi
 PASS=true
 
 echo "Starting linting..."
+
 yarn lint:types
+
+if [ $? -eq 1 ]; then
+  PASS=false
+fi
+
+yarn lint:eslint
 
 if [ $? -eq 1 ]; then
   PASS=false
