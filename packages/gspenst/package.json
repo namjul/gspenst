@@ -36,7 +36,7 @@
     "sort-on": "^4.0.0",
     "styled-components": "^5.3.5",
     "tinacms": "^1.4.0",
-    "zod": "^3.17.3"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@tinacms/cli": "^1.5.2",
