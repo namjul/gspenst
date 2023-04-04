@@ -38,8 +38,8 @@ export const routerManager = (routesConfig: RoutesConfig) => {
    */
 
   // 1.
-  // const adminRouter = new AdminRouter()
-  // routers.push(adminRouter)
+  const adminRouter = new AdminRouter()
+  routers.push(adminRouter)
 
   // 2.
   getRoutes(config).forEach(([key, value]) => {
