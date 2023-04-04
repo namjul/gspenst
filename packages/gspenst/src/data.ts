@@ -191,8 +191,8 @@ const withData = (Component: ThemeComponent, { pageMap }: WithDataOptions) => {
 
   function HOC(props: ThemeContext) {
     if (props.context === 'internal') {
-      console.log(pageMap, props);
-      
+      console.log(pageMap, props)
+
       return React.createElement('div', {}, 'internal')
     } else {
       return React.createElement(DataProvider, {
@@ -207,7 +207,7 @@ const withData = (Component: ThemeComponent, { pageMap }: WithDataOptions) => {
   HOC.displayName = `withData(${
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     Component.displayName || Component.name || 'Component'
-    })`
+  })`
 
   return HOC
 }

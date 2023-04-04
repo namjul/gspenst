@@ -9,18 +9,18 @@
     "dev": "tinacms dev -c \"next dev\"",
     "export": "GSPENST_STATIC_EXPORT=true npm run build && next export",
     "lint": "next lint",
-    "start": "tinacms build && next start",
-    "lint:types": "tsc --noEmit"
+    "lint:types": "tsc --noEmit",
+    "start": "tinacms build && next start"
   },
   "dependencies": {
-    "react": "*",
-    "react-dom": "*",
-    "next": ">=13",
-    "gspenst": "*",
     "@gspenst/next": "*",
     "@gspenst/nextra-theme-blog": "*",
     "@next/bundle-analyzer": "^12.2.2",
-    "next-bundle-analyzer": "^0.6.4"
+    "gspenst": "*",
+    "next": ">=13",
+    "next-bundle-analyzer": "^0.6.4",
+    "react": "*",
+    "react-dom": "*"
   },
   "devDependencies": {
     "@tinacms/cli": "^1.5.2",

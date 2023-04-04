@@ -67,12 +67,12 @@ export function format(errors: GspenstError | GspenstError[]) {
         const cause = do_(() => {
           if (error.error instanceof z.ZodError) {
             const formatedErrors = error.error.format()
-            return (Object.entries(formatedErrors) as Entries<typeof formatedErrors>).flatMap(
-              ([name, value]) => {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition --- TODO fix
-                return `${name}: ${value.join?.(', ')}\n`
-              }
-            )
+            return (
+              Object.entries(formatedErrors) as Entries<typeof formatedErrors>
+            ).flatMap(([name, value]) => {
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition --- TODO fix
+              return `${name}: ${value.join?.(', ')}\n`
+            })
           }
 
           return error.error.message

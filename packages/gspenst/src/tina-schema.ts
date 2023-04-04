@@ -17,9 +17,7 @@ import {
 //   data: { tinaField: SchemaField }
 // }
 
-export type {
-  Schema
-}
+export type { Schema }
 const dateFormat = 'YYYY MM DD'
 const commonFields: TinaField[] = [
   {
@@ -83,8 +81,8 @@ const commonFields: TinaField[] = [
 ]
 
 export function defineSchema(): Schema {
-// templates: Template[] = [],
-// themeFields: SchemaField[] = []
+  // templates: Template[] = [],
+  // themeFields: SchemaField[] = []
   const postFields: TinaField[] = [
     {
       type: 'string',

@@ -1,8 +1,7 @@
 import { createClient } from 'tinacms/dist/client'
 import { env } from '../domain/env'
-import { tinaConfig } from "../tina-config";
+import { tinaConfig } from '../tina-config'
 import { queries } from '../.tina/__generated__/types'
-
 
 const { branch, clientId, token } = tinaConfig
 
