@@ -28,24 +28,24 @@ if (envResult.isErr()) {
 
 export const env = envResult.value
 
-export const parseEnv = <T extends z.ZodRawShape>(
-  input: unknown,
-  schema: T
-) => {
-  const actualSchema = envSchema.merge(z.object(schema)).refine(
-    (value) => {
-      if ('NODE_ENV' in value) {
-        const { NODE_ENV, NEXT_PUBLIC_TINA_CLIENT_ID, NEXT_PUBLIC_TINA_TOKEN } = value
-        if (NODE_ENV === 'production') {
-          return !!NEXT_PUBLIC_TINA_CLIENT_ID && !!NEXT_PUBLIC_TINA_TOKEN
-        }
-      }
-      return true
-    },
-    {
-      message:
-        'production environment requires NEXT_PUBLIC_TINA_CLIENT_ID to be set. See https://tina.io/docs/tina-cloud/connecting-site/',
-    }
-  )
-  return parse(actualSchema, input)
-}
+// export const parseEnv = <T extends z.ZodRawShape>(
+//   input: unknown,
+//   schema: T
+// ) => {
+//   const actualSchema = envSchema.merge(z.object(schema)).refine(
+//     (value) => {
+//       if ('NODE_ENV' in value) {
+//         const { NODE_ENV, NEXT_PUBLIC_TINA_CLIENT_ID, NEXT_PUBLIC_TINA_TOKEN } = value
+//         if (NODE_ENV === 'production') {
+//           return !!NEXT_PUBLIC_TINA_CLIENT_ID && !!NEXT_PUBLIC_TINA_TOKEN
+//         }
+//       }
+//       return true
+//     },
+//     {
+//       message:
+//         'production environment requires NEXT_PUBLIC_TINA_CLIENT_ID to be set. See https://tina.io/docs/tina-cloud/connecting-site/',
+//     }
+//   )
+//   return parse(actualSchema, input)
+// }

@@ -3,7 +3,7 @@ import fse from 'fs-extra'
 import withPreconstruct from '@preconstruct/next'
 import { type Configuration } from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
 import { type NextConfig } from 'next'
-import { parseEnv, Errors } from 'gspenst'
+import { env } from 'gspenst'
 import { log } from './logger'
 import { type LoaderOptions } from './loader'
 import {
@@ -12,18 +12,6 @@ import {
   YAML_EXTENSIONS,
 } from './constants'
 // import { GspenstPlugin } from './plugin'
-
-const envResult = parseEnv(process.env, {})
-
-if (envResult.isErr()) {
-  console.error(
-    '❌ Invalid environment variables:\n',
-    Errors.format(envResult.error)
-  )
-  process.exit(1)
-}
-
-const env = envResult.value
 
 const mediaDir = path.join(
   process.cwd(),
