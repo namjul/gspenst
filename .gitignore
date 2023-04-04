@@ -32,6 +32,12 @@ out
 lib
 *.tsbuildinfo
 
+#**/.tina/__generated__/
+# tinacms
+**/__generated__/*
+!__generated__/__mocks__
+**/public/admin/*
+
 # nextjs
 .next
 
