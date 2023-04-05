@@ -7,7 +7,7 @@
     "build": "tinacms build && next build",
     "debug": "NODE_OPTIONS='--inspect' npm dev",
     "dev": "tinacms dev -c \"next dev\"",
-    "export": "GSPENST_STATIC_EXPORT=true npm run build && next export",
+    "export": "npm run build && next export",
     "lint": "next lint",
     "lint:types": "tsc --noEmit",
     "start": "tinacms build && next start"
