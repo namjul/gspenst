@@ -7,7 +7,7 @@ const { branch, clientId, token } = tinaConfig
 
 const apiURL =
   env.NODE_ENV === 'production'
-    ? `https://content.tinajs.io/content/${clientId}/github/${branch}`
+    ? `https://content.tinajs.io/1.4/content/${clientId}/github/${branch}`
     : 'http://localhost:4001/graphql'
 
 export const client = createClient({
