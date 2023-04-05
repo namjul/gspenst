@@ -6,7 +6,6 @@ node_modules
 # package managers
 .pnp/
 .pnp.js
-*-lock.json
 .yarn
 .pnp.js
 .yarnrc.yml
