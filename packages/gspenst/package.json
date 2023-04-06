@@ -3,6 +3,25 @@
   "version": "0.0.6",
   "main": "dist/gspenst.cjs.js",
   "module": "dist/gspenst.esm.js",
+  "exports": {
+    "./data": {
+      "module": "./data/dist/gspenst-data.esm.js",
+      "default": "./data/dist/gspenst-data.cjs.js"
+    },
+    ".": {
+      "module": "./dist/gspenst.esm.js",
+      "default": "./dist/gspenst.cjs.js"
+    },
+    "./server": {
+      "module": "./server/dist/gspenst-server.esm.js",
+      "default": "./server/dist/gspenst-server.cjs.js"
+    },
+    "./components/MdxTheme": {
+      "module": "./components/MdxTheme/dist/gspenst-components-MdxTheme.esm.js",
+      "default": "./components/MdxTheme/dist/gspenst-components-MdxTheme.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist",
     "server",

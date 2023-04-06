@@ -3,6 +3,18 @@
   "version": "0.0.6",
   "main": "dist/gspenst-nextra-theme-blog.cjs.js",
   "module": "dist/gspenst-nextra-theme-blog.esm.js",
+  "exports": {
+    ".": {
+      "module": "./dist/gspenst-nextra-theme-blog.esm.js",
+      "default": "./dist/gspenst-nextra-theme-blog.cjs.js"
+    },
+    "./schema": {
+      "module": "./schema/dist/gspenst-nextra-theme-blog-schema.esm.js",
+      "default": "./schema/dist/gspenst-nextra-theme-blog-schema.cjs.js"
+    },
+    "./package.json": "./package.json",
+    "./style.css": "./style.css"
+  },
   "files": [
     "dist",
     "schema"
@@ -27,6 +39,11 @@
     "entrypoints": [
       "index.tsx",
       "schema.ts"
-    ]
+    ],
+    "exports": {
+      "extra": {
+        "./style.css": "./style.css"
+      }
+    }
   }
 }

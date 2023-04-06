@@ -3,6 +3,21 @@
   "version": "0.0.6",
   "main": "dist/gspenst-next.cjs.js",
   "module": "dist/gspenst-next.esm.js",
+  "exports": {
+    ".": {
+      "module": "./dist/gspenst-next.esm.js",
+      "default": "./dist/gspenst-next.cjs.js"
+    },
+    "./loader": {
+      "module": "./loader/dist/gspenst-next-loader.esm.js",
+      "default": "./loader/dist/gspenst-next-loader.cjs.js"
+    },
+    "./componentRegistry": {
+      "module": "./componentRegistry/dist/gspenst-next-componentRegistry.esm.js",
+      "default": "./componentRegistry/dist/gspenst-next-componentRegistry.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist",
     "loader",
