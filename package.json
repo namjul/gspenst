@@ -4,7 +4,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "playground/*"
+    "examples/*"
   ],
   "scripts": {
     "build": "preconstruct build",

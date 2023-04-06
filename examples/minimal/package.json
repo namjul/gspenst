@@ -1,5 +1,5 @@
 {
-  "name": "@gspenst/blog-starter",
+  "name": "minimal",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,13 +14,13 @@
   },
   "dependencies": {
     "@gspenst/next": "*",
-    "@gspenst/nextra-theme-blog": "*",
     "@next/bundle-analyzer": "^12.2.2",
     "gspenst": "*",
     "next": ">=13",
     "next-bundle-analyzer": "^0.6.4",
     "react": "*",
-    "react-dom": "*"
+    "react-dom": "*",
+    "react-json-view": "^1.21.3"
   },
   "devDependencies": {
     "@tinacms/cli": "^1.5.2",
