@@ -110,7 +110,7 @@ const routingParameter = '${routingParameter}'
 const isStaticHTMLExport = ${options.isStaticHTMLExport}
 const isBuildPhase = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
 
-export const getStaticPaths = async () => {
+export const getStaticPaths = async () => { 
   return {
     paths: getPaths({ routesConfig, resources }),
     fallback: isStaticHTMLExport ? false : 'blocking',
@@ -121,16 +121,10 @@ export const getStaticProps = async ({ params }) => {
 
   const propsResult = await getProps({ routesConfig, resources, isBuildPhase }, params?.[routingParameter])
 
-  console.log("propsResult", JSON.stringify(propsResult, null, 2))
-
   if (propsResult.isOk()) {
     const result = await propsResult.value
     if ('redirect' in result && !isStaticExport) {
       return { redirect: result.redirect }
-    } else {
-      return {
-        notFound: true,
-      }
     }
 
     if (result.props.isErr()) {
@@ -142,7 +136,7 @@ export const getStaticProps = async ({ params }) => {
       throw Errors.format(result.props.error)
     }
 
-    return { props: result.props.value, revalidate: 10 }
+    return { props: result.props.value, ...(isStaticHTMLExport ? {} : { revalidate: 10 }) }
   }
 
   throw Errors.format(propsResult.error)
