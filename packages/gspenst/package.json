@@ -1,8 +1,6 @@
 {
   "name": "gspenst",
   "version": "0.0.6",
-  "main": "dist/gspenst.cjs.js",
-  "module": "dist/gspenst.esm.js",
   "exports": {
     "./data": {
       "module": "./data/dist/gspenst-data.esm.js",
@@ -22,6 +20,8 @@
     },
     "./package.json": "./package.json"
   },
+  "main": "dist/gspenst.cjs.js",
+  "module": "dist/gspenst.esm.js",
   "files": [
     "dist",
     "server",
@@ -45,7 +45,7 @@
     "filter-obj": "^2.0.0",
     "fnv1a": "^1.0.0",
     "fs-extra": "^10.0.0",
-    "graphql": "^15.1.0",
+    "graphql": "^16.6.0",
     "ioredis": "^5.0.3",
     "neverthrow": "^4.3.1",
     "normalizr": "^3.6.2",
