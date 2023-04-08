@@ -12,6 +12,8 @@ import { PARAM_REGEX, IS_PRODUCTION } from './constants'
 export type LoaderOptions = {
   theme: string
   themeConfig?: string
+  isServer: boolean
+  isStaticHTMLExport: boolean
 }
 
 const contentDir = path.resolve(findContentDir())
@@ -105,22 +107,30 @@ export default function GspenstLayout (props) {
 const resources = ${JSON.stringify(resources)}
 const routesConfig = ${routesConfigStringified}
 const routingParameter = '${routingParameter}'
-const isStaticExport = process.env.NEXT_PHASE === PHASE_EXPORT
+const isStaticHTMLExport = ${options.isStaticHTMLExport}
 const isBuildPhase = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
 
 export const getStaticPaths = async () => {
   return {
     paths: getPaths({ routesConfig, resources }),
-    fallback: isStaticExport ? false : 'blocking',
+    fallback: isStaticHTMLExport ? false : 'blocking',
   }
 }
 
 export const getStaticProps = async ({ params }) => {
+
   const propsResult = await getProps({ routesConfig, resources, isBuildPhase }, params?.[routingParameter])
+
+  console.log("propsResult", JSON.stringify(propsResult, null, 2))
+
   if (propsResult.isOk()) {
     const result = await propsResult.value
-    if ('redirect' in result) {
+    if ('redirect' in result && !isStaticExport) {
       return { redirect: result.redirect }
+    } else {
+      return {
+        notFound: true,
+      }
     }
 
     if (result.props.isErr()) {
@@ -134,6 +144,7 @@ export const getStaticProps = async ({ params }) => {
 
     return { props: result.props.value, revalidate: 10 }
   }
+
   throw Errors.format(propsResult.error)
 }
 `

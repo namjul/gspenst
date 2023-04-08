@@ -7,5 +7,6 @@ export default withNextBundleAnalyzer({
 })(
   withGspenst.default('./theme')({
     productionBrowserSourceMaps: true,
+    output: 'export',
   })
 )

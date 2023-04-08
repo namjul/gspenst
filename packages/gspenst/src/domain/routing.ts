@@ -8,7 +8,6 @@ export const routeTypeChannel = z.literal('channel')
 export const routeTypeCollection = z.literal('collection')
 export const routeTypeCustom = z.literal('custom')
 export const routeTypeRedirect = z.literal('redirect')
-export const routeTypeInternal = z.literal('internal')
 
 export const routeTypes = [
   routeTypeEntry.value,
@@ -16,7 +15,6 @@ export const routeTypes = [
   routeTypeCollection.value,
   routeTypeCustom.value,
   routeTypeRedirect.value,
-  routeTypeInternal.value,
 ]
 
 export const routeTypesSchema = z.union([
@@ -25,7 +23,6 @@ export const routeTypesSchema = z.union([
   routeTypeCollection,
   routeTypeCustom,
   routeTypeRedirect,
-  routeTypeInternal,
 ])
 
 export type RouteType = z.infer<typeof routeTypesSchema>
@@ -120,7 +117,6 @@ const routingContextSchema = z.discriminatedUnion('type', [
   entryRoutingContextSchema,
   customRoutingContextSchema,
   redirectRoutingContextSchema,
-  z.object({ type: routeTypeInternal }),
 ])
 
 routingContextSchema.describe('routingContextSchema')

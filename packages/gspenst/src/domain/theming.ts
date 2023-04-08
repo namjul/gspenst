@@ -38,7 +38,7 @@ const dataSchema = z.discriminatedUnion('type', [
 
 export type Data = z.infer<typeof dataSchema>
 
-const pageThemeContextSchema = z
+export const themeContextSchema = z
   .object({
     // TODO merge context and templates into single field
     templates: z.array(z.string()),
@@ -49,17 +49,5 @@ const pageThemeContextSchema = z
     route: pathSchema,
   })
   .strict()
-
-export type PageThemeContext = z.infer<typeof pageThemeContextSchema>
-
-const internalThemeContextSchema = z.object({
-  context: z.literal('internal'),
-})
-
-// TODO rename file to themeContext?
-export const themeContextSchema = z.union([
-  pageThemeContextSchema,
-  internalThemeContextSchema,
-])
 
 export type ThemeContext = z.infer<typeof themeContextSchema>

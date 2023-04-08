@@ -50,8 +50,6 @@ export function getTemplateHierarchy(routingContext: RoutingContext) {
       // TODO add customTemplate
 
       return templateList
-    case 'internal':
-      throw new Error('Should not reach this part.')
     case 'redirect':
       throw new Error('Should not reach this part.')
 

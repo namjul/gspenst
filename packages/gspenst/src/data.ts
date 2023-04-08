@@ -2,7 +2,7 @@ import merge from 'deepmerge'
 import React, { createContext, useContext, useEffect } from 'react'
 import { useTina } from 'tinacms/dist/react'
 import { isValidElementType } from 'react-is'
-import { type PageThemeContext, type ThemeContext } from './domain/theming'
+import { type ThemeContext } from './domain/theming'
 import { type Resource } from './domain/resource'
 import { assertUnreachable, do_ } from './shared/utils'
 import { type Json } from './shared/kernel'
@@ -17,13 +17,13 @@ import {
 
 type Action = { type: 'HYDRATE'; payload: State }
 type Dispatch = (action: Action) => void
-type State = PageThemeContext & {
+type State = ThemeContext & {
   ctxEditingLoading?: boolean
   pageMap: PageMapItem[]
 }
 type ThemeComponent = React.ComponentType
 type DataProviderProps = {
-  props: PageThemeContext
+  props: ThemeContext
   pageMap: PageMapItem[]
   Component: ThemeComponent
   routingMapping: RoutingMapping
@@ -190,24 +190,18 @@ const withData = (Component: ThemeComponent, { pageMap }: WithDataOptions) => {
   const routingMapping = getRoutingMapping(pageMap)
 
   function HOC(props: ThemeContext) {
-    if (props.context === 'internal') {
-      console.log(pageMap, props)
-
-      return React.createElement('div', {}, 'internal')
-    } else {
-      return React.createElement(DataProvider, {
-        props,
-        pageMap,
-        Component,
-        routingMapping,
-      })
-    }
+    return React.createElement(DataProvider, {
+      props,
+      pageMap,
+      Component,
+      routingMapping,
+    })
   }
 
   HOC.displayName = `withData(${
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     Component.displayName || Component.name || 'Component'
-  })`
+    })`
 
   return HOC
 }

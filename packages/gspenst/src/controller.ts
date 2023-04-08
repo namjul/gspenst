@@ -25,11 +25,7 @@ import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import * as Errors from './errors'
 import { do_, assertUnreachable } from './shared/utils'
-import {
-  type ThemeContext,
-  type PageThemeContext,
-  type Data,
-} from './domain/theming'
+import { type ThemeContext, type Data } from './domain/theming'
 import { type Entities } from './domain/entity'
 import { configId } from './constants'
 import repository from './repository'
@@ -47,7 +43,7 @@ async function routeController(
     | EntryRoutingContext
     | CustomRoutingContext,
   dataLoaders: DataLoaders
-): Promise<ControllerResultAsync<PageThemeContext>> {
+): Promise<ControllerResultAsync<ThemeContext>> {
   const dataQueries: Record<string, DataQuery> = {
     ...('data' in routingContext ? routingContext.data : {}),
   }
@@ -140,13 +136,6 @@ export function controller(
             return {
               type: 'props' as const,
               props: await routeController(context, dataLoaders),
-            }
-          case 'internal':
-            return {
-              type: 'props' as const,
-              props: ok({
-                context: 'internal' as const,
-              }),
             }
           case 'redirect':
             return {
