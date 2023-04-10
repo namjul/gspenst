@@ -70,6 +70,7 @@
     "react-dom": ">=16.13.1"
   },
   "preconstruct": {
+    "exports": true,
     "entrypoints": [
       "index.ts",
       "server.ts",

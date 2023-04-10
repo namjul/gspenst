@@ -121,7 +121,6 @@
     "packages": [
       "packages/*",
       "packages/@gspenst/*"
-    ],
-    "exports": true
+    ]
   }
 }
