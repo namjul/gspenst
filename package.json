@@ -4,6 +4,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
+    "packages/@gspenst/*",
     "examples/*"
   ],
   "scripts": {
@@ -118,7 +119,8 @@
   },
   "preconstruct": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "packages/@gspenst/*"
     ],
     "exports": true
   }
