@@ -1,0 +1,23 @@
+{
+  "name": "@gspenst/cli",
+  "version": "0.0.6",
+  "main": "dist/gspenst-cli.cjs.js",
+  "module": "dist/gspenst-cli.esm.js",
+  "files": [
+    "bin.js",
+    "!**/*.d.ts",
+    "dist",
+    "cli"
+  ],
+  "scripts": {
+    "lint:types": "tsc --noEmit"
+  },
+  "bin": {
+    "gspenst": "./bin.js"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "cli.ts"
+    ]
+  }
+}
