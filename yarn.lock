@@ -3187,7 +3187,7 @@
     webfontloader "1.6.28"
     xstate "4.32.1"
 
-"@tinacms/cli@^1.5.2":
+"@tinacms/cli@^1.5.2", "@tinacms/cli@^1.5.5":
   version "1.5.5"
   resolved "https://registry.npmjs.org/@tinacms/cli/-/cli-1.5.5.tgz#162a0aebb875370fcb855209230add3c2452be76"
   integrity sha512-JkTjDw3icAEAtrY0rRCUmpZxi0ZFSHrjLfUyvVAU8ngoSBnd1Dei3AHszbJ99ixfB9I5jGEKjHRANIKBMl4P8A==
@@ -3779,9 +3779,9 @@
     redux "^4.0.0"
 
 "@types/react@*", "@types/react@>=16", "@types/react@^17", "@types/react@^17.0.38":
-  version "17.0.56"
-  resolved "https://registry.npmjs.org/@types/react/-/react-17.0.56.tgz#16f54a0b0a4820065b8296f1dd6da80791fcf964"
-  integrity sha512-Z13f9Qz7Hg8f2g2NsBjiJSVWmON2b3K8RIqFK8mMKCIgvD0CD0ZChTukz87H3lI28X3ukXoNFGzo3ZW1ICTtPA==
+  version "17.0.57"
+  resolved "https://registry.npmjs.org/@types/react/-/react-17.0.57.tgz#341152f222222075caf020ae6e0e68b9b835404c"
+  integrity sha512-e4msYpu5QDxzNrXDHunU/VPyv2M1XemGG/p7kfCjUiPtlLDCWLGQfgAMng6YyisWYxZ09mYdQlmMnyS0NfZdEg==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"

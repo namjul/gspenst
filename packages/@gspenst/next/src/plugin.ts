@@ -4,6 +4,7 @@ import path from 'path'
 import { type Compiler } from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
 import { startTinaServer } from 'gspenst/server'
 import pkg from '../package.json'
+import { IS_PRODUCTION } from './constants'
 
 // api lookup: https://webpack.js.org/api/plugins/
 // example: https://github.com/shellscape/webpack-plugin-serve/blob/master/lib/index.js
@@ -40,7 +41,9 @@ export class GspenstPlugin extends EventEmitter {
       const { beforeCompile } = this.compiler.hooks
 
       beforeCompile.tapPromise(key, async () => {
-        await this.start()
+        if (!IS_PRODUCTION) {
+          await this.start()
+        }
       })
     }
   }
@@ -48,7 +51,7 @@ export class GspenstPlugin extends EventEmitter {
   async start() {
     if (!state.starting) {
       // ensure we're only trying to start the server once
-      state.starting = startTinaServer.bind(this)({ onlyCheck: true })
+      state.starting = startTinaServer.bind(this)({ onlyCheck: false })
     }
 
     // wait for the server to startup

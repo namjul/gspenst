@@ -11,7 +11,7 @@ import {
   DEFAULT_EXTENSIONS,
   YAML_EXTENSIONS,
 } from './constants'
-// import { GspenstPlugin } from './plugin'
+import { GspenstPlugin } from './plugin'
 
 const mediaDir = path.join(
   process.cwd(),
@@ -66,12 +66,12 @@ export default (...args: [string | LoaderOptions, string]) =>
       pageExtensions,
       webpack(config: Configuration, context) {
         log('Initializing next webpack config')
-        // const gspenst = new GspenstPlugin(context.isServer)
-        // if (config.plugins) {
-        //   config.plugins.push(gspenst)
-        // } else {
-        //   config.plugins = [gspenst]
-        // }
+        const gspenst = new GspenstPlugin(context.isServer)
+        if (config.plugins) {
+          config.plugins.push(gspenst)
+        } else {
+          config.plugins = [gspenst]
+        }
 
         // [Prefer `module` over `main`](https://github.com/vercel/next.js/issues/9323#issuecomment-550560435)
         // This solves the Warning: Did not expect server HTML to contain a ...
@@ -104,7 +104,7 @@ export default (...args: [string | LoaderOptions, string]) =>
 
         return config
       },
-      ...(isStaticHTMLExport ? {} : { rewrites }),
+      ...(isStaticHTMLExport ? {} : { rewrites /* TODO also apply in dev mode */ }),
       trailingSlash: true,
       reactStrictMode: true,
       swcMinify: true,

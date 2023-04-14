@@ -1,8 +1,6 @@
-import path from 'path'
 import EventEmitter, { once } from 'events'
-import fse from 'fs-extra'
-import spawn from 'cross-spawn'
 import { createLogger } from './logger'
+import { startSubprocess } from './utils'
 
 const log = createLogger('tinaServer')
 
@@ -10,29 +8,21 @@ export async function startTinaServer(
   this: { projectPath: string } & EventEmitter,
   config: { onlyCheck: boolean }
 ) {
-  if (
-    !(await fse.pathExists(
-      // TODO allow .tina/schema.{ts,js,tsx} file
-      path.resolve(this.projectPath, '.tina', 'schema.ts')
-    ))
-  ) {
-    throw new Error('Theme is missing schema definition')
-  }
 
   if (!config.onlyCheck) {
     log('Starting tina server', this.projectPath)
 
-    // TODO remove `--noWatch` and add `--experimentalData`
-    const ps = spawn('tinacms', ['server:start', '--noWatch'], {
+    const ps = await startSubprocess({
+      command: 'tinacms dev',
       cwd: this.projectPath,
     })
 
     this.on('cleanup', () => {
-      ps.kill()
+      ps?.kill()
     })
 
     // TODO output errors
-    if (ps.stdout) {
+    if (ps?.stdout) {
       let flag = true
       while (flag) {
         const [data] = (await once(ps.stdout, 'data')) as Buffer[] // eslint-disable-line no-await-in-loop

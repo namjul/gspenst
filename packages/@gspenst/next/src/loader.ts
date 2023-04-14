@@ -4,7 +4,7 @@ import path from 'path'
 import yaml from 'js-yaml'
 import { type LoaderContext } from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
 import { Errors } from 'gspenst'
-import { init } from 'gspenst/server'
+import { build, buildTina } from 'gspenst/server'
 import { findContentDir } from './utils'
 import { log } from './logger'
 import { PARAM_REGEX, IS_PRODUCTION } from './constants'
@@ -28,7 +28,7 @@ async function loader(
   log('Run Loader')
 
   const options = context.getOptions()
-  const { theme, themeConfig } = options
+  const { theme, themeConfig, isServer } = options
 
   if (!theme) {
     context.emitError(new Error('No Gspenst Theme found.'))
@@ -60,7 +60,11 @@ async function loader(
     (PARAM_REGEX.exec(filename) ?? []) as Array<string | undefined>
   )[1]
 
-  const configResult = await init(yaml.load(source))
+  const configResult = await build(yaml.load(source))
+
+  if (isServer && IS_PRODUCTION) {
+    await buildTina(process.cwd())
+  }
 
   if (configResult.isErr()) {
     context.emitError(Errors.format(configResult.error))
@@ -81,19 +85,17 @@ import { getPaths, getProps } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import __gspenst_withTheme__ from '${themePath}'
-${
-  themeConfigPath
-    ? `import __gspenst_themeConfig__ from '${themeConfigPath}'`
-    : ''
-}
+${themeConfigPath
+      ? `import __gspenst_themeConfig__ from '${themeConfigPath}'`
+      : ''
+    }
 `
 
   const component = `
 const pageMap = ${JSON.stringify(pageMap)}
 const GspenstThemeComponent = __gspenst_withData__(
-  __gspenst_withTheme__(${
-    themeConfigPath ? '__gspenst_themeConfig__' : 'null'
-  }), {
+  __gspenst_withTheme__(${themeConfigPath ? '__gspenst_themeConfig__' : 'null'
+    }), {
     pageMap,
   }
 )

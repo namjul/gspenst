@@ -10,10 +10,11 @@ import { controller } from './controller'
 import { createLoaders } from './helpers/processQuery'
 import { getPageMap } from './helpers/getPageMap'
 import { createLogger } from './logger'
+import { startSubprocess } from "./utils";
 
 const log = createLogger(`server`)
 
-export const init = (routesConfigInput: unknown) => {
+export const build = (routesConfigInput: unknown) => {
   const routesConfigResult = parseRoutes(routesConfigInput)
 
   if (routesConfigResult.isErr()) {
@@ -31,6 +32,10 @@ export const init = (routesConfigInput: unknown) => {
 
     return { pageMap, routesConfig, resources: locatorResources }
   })
+}
+
+export const buildTina = (path: string) => {
+  return startSubprocess({ command: "tinacms build", cwd: path })
 }
 
 type Config = {

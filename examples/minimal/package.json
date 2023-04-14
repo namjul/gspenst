@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "analyze": "ANALYZE=true npm run build",
-    "build": "tinacms build && next build",
+    "build": "next build",
     "debug": "NODE_OPTIONS='--inspect' npm dev",
-    "dev": "tinacms dev -c \"next dev\"",
+    "dev": "next dev",
     "lint": "next lint",
     "lint:types": "tsc --noEmit",
-    "start": "tinacms build && next start"
+    "start": "next start"
   },
   "dependencies": {
     "@gspenst/next": "*",

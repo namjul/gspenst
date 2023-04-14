@@ -58,7 +58,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@tinacms/cli": "^1.5.2",
+    "@tinacms/cli": "^1.5.5",
     "@types/cross-spawn": "^6.0.2",
     "@types/fs-extra": "^9.0.13",
     "@types/mock-fs": "^4.13.1",
