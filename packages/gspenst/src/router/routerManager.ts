@@ -15,6 +15,7 @@ import {
 import { type RoutingContext } from '../domain/routing'
 import { type LocatorResource } from '../domain/resource'
 
+import AdminRouter from './AdminRouter'
 import StaticPagesRouter from './StaticPagesRouter'
 import CollectionRouter from './CollectionRouter'
 import TaxonomyRouter from './TaxonomyRouter'
@@ -29,19 +30,24 @@ export const routerManager = (routesConfig: RoutesConfig) => {
   routers.push(router)
 
   /**
-   * 1. Static Routes: Very strong, because you can override any urls and redirect to a static route.
-   * 2. Taxonomies: Stronger than collections, because it's an inbuilt feature.
-   * 3. Collections
-   * 4. Static Pages: Weaker than collections, because we first try to find a post slug and fallback to lookup a static page.
+   * 1. Admin: Strongest inbuilt features, which you can never override.
+   * 2. Static Routes: Very strong, because you can override any urls and redirect to a static route.
+   * 3. Taxonomies: Stronger than collections, because it's an inbuilt feature.
+   * 4. Collections
+   * 5. Static Pages: Weaker than collections, because we first try to find a post slug and fallback to lookup a static page.
    */
 
   // 1.
+  const adminRouter = new AdminRouter()
+  routers.push(adminRouter)
+
+  // 2.
   getRoutes(config).forEach(([key, value]) => {
     const staticRoutesRouter = new StaticRoutesRouter(key, value)
     routers.push(staticRoutesRouter)
   })
 
-  // 2.
+  // 3.
 
   const postSet = new Set<ID>()
   getCollections(config).forEach(([key, value]) => {
@@ -49,13 +55,13 @@ export const routerManager = (routesConfig: RoutesConfig) => {
     routers.push(collectionRouter)
   })
 
-  // 3.
+  // 4.
   getTaxonomies(config).forEach(([key, value]) => {
     const taxonomyRouter = new TaxonomyRouter(key, value)
     routers.push(taxonomyRouter)
   })
 
-  // 4.
+  // 5.
   const staticPagesRouter = new StaticPagesRouter()
   routers.push(staticPagesRouter)
 

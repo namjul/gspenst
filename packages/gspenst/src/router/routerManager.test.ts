@@ -16,7 +16,7 @@ describe('router resolvePaths', () => {
       const locatorResources = resources.filter(filterLocatorResources)
       const router = routerManager(routesConfig)
       const result = router.resolvePaths(locatorResources)
-      expect(result).toEqual(['/about', '/home', '/portfolio'])
+      expect(result).toEqual(['/admin', '/about', '/home', '/portfolio'])
     })
 
     test('default routing config', async () => {
@@ -26,6 +26,7 @@ describe('router resolvePaths', () => {
       const locatorResources = resources.filter(filterLocatorResources)
       const result = router.resolvePaths(locatorResources)
       expect(result).toEqual([
+        '/admin',
         '/',
         '/0th-post/',
         '/1th-post/',
@@ -134,6 +135,7 @@ describe('router resolvePaths', () => {
     const locatorResources = resources.filter(filterLocatorResources)
     const result = router.resolvePaths(locatorResources)
     expect(result).toEqual([
+      '/admin',
       '/features/',
       '/',
       '/0th-post',
@@ -172,6 +174,7 @@ describe('router resolvePaths', () => {
     const locatorResources = resources.filter(filterLocatorResources)
     const result = router.resolvePaths(locatorResources)
     expect(result).toEqual([
+      '/admin',
       '/features/',
       '/features/page/1',
       '/features/page/2',
@@ -205,6 +208,7 @@ describe('router resolvePaths', () => {
     const locatorResources = resources.filter(filterLocatorResources)
     const result = router.resolvePaths(locatorResources)
     expect(result).toEqual([
+      '/admin',
       '/',
       '/3th-post/',
       '/page/1',
