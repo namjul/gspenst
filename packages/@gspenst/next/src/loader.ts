@@ -109,8 +109,9 @@ export default function GspenstLayout (props) {
 const resources = ${JSON.stringify(resources)}
 const routesConfig = ${routesConfigStringified}
 const routingParameter = '${routingParameter}'
-const isStaticHTMLExport = ${options.isStaticHTMLExport}
+const nextPhase = process.env.NEXT_PHASE
 const isBuildPhase = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
+const isStaticHTMLExport = !!${options.isStaticHTMLExport}
 
 export const getStaticPaths = async () => { 
   return {
@@ -125,8 +126,13 @@ export const getStaticProps = async ({ params }) => {
 
   if (propsResult.isOk()) {
     const result = await propsResult.value
-    if ('redirect' in result && !isStaticExport) {
-      return { redirect: result.redirect }
+
+    if ('redirect' in result) {
+      if (!isStaticHTMLExport) {
+        return { redirect: result.redirect }
+      } else {
+       throw Errors.format(Errors.other("Redirect not supported with static export"))
+      }
     }
 
     if (result.props.isErr()) {

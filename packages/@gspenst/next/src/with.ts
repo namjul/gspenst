@@ -34,28 +34,6 @@ export default (...args: [string | LoaderOptions, string]) =>
     const pageExtensions = nextConfig.pageExtensions ?? [...DEFAULT_EXTENSIONS]
     pageExtensions.push(...YAML_EXTENSIONS)
 
-    const rewrites = async () => {
-      const rules = [
-        {
-          source: '/admin',
-          destination: '/admin/index.html',
-        },
-      ]
-
-      if (nextConfig.rewrites) {
-        const originalRewrites = await nextConfig.rewrites()
-        if (Array.isArray(originalRewrites)) {
-          return [...originalRewrites, ...rules]
-        }
-        return {
-          ...originalRewrites,
-          beforeFiles: [...originalRewrites.beforeFiles, ...rules],
-        }
-      }
-
-      return rules
-    }
-
     // https://nextjs.org/docs/advanced-features/static-html-export
     const isStaticHTMLExport = nextConfig.output === 'export'
 
@@ -104,7 +82,6 @@ export default (...args: [string | LoaderOptions, string]) =>
 
         return config
       },
-      ...(isStaticHTMLExport ? {} : { rewrites /* TODO also apply in dev mode */ }),
       trailingSlash: true,
       reactStrictMode: true,
       swcMinify: true,
