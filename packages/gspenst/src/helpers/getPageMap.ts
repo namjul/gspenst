@@ -55,6 +55,7 @@ function getLocatorResources(resources: Resource[] = []): PageMapItem[] {
   })
 }
 
+//TODO rebuild only with acces to repository
 export function getPageMap(
   resources: Resource[],
   routesConfig: RoutesConfig

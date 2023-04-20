@@ -45,6 +45,7 @@ type Config = {
 }
 
 export const getPaths = (config: Config) => {
+  // TODO validate config.routesConfig, because there can be references that actually don't exist
   const paths = routerManager(config.routesConfig).resolvePaths(
     config.resources
   )

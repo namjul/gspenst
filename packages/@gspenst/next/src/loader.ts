@@ -63,6 +63,7 @@ async function loader(
   const configResult = await build(yaml.load(source))
 
   if (isServer && IS_PRODUCTION) {
+    // TODO hold on to reference and close when process closes or make it close automatically when parent closes
     await buildTina(process.cwd())
   }
 
