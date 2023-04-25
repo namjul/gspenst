@@ -1,19 +1,21 @@
+import path from 'path'
 import {
   filterLocatorResources,
   filterPageResources,
+  isRoutesResource,
 } from '../helpers/resource'
+import { type Resource } from '../domain/resource'
 import {
-  type Resource,
   type LocatorResource,
   type LocatorResourceType,
-} from '../domain/resource'
+} from '../domain/resource/resource.locator'
 import { type RoutesConfig } from '../domain/routes'
 import { type RouteType } from '../domain/routing'
 
-type FilePath = LocatorResource['filepath']
-type Path = LocatorResource['path']
+type ResourcePath = LocatorResource['path']
+type Path = LocatorResource['metadata']['path']
 export type RoutingMapping = {
-  [filePath: FilePath]: Path
+  [resourcePath: ResourcePath]: Path
 }
 
 export type PageMapItem = {
@@ -31,39 +33,41 @@ export type PageMapItem = {
 }
 
 function getLocatorResources(resources: Resource[] = []): PageMapItem[] {
-  return resources.flatMap((resource) => {
-    if (filterLocatorResources(resource)) {
-      return {
-        type: 'entry',
-        name: resource.filename,
-        route: resource.path,
-        filepath: resource.filepath,
-        resourceType: resource.type,
-        children: filterPageResources(resource)
-          ? getLocatorResources(
-              resources.filter(({ breadcrumbs, id }) => {
-                return (
-                  breadcrumbs.join().startsWith(resource.breadcrumbs.join()) &&
-                  id !== resource.id
-                )
-              })
-            )
-          : [],
-      }
+  const locatorResources = resources.filter(filterLocatorResources)
+  return locatorResources.map((resource) => {
+    return {
+      type: 'entry',
+      name: path.parse(resource.path).name,
+      route: resource.metadata.path,
+      filepath: resource.path,
+      resourceType: resource.type,
+      children: filterPageResources(resource)
+        ? getLocatorResources(
+            locatorResources.filter(({ metadata: { breadcrumbs }, id }) => {
+              return (
+                breadcrumbs
+                  .join()
+                  .startsWith(resource.metadata.breadcrumbs.join()) &&
+                id !== resource.id
+              )
+            })
+          )
+        : [],
     }
-    return []
   })
 }
 
 //TODO rebuild only with acces to repository
 export function getPageMap(
-  resources: Resource[],
-  routesConfig: RoutesConfig
+  resources: Resource[]
   // currentResourcePath: string,
   // pageMaps: PageMapItem[],
   // fileMap: Record<string, PageMapItem>,
   // defaultLocale: string
 ): PageMapItem[] {
+  const routesResource = resources.find(isRoutesResource)
+  const routesConfig: RoutesConfig = routesResource?.data ?? {}
+
   const result: PageMapItem[] = []
   Object.keys(routesConfig.routes ?? {}).forEach((route) => {
     result.push({

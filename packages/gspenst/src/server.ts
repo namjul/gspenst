@@ -1,8 +1,9 @@
 import {
   parseRoutesWithDefaults as parseRoutes,
+  type RoutesConfigInput,
   type RoutesConfig,
 } from './domain/routes'
-import { filterLocatorResources } from './helpers/resource'
+import { filterLocatorResources, isRoutesResource } from './helpers/resource'
 import repository from './repository'
 import { routerManager } from './router'
 import { controller } from './controller'
@@ -13,20 +14,11 @@ import { startSubprocess } from './utils'
 
 const log = createLogger(`server`)
 
-export const build = (routesConfigInput: unknown) => {
-  const routesConfigResult = parseRoutes(routesConfigInput)
-
-  if (routesConfigResult.isErr()) {
-    return routesConfigResult
-  }
-
-  const routesConfig = routesConfigResult.isOk()
-    ? routesConfigResult.value[0]!
-    : {}
-
-  return repository.collect(routesConfig).map((resources) => {
-    const pageMap = getPageMap(resources, routesConfig) // remove and add call to loader.ts
-    return { pageMap, routesConfig }
+export const build = (routesConfigInput: RoutesConfigInput) => {
+  return repository.collect(routesConfigInput).map((resources) => {
+    const routesResource = resources.find(isRoutesResource)
+    const pageMap = getPageMap(resources) // remove and add call to loader.ts
+    return { pageMap, routesConfig: routesResource?.data }
   })
 }
 

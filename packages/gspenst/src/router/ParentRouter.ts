@@ -5,7 +5,7 @@ import { type Data } from '../domain/routes'
 import {
   type LocatorResourceType,
   type LocatorResource,
-} from '../domain/resource'
+} from '../domain/resource/resource.locator'
 import { pathToRegexp } from '../utils'
 import { parse } from '../helpers/parser'
 

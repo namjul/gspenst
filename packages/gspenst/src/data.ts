@@ -53,19 +53,23 @@ function useGspenstState(
 } {
   const [state, dispatch] = React.useReducer(storeReducer, initialState)
 
-  const { tinaData } = state.resource
+  if (state.resource.type === 'routes') {
+    throw new Error("routes resource should not land on client")
+  }
 
-  const { data } = useTina({
-    query: tinaData.query,
-    variables: tinaData.variables,
-    data: tinaData.data,
+  const { data } = state.resource
+
+  const { data: tinaData } = useTina({
+    query: data.query,
+    variables: data.variables,
+    data: data.data,
   })
 
   const resource = {
     ...state.resource,
-    tinaData: {
-      ...tinaData,
-      data: { ...tinaData.data, ...data },
+    data: {
+      ...data,
+      data: { ...data.data, ...tinaData },
     },
   } as Resource
 

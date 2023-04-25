@@ -15,6 +15,7 @@ import {
 import * as Errors from '../errors'
 import { type Resource } from '../domain/resource'
 import { type RoutingMapping } from '../helpers/getPageMap'
+import { filterLocatorResources, isConfigResource } from '../helpers/resource'
 import { postSchema, createPost, type Post } from '../domain/post'
 import { pageSchema, createPage, type Page } from '../domain/page'
 import { authorSchema, createAuthor, type Author } from '../domain/author'
@@ -210,29 +211,32 @@ export function resolveResourceData(
     const { type } = resource
     switch (type) {
       case 'post':
-        return [createPost(resource.tinaData.data.post, routingMapping)]
+        return [createPost(resource.data.data.post, routingMapping)]
       case 'page':
-        return [createPage(resource.tinaData.data.page, routingMapping)]
+        return [createPage(resource.data.data.page, routingMapping)]
       case 'author':
-        return [createAuthor(resource.tinaData.data.author, routingMapping)]
+        return [createAuthor(resource.data.data.author, routingMapping)]
       case 'tag':
-        return [createTag(resource.tinaData.data.tag, routingMapping)]
+        return [createTag(resource.data.data.tag, routingMapping)]
       case 'config':
-        return [createConfig(resource.tinaData.data.config)]
+        return [createConfig(resource.data.data.config)]
+      case 'routes':
+        return []
       default:
         return assertUnreachable(type)
     }
   })
 
-  if (resource.tinaData.data.config) {
-    const configEntity = createConfig(resource.tinaData.data.config)
+  // TODO check why this is necessary
+  if (isConfigResource(resource)) {
+    const configEntity = createConfig(resource.data.data.config)
     entitiesResultList.push(configEntity)
   }
 
   return combine(entitiesResultList).map((entities) => {
     return entities.map((entity) => {
-      if ('path' in entity && 'path' in resource) {
-        entity.path = resource.path
+      if ('path' in entity && filterLocatorResources(resource)) {
+        entity.path = resource.metadata.path
       }
       return entity
     })

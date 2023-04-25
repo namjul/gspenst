@@ -81,26 +81,36 @@ class TaxonomyRouter extends ParentRouter {
         return []
       }
 
-      if (this.respectDominantRouter(routers, resource.type, resource.slug)) {
+      if (
+        this.respectDominantRouter(
+          routers,
+          resource.type,
+          resource.metadata.slug
+        )
+      ) {
         return []
       }
 
       const postResources = resources.filter(
         (_resource) =>
           _resource.type === 'post' &&
-          _resource.filters.includes(this.#replaceFilter(resource.slug))
+          _resource.metadata.filters.includes(
+            this.#replaceFilter(resource.metadata.slug)
+          )
       )
 
-      const { path: resourcePath } = resource
+      const {
+        metadata: { path: resourcePath },
+      } = resource
 
       const pages =
         postResources.length > 0
           ? Math.ceil(
-              postResources.length /
-                (this.config.limit === 'all'
-                  ? postResources.length
-                  : this.config.limit)
-            )
+            postResources.length /
+            (this.config.limit === 'all'
+              ? postResources.length
+              : this.config.limit)
+          )
           : 0
 
       if (resourcePath) {

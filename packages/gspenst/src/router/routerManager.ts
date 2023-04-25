@@ -13,7 +13,7 @@ import {
   type RoutesConfig,
 } from '../domain/routes'
 import { type RoutingContext } from '../domain/routing'
-import { type LocatorResource } from '../domain/resource'
+import { type LocatorResource } from '../domain/resource/resource.locator'
 
 import AdminRouter from './AdminRouter'
 import StaticPagesRouter from './StaticPagesRouter'

@@ -2,30 +2,33 @@ import {
   idSchema,
   slugSchema,
   pathSchema,
-  ok,
+  Result,
+  Option,
   err,
   z,
-  type Result,
-} from '../shared/kernel'
-import { parse } from '../helpers/parser'
+} from '../../shared/kernel'
+import { parse } from '../../helpers/parser'
+import { do_ } from '../../shared/utils'
 import {
   type PostNodeFragment,
   type PageNodeFragment,
   type AuthorNodeFragment,
   type TagNodeFragment,
-  type ThemeConfigNodeFragment,
   GetPostDocument,
   GetPageDocument,
   GetAuthorDocument,
   GetTagDocument,
-  GetConfigDocument,
-} from '../.tina/__generated__/types'
-import { type ApiEntity } from '../api'
-import { assertUnreachable, do_ } from '../shared/utils'
+} from '../../.tina/__generated__/types'
+import { configFragmentSchema, resourceTypeConfig } from './resource.config'
+import { resourceBaseSchema } from './resource.base'
+
+/**
+ * I discovered the name locator in https://de.wikipedia.org/wiki/Uniform_Resource_Locator
+ * The semantic meaning is that, distict to other resources, locator resources than can be targeted by a URL.
+ */
+
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-const isConfigNode = (value: any): value is ThemeConfigNodeFragment =>
-  '__typename' in value && value.__typename === 'Config'
 const isPostNode = (value: any): value is PostNodeFragment =>
   '__typename' in value && value.__typename === 'Post'
 const isPageNode = (value: any): value is PostNodeFragment =>
@@ -35,31 +38,6 @@ const isTagNode = (value: any): value is TagNodeFragment =>
 const isAuthorNode = (value: any): value is AuthorNodeFragment =>
   '__typename' in value && value.__typename === 'Author'
 /* eslint-enable @typescript-eslint/no-unsafe-member-access */
-
-const configFragmentSchema = z.custom<ThemeConfigNodeFragment>((value: any) =>
-  isConfigNode(value)
-)
-
-export const configTinaDataSchema = z
-  .preprocess(
-    (value) => {
-      return {
-        data: {
-          config: value,
-        },
-        query: GetConfigDocument,
-        variables: {},
-      }
-    },
-    z.object({
-      data: z.object({
-        config: configFragmentSchema,
-      }),
-      query: z.string(),
-      variables: z.object({}),
-    })
-  )
-  .describe('configTinaDataSchema')
 
 const postFragmentSchema = z.custom<PostNodeFragment>((value: any) =>
   isPostNode(value)
@@ -183,7 +161,6 @@ export const authorTinaDataSchema = z
   )
   .describe('authorTinaDataSchema')
 
-export const resourceTypeConfig = z.literal('config')
 export const resourceTypePost = z.literal('post')
 export const resourceTypePage = z.literal('page')
 export const resourceTypeAuthor = z.literal('author')
@@ -218,16 +195,8 @@ export const locatorResourceTypeSchema = z.union([
   resourceTypeTag,
 ])
 
-const resourceBaseSchema = z.object({
-  id: idSchema,
-  filename: z.string(),
-  filepath: z.string(),
-  relativePath: z.string(),
-  breadcrumbs: z.array(z.string()),
-  timestamp: z.number().optional(),
-})
-
 export const dynamicVariablesSchema = z.object({
+  id: idSchema,
   slug: slugSchema,
   year: z.number(),
   month: z.number(),
@@ -236,28 +205,23 @@ export const dynamicVariablesSchema = z.object({
   primary_author: z.string().default('all'),
 })
 
-const locatorResourceBaseSchema = z
-  .object({
-    path: pathSchema,
-    filters: z.array(z.string()).default([]),
-  })
-  .merge(dynamicVariablesSchema)
-
-export const configResourceSchema = resourceBaseSchema.merge(
-  z.object({
-    type: resourceTypeConfig,
-    tinaData: configTinaDataSchema,
-  })
-)
-
-export type ConfigResource = z.infer<typeof configResourceSchema>
+const locatorResourceBaseSchema = z.object({
+  metadata: z
+    .object({
+      breadcrumbs: z.array(z.string()),
+      path: pathSchema,
+      relativePath: z.string(),
+      filters: z.array(z.string()).default([]),
+    })
+    .merge(dynamicVariablesSchema),
+})
 
 export const authorResourceSchema = resourceBaseSchema
   .merge(locatorResourceBaseSchema)
   .merge(
     z.object({
       type: resourceTypeAuthor,
-      tinaData: authorTinaDataSchema,
+      data: authorTinaDataSchema,
     })
   )
 
@@ -268,7 +232,7 @@ export const tagResourceSchema = resourceBaseSchema
   .merge(
     z.object({
       type: resourceTypeTag,
-      tinaData: tagTinaDataSchema,
+      data: tagTinaDataSchema,
     })
   )
 
@@ -279,7 +243,7 @@ export const postResourceSchema = resourceBaseSchema
   .merge(
     z.object({
       type: resourceTypePost,
-      tinaData: postTinaDataSchema,
+      data: postTinaDataSchema,
     })
   )
 
@@ -290,21 +254,11 @@ export const pageResourceSchema = resourceBaseSchema
   .merge(
     z.object({
       type: resourceTypePage,
-      tinaData: pageTinaDataSchema,
+      data: pageTinaDataSchema,
     })
   )
 
 export type PageResource = z.infer<typeof pageResourceSchema>
-
-export const resourceSchema = z
-  .discriminatedUnion('type', [
-    configResourceSchema,
-    postResourceSchema,
-    pageResourceSchema,
-    authorResourceSchema,
-    tagResourceSchema,
-  ])
-  .describe('resourceSchema')
 
 export const locatorResourceSchema = z
   .discriminatedUnion('type', [
@@ -315,72 +269,9 @@ export const locatorResourceSchema = z
   ])
   .describe('locatorResourceSchema')
 
-export type ResourceType = z.infer<typeof resourceTypeSchema>
-export type Resource = z.infer<typeof resourceSchema>
 export type LocatorResourceType = z.infer<typeof locatorResourceTypeSchema>
 export type LocatorResource = z.infer<typeof locatorResourceSchema>
 export type DynamicVariables = z.infer<typeof dynamicVariablesSchema>
-
-export function createResource(entity: ApiEntity): Result<Resource> {
-  const timestamp = 'timestamp' in entity ? entity.timestamp : undefined
-
-  const node = do_(() => {
-    const { type, data } = entity
-    switch (type) {
-      case 'post':
-        return data.data.post
-      case 'page':
-        return data.data.page
-      case 'author':
-        return data.data.author
-      case 'tag':
-        return data.data.tag
-      case 'config':
-        return data.data.config
-      default:
-        assertUnreachable(type, 'createResource')
-    }
-  })
-
-  const dynamicVariablesResult =
-    node.__typename === 'Config' ? ok({}) : createDynamicVariables(node)
-
-  if (dynamicVariablesResult.isErr()) {
-    return err(dynamicVariablesResult.error)
-  }
-
-  const dynamicVariables = dynamicVariablesResult.value
-
-  const {
-    _sys: { filename, path: filepath, relativePath, breadcrumbs } = {},
-    __typename,
-  } = node
-
-  const idResult = parse(idSchema, node.id)
-
-  if (idResult.isErr()) {
-    return err(idResult.error)
-  }
-
-  const baseResource = {
-    id: idResult.value,
-    filename,
-    filepath,
-    relativePath,
-    breadcrumbs,
-    timestamp,
-  }
-
-  const resource = {
-    ...baseResource,
-    ...dynamicVariables,
-    type: __typename.toLowerCase(),
-    tinaData: node,
-    path: `/${idResult.value}`,
-  }
-
-  return parse(resourceSchema, resource)
-}
 
 export type LocatorResourceNode =
   | PostNodeFragment
@@ -388,10 +279,44 @@ export type LocatorResourceNode =
   | AuthorNodeFragment
   | TagNodeFragment
 
+export function createLocatorResource(
+  data: LocatorResourceNode,
+  time: Option<number>
+) {
+  const { _sys: { path, relativePath, breadcrumbs } = {}, __typename: type } = data
+  const resourceLocatorResult = createDynamicVariables(data).map(
+    (dynamicVariables) => {
+      const { slug } = dynamicVariables
+      const nestedPath = breadcrumbs?.slice(0, -1)
+      return {
+        id: dynamicVariables.id,
+        path,
+        time,
+        data,
+        type: type.toLowerCase(),
+        metadata: {
+          ...dynamicVariables,
+          relativePath,
+          breadcrumbs,
+          path: `/${
+            nestedPath?.length ? `${nestedPath.join('/')}/` : ''
+          }${slug}`,
+        },
+      }
+    }
+  )
+
+  if (resourceLocatorResult.isErr()) {
+    return err(resourceLocatorResult.error)
+  }
+
+  return parse(locatorResourceSchema, resourceLocatorResult.value)
+}
+
 export function createDynamicVariables(
   node: Partial<LocatorResourceNode>
 ): Result<DynamicVariables> {
-  const { _sys: { filename } = {} } = node
+  const { _sys: { filename } = {}, id } = node
 
   const { slug, primary_tag, primary_author } = do_(() => {
     /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
@@ -426,6 +351,7 @@ export function createDynamicVariables(
     .map(Number) as [number, number, number]
 
   return parse(dynamicVariablesSchema, {
+    id,
     slug,
     year,
     month,

@@ -3,23 +3,22 @@ import { type DefinitionNode, type SelectionNode } from 'graphql'
 import { type Result, combine, ok, err } from '../shared/kernel'
 import * as Errors from '../errors'
 import { safeGraphqlParse, safeGraphqlStringify } from '../utils'
-import { type Resource, type ConfigResource } from '../domain/resource'
+import { type LocatorResource } from '../domain/resource/resource.locator'
+import { type ConfigResource } from "../domain/resource/resource.config";
 
 export function confifyTinaData(
   configResource: ConfigResource,
-  resource: Resource | undefined
-): Result<Resource> {
+  resource: LocatorResource | undefined
+): Result<LocatorResource | ConfigResource> {
+
   if (!resource) {
+    // TODO should not this return err?
     return ok(configResource)
   }
 
-  if (resource.type === 'config') {
-    return err(Errors.other('confifyTinaData: Cannot confify config resource.'))
-  }
-
   return combine([
-    safeGraphqlParse(configResource.tinaData.query),
-    safeGraphqlParse(resource.tinaData.query),
+    safeGraphqlParse(configResource.data.query),
+    safeGraphqlParse(resource.data.query),
   ])
     .andThen(([configDocumentNode, resourceDocumentNode]) => {
       if (configDocumentNode && resourceDocumentNode) {
@@ -94,8 +93,8 @@ export function confifyTinaData(
     })
     .map((query) => {
       // TODO maybe should not me modified, keep it immutable
-      resource.tinaData.data.config = configResource.tinaData.data.config
-      resource.tinaData.query = query
+      resource.data.data.config = configResource.data.data.config
+      resource.data.query = query
       return resource
     })
 }

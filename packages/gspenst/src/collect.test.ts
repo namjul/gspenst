@@ -13,79 +13,77 @@ describe('collect', () => {
           filter: 'primary_tag:-tag-1',
           limit: 3,
           data: {
-            query: {
-              tags: {
-                resourceType: 'tag' as const,
-                type: 'browse' as const,
-                filter: "date:>'2015-07-20'",
-                // filter: "slug:tag-1",
-                limit: 5,
-              },
+            tags: {
+              resourceType: 'tag' as const,
+              type: 'browse' as const,
+              filter: "date:>'2015-07-20'",
+              // filter: "slug:tag-1",
+              limit: 5,
             },
-            router: {},
           },
         },
       },
       collections: {
         '/': {
-          permalink: '/post/:slug/:year/',
+          permalink: '/post/{slug}/{year}/',
           filter: 'primary_tag:tag-1',
           limit: 5,
         },
         '/podcast/': {
-          permalink: '/podcast/:slug/',
+          permalink: '/podcast/{slug}/',
           filter: 'primary_tag:tag-2',
           limit: 5,
         },
       },
       taxonomies: {
-        tag: {
-          permalink: '/tag/:slug',
-          filter: "tags:'%s'" as const,
-          limit: 5,
-        },
-        author: {
-          permalink: '/author/:slug',
-          filter: "authors:'%s'" as const,
-          limit: 5,
-        },
+        tag: '/tag/{slug}/',
+        author: '/author/{slug}/',
       },
     }
     const collectResult = await collect(routesConfig)
     const resources = collectResult._unsafeUnwrap()
-    expect(resources).toHaveLength(18)
+    expect(resources).toHaveLength(19) // with routesResource
     expect(resources.find(({ id }) => id === 1824064168)).toEqual(
       expect.objectContaining({
         id: 1824064168,
-        filename: '3th-post',
-        filepath: 'content/posts/3th-post.mdx',
-        relativePath: '3th-post.mdx',
-        path: '/post/3th-post/2021/',
-        filters: ["tags:'tag-1'", "authors:'pedro'", 'primary_tag:tag-1'],
-        slug: '3th-post',
-        year: 2021,
-        month: 3,
-        day: 3,
-        primary_tag: 'tag-1',
-        primary_author: 'pedro',
+        path: 'content/posts/3th-post.mdx',
         type: 'post',
+        time: 123,
+        metadata: {
+          breadcrumbs: ['3th-post'],
+          path: '/post/3th-post/2021/',
+          relativePath: '3th-post.mdx',
+          filters: ["tags:'tag-1'", "authors:'pedro'", 'primary_tag:tag-1'],
+          id: 1824064168,
+          slug: '3th-post',
+          year: 2021,
+          month: 3,
+          day: 3,
+          primary_tag: 'tag-1',
+          primary_author: 'pedro',
+        },
       })
     )
+
     expect(resources.find(({ id }) => id === 1071642883)).toEqual(
       expect.objectContaining({
-        filename: 'tag-2',
-        filepath: 'content/tags/tag-2.mdx',
-        relativePath: 'tag-2.mdx',
-        path: '/tag/tag-2',
-        filters: ["date:>'2015-07-20'"],
         id: 1071642883,
-        slug: 'tag-2',
-        year: 2021,
-        month: 7,
-        day: 3,
-        primary_tag: 'all',
-        primary_author: 'all',
+        path: 'content/tags/tag-2.mdx',
         type: 'tag',
+        time: 123,
+        metadata: {
+          id: 1071642883,
+          breadcrumbs: ['tag-2'],
+          path: '/tag/tag-2/', // NEXT for some reason the output is `/tag-2` which is wrong
+          relativePath: 'tag-2.mdx',
+          filters: ["date:>'2015-07-20'"],
+          slug: 'tag-2',
+          year: 2021,
+          month: 7,
+          day: 3,
+          primary_tag: 'all',
+          primary_author: 'all',
+        },
       })
     )
   })

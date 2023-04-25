@@ -1,8 +1,7 @@
 import { ok } from '../shared/kernel'
 import repository from '../repository'
-import { parseRoutes } from '../domain/routes'
 import defaultRoutes from '../defaultRoutes'
-import { filterLocatorResources } from '../helpers/resource'
+import { filterLocatorResources, isRoutesResource } from '../helpers/resource'
 import { routerManager } from './routerManager'
 
 jest.mock('../api')
@@ -20,9 +19,11 @@ describe('router resolvePaths', () => {
     })
 
     test('default routing config', async () => {
-      const routesConfig = parseRoutes(defaultRoutes)._unsafeUnwrap()[0]!
-      const router = routerManager(routesConfig)
-      const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+      const resources = (
+        await repository.collect(defaultRoutes)
+      )._unsafeUnwrap()
+      const routesResource = resources.find(isRoutesResource)
+      const router = routerManager(routesResource?.data!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
       const locatorResources = resources.filter(filterLocatorResources)
       const result = router.resolvePaths(locatorResources)
       expect(result).toEqual([
@@ -61,76 +62,55 @@ describe('router resolvePaths', () => {
           template: 'Features',
           limit: 5,
           data: {
-            query: {
-              firstpost: {
-                type: 'read' as const,
-                resourceType: 'post' as const,
-                slug: '1th-post',
-              },
-              secondpost: {
-                type: 'read' as const,
-                resourceType: 'post' as const,
-                slug: '2th-post',
-                redirect: false,
-              },
-              home: {
-                type: 'read' as const,
-                resourceType: 'page' as const,
-                slug: 'home',
-                redirect: true,
-              },
+            firstpost: {
+              type: 'read' as const,
+              resourceType: 'post' as const,
+              slug: '1th-post',
             },
-            router: {
-              post: [
-                { redirect: true, slug: '1th-post' },
-                { redirect: false, slug: '2th-post' },
-              ],
-              page: [{ redirect: true, slug: 'home' }],
+            secondpost: {
+              type: 'read' as const,
+              resourceType: 'post' as const,
+              slug: '2th-post',
+              redirect: false,
+            },
+            home: {
+              type: 'read' as const,
+              resourceType: 'page' as const,
+              slug: 'home',
+              redirect: true,
             },
           },
         },
       },
       collections: {
         '/': {
-          permalink: '/:slug',
+          permalink: '/{slug}',
           limit: 5,
           data: {
-            query: {
-              thirdpost: {
-                type: 'read' as const,
-                resourceType: 'post' as const,
-                slug: '3th-post',
-                redirect: true,
-              },
-              tag1: {
-                type: 'read' as const,
-                resourceType: 'tag' as const,
-                slug: 'tag-1',
-                redirect: true,
-              },
+            thirdpost: {
+              type: 'read' as const,
+              resourceType: 'post' as const,
+              slug: '3th-post',
+              redirect: true,
             },
-            router: {
-              post: [{ redirect: true, slug: '3th-post' }],
-              tag: [{ redirect: true, slug: 'tag-1' }],
+            tag1: {
+              type: 'read' as const,
+              resourceType: 'tag' as const,
+              slug: 'tag-1',
+              redirect: true,
             },
           },
         },
       },
       taxonomies: {
-        tag: {
-          permalink: '/tag/:slug',
-          filter: "tags:'%s'" as const,
-          limit: 5,
-        },
-        author: {
-          permalink: '/author/:slug',
-          filter: "authors:'%s'" as const,
-          limit: 5,
-        },
+        tag: '/tag/{slug}',
+        author: '/author/{slug}',
       },
     }
-    const router = routerManager(routesConfig)
+
     const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+    const routesResource = resources.find(isRoutesResource)
+    const router = routerManager(routesResource?.data!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
     const locatorResources = resources.filter(filterLocatorResources)
     const result = router.resolvePaths(locatorResources)
     expect(result).toEqual([
@@ -185,14 +165,14 @@ describe('router resolvePaths', () => {
     const routesConfig = {
       collections: {
         '/': {
-          permalink: '/:slug/',
+          permalink: '/{slug}/',
           template: 'index',
           filter: 'primary_tag:tag-1',
           limit: 5,
           order: undefined,
         },
         '/posts/': {
-          permalink: '/posts/:slug/',
+          permalink: '/posts/{slug}/',
           template: 'index',
           filter: 'primary_tag:-tag-1',
           limit: 5,
@@ -229,20 +209,13 @@ describe('router resolvePaths', () => {
   test('taxonomies', async () => {
     const routesConfig = {
       taxonomies: {
-        tag: {
-          permalink: '/category-1/:slug',
-          filter: "tags:'%s'" as const,
-          limit: 5,
-        },
-        author: {
-          permalink: '/category-2/:slug',
-          filter: "authors:'%s'" as const,
-          limit: 5,
-        },
+        tag: '/category-1/{slug}',
+        author: '/category-2/{slug}',
       },
     }
-    const router = routerManager(routesConfig)
     const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+    const routesResource = resources.find(isRoutesResource)
+    const router = routerManager(routesResource?.data!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
     const locatorResources = resources.filter(filterLocatorResources)
     const result = router.resolvePaths(locatorResources)
     expect(result).toContain('/category-2/napoleon')

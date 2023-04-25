@@ -14,13 +14,14 @@ import {
   type CustomRoutingContext,
   type Redirect,
 } from './domain/routing'
-import { type LocatorResource } from './domain/resource'
+import { type LocatorResource } from './domain/resource/resource.locator'
 import { type DataQuery } from './domain/routes'
 import {
   type DataLoaders,
   createLoaders,
   processData,
 } from './helpers/processQuery'
+import { filterLocatorResources } from "./helpers/resource";
 import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import * as Errors from './errors'
@@ -175,7 +176,7 @@ export function controller(
 function findMainResource(
   data: Record<string, Data>,
   entities: Entities
-): LocatorResource | undefined {
+): Option<LocatorResource> {
   const entries = Object.entries(data)
   const mainIndex = entries.findIndex(([key]) => key === MAIN_ENTRY)
 
@@ -183,8 +184,8 @@ function findMainResource(
     .flatMap<LocatorResource>(([_, dataSchema]) => {
       if (dataSchema.type === 'read') {
         const resource = entities.resource[dataSchema.resource]
-        if (resource?.type !== 'config') {
-          return resource ?? []
+        if (resource && filterLocatorResources(resource)) {
+          return resource
         }
       }
       return []

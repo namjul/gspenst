@@ -3,7 +3,7 @@ import { type Key } from 'path-to-regexp'
 import { ok, type ID } from '../shared/kernel'
 import { type Request } from '../domain/routing'
 import { type Collection } from '../domain/routes'
-import { type LocatorResource } from '../domain/resource'
+import { type LocatorResource } from '../domain/resource/resource.locator'
 import ParentRouter, { type RouteCb } from './ParentRouter'
 
 class CollectionRouter extends ParentRouter {
@@ -75,7 +75,7 @@ class CollectionRouter extends ParentRouter {
       (resource) =>
         resource.type === 'post' &&
         (this.config.filter
-          ? resource.filters.includes(this.config.filter)
+          ? resource.metadata.filters.includes(this.config.filter)
           : true)
     )
 
@@ -103,7 +103,7 @@ class CollectionRouter extends ParentRouter {
             this.respectDominantRouter(
               routers,
               resource.type,
-              'slug' in resource ? resource.slug : undefined
+              'slug' in resource.metadata ? resource.metadata.slug : undefined
             )
           ) {
             return []
@@ -111,7 +111,7 @@ class CollectionRouter extends ParentRouter {
 
           if (!this.postSet.has(resource.id)) {
             this.postSet.add(resource.id)
-            return resource.path
+            return resource.metadata.path
           }
           return []
         })

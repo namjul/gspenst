@@ -13,11 +13,8 @@ import {
   type ResultAsync,
   type ID,
 } from '../shared/kernel'
-import {
-  type Resource,
-  type ResourceType,
-  dynamicVariablesSchema,
-} from '../domain/resource'
+import { type Resource, type ResourceType } from '../domain/resource'
+import { dynamicVariablesSchema } from '../domain/resource/resource.locator'
 import { type DataQuery } from '../domain/routes'
 import { type Pagination, type Data } from '../domain/theming'
 import { type Entities } from '../domain/entity'
@@ -85,7 +82,7 @@ export function processQuery(
       return parse(dynamicVariablesSchema.partial(), query).asyncAndThen(
         (dynamicVariables) => {
           return repository
-            .find(removeNullish(dynamicVariables))
+            .find({ metadata: removeNullish(dynamicVariables) })
             .andThen(loadResource)
             .andThen(normalizeResource)
             .andThen(({ result, entities }) => {
@@ -118,7 +115,7 @@ export function processQuery(
           // 1. apply filter
           const filteredResources = resources.flatMap((resource) => {
             if (query.filter) {
-              if (resource.filters.includes(query.filter)) {
+              if (resource.metadata.filters.includes(query.filter)) {
                 return resource
               }
               return []
@@ -132,9 +129,8 @@ export function processQuery(
             .map((x) => x.flat())
             .map((entityList) => {
               const property = query.order?.map((orderValue) => {
-                return `${orderValue.order === 'desc' ? '-' : ''}${
-                  orderValue.field
-                }`
+                return `${orderValue.order === 'desc' ? '-' : ''}${orderValue.field
+                  }`
               })
               // 2. apply sorting
               return property ? sortOn(entityList, property) : entityList
@@ -185,6 +181,12 @@ export function processQuery(
                   Errors.absurd(
                     `Should not happen: resource ${result} not found`
                   )
+                )
+              }
+
+              if (resource.type === 'routes') {
+                return err(
+                  Errors.other(`Routes resource should not be processed`)
                 )
               }
 
@@ -336,8 +338,9 @@ export function createLoaders(
     ): Promise<Result<Resource>[]> => {
       log(
         'load',
-        resources.map((resource) => resource.relativePath)
+        resources.map((resource) => resource.metadata.relativePath)
       )
+
       // const batchResult = await sem.runExclusive(async () => {
       //   if (resources.every(isPostResource)) {
       //     return api
@@ -474,39 +477,61 @@ export function createLoaders(
       return Promise.all(
         resources.map(async (resource) => {
           return sem.runExclusive(async () => {
-            const x = do_(() => {
-              const { type, relativePath } = resource
+            return do_(() => {
+              const { type } = resource
               switch (type) {
-                case 'page':
+                case 'page': {
+                  const {
+                    metadata: { relativePath },
+                  } = resource
                   return api.getPage({ relativePath }).map((apiPage) => ({
                     ...resource,
                     tinaData: apiPage.data,
                   }))
-                case 'post':
+                }
+                case 'post': {
+                  const {
+                    metadata: { relativePath },
+                  } = resource
                   return api.getPost({ relativePath }).map((apiPost) => ({
                     ...resource,
                     tinaData: apiPost.data,
                   }))
-                case 'author':
+                }
+                case 'author': {
+                  const {
+                    metadata: { relativePath },
+                  } = resource
                   return api.getAuthor({ relativePath }).map((apiAuthor) => ({
                     ...resource,
                     tinaData: apiAuthor.data,
                   }))
-                case 'tag':
+                }
+                case 'tag': {
+                  const {
+                    metadata: { relativePath },
+                  } = resource
                   return api.getTag({ relativePath }).map((apiTag) => ({
                     ...resource,
                     tinaData: apiTag.data,
                   }))
+                }
                 case 'config':
                   return api.getConfig().map((apiConfig) => ({
                     ...resource,
                     tinaData: apiConfig.data,
                   }))
+                case 'routes': {
+                    return err(
+                      Errors.absurd(
+                        `Should not happen: routes resource is not a tina resource`
+                      )
+                    )
+                }
                 default:
                   return assertUnreachable(type)
               }
             })
-            return x
           })
         })
       )
@@ -557,7 +582,7 @@ export function createLoaders(
           const { type, resource } = resourceResultOrError
           log(
             type,
-            resource.relativePath,
+            resource.metadata.relativePath,
             type === 'miss' ? resourceResultOrError.revalidate : undefined
           )
           if (type === 'miss') {
@@ -574,12 +599,12 @@ export function createLoaders(
                 return repository.set(_resource).map(() => _resource)
               })
               .map((_resource) => {
-                log('Found from Tina: ', _resource.relativePath)
+                log('Found from Tina: ', _resource.metadata.relativePath)
                 return _resource
               })
           }
 
-          log('Found from Redis: ', resource.relativePath)
+          log('Found from Redis: ', resource.metadata.relativePath)
           return okAsync(resource)
         })
       )

@@ -1,3 +1,5 @@
+import { type Entries } from './kernel'
+
 export function removeNullish<T extends Record<string, any>>(
   obj: T
 ): { [P in keyof T]?: NonNullable<T[P]> } {
@@ -43,4 +45,19 @@ export function convertArrayToObject<T extends Record<string, any>>(
       [item[key]]: item,
     }
   }, {})
+}
+
+export function objectMatch<
+  T extends Record<string, any>,
+  TT extends Record<string, any>
+>(match: T, target: TT): boolean {
+  const entries = Object.entries(match) as Entries<T>
+  return entries
+    .map(([key, value]) => {
+      if (isObject(value)) {
+        return objectMatch(value, target[key])
+      }
+      return String(target[key]) === String(value) // when i need to compare array convert this to deep-equal
+    })
+    .every(Boolean)
 }

@@ -27,7 +27,6 @@ export type Author = z.infer<typeof authorSchema>
 
 export function createAuthor(
   node: AuthorNodeFragment,
-
   routingMapping: RoutingMapping = {}
 ): Result<Author> {
   const { __typename, _sys, id, ...author } = node

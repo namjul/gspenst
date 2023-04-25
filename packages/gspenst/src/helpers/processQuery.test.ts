@@ -11,7 +11,7 @@ beforeAll(async () => {
   const result = await repository.collect({
     collections: {
       '/': {
-        permalink: '/:slug',
+        permalink: '/{slug}',
         filter: 'slug:-8th-post',
         limit: 5,
       },

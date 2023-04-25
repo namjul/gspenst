@@ -18,7 +18,7 @@ import {
   locatorResourceTypeSchema,
   dynamicVariablesSchema,
   resourceTypes,
-} from './resource'
+} from './resource/resource.locator'
 
 const POST_PER_PAGE = 5
 
@@ -247,7 +247,7 @@ const taxonomies = z
   })
   .strict()
 
-const routesSchema = z
+export const routesSchema = z
   .object({
     routes: z
       .record(
@@ -270,6 +270,7 @@ const routesSchema = z
 
 routesSchema.describe('routesSchema')
 
+export type RoutesConfigInput = z.input<typeof routesSchema>
 export type RoutesConfig = z.output<typeof routesSchema>
 
 export function parseRoutes(input: unknown) {

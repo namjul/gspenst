@@ -3,6 +3,7 @@ import * as Errors from './errors'
 import {
   type AsyncReturnType,
   type ResultAsync,
+  type Option,
   z,
   fromPromise,
   combine,
@@ -16,8 +17,8 @@ import {
   pageTinaDataSchema,
   authorTinaDataSchema,
   tagTinaDataSchema,
-  configTinaDataSchema,
-} from './domain/resource'
+} from './domain/resource/resource.locator'
+import { configTinaDataSchema } from './domain/resource/resource.config'
 import {
   type PostFilter,
   type PageFilter,
@@ -38,23 +39,23 @@ type GetTag = Confify<AsyncReturnType<typeof sdk.getTag>>
 export type Page = {
   type: 'page'
   data: GetPage
-  timestamp: number | undefined
+  timestamp: Option<number>
 }
 export type Post = {
   type: 'post'
   data: GetPost
-  timestamp: number | undefined
+  timestamp: Option<number>
 }
 export type Author = {
   type: 'author'
   data: GetAuthor
-  timestamp: number | undefined
+  timestamp: Option<number>
 }
 export type Tag = { type: 'tag'; data: GetTag; timestamp: number | undefined }
 export type Config = {
   type: 'config'
   data: GetConfig
-  timestamp: number | undefined
+  timestamp: Option<number>
 }
 export type ApiEntity = Page | Post | Author | Tag | Config
 

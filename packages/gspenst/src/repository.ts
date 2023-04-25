@@ -7,9 +7,10 @@ import {
 } from './shared/kernel'
 import { createDb } from './db'
 import { type ResourceType, type Resource } from './domain/resource'
-import { type RoutesConfig } from './domain/routes'
+import { type RoutesConfigInput } from './domain/routes'
 import * as Errors from './errors'
 import { collect } from './collect'
+import { objectMatch } from './shared/utils'
 
 export const db = createDb<Resource>('resources')
 
@@ -24,7 +25,7 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
 >
 
 const repository = {
-  collect(routesConfig: RoutesConfig = {}): RepoResultAsync<Resource[]> {
+  collect(routesConfig: RoutesConfigInput = {}): RepoResultAsync<Resource[]> {
     return collect(routesConfig).andThen((resources) => this.setAll(resources))
   },
 
@@ -45,14 +46,12 @@ const repository = {
   get<T extends ID | ID[]>(id: T): GetValue<T> {
     const ids = [id].flat()
 
-    const result = db
-      .get(...ids.map(String))
-      .map((resources) => {
-        if (ids.length === 1) {
-          return resources[0]
-        }
-        return resources
-      })
+    const result = db.get(...ids.map(String)).map((resources) => {
+      if (ids.length === 1) {
+        return resources[0]
+      }
+      return resources
+    })
 
     return result as GetValue<T>
   },
@@ -69,10 +68,10 @@ const repository = {
       return found
         ? okAsync(found)
         : errAsync(
-            Errors.notFound(
-              `Repo#find: ${JSON.stringify(partialResourceItem, null, 2)}`
-            )
+          Errors.notFound(
+            `Repo#find: ${JSON.stringify(partialResourceItem, null, 2)}`
           )
+        )
     })
   },
 
@@ -91,13 +90,7 @@ const repository = {
       const isResource = 'type' in partialEntity && 'type' in resource
       return (
         (isResource ? partialEntity.type === resource.type : true) &&
-        Object.entries(partialEntity)
-          .map(([key, value]) => {
-            return (
-              String(resource[key as keyof Partial<Resource>]) === String(value)
-            )
-          })
-          .every(Boolean)
+        objectMatch(partialEntity, resource)
       )
     }
   },

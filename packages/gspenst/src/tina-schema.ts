@@ -192,8 +192,8 @@ export function defineSchema(): Schema {
     path: 'content/pages',
     format: 'mdx',
     fields: [...commonFields, ...postFields],
-    ui: {
-      router: ({ document }) => {
+    // ui: {
+    //   router: ({ document }) => {
 
         // if (document._sys.filename === 'about') {
         //   return `/about`
@@ -203,9 +203,9 @@ export function defineSchema(): Schema {
         //     return routingMapping[document._sys.path]
         //   })
 
-        return undefined
-      },
-    },
+        // return undefined
+    //   },
+    // },
   }
 
   const postCollection: Collection = {

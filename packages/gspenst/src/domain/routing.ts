@@ -1,6 +1,6 @@
 import { z } from '../shared/kernel'
 import { isString } from '../shared/utils'
-import { dynamicVariablesSchema, locatorResourceTypeSchema } from './resource'
+import { dynamicVariablesSchema, locatorResourceTypeSchema } from './resource/resource.locator'
 import { queryFilterOptions, dataQuery } from './routes'
 
 export const routeTypeEntry = z.literal('entry')

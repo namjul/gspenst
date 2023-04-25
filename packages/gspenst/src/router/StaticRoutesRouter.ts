@@ -63,7 +63,7 @@ class StaticRoutesRouter extends ParentRouter {
         (resource) =>
           resource.type === 'post' &&
           (this.config.filter
-            ? resource.filters.includes(this.config.filter)
+            ? resource.metadata.filters.includes(this.config.filter)
             : true)
       )
 
