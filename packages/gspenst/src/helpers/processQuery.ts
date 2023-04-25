@@ -316,7 +316,7 @@ export function createLoaders(
   async function batchLoadFromRedis(resources: ReadonlyArray<Resource>) {
     return Promise.all(
       resources.map(async (resource) => {
-        const x = repository
+        return repository
           .get(resource.id)
           .andThen((_resource) => {
             if (isBuildPhase) {
@@ -325,7 +325,6 @@ export function createLoaders(
             return ok({ type: 'miss' as const, resource, revalidate: true })
           })
           .unwrapOr({ type: 'miss' as const, resource, revalidate: false })
-        return x
       })
     )
   }

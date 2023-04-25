@@ -71,9 +71,9 @@ async function loader(
     context.emitError(Errors.format(configResult.error))
   }
 
-  const { routesConfig, pageMap, resources } = configResult.isOk()
+  const { routesConfig, pageMap } = configResult.isOk()
     ? configResult.value
-    : { routesConfig: {}, pageMap: [], resources: [] }
+    : { routesConfig: {}, pageMap: [] }
 
   const routesConfigStringified = JSON.stringify(routesConfig)
 
@@ -107,7 +107,6 @@ export default function GspenstLayout (props) {
 
   const dataFetchingFunctions = `
 
-const resources = ${JSON.stringify(resources)}
 const routesConfig = ${routesConfigStringified}
 const routingParameter = '${routingParameter}'
 const nextPhase = process.env.NEXT_PHASE
@@ -116,14 +115,14 @@ const isStaticHTMLExport = !!${options.isStaticHTMLExport}
 
 export const getStaticPaths = async () => { 
   return {
-    paths: getPaths({ routesConfig, resources }),
+    paths: getPaths({ routesConfig }),
     fallback: isStaticHTMLExport ? false : 'blocking',
   }
 }
 
 export const getStaticProps = async ({ params }) => {
 
-  const propsResult = await getProps({ routesConfig, resources, isBuildPhase }, params?.[routingParameter])
+  const propsResult = await getProps({ routesConfig, isBuildPhase }, params?.[routingParameter])
 
   if (propsResult.isOk()) {
     const result = await propsResult.value
