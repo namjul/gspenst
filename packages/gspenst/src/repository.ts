@@ -11,9 +11,7 @@ import { type RoutesConfig } from './domain/routes'
 import * as Errors from './errors'
 import { collect } from './collect'
 
-type Meta = { type: 'meta'; updated_at: number }
-
-export const db = createDb<Resource | Meta>('resources')
+export const db = createDb<Resource>('resources')
 
 type RepoResultAsync<T> = ResultAsync<T>
 
@@ -31,10 +29,7 @@ const repository = {
   },
 
   set(resource: Resource) {
-    return combine([
-      db.set(String(resource.id), resource),
-      db.set('meta', { type: 'meta', updated_at: new Date().getTime() }),
-    ])
+    return db.set(String(resource.id), resource)
   },
 
   setAll(resources: Resource[]) {
@@ -47,35 +42,11 @@ const repository = {
     )
   },
 
-  sinceLastUpdate(date: Date) {
-    return db.get('meta').andThen((resources) => {
-      if (resources.length === 1) {
-        const resourcesMetaData = resources[0]
-        if (resourcesMetaData && 'updated_at' in resourcesMetaData) {
-          return okAsync(date.getTime() - Number(resourcesMetaData.updated_at))
-        }
-        return errAsync(Errors.notFound(`Repo#sinceLastUpdate`))
-      } else {
-        return errAsync(
-          Errors.other(
-            'sinceLastUpdate: there should be only a single meta entry'
-          )
-        )
-      }
-    })
-  },
-
   get<T extends ID | ID[]>(id: T): GetValue<T> {
     const ids = [id].flat()
 
     const result = db
       .get(...ids.map(String))
-      .map((resources) => {
-        return resources.filter((resource) => {
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          return !('type' in resource && resource.type === 'meta')
-        })
-      })
       .map((resources) => {
         if (ids.length === 1) {
           return resources[0]
