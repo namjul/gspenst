@@ -19,6 +19,7 @@
     "prerelease": "yarn build",
     "release": "changeset publish",
     "test": "jest && yarn workspace gspenst test:tina",
+    "test:watch": "jest --watch",
     "version": "changeset version",
     "watch": "preconstruct watch"
   },
