@@ -7,7 +7,8 @@ class AdminRouter extends ParentRouter {
   routeRegExpResult: Result<RegExp>
   constructor() {
     super('AdminRouter')
-    this.routeRegExpResult = pathToRegexp('/admin')
+    this.route = '/admin'
+    this.routeRegExpResult = pathToRegexp(this.getRoute())
   }
   handle(
     request: string,
@@ -20,7 +21,7 @@ class AdminRouter extends ParentRouter {
 
         if (match) {
           // redirect to tinacms generated admin page
-          return ok(this.createRedirectContext(`${this.route}/index.html`))
+          return ok(this.createRedirectContext(`${this.getRoute()}/index.html`))
         }
         return ok(undefined)
       })
