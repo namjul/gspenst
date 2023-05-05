@@ -270,7 +270,7 @@ export const routesSchema = z
 
 routesSchema.describe('routesSchema')
 
-export type RoutesConfigInput = z.input<typeof routesSchema>
+export type RoutesConfigInput = z.input<typeof routesSchema> | unknown
 export type RoutesConfig = z.output<typeof routesSchema>
 
 export function parseRoutes(input: unknown) {

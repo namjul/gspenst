@@ -114,10 +114,16 @@ const isBuildPhase = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
 const isStaticHTMLExport = !!${options.isStaticHTMLExport}
 
 export const getStaticPaths = async () => { 
-  return {
-    paths: getPaths({ routesConfig }),
-    fallback: isStaticHTMLExport ? false : 'blocking',
+  const pathResult = await getPaths({ routesConfig })
+  if (pathResult.isOk()) {
+    const paths = pathResult.value
+    return {
+      paths,
+      fallback: isStaticHTMLExport ? false : 'blocking',
+    }
   }
+
+  throw Errors.format(pathResult.error)
 }
 
 export const getStaticProps = async ({ params }) => {
