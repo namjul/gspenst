@@ -1,6 +1,7 @@
 {
   "name": "gspenst",
   "version": "0.0.6",
+  "license": "MIT",
   "exports": {
     "./data": {
       "module": "./data/dist/gspenst-data.esm.js",
