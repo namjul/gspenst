@@ -1,8 +1,5 @@
 import { z } from '../../shared/kernel'
-import {
-  resourceTypeConfig,
-  configResourceSchema,
-} from './resource.config'
+import { resourceTypeConfig, configResourceSchema } from './resource.config'
 import {
   resourceTypePost,
   resourceTypePage,
@@ -44,7 +41,6 @@ export const tinaResourceSchema = z
     tagResourceSchema,
   ])
   .describe('tinaResourceSchema')
-
 
 export const tinaResourceTypeSchema = z.union([
   resourceTypeConfig,

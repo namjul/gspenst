@@ -1,7 +1,4 @@
-import {
-  idSchema,
-  z,
-} from '../../shared/kernel'
+import { idSchema, z } from '../../shared/kernel'
 
 export const resourceBaseSchema = z.object({
   id: idSchema,

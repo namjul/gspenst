@@ -5,9 +5,9 @@ import {
   type PageResource,
   type PostResource,
 } from '../domain/resource/resource.locator'
-import { ConfigResource } from "../domain/resource/resource.config";
-import { type Resource } from "../domain/resource";
-import { type RoutesResource } from "../domain/resource/resource.routes";
+import { ConfigResource } from '../domain/resource/resource.config'
+import { type Resource } from '../domain/resource'
+import { type RoutesResource } from '../domain/resource/resource.routes'
 
 export const isPostResource = (
   resource: Resource
@@ -45,7 +45,8 @@ export const isRoutesResource = (
 
 export const filterLocatorResources = (
   resource: Resource
-): resource is LocatorResource => !isConfigResource(resource) && !isRoutesResource(resource)
+): resource is LocatorResource =>
+  !isConfigResource(resource) && !isRoutesResource(resource)
 
 export const filterTagResources = (
   resource: Resource

@@ -32,7 +32,6 @@ class AdminRouter extends ParentRouter {
   resolvePaths() {
     return []
   }
-
 }
 
 export default AdminRouter

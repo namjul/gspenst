@@ -68,10 +68,10 @@ const repository = {
       return found
         ? okAsync(found)
         : errAsync(
-          Errors.notFound(
-            `Repo#find: ${JSON.stringify(partialResourceItem, null, 2)}`
+            Errors.notFound(
+              `Repo#find: ${JSON.stringify(partialResourceItem, null, 2)}`
+            )
           )
-        )
     })
   },
 

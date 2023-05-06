@@ -84,17 +84,19 @@ import { getPaths, getProps } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import __gspenst_withTheme__ from '${themePath}'
-${themeConfigPath
-      ? `import __gspenst_themeConfig__ from '${themeConfigPath}'`
-      : ''
-    }
+${
+  themeConfigPath
+    ? `import __gspenst_themeConfig__ from '${themeConfigPath}'`
+    : ''
+}
 `
 
   const component = `
 const pageMap = ${JSON.stringify(pageMap)}
 const GspenstThemeComponent = __gspenst_withData__(
-  __gspenst_withTheme__(${themeConfigPath ? '__gspenst_themeConfig__' : 'null'
-    }), {
+  __gspenst_withTheme__(${
+    themeConfigPath ? '__gspenst_themeConfig__' : 'null'
+  }), {
     pageMap,
   }
 )

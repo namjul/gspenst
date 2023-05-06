@@ -2,8 +2,6 @@
   "name": "@gspenst/next",
   "version": "0.0.6",
   "license": "MIT",
-  "main": "dist/gspenst-next.cjs.js",
-  "module": "dist/gspenst-next.esm.js",
   "exports": {
     ".": {
       "module": "./dist/gspenst-next.esm.js",
@@ -19,6 +17,8 @@
     },
     "./package.json": "./package.json"
   },
+  "main": "dist/gspenst-next.cjs.js",
+  "module": "dist/gspenst-next.esm.js",
   "files": [
     "dist",
     "loader",

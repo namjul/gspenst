@@ -21,7 +21,7 @@ import {
   createLoaders,
   processData,
 } from './helpers/processQuery'
-import { filterLocatorResources } from "./helpers/resource";
+import { filterLocatorResources } from './helpers/resource'
 import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import * as Errors from './errors'

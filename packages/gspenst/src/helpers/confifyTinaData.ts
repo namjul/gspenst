@@ -4,13 +4,12 @@ import { type Result, combine, ok, err } from '../shared/kernel'
 import * as Errors from '../errors'
 import { safeGraphqlParse, safeGraphqlStringify } from '../utils'
 import { type LocatorResource } from '../domain/resource/resource.locator'
-import { type ConfigResource } from "../domain/resource/resource.config";
+import { type ConfigResource } from '../domain/resource/resource.config'
 
 export function confifyTinaData(
   configResource: ConfigResource,
   resource: LocatorResource | undefined
 ): Result<LocatorResource | ConfigResource> {
-
   if (!resource) {
     // TODO should not this return err?
     return ok(configResource)

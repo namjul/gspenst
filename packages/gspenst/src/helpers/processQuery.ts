@@ -129,8 +129,9 @@ export function processQuery(
             .map((x) => x.flat())
             .map((entityList) => {
               const property = query.order?.map((orderValue) => {
-                return `${orderValue.order === 'desc' ? '-' : ''}${orderValue.field
-                  }`
+                return `${orderValue.order === 'desc' ? '-' : ''}${
+                  orderValue.field
+                }`
               })
               // 2. apply sorting
               return property ? sortOn(entityList, property) : entityList
@@ -522,11 +523,11 @@ export function createLoaders(
                     tinaData: apiConfig.data,
                   }))
                 case 'routes': {
-                    return err(
-                      Errors.absurd(
-                        `Should not happen: routes resource is not a tina resource`
-                      )
+                  return err(
+                    Errors.absurd(
+                      `Should not happen: routes resource is not a tina resource`
                     )
+                  )
                 }
                 default:
                   return assertUnreachable(type)

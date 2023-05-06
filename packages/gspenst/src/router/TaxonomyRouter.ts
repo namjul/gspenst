@@ -106,11 +106,11 @@ class TaxonomyRouter extends ParentRouter {
       const pages =
         postResources.length > 0
           ? Math.ceil(
-            postResources.length /
-            (this.config.limit === 'all'
-              ? postResources.length
-              : this.config.limit)
-          )
+              postResources.length /
+                (this.config.limit === 'all'
+                  ? postResources.length
+                  : this.config.limit)
+            )
           : 0
 
       if (resourcePath) {

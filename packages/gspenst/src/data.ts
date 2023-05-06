@@ -54,7 +54,7 @@ function useGspenstState(
   const [state, dispatch] = React.useReducer(storeReducer, initialState)
 
   if (state.resource.type === 'routes') {
-    throw new Error("routes resource should not land on client")
+    throw new Error('routes resource should not land on client')
   }
 
   const { data } = state.resource
@@ -205,7 +205,7 @@ const withData = (Component: ThemeComponent, { pageMap }: WithDataOptions) => {
   HOC.displayName = `withData(${
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     Component.displayName || Component.name || 'Component'
-    })`
+  })`
 
   return HOC
 }

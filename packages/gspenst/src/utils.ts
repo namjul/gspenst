@@ -25,9 +25,9 @@ export function compilePermalink(
     error instanceof Error
       ? Errors.parse(error, '`path-to-regexp`#compile')
       : Errors.other(
-        '`path-to-regexp`#compile',
-        error instanceof Error ? error : undefined
-      )
+          '`path-to-regexp`#compile',
+          error instanceof Error ? error : undefined
+        )
   )(dynamicVariables)
 }
 
@@ -59,7 +59,13 @@ export const safeGraphqlStringify = fromThrowable(
       : Errors.other('graphql.print')
 )
 
-export const startSubprocess = async ({ command, cwd }: { command: string, cwd?: string }) => {
+export const startSubprocess = async ({
+  command,
+  cwd,
+}: {
+  command: string
+  cwd?: string
+}) => {
   if (typeof command === 'string') {
     const commands = command.split(' ')
     const firstCommand = commands[0]
@@ -67,7 +73,7 @@ export const startSubprocess = async ({ command, cwd }: { command: string, cwd?:
     const ps = spawn(firstCommand!, args, {
       stdio: 'inherit',
       shell: true,
-      cwd
+      cwd,
     })
     ps.on('error', (code) => {
       console.error(`name: ${code.name}

@@ -4,6 +4,9 @@
   "license": "MIT",
   "main": "dist/gspenst-cli.cjs.js",
   "module": "dist/gspenst-cli.esm.js",
+  "bin": {
+    "gspenst": "./bin.js"
+  },
   "files": [
     "bin.js",
     "!**/*.d.ts",
@@ -12,9 +15,6 @@
   ],
   "scripts": {
     "lint:types": "tsc --noEmit"
-  },
-  "bin": {
-    "gspenst": "./bin.js"
   },
   "preconstruct": {
     "entrypoints": [

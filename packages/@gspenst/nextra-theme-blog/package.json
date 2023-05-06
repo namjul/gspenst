@@ -2,8 +2,6 @@
   "name": "@gspenst/nextra-theme-blog",
   "version": "0.0.6",
   "license": "MIT",
-  "main": "dist/gspenst-nextra-theme-blog.cjs.js",
-  "module": "dist/gspenst-nextra-theme-blog.esm.js",
   "exports": {
     ".": {
       "module": "./dist/gspenst-nextra-theme-blog.esm.js",
@@ -16,6 +14,8 @@
     "./package.json": "./package.json",
     "./style.css": "./style.css"
   },
+  "main": "dist/gspenst-nextra-theme-blog.cjs.js",
+  "module": "dist/gspenst-nextra-theme-blog.esm.js",
   "files": [
     "dist",
     "schema"

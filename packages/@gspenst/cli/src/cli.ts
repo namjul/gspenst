@@ -1,5 +1,3 @@
+const [, , ...args] = process.argv
 
-const [,, ...args] = process.argv
-
-console.log(`Hello World ${args}`);
-
+console.log(`Hello World ${args}`)

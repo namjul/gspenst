@@ -27,7 +27,6 @@ import { resourceBaseSchema } from './resource.base'
  * The semantic meaning is that, distict to other resources, locator resources than can be targeted by a URL.
  */
 
-
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 const isPostNode = (value: any): value is PostNodeFragment =>
   '__typename' in value && value.__typename === 'Post'
@@ -283,7 +282,8 @@ export function createLocatorResource(
   data: LocatorResourceNode,
   time: Option<number>
 ) {
-  const { _sys: { path, relativePath, breadcrumbs } = {}, __typename: type } = data
+  const { _sys: { path, relativePath, breadcrumbs } = {}, __typename: type } =
+    data
   const resourceLocatorResult = createDynamicVariables(data).map(
     (dynamicVariables) => {
       const { slug } = dynamicVariables

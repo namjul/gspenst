@@ -8,7 +8,6 @@ import {
 } from 'tinacms'
 // import repository from "./repository";
 
-
 // import slugify from 'slugify'
 
 // type ValidateMeta = {
@@ -23,7 +22,6 @@ import {
 // TODO use https://tina.io/docs/contextual-editing/router/
 //
 
-
 // When `tina-admin` is enabled, this plugin configures contextual editing for collections
 // void import('tinacms').then(({ RouteMappingPlugin }) => {
 //   const RouteMapping = new RouteMappingPlugin((_collection, document) => {
@@ -31,7 +29,6 @@ import {
 //   })
 //   cms.plugins.add(RouteMapping)
 // })
-
 
 export type { Schema }
 const dateFormat = 'YYYY MM DD'
@@ -195,15 +192,15 @@ export function defineSchema(): Schema {
     // ui: {
     //   router: ({ document }) => {
 
-        // if (document._sys.filename === 'about') {
-        //   return `/about`
-        // }
+    // if (document._sys.filename === 'about') {
+    //   return `/about`
+    // }
 
-        //   const RouteMapping = new RouteMappingPlugin((_collection, document) => {
-        //     return routingMapping[document._sys.path]
-        //   })
+    //   const RouteMapping = new RouteMappingPlugin((_collection, document) => {
+    //     return routingMapping[document._sys.path]
+    //   })
 
-        // return undefined
+    // return undefined
     //   },
     // },
   }

@@ -8,7 +8,6 @@ export async function startTinaServer(
   this: { projectPath: string } & EventEmitter,
   config: { onlyCheck: boolean }
 ) {
-
   if (!config.onlyCheck) {
     log('Starting tina server', this.projectPath)
 
