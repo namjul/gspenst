@@ -66,7 +66,7 @@ const gitRepoResult = gitDiscover(process.cwd()).map((repository) => {
 })
 
 const sdk = getSdk(async (query: any, variables: any): Promise<any> => {
-  /* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment */
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
   const result = await client.request({ query, variables })
   return { ...result, variables }
   /* eslint-enable */

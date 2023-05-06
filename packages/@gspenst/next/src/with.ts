@@ -39,7 +39,6 @@ export default (...args: [string | LoaderOptions, string]) =>
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     return withPreconstruct({
-      // eslint-disable-line @typescript-eslint/no-unsafe-call
       ...nextConfig,
       pageExtensions,
       webpack(config: Configuration, context) {

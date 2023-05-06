@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-invalid-this */
-
 import path from 'path'
 import yaml from 'js-yaml'
 import { type LoaderContext } from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
