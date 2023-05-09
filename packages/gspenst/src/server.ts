@@ -1,4 +1,7 @@
+import fs from 'fs'
+import path from 'path'
 import EventEmitter, { once } from 'events'
+import pkg from '../package.json'
 import {
   parseRoutesWithDefaults as parseRoutes,
   type RoutesConfigInput,
@@ -23,8 +26,8 @@ export const build = (routesConfigInput: RoutesConfigInput) => {
   })
 }
 
-export const buildTina = (path: string) => {
-  return startSubprocess({ command: 'tinacms build', cwd: path })
+export const buildTina = (cwd: string) => {
+  return startSubprocess({ command: 'tinacms build', cwd })
 }
 
 type Config = {
@@ -52,7 +55,6 @@ export const getProps = async (config: Config, params: string | string[]) => {
     createLoaders(undefined, config.isBuildPhase)
   )
 }
-
 
 export async function startTinaServer(
   this: { projectPath: string } & EventEmitter,
@@ -88,6 +90,18 @@ export async function startTinaServer(
 
     return ps
   }
+}
+
+export async function reloadTinaServer() {
+  const packagePath: string = path.dirname(
+    require.resolve(`gspenst/package.json`)
+  )
+
+  const distFilePath = path.resolve(packagePath, pkg.module) // tinacms uses `module`
+
+  // touch file
+  const time = new Date()
+  fs.utimesSync(distFilePath, time, time)
 }
 
 export { collect } from './collect'

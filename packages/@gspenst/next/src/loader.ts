@@ -10,7 +10,7 @@ import { PARAM_REGEX, IS_PRODUCTION } from './constants'
 export type LoaderOptions = {
   theme: string
   themeConfig?: string
-  isServer: boolean
+  isServer?: boolean
   isStaticHTMLExport: boolean
 }
 

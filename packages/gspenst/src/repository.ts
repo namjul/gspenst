@@ -24,13 +24,32 @@ type FindAllValue<T extends ResourceType> = RepoResultAsync<
   (T extends null | undefined ? Resource : Extract<Resource, { type: T }>)[]
 >
 
-const repository = {
+type Func = (data: unknown) => void
+const observers: Array<Func> = []
+const observer = Object.freeze({
+  notify: (data: unknown) => observers.forEach((_observer) => _observer(data)),
+  subscribe: (func: Func) => observers.push(func),
+  unsubscribe: (func: Func) => {
+    ;[...observers].forEach((_observer, index) => {
+      if (_observer === func) {
+        observers.splice(index, 1)
+      }
+    })
+  },
+})
+
+const repository = Object.freeze({
+  ...observer,
+
   collect(routesConfig: RoutesConfigInput = {}): RepoResultAsync<Resource[]> {
     return collect(routesConfig).andThen((resources) => this.setAll(resources))
   },
 
   set(resource: Resource) {
-    return db.set(String(resource.id), resource)
+    return db.set(String(resource.id), resource).map(result => {
+      this.notify(result)
+      return result
+    })
   },
 
   setAll(resources: Resource[]) {
@@ -94,7 +113,7 @@ const repository = {
       )
     }
   },
-}
+})
 
 type Repository = typeof repository
 

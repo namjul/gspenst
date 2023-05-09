@@ -37,19 +37,23 @@ export default (...args: [string | LoaderOptions, string]) =>
     // https://nextjs.org/docs/advanced-features/static-html-export
     const isStaticHTMLExport = nextConfig.output === 'export'
 
+    const gspenstPlugin = new GspenstPlugin()
+
+    const gspenstLoaderOptions: LoaderOptions = {
+      ...options,
+      isStaticHTMLExport,
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     return withPreconstruct({
       ...nextConfig,
       pageExtensions,
       webpack(config: Configuration, context) {
         log('Initializing next webpack config')
-        const gspenst = new GspenstPlugin(context.isServer)
-        if (config.plugins) {
-          config.plugins.push(gspenst)
-        } else {
-          config.plugins = [gspenst]
+        if (context.isServer) {
+          config.plugins ||= [] // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+          config.plugins.push(gspenstPlugin)
         }
-
         // [Prefer `module` over `main`](https://github.com/vercel/next.js/issues/9323#issuecomment-550560435)
         // This solves the Warning: Did not expect server HTML to contain a ...
         // Note: main/cjs entry has `require()` and module/esm `import()`
@@ -67,8 +71,7 @@ export default (...args: [string | LoaderOptions, string]) =>
             {
               loader: '@gspenst/next/loader',
               options: {
-                ...options,
-                isStaticHTMLExport,
+                ...gspenstLoaderOptions,
                 isServer: context.isServer,
               },
             },

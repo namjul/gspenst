@@ -12,6 +12,12 @@ export function clear(): DBResultAsync<'OK'> {
 
 export function createDb<T extends object>(key: string) {
   const db = {
+    subscribe(): DBResultAsync<unknown> {
+      return fromPromise(redis.subscribe(key), (error: unknown) =>
+        Errors.other('Db', error instanceof Error ? error : undefined)
+      )
+    },
+
     delete(): DBResultAsync<number> {
       return fromPromise(redis.del(key), (error: unknown) =>
         Errors.other('Db', error instanceof Error ? error : undefined)
