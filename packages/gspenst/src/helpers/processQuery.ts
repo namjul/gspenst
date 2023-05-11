@@ -487,7 +487,7 @@ export function createLoaders(
                   } = resource
                   return api.getPage({ relativePath }).map((apiPage) => ({
                     ...resource,
-                    tinaData: apiPage.data,
+                    data: apiPage.data,
                   }))
                 }
                 case 'post': {
@@ -496,7 +496,7 @@ export function createLoaders(
                   } = resource
                   return api.getPost({ relativePath }).map((apiPost) => ({
                     ...resource,
-                    tinaData: apiPost.data,
+                    data: apiPost.data,
                   }))
                 }
                 case 'author': {
@@ -505,7 +505,7 @@ export function createLoaders(
                   } = resource
                   return api.getAuthor({ relativePath }).map((apiAuthor) => ({
                     ...resource,
-                    tinaData: apiAuthor.data,
+                    data: apiAuthor.data,
                   }))
                 }
                 case 'tag': {
@@ -514,13 +514,13 @@ export function createLoaders(
                   } = resource
                   return api.getTag({ relativePath }).map((apiTag) => ({
                     ...resource,
-                    tinaData: apiTag.data,
+                    data: apiTag.data,
                   }))
                 }
                 case 'config':
                   return api.getConfig().map((apiConfig) => ({
                     ...resource,
-                    tinaData: apiConfig.data,
+                    data: apiConfig.data,
                   }))
                 case 'routes': {
                   return err(

@@ -58,19 +58,19 @@ export function createPost(
   node: PostNodeFragment | PageNodeFragment,
   routingMapping: RoutingMapping = {}
 ): Result<Post> {
-  const { __typename, _sys, id, ...post } = node
+  const { id, title, date, excerpt, slug } = node
 
-  const idResult = parse(idSchema, node.id)
+  const idResult = parse(idSchema, id)
 
   if (idResult.isErr()) {
     return err(idResult.error)
   }
 
-  const rawTags = (post.tags ?? []).flatMap((tag) => {
+  const rawTags = (node.tags ?? []).flatMap((tag) => {
     return tag?.tag ?? []
   })
 
-  const rawAuthors = (post.authors ?? []).flatMap((author) => {
+  const rawAuthors = (node.authors ?? []).flatMap((author) => {
     return author?.author ?? []
   })
 
@@ -95,17 +95,19 @@ export function createPost(
       path: routingMapping[node._sys.path] ?? `/${idResult.value}`,
     }
 
-    const { headings, titleText, hasH1 } = getHeaders(post.content as Root)
+    const { headings, titleText, hasH1 } = getHeaders(node.content as Root)
 
     return parse(postSchema, {
       id: idResult.value,
       type: 'post',
-      ...post,
-      title: titleText ?? post.title,
+      title: titleText ?? title,
       headings,
       hasH1,
       tags,
       authors,
+      date,
+      excerpt,
+      slug,
       ...specialAttributes,
     })
   })

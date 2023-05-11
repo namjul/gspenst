@@ -29,18 +29,20 @@ export function createTag(
   node: TagNodeFragment,
   routingMapping: RoutingMapping = {}
 ): Result<Tag> {
-  const { __typename, _sys, id, ...tag } = node
+  const { id, name, date, slug } = node
 
-  const idResult = parse(idSchema, node.id)
+  const idResult = parse(idSchema, id)
 
   if (idResult.isErr()) {
     return err(idResult.error)
   }
 
   return parse(tagSchema, {
-    id: idResult.value,
     type: 'tag',
+    id: idResult.value,
+    name,
+    date,
+    slug,
     path: routingMapping[node._sys.path] ?? `/${idResult.value}`,
-    ...tag,
   })
 }

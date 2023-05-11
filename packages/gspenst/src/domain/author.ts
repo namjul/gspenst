@@ -29,18 +29,20 @@ export function createAuthor(
   node: AuthorNodeFragment,
   routingMapping: RoutingMapping = {}
 ): Result<Author> {
-  const { __typename, _sys, id, ...author } = node
+  const { id, name, date, slug } = node
 
-  const idResult = parse(idSchema, node.id)
+  const idResult = parse(idSchema, id)
 
   if (idResult.isErr()) {
     return err(idResult.error)
   }
 
   return parse(authorSchema, {
-    id: idResult.value,
     type: 'author',
+    id: idResult.value,
+    name,
+    date,
+    slug,
     path: routingMapping[node._sys.path] ?? `/${idResult.value}`,
-    ...author,
   })
 }
