@@ -1,5 +1,17 @@
 # @gspenst/nextra-theme-blog
 
+## 0.1.0
+
+### Minor Changes
+
+- 2300c4e: Mark new phase.
+
+### Patch Changes
+
+- Updated dependencies [2300c4e]
+  - @gspenst/next@0.1.0
+  - gspenst@0.1.0
+
 ## 0.0.6
 
 ### Patch Changes

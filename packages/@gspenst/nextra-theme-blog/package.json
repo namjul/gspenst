@@ -1,6 +1,6 @@
 {
   "name": "@gspenst/nextra-theme-blog",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -24,9 +24,9 @@
     "lint:types": "tsc --noEmit"
   },
   "dependencies": {
-    "@gspenst/next": "^0.0.6",
+    "@gspenst/next": "^0.1.0",
     "@mdx-js/react": "^2.1.1",
-    "gspenst": "^0.0.6",
+    "gspenst": "^0.1.0",
     "nextra-theme-blog": "2.2.19"
   },
   "devDependencies": {

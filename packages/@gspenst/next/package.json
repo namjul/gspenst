@@ -1,6 +1,6 @@
 {
   "name": "@gspenst/next",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -33,7 +33,7 @@
     "@preconstruct/next": "^4.0.0",
     "debug": "^4.3.3",
     "fs-extra": "^10.0.0",
-    "gspenst": "^0.0.6",
+    "gspenst": "^0.1.0",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
