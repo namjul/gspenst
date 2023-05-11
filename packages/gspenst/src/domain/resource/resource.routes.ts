@@ -2,7 +2,7 @@ import { z } from '../../shared/kernel'
 import { parse } from '../../helpers/parser'
 import { routesSchema, type RoutesConfigInput } from '../routes'
 import { resourceBaseSchema } from './resource.base'
-import defaultRoutes from "../../defaultRoutes";
+import defaultRoutes from '../../defaultRoutes'
 
 export const resourceTypeRoutes = z.literal('routes')
 
