@@ -1,19 +1,15 @@
 {
   "name": "@gspenst/minimal-starter",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
-    "build": "tinacms build && next build",
-    "dev": "tinacms dev -c \"next dev\"",
-    "export": "npm run build && next export",
+    "build": "next build",
+    "dev": "next dev",
     "lint": "next lint",
-    "lint:types": "tsc --noEmit",
-    "start": "tinacms build && next start"
+    "start": "next start"
   },
   "dependencies": {
-    "@gspenst/next": "*",
-    "@tinacms/cli": "^1.2.2",
-    "gspenst": "*",
+    "@gspenst/next": "^0.1.0",
+    "gspenst": "^0.1.0",
     "next": "^12.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
