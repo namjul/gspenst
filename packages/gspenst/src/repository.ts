@@ -46,7 +46,7 @@ const repository = Object.freeze({
   },
 
   set(resource: Resource) {
-    return db.set(String(resource.id), resource).map(result => {
+    return db.set(String(resource.id), resource).map((result) => {
       this.notify(result)
       return result
     })

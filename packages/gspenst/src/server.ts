@@ -1,6 +1,6 @@
 import EventEmitter, { once } from 'events'
-import path from "path";
-import fse from "fs-extra";
+import path from 'path'
+import fse from 'fs-extra'
 import {
   parseRoutesWithDefaults as parseRoutes,
   type RoutesConfigInput,
@@ -11,7 +11,11 @@ import repository from './repository'
 import { routerManager } from './router'
 import { controller } from './controller'
 import { createLoaders } from './helpers/processQuery'
-import { getPageMap, getRoutingMapping, type PageMap } from './helpers/getPageMap'
+import {
+  getPageMap,
+  getRoutingMapping,
+  type PageMap,
+} from './helpers/getPageMap'
 import { createLogger } from './logger'
 import { startSubprocess } from './utils'
 
@@ -93,13 +97,16 @@ export async function startTinaServer(
 }
 
 export function updateRoutingMapping(pageMap: PageMap) {
-    log("Writing `routingMapping.json`...")
-    const routingMapping = getRoutingMapping(pageMap)
-    const packagePath: string = path.dirname(
-      require.resolve(`gspenst/package.json`)
-    )
-    const routingMappingFilePath = path.resolve(packagePath, "./routingMapping.json")
-    return fse.writeJsonSync(routingMappingFilePath, routingMapping)
+  log('Writing `routingMapping.json`...')
+  const routingMapping = getRoutingMapping(pageMap)
+  const packagePath: string = path.dirname(
+    require.resolve(`gspenst/package.json`)
+  )
+  const routingMappingFilePath = path.resolve(
+    packagePath,
+    './routingMapping.json'
+  )
+  return fse.writeJsonSync(routingMappingFilePath, routingMapping)
 }
 
 export { collect } from './collect'

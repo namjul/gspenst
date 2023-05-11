@@ -9,7 +9,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import routingMapping from 'gspenst/routingMapping.json'
 import { createLogger } from './logger'
-import { type RoutingMapping } from "./helpers/getPageMap";
+import { type RoutingMapping } from './helpers/getPageMap'
 
 const log = createLogger('tinaschema')
 
