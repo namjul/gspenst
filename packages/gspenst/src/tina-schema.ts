@@ -8,6 +8,9 @@ import {
 } from 'tinacms'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import routingMapping from 'gspenst/routingMapping.json'
+import { createLogger } from './logger'
+
+const log = createLogger('tinaschema')
 
 // import slugify from 'slugify'
 
@@ -23,7 +26,7 @@ import routingMapping from 'gspenst/routingMapping.json'
 // TODO use https://tina.io/docs/contextual-editing/router/
 //
 
-console.log('TINA SCHEMA BUILDING with the following routingMapping', routingMapping)
+log('BUILDING with the following routingMapping', routingMapping)
 
 export type { Schema }
 const dateFormat = 'YYYY MM DD'
