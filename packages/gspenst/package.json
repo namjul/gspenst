@@ -34,7 +34,7 @@
   "scripts": {
     "dev": "tinacms dev --rootPath src",
     "lint:types": "tsc --noEmit",
-    "test:tina": "tinacms audit --rootPath src"
+    "test": "tinacms audit --rootPath src"
   },
   "dependencies": {
     "@napi-rs/simple-git": "^0.1.8",
