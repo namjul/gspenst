@@ -6,7 +6,8 @@ import {
   type TinaField,
   type Schema,
 } from 'tinacms'
-// import repository from "./repository";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import routingMapping from 'gspenst/routingMapping.json'
 
 // import slugify from 'slugify'
 
@@ -22,13 +23,7 @@ import {
 // TODO use https://tina.io/docs/contextual-editing/router/
 //
 
-// When `tina-admin` is enabled, this plugin configures contextual editing for collections
-// void import('tinacms').then(({ RouteMappingPlugin }) => {
-//   const RouteMapping = new RouteMappingPlugin((_collection, document) => {
-//     return routingMapping[document._sys.path]
-//   })
-//   cms.plugins.add(RouteMapping)
-// })
+console.log('TINA SCHEMA BUILDING with the following routingMapping', routingMapping)
 
 export type { Schema }
 const dateFormat = 'YYYY MM DD'
@@ -189,20 +184,18 @@ export function defineSchema(): Schema {
     path: 'content/pages',
     format: 'mdx',
     fields: [...commonFields, ...postFields],
-    // ui: {
-    //   router: ({ document }) => {
+    ui: {
+      router: () => {
+        // if (document._sys.filename === 'about') {
+        //   return `/about`
+        // }
+        // const RouteMapping = new RouteMappingPlugin((_collection, document) => {
+        //   return routingMapping[document._sys.path]
+        // })
 
-    // if (document._sys.filename === 'about') {
-    //   return `/about`
-    // }
-
-    //   const RouteMapping = new RouteMappingPlugin((_collection, document) => {
-    //     return routingMapping[document._sys.path]
-    //   })
-
-    // return undefined
-    //   },
-    // },
+        return undefined
+      },
+    },
   }
 
   const postCollection: Collection = {

@@ -57,13 +57,15 @@ function getLocatorResources(resources: Resource[] = []): PageMapItem[] {
   })
 }
 
+export type PageMap = PageMapItem[]
+
 export function getPageMap(
   resources: Resource[]
   // currentResourcePath: string,
   // pageMaps: PageMapItem[],
   // fileMap: Record<string, PageMapItem>,
   // defaultLocale: string
-): PageMapItem[] {
+): PageMap {
   const routesResource = resources.find(isRoutesResource)
   const routesConfig: RoutesConfig = routesResource?.data ?? {}
 

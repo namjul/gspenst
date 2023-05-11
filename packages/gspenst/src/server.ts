@@ -1,7 +1,6 @@
-import fs from 'fs'
-import path from 'path'
 import EventEmitter, { once } from 'events'
-import pkg from '../package.json'
+import path from "path";
+import fse from "fs-extra";
 import {
   parseRoutesWithDefaults as parseRoutes,
   type RoutesConfigInput,
@@ -12,7 +11,7 @@ import repository from './repository'
 import { routerManager } from './router'
 import { controller } from './controller'
 import { createLoaders } from './helpers/processQuery'
-import { getPageMap } from './helpers/getPageMap'
+import { getPageMap, getRoutingMapping, type PageMap } from './helpers/getPageMap'
 import { createLogger } from './logger'
 import { startSubprocess } from './utils'
 
@@ -21,7 +20,8 @@ const log = createLogger(`server`)
 export const build = (routesConfigInput: RoutesConfigInput) => {
   return repository.collect(routesConfigInput).map((resources) => {
     const routesResource = resources.find(isRoutesResource)
-    const pageMap = getPageMap(resources) // remove and add call to loader.ts
+    const pageMap = getPageMap(resources)
+    updateRoutingMapping(pageMap)
     return { pageMap, routesConfig: routesResource?.data }
   })
 }
@@ -92,17 +92,15 @@ export async function startTinaServer(
   }
 }
 
-export async function reloadTinaServer() {
-  const packagePath: string = path.dirname(
-    require.resolve(`gspenst/package.json`)
-  )
-
-  const distFilePath = path.resolve(packagePath, pkg.module) // tinacms uses `module`
-
-  // touch file
-  const time = new Date()
-  fs.utimesSync(distFilePath, time, time)
+export function updateRoutingMapping(pageMap: PageMap) {
+    log("Writing `routingMapping.json`...")
+    const routingMapping = getRoutingMapping(pageMap)
+    const packagePath: string = path.dirname(
+      require.resolve(`gspenst/package.json`)
+    )
+    const routingMappingFilePath = path.resolve(packagePath, "./routingMapping.json")
+    return fse.writeJsonSync(routingMappingFilePath, routingMapping)
 }
 
 export { collect } from './collect'
-export { routerManager, controller, repository, parseRoutes }
+export { routerManager, controller, repository, parseRoutes, getPageMap }

@@ -19,7 +19,8 @@
       "module": "./components/MdxTheme/dist/gspenst-components-MdxTheme.esm.js",
       "default": "./components/MdxTheme/dist/gspenst-components-MdxTheme.cjs.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./routingMapping.json": "./routingMapping.json"
   },
   "main": "dist/gspenst.cjs.js",
   "module": "dist/gspenst.esm.js",
@@ -27,7 +28,8 @@
     "dist",
     "server",
     "data",
-    "components"
+    "components",
+    "routingMapping.json"
   ],
   "scripts": {
     "dev": "tinacms dev --rootPath src",
@@ -71,7 +73,11 @@
     "react-dom": ">=16.13.1"
   },
   "preconstruct": {
-    "exports": true,
+    "exports": {
+      "extra": {
+        "./routingMapping.json": "./routingMapping.json"
+      }
+    },
     "entrypoints": [
       "index.ts",
       "server.ts",
