@@ -9,6 +9,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import routingMapping from 'gspenst/routingMapping.json'
 import { createLogger } from './logger'
+import { type RoutingMapping } from "./helpers/getPageMap";
 
 const log = createLogger('tinaschema')
 
@@ -188,15 +189,8 @@ export function defineSchema(): Schema {
     format: 'mdx',
     fields: [...commonFields, ...postFields],
     ui: {
-      router: () => {
-        // if (document._sys.filename === 'about') {
-        //   return `/about`
-        // }
-        // const RouteMapping = new RouteMappingPlugin((_collection, document) => {
-        //   return routingMapping[document._sys.path]
-        // })
-
-        return undefined
+      router: ({ document }) => {
+        return (routingMapping as RoutingMapping)[document._sys.path]
       },
     },
   }
@@ -207,6 +201,11 @@ export function defineSchema(): Schema {
     path: 'content/posts',
     format: 'mdx',
     fields: [...commonFields, ...postFields],
+    ui: {
+      router: ({ document }) => {
+        return (routingMapping as RoutingMapping)[document._sys.path]
+      },
+    },
   }
 
   const taxonomyFields = (_type: 'author' | 'tag'): TinaField[] => [
@@ -237,6 +236,11 @@ export function defineSchema(): Schema {
     path: 'content/authors',
     format: 'md',
     fields: [...taxonomyFields('author'), ...commonFields],
+    ui: {
+      router: ({ document }) => {
+        return (routingMapping as RoutingMapping)[document._sys.path]
+      },
+    },
   }
 
   const tagCollection: Collection = {
@@ -245,6 +249,11 @@ export function defineSchema(): Schema {
     path: 'content/tags',
     format: 'md',
     fields: [...taxonomyFields('tag'), ...commonFields],
+    ui: {
+      router: ({ document }) => {
+        return (routingMapping as RoutingMapping)[document._sys.path]
+      },
+    },
   }
 
   return _defineSchema({
