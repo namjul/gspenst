@@ -2,6 +2,7 @@ import { z } from '../../shared/kernel'
 import { parse } from '../../helpers/parser'
 import { routesSchema, type RoutesConfigInput } from '../routes'
 import { resourceBaseSchema } from './resource.base'
+import defaultRoutes from "../../defaultRoutes";
 
 export const resourceTypeRoutes = z.literal('routes')
 
@@ -20,7 +21,11 @@ export function createRoutesResource(data: RoutesConfigInput) {
     id: 'route',
     path: 'not-path',
     time: new Date().getTime(),
-    data,
+    data: {
+      ...defaultRoutes,
+      //@ts-expect-error --- data can be unknown.
+      ...data,
+    },
     metadata: {},
   }
   return parse(routesResourceSchema, routesResource)
