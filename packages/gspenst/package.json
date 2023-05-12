@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@napi-rs/simple-git": "^0.1.8",
+    "@tinacms/cli": "^1.5.5",
     "@tryghost/nql": "^0.9.1",
     "async-mutex": "^0.3.2",
     "cross-spawn": "^7.0.3",
@@ -58,7 +59,6 @@
     "sort-on": "^4.0.0",
     "styled-components": "^5.3.5",
     "tinacms": "^1.4.0",
-    "@tinacms/cli": "^1.5.5",
     "zod": "^3.21.4"
   },
   "devDependencies": {

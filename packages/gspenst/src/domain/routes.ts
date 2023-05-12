@@ -254,8 +254,8 @@ export const routesSchema = z
           (value) =>
             isString(value)
               ? {
-                template: value,
-              }
+                  template: value,
+                }
               : value,
           route
         )
