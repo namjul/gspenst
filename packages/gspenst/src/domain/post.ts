@@ -59,6 +59,7 @@ export function createPost(
   routingMapping: RoutingMapping = {}
 ): Result<Post> {
   const { id, title, date, excerpt, slug } = node
+  const content = node.content as Root
 
   const idResult = parse(idSchema, id)
 
@@ -95,7 +96,7 @@ export function createPost(
       path: routingMapping[node._sys.path] ?? `/${idResult.value}`,
     }
 
-    const { headings, titleText, hasH1 } = getHeaders(node.content as Root)
+    const { headings, titleText, hasH1 } = getHeaders(content)
 
     return parse(postSchema, {
       id: idResult.value,
@@ -108,6 +109,7 @@ export function createPost(
       date,
       excerpt,
       slug,
+      content,
       ...specialAttributes,
     })
   })
