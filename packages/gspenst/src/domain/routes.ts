@@ -12,7 +12,6 @@ import {
 import * as Errors from '../errors'
 import { isString /*, isObject*/ } from '../shared/utils'
 import { parse } from '../helpers/parser'
-import defaultRoutes from '../defaultRoutes'
 import {
   type LocatorResourceType,
   locatorResourceTypeSchema,
@@ -255,8 +254,8 @@ export const routesSchema = z
           (value) =>
             isString(value)
               ? {
-                  template: value,
-                }
+                template: value,
+              }
               : value,
           route
         )
@@ -267,6 +266,19 @@ export const routesSchema = z
     taxonomies: taxonomies.nullable().optional(),
   })
   .strict()
+  .default({
+    routes: {},
+    collections: {
+      '/': {
+        permalink: '/{slug}/',
+        template: 'index',
+      },
+    },
+    taxonomies: {
+      tag: '/tag/{slug}',
+      author: '/author/{slug}',
+    },
+  })
 
 routesSchema.describe('routesSchema')
 
@@ -301,10 +313,6 @@ export function parseRoutes(input: unknown) {
     })
   }
   return combineWithAllErrors(resultList)
-}
-
-export function parseRoutesWithDefaults(input: unknown) {
-  return parseRoutes({ ...defaultRoutes, ...(input as any) })
 }
 
 export function getRoutes(routesConfig: RoutesConfig) {

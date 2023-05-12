@@ -41,7 +41,7 @@ const observer = Object.freeze({
 const repository = Object.freeze({
   ...observer,
 
-  collect(routesConfig: RoutesConfigInput = {}): RepoResultAsync<Resource[]> {
+  collect(routesConfig: RoutesConfigInput): RepoResultAsync<Resource[]> {
     return collect(routesConfig).andThen((resources) => this.setAll(resources))
   },
 

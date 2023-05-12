@@ -2,7 +2,7 @@ import EventEmitter, { once } from 'events'
 import path from 'path'
 import fse from 'fs-extra'
 import {
-  parseRoutesWithDefaults as parseRoutes,
+  parseRoutes,
   type RoutesConfigInput,
   type RoutesConfig,
 } from './domain/routes'

@@ -1,6 +1,5 @@
 import { ok } from '../shared/kernel'
 import repository from '../repository'
-import defaultRoutes from '../defaultRoutes'
 import { filterLocatorResources, isRoutesResource } from '../helpers/resource'
 import { routerManager } from './routerManager'
 
@@ -19,9 +18,7 @@ describe('router resolvePaths', () => {
     })
 
     test('default routing config', async () => {
-      const resources = (
-        await repository.collect(defaultRoutes)
-      )._unsafeUnwrap()
+      const resources = (await repository.collect({}))._unsafeUnwrap()
       const routesResource = resources.find(isRoutesResource)
       const router = routerManager(routesResource?.data!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
       const locatorResources = resources.filter(filterLocatorResources)

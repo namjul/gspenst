@@ -24,7 +24,7 @@ import { createConfigResource } from './domain/resource/resource.config'
 const log = createLogger('collect')
 
 export function collect(
-  routesConfigInput: RoutesConfigInput = {}
+  routesConfigInput: RoutesConfigInput
 ): ResultAsync<Resource[]> {
   log('start')
 

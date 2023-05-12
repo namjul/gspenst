@@ -7,7 +7,7 @@ jest.mock('./redis')
 jest.mock('./api')
 
 beforeAll(async () => {
-  const result = await repository.collect()
+  const result = await repository.collect({})
   if (result.isErr()) {
     throw format(result.error)
   }
