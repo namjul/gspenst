@@ -12,6 +12,7 @@ import { IS_PRODUCTION } from './constants'
 const key = `${pkg.name}:plugin`
 const state: { starting?: Promise<ChildProcess | undefined> } = {}
 
+// TODO graceful and plugin when nextjs restarts
 export class GspenstPlugin extends EventEmitter {
   compiler?: Compiler
   packagePath: string = path.dirname(
