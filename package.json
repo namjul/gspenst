@@ -18,7 +18,7 @@
     "prepare": "git config --local core.hooksPath .githooks || echo 'not in git' && preconstruct dev",
     "prerelease": "yarn build",
     "release": "changeset publish",
-    "test": "jest && yarn workspace gspenst test:tina",
+    "test": "jest && yarn workspace gspenst test",
     "test:watch": "jest --watch",
     "version": "changeset version",
     "watch": "preconstruct watch"
