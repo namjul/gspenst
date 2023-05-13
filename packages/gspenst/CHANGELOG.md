@@ -1,5 +1,15 @@
 # gspenst
 
+## 0.1.1
+
+### Patch Changes
+
+- 8c8d44b:
+  - use `zod` for default values
+  - add missing `content` field
+  - make tinacms cli a core depedency
+  - add default routing config
+
 ## 0.1.0
 
 ### Minor Changes
