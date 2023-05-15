@@ -1,6 +1,5 @@
-import { defineConfig as _defineConfig } from 'tinacms'
+import { defineConfig as _defineConfig, type Schema } from 'tinacms'
 import { env } from './domain/env'
-import { type Schema } from './tina-schema'
 
 export const tinaConfig = {
   clientId: env.NEXT_PUBLIC_TINA_CLIENT_ID ?? null,
@@ -21,6 +20,12 @@ export function defineConfig({ schema }: Options) {
     build: {
       publicFolder: 'public', // The public asset folder for your framework
       outputFolder: 'admin', // within the public folder
+    },
+    media: {
+      tina: {
+        publicFolder: 'public',
+        mediaRoot: 'uploads',
+      },
     },
   })
 }

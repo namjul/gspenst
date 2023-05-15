@@ -29,7 +29,6 @@ const log = createLogger('tinaschema')
 
 log('BUILDING with the following routingMapping', routingMapping)
 
-export type { Schema }
 const dateFormat = 'YYYY MM DD'
 const commonFields: TinaField[] = [
   {
