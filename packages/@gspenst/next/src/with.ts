@@ -92,5 +92,8 @@ export default (...args: [string | LoaderOptions, string]) =>
         // esmExternals: 'loose',
         // externalDir: true, // seems to replace @preconstruc/next https://github.com/preconstruct/preconstruct/issues/444#issuecomment-1029218560
       },
+      images: {
+        domains: ['assets.tina.io'],
+      },
     } as NextConfig)
   }
