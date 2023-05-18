@@ -1,6 +1,6 @@
-import withLayout from 'nextra-theme-blog'
+import NextraLayout from 'nextra-theme-blog'
 import { type Root } from 'gspenst'
-import { type PageOpts, type PageMapItem } from 'nextra'
+import { type PageOpts, type PageMapItem, type NextraThemeLayoutProps } from 'nextra'
 import { useStore, selectData, selectConfig } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import { useMDXComponents } from '@mdx-js/react'
@@ -161,16 +161,18 @@ const createTheme = (_config: NextraBlogTheme) => {
     ) : (
       ''
     )
-    const nextraThemeBlog = withLayout({
+
+    const nextraThemeLayoutProps: NextraThemeLayoutProps = {
       pageOpts,
       themeConfig,
       children,
       pageProps: {},
-    })
+
+    }
 
     return (
       <>
-        {nextraThemeBlog}
+        <NextraLayout {...nextraThemeLayoutProps} />
         <pre>{JSON.stringify(state, null, 2)}</pre>
       </>
     )
