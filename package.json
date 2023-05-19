@@ -13,7 +13,7 @@
     "clean": "rimraf packages/*/dist",
     "lint": "yarn lint:types & yarn lint:eslint & yarn lint:format",
     "lint:eslint": "eslint_d --cache --ignore-path .gitignore --report-unused-disable-directives --max-warnings 0 . --ext .ts,.tsx",
-    "lint:format": "prettier --ignore-path .gitignore  . -l",
+    "lint:format": "prettier --ignore-path .gitignore  . '!**/*-lock.json' -l",
     "lint:types": "yarn workspaces run lint:types",
     "prepare": "git config --local core.hooksPath .githooks || echo 'not in git' && preconstruct dev",
     "prerelease": "yarn build",
