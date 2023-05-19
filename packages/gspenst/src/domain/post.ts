@@ -87,30 +87,32 @@ export function createPost(
     })
   )
 
-  return Result.combine([tagsResult, authorsResult]).andThen(([tags, authors]) => {
-    const primary_tag = tags[0]
-    const primary_author = authors[0]
-    const specialAttributes = {
-      ...(primary_tag && { primary_tag }),
-      ...(primary_author && { primary_author }),
-      path: routingMapping[node._sys.path] ?? `/${idResult.value}`,
+  return Result.combine([tagsResult, authorsResult]).andThen(
+    ([tags, authors]) => {
+      const primary_tag = tags[0]
+      const primary_author = authors[0]
+      const specialAttributes = {
+        ...(primary_tag && { primary_tag }),
+        ...(primary_author && { primary_author }),
+        path: routingMapping[node._sys.path] ?? `/${idResult.value}`,
+      }
+
+      const { headings, titleText, hasH1 } = getHeaders(content)
+
+      return parse(postSchema, {
+        id: idResult.value,
+        type: 'post',
+        title: titleText ?? title,
+        headings,
+        hasH1,
+        tags,
+        authors,
+        date,
+        excerpt,
+        slug,
+        content,
+        ...specialAttributes,
+      })
     }
-
-    const { headings, titleText, hasH1 } = getHeaders(content)
-
-    return parse(postSchema, {
-      id: idResult.value,
-      type: 'post',
-      title: titleText ?? title,
-      headings,
-      hasH1,
-      tags,
-      authors,
-      date,
-      excerpt,
-      slug,
-      content,
-      ...specialAttributes,
-    })
-  })
+  )
 }

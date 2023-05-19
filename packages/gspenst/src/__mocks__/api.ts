@@ -512,7 +512,9 @@ export const getTag = ({
 }
 
 export const getTags = (): ApiResultAsync<Tag[]> => {
-  return ResultAsync.combine(Object.keys(tags).map((key) => getTag({ relativePath: key })))
+  return ResultAsync.combine(
+    Object.keys(tags).map((key) => getTag({ relativePath: key }))
+  )
 }
 
 export const getConfig = (): ApiResultAsync<Config> => {

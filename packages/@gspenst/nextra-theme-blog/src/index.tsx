@@ -1,6 +1,10 @@
 import NextraLayout from 'nextra-theme-blog'
 import { type Root } from 'gspenst'
-import { type PageOpts, type PageMapItem, type NextraThemeLayoutProps } from 'nextra'
+import {
+  type PageOpts,
+  type PageMapItem,
+  type NextraThemeLayoutProps,
+} from 'nextra'
 import { useStore, selectData, selectConfig } from 'gspenst/data'
 import getComponent from '@gspenst/next/componentRegistry'
 import { useMDXComponents } from '@mdx-js/react'
@@ -167,7 +171,6 @@ const createTheme = (_config: NextraBlogTheme) => {
       themeConfig,
       children,
       pageProps: {},
-
     }
 
     return (

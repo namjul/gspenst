@@ -4,7 +4,7 @@ import {
   type Option,
   type ID,
   ok,
-  Result
+  Result,
 } from '../shared/kernel'
 import {
   getRoutes,
@@ -71,7 +71,9 @@ export const routerManager = (routesConfig: RoutesConfig) => {
   return {
     handle(
       params: string[] | string = []
-    ): GspenstResult<Option<RoutingContext>> | GspenstResult<Option<RoutingContext>[]> {
+    ):
+      | GspenstResult<Option<RoutingContext>>
+      | GspenstResult<Option<RoutingContext>[]> {
       if (params) {
         const request = `/${[params].flat().join('/')}`
         const requestSlugified = `/${[params]

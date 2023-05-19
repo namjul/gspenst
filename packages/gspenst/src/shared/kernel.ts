@@ -30,7 +30,7 @@ export {
   fromPromise,
   fromThrowable,
   Result,
-  ResultAsync
+  ResultAsync,
 } from 'neverthrow'
 export { z }
 

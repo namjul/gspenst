@@ -1,4 +1,10 @@
-import { type GspenstResultAsync, ok, err, Result, ResultAsync } from './shared/kernel'
+import {
+  type GspenstResultAsync,
+  ok,
+  err,
+  Result,
+  ResultAsync,
+} from './shared/kernel'
 import * as db from './db'
 import {
   type RoutesConfigInput,

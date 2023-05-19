@@ -549,12 +549,13 @@ export function createLoaders(
     cacheKeyFn: (resource) => resource.id,
   })
 
-  const slowResourceLoader = new DataLoader<Resource, GspenstResult<Resource>, ID>(
-    batchLoadFromTina(),
-    {
-      cacheKeyFn: (resource) => resource.id,
-    }
-  )
+  const slowResourceLoader = new DataLoader<
+    Resource,
+    GspenstResult<Resource>,
+    ID
+  >(batchLoadFromTina(), {
+    cacheKeyFn: (resource) => resource.id,
+  })
 
   const loadManyResource = (resources: Resource[]) => {
     return fromPromise(
