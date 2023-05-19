@@ -27,10 +27,10 @@ export {
   err,
   okAsync,
   errAsync,
-  combine,
-  combineWithAllErrors,
   fromPromise,
   fromThrowable,
+  Result,
+  ResultAsync
 } from 'neverthrow'
 export { z }
 
@@ -73,8 +73,8 @@ export const jsonSchema: z.ZodType<Json> = z.lazy(() =>
   z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)])
 )
 
-export type Result<T, E = GspenstError> = Ok<T, E> | Err<T, E>
-export type ResultAsync<T> = NeverthrowResultAsync<T, GspenstError>
+export type GspenstResult<T, E = GspenstError> = Ok<T, E> | Err<T, E>
+export type GspenstResultAsync<T> = NeverthrowResultAsync<T, GspenstError>
 export type Dict<T = any> = Record<string, T>
 export type Unpacked<T> = T extends Array<infer U> ? U : T
 export type Option<T> = T | undefined

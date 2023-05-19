@@ -1,8 +1,8 @@
-import { type ResultAsync, fromPromise } from './shared/kernel'
+import { type GspenstResultAsync, fromPromise } from './shared/kernel'
 import redis from './redis'
 import * as Errors from './errors'
 
-type DBResultAsync<T> = ResultAsync<T>
+type DBResultAsync<T> = GspenstResultAsync<T>
 
 export function clear(): DBResultAsync<'OK'> {
   return fromPromise(redis.flushall(), (error: unknown) =>

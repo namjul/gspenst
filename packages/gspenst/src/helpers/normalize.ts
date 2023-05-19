@@ -6,9 +6,9 @@ import {
 } from 'normalizr'
 import { type ValueOf } from 'type-fest'
 import {
-  type Result,
+  type GspenstResult,
   type ID,
-  combine,
+  Result,
   fromThrowable,
   z,
 } from '../shared/kernel'
@@ -85,7 +85,7 @@ type DenormalizedEntities = {
 }
 
 export function normalizeEntities(data: DenormalizedEntities) {
-  return normalize(data, entitiesSchema) as Result<
+  return normalize(data, entitiesSchema) as GspenstResult<
     NormalizedSchema<
       Entities,
       {
@@ -100,7 +100,7 @@ export function denormalizeEntities<T extends Partial<Entities>>(
     [name in keyof T]?: ID[]
   },
   entities: T
-): Result<{
+): GspenstResult<{
   [name in keyof T]: NonNullable<ValueOf<T[name]>>[]
 }> {
   return denormalize(data, entitiesSchema, entities)
@@ -159,7 +159,7 @@ export function normalizeResources(
   resources: Resource[],
   routingMapping: RoutingMapping = {}
 ) {
-  return combine(
+  return Result.combine(
     resources.map((resource) => resolveResourceData(resource, routingMapping))
   ).andThen((entityList) => {
     return normalizeEntities(
@@ -206,8 +206,8 @@ export function normalizeResources(
 export function resolveResourceData(
   resource: Resource,
   routingMapping: RoutingMapping = {}
-): Result<Entity[]> {
-  const entitiesResultList: Result<Entity>[] = do_(() => {
+): GspenstResult<Entity[]> {
+  const entitiesResultList: GspenstResult<Entity>[] = do_(() => {
     const { type } = resource
     switch (type) {
       case 'post':
@@ -233,7 +233,7 @@ export function resolveResourceData(
     entitiesResultList.push(configEntity)
   }
 
-  return combine(entitiesResultList).map((entities) => {
+  return Result.combine(entitiesResultList).map((entities) => {
     return entities.map((entity) => {
       if ('path' in entity && filterLocatorResources(resource)) {
         entity.path = resource.metadata.path

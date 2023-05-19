@@ -1,7 +1,7 @@
-import { type Result, ok, err, z } from '../shared/kernel'
+import { type GspenstResult, ok, err, z } from '../shared/kernel'
 import * as Errors from '../errors'
 
-export type ParseResult<T> = Result<T>
+export type ParseResult<T> = GspenstResult<T>
 
 export const parse = <T extends z.ZodTypeAny>(
   schema: T,

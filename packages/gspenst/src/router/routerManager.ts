@@ -1,10 +1,10 @@
 import slugify from 'slugify'
 import {
-  type Result,
+  type GspenstResult,
   type Option,
   type ID,
   ok,
-  combine,
+  Result
 } from '../shared/kernel'
 import {
   getRoutes,
@@ -71,7 +71,7 @@ export const routerManager = (routesConfig: RoutesConfig) => {
   return {
     handle(
       params: string[] | string = []
-    ): Result<Option<RoutingContext>> | Result<Option<RoutingContext>[]> {
+    ): GspenstResult<Option<RoutingContext>> | GspenstResult<Option<RoutingContext>[]> {
       if (params) {
         const request = `/${[params].flat().join('/')}`
         const requestSlugified = `/${[params]
@@ -81,7 +81,7 @@ export const routerManager = (routesConfig: RoutesConfig) => {
         if (request !== requestSlugified) {
           return ok(router.createRedirectContext(requestSlugified))
         }
-        return combine(router.handle(request, [], routers)).map(
+        return Result.combine(router.handle(request, [], routers)).map(
           (routingContexts) => {
             return routingContexts.filter(Boolean)
           }

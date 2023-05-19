@@ -1,4 +1,4 @@
-import { type ResultAsync, combine, okAsync } from '../shared/kernel'
+import { type GspenstResultAsync, ResultAsync, okAsync } from '../shared/kernel'
 import {
   type GetPostQuery,
   type GetPageQuery,
@@ -13,7 +13,7 @@ import {
   type Config,
 } from '../api'
 
-type ApiResultAsync<T> = ResultAsync<T>
+type ApiResultAsync<T> = GspenstResultAsync<T>
 
 const authors: { [name: string]: GetAuthorQuery } = {
   'napoleon.mdx': {
@@ -446,7 +446,7 @@ export const getPost = ({
 }
 
 export const getPosts = (): ApiResultAsync<Post[]> => {
-  return combine(
+  return ResultAsync.combine(
     Object.keys(posts).map((key) => getPost({ relativePath: key }))
   )
 }
@@ -468,7 +468,7 @@ export const getPage = ({
 }
 
 export const getPages = (): ApiResultAsync<Page[]> => {
-  return combine(
+  return ResultAsync.combine(
     Object.keys(pages).map((key) => getPage({ relativePath: key }))
   )
 }
@@ -490,7 +490,7 @@ export const getAuthor = ({
 }
 
 export const getAuthors = (): ApiResultAsync<Author[]> => {
-  return combine(
+  return ResultAsync.combine(
     Object.keys(authors).map((key) => getAuthor({ relativePath: key }))
   )
 }
@@ -512,7 +512,7 @@ export const getTag = ({
 }
 
 export const getTags = (): ApiResultAsync<Tag[]> => {
-  return combine(Object.keys(tags).map((key) => getTag({ relativePath: key })))
+  return ResultAsync.combine(Object.keys(tags).map((key) => getTag({ relativePath: key })))
 }
 
 export const getConfig = (): ApiResultAsync<Config> => {

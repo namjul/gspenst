@@ -1,5 +1,5 @@
 import {
-  type Result,
+  type GspenstResult,
   type Json,
   idSchema,
   jsonSchema,
@@ -21,7 +21,7 @@ configSchema.describe('configSchema')
 export type Config = z.infer<typeof configSchema>
 export type ConfigResourceNode = ThemeConfigNodeFragment & { values?: Json }
 
-export function createConfig(node: ConfigResourceNode): Result<Config> {
+export function createConfig(node: ConfigResourceNode): GspenstResult<Config> {
   return parse(configSchema, {
     type: 'config',
     id: node.id,

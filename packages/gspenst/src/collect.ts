@@ -1,4 +1,4 @@
-import { type ResultAsync, ok, err, combine } from './shared/kernel'
+import { type GspenstResultAsync, ok, err, Result, ResultAsync } from './shared/kernel'
 import * as db from './db'
 import {
   type RoutesConfigInput,
@@ -25,7 +25,7 @@ const log = createLogger('collect')
 
 export function collect(
   routesConfigInput: RoutesConfigInput
-): ResultAsync<Resource[]> {
+): GspenstResultAsync<Resource[]> {
   log('start')
 
   const result = db
@@ -42,7 +42,7 @@ export function collect(
           )
         })
         .andThen((configResource) => {
-          return combine([
+          return ResultAsync.combine([
             api.getTags(),
             api.getAuthors(),
             api.getPosts(),
@@ -92,7 +92,7 @@ export function collect(
                   return ok(resource)
                 })
               })
-            return combine(locatorResourcesResultList).andThen(
+            return Result.combine(locatorResourcesResultList).andThen(
               (locatorResources) => {
                 const resourcesFilters = [
                   ...getRoutes(routesConfig).map(
@@ -312,7 +312,7 @@ export function collect(
                   ok(configResource),
                   ...locatorResourceResultList,
                 ]
-                return combine(resourceResultList)
+                return Result.combine(resourceResultList)
               }
             )
           })

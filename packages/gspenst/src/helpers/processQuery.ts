@@ -3,14 +3,15 @@ import DataLoader from 'dataloader'
 import { type SemaphoreInterface, Semaphore } from 'async-mutex'
 import sortOn from 'sort-on'
 import {
-  combine,
+  Result,
+  ResultAsync,
   ok,
   err,
   okAsync,
   errAsync,
   fromPromise,
-  type Result,
-  type ResultAsync,
+  type GspenstResult,
+  type GspenstResultAsync,
   type ID,
 } from '../shared/kernel'
 import { type Resource, type ResourceType } from '../domain/resource'
@@ -62,8 +63,8 @@ const defaultSem = new Semaphore(100)
 export type DataLoaders = ReturnType<typeof createLoaders>
 
 type ResultAsyncQueryOutcome<T> = T extends Extract<DataQuery, { type: 'read' }>
-  ? ResultAsync<Extract<QueryOutcome, { type: 'read' }>>
-  : ResultAsync<Extract<QueryOutcome, { type: 'browse' }>>
+  ? GspenstResultAsync<Extract<QueryOutcome, { type: 'read' }>>
+  : GspenstResultAsync<Extract<QueryOutcome, { type: 'browse' }>>
 
 export function processQuery<T extends DataQuery>(
   dataLoaders: DataLoaders,
@@ -72,7 +73,7 @@ export function processQuery<T extends DataQuery>(
 export function processQuery(
   dataLoaders: DataLoaders,
   query: DataQuery
-): ResultAsync<QueryOutcome> {
+): GspenstResultAsync<QueryOutcome> {
   const { loadResource, loadManyResource } = dataLoaders
 
   const { type } = query
@@ -123,7 +124,7 @@ export function processQuery(
             return resource
           })
 
-          return combine(
+          return Result.combine(
             filteredResources.map((resource) => resolveResourceData(resource))
           )
             .map((x) => x.flat())
@@ -174,7 +175,7 @@ export function processQuery(
           })
         )
         .andThen(({ result, entities, total, start, end }) => {
-          const entityResourcesResult = combine(
+          const entityResourcesResult = Result.combine(
             result.map((id) => {
               const resource = entities.resource[id]
               if (!resource) {
@@ -246,9 +247,9 @@ type ProcessData = {
 export function processData(
   dataLoaders: DataLoaders,
   data: { [name: string]: DataQuery } = {}
-): ResultAsync<ProcessData> {
+): GspenstResultAsync<ProcessData> {
   const keys = Object.keys(data)
-  const result = combine(
+  const result = ResultAsync.combine(
     keys.map((key) => {
       return processQuery(dataLoaders, data[key]!)
     })
@@ -336,7 +337,7 @@ export function createLoaders(
     // TODO use ResultAsync<Resource[]>
     return async (
       resources: ReadonlyArray<Resource>
-    ): Promise<Result<Resource>[]> => {
+    ): Promise<GspenstResult<Resource>[]> => {
       log(
         'load',
         resources.map((resource) => resource.metadata.relativePath)
@@ -548,7 +549,7 @@ export function createLoaders(
     cacheKeyFn: (resource) => resource.id,
   })
 
-  const slowResourceLoader = new DataLoader<Resource, Result<Resource>, ID>(
+  const slowResourceLoader = new DataLoader<Resource, GspenstResult<Resource>, ID>(
     batchLoadFromTina(),
     {
       cacheKeyFn: (resource) => resource.id,
@@ -564,7 +565,7 @@ export function createLoaders(
           error instanceof Error ? error : undefined
         )
     ).andThen((dataLoaderResult) => {
-      return combine(
+      return ResultAsync.combine(
         dataLoaderResult.map((resourceResultOrError) => {
           if (resourceResultOrError instanceof Error) {
             return errAsync(

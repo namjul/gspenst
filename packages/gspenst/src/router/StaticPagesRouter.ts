@@ -1,11 +1,11 @@
-import { type Result, ok } from '../shared/kernel'
+import { type GspenstResult, ok } from '../shared/kernel'
 import { pathToRegexp } from '../utils'
 import { type Request } from '../domain/routing'
 import { type Resource } from '../domain/resource'
 import ParentRouter from './ParentRouter'
 
 class StaticPagesRouter extends ParentRouter {
-  routeRegExpResult: Result<RegExp>
+  routeRegExpResult: GspenstResult<RegExp>
   constructor() {
     super('StaticPagesRouter')
     this.routeRegExpResult = pathToRegexp('/:slug+')

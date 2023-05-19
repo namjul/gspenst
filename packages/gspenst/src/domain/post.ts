@@ -3,9 +3,9 @@ import {
   dateSchema,
   pathSchema,
   z,
-  combine,
+  Result,
   err,
-  type Result,
+  type GspenstResult,
   type Root,
 } from '../shared/kernel'
 import { parse } from '../helpers/parser'
@@ -57,7 +57,7 @@ export type PostNormalized = z.infer<typeof postNormalizedSchema>
 export function createPost(
   node: PostNodeFragment | PageNodeFragment,
   routingMapping: RoutingMapping = {}
-): Result<Post> {
+): GspenstResult<Post> {
   const { id, title, date, excerpt, slug } = node
   const content = node.content as Root
 
@@ -75,21 +75,21 @@ export function createPost(
     return author?.author ?? []
   })
 
-  const tagsResult = combine(
+  const tagsResult = Result.combine(
     rawTags.map((tag) => {
       return createTag(tag, routingMapping)
     })
   )
 
-  const authorsResult = combine(
+  const authorsResult = Result.combine(
     rawAuthors.map((author) => {
       return createAuthor(author, routingMapping)
     })
   )
 
-  return combine([tagsResult, authorsResult]).andThen(([tags, authors]) => {
-    const primary_tag = tags?.[0]
-    const primary_author = authors?.[0]
+  return Result.combine([tagsResult, authorsResult]).andThen(([tags, authors]) => {
+    const primary_tag = tags[0]
+    const primary_author = authors[0]
     const specialAttributes = {
       ...(primary_tag && { primary_tag }),
       ...(primary_author && { primary_author }),

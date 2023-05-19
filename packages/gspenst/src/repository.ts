@@ -1,9 +1,9 @@
 import {
   type ID,
-  type ResultAsync,
+  type GspenstResultAsync,
   okAsync,
   errAsync,
-  combine,
+  ResultAsync,
 } from './shared/kernel'
 import { createDb } from './db'
 import { type ResourceType, type Resource } from './domain/resource'
@@ -14,7 +14,7 @@ import { objectMatch } from './shared/utils'
 
 export const db = createDb<Resource>('resources')
 
-type RepoResultAsync<T> = ResultAsync<T>
+type RepoResultAsync<T> = GspenstResultAsync<T>
 
 type GetValue<T extends ID | ID[]> = T extends ID[]
   ? RepoResultAsync<Resource[]>
@@ -53,7 +53,7 @@ const repository = Object.freeze({
   },
 
   setAll(resources: Resource[]) {
-    return combine(
+    return ResultAsync.combine(
       resources.map((resource) => {
         return this.set(resource).map(() => {
           return resource

@@ -1,10 +1,10 @@
-import { ok, type Result, type Option } from '../shared/kernel'
+import { ok, type GspenstResult, type Option } from '../shared/kernel'
 import { pathToRegexp } from '../utils'
 import { type RoutingContext } from '../domain/routing'
 import ParentRouter from './ParentRouter'
 
 class AdminRouter extends ParentRouter {
-  routeRegExpResult: Result<RegExp>
+  routeRegExpResult: GspenstResult<RegExp>
   constructor() {
     super('AdminRouter')
     this.route = '/admin'
@@ -12,7 +12,7 @@ class AdminRouter extends ParentRouter {
   }
   handle(
     request: string,
-    contexts: Result<Option<RoutingContext>>[],
+    contexts: GspenstResult<Option<RoutingContext>>[],
     routers: ParentRouter[]
   ) {
     contexts.push(

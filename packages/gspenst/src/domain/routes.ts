@@ -1,13 +1,13 @@
 // import nql from '@tryghost/nql'
 import {
   type Split,
-  type Result,
+  type GspenstResult,
   type Entries,
   type Option,
   z,
   ok,
   err,
-  combineWithAllErrors,
+  Result,
 } from '../shared/kernel'
 import * as Errors from '../errors'
 import { isString /*, isObject*/ } from '../shared/utils'
@@ -288,7 +288,7 @@ export type RoutesConfig = z.output<typeof routesSchema>
 export function parseRoutes(input: unknown) {
   const result = parse(routesSchema, input)
 
-  const resultList: Result<RoutesConfig>[] = []
+  const resultList: GspenstResult<RoutesConfig>[] = []
 
   const processIssue = (issue: z.ZodIssue): z.ZodIssue[] => {
     if (issue.code === z.ZodIssueCode.invalid_union) {
@@ -312,7 +312,7 @@ export function parseRoutes(input: unknown) {
       resultList.push(err(Errors.validation({ message, help })))
     })
   }
-  return combineWithAllErrors(resultList)
+  return Result.combineWithAllErrors(resultList)
 }
 
 export function getRoutes(routesConfig: RoutesConfig) {

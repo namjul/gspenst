@@ -1,5 +1,5 @@
 import { type Key } from 'path-to-regexp'
-import { ok, combine, type Result, type Option } from '../shared/kernel'
+import { ok, Result, type GspenstResult, type Option } from '../shared/kernel'
 import { paramsSchema, type RoutingContext } from '../domain/routing'
 import { type Data } from '../domain/routes'
 import {
@@ -12,7 +12,7 @@ import { parse } from '../helpers/parser'
 export type RouteCb = (
   match: { match: string; matches: string[]; keys: Key[] },
   routers: ParentRouter[]
-) => Result<Option<RoutingContext>>
+) => GspenstResult<Option<RoutingContext>>
 
 export type Route = {
   regExp: RegExp
@@ -26,7 +26,7 @@ class ParentRouter {
   route?: string
   data?: Data | undefined
   #nextRouter?: ParentRouter
-  #routes: Result<Route>[] = []
+  #routes: GspenstResult<Route>[] = []
 
   constructor(name: string, data?: Data) {
     this.name = name
@@ -52,17 +52,17 @@ class ParentRouter {
 
   handleRequest(
     _regExpexecArray: RegExpExecArray
-  ): Result<Option<RoutingContext>> {
+  ): GspenstResult<Option<RoutingContext>> {
     return ok(undefined)
   }
 
   handle(
     request: string,
-    contexts: Result<Option<RoutingContext>>[],
+    contexts: GspenstResult<Option<RoutingContext>>[],
     routers: ParentRouter[]
-  ): Result<Option<RoutingContext>>[] {
+  ): GspenstResult<Option<RoutingContext>>[] {
     contexts.push(
-      combine(this.#routes).andThen((routes) => {
+      Result.combine(this.#routes).andThen((routes) => {
         const routingContextResults = routes.flatMap((route) => {
           const [match, ...matches] = route.regExp.exec(request) ?? []
           if (match) {

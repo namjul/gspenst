@@ -1,7 +1,7 @@
 import filterObject from 'filter-obj'
 import {
-  type Result,
-  type ResultAsync,
+  type GspenstResult,
+  type GspenstResultAsync,
   type Option,
   ok,
   err,
@@ -32,8 +32,8 @@ import { configId } from './constants'
 import repository from './repository'
 import { confifyTinaData } from './helpers/confifyTinaData'
 
-type ControllerResult<T> = Result<T>
-type ControllerResultAsync<T> = ResultAsync<T>
+type ControllerResult<T> = GspenstResult<T>
+type ControllerResultAsync<T> = GspenstResultAsync<T>
 
 const MAIN_ENTRY = '__gspenst_main_entry__'
 
@@ -115,10 +115,10 @@ type ControllerReturnType =
 
 export function controller(
   routingContextsResult:
-    | Result<Option<RoutingContext>>
-    | Result<Option<RoutingContext>[]>,
+    | GspenstResult<Option<RoutingContext>>
+    | GspenstResult<Option<RoutingContext>[]>,
   dataLoaders: DataLoaders = createLoaders()
-): Result<Promise<ControllerReturnType>> {
+): GspenstResult<Promise<ControllerReturnType>> {
   return routingContextsResult.map(async (routingContext) => {
     for (const context of [routingContext].flat()) {
       if (context === undefined) {

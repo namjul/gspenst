@@ -1,4 +1,4 @@
-import { z, type Result } from '../shared/kernel'
+import { z, type GspenstResult } from '../shared/kernel'
 import { parse } from '../helpers/parser'
 import { type PageNodeFragment } from '../.tina/__generated__/types'
 import { type RoutingMapping } from '../helpers/getPageMap'
@@ -21,7 +21,7 @@ export type PageNormalized = z.infer<typeof pageNormalizedSchema>
 export function createPage(
   node: PageNodeFragment,
   routingMapping: RoutingMapping = {}
-): Result<Page> {
+): GspenstResult<Page> {
   return createPost(node, routingMapping)
     .map((post) => ({ ...post, type: 'page' }))
     .andThen((post) => parse(pageSchema, post))

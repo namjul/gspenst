@@ -2,11 +2,11 @@ import path from 'path'
 import * as Errors from './errors'
 import {
   type AsyncReturnType,
-  type ResultAsync,
+  type GspenstResultAsync,
   type Option,
   z,
   fromPromise,
-  combine,
+  ResultAsync,
   ok,
 } from './shared/kernel'
 import { client } from './shared/client'
@@ -28,7 +28,7 @@ import {
   getSdk,
 } from './.tina/__generated__/types'
 
-type ApiResultAsync<T> = ResultAsync<T>
+type ApiResultAsync<T> = GspenstResultAsync<T>
 type Confify<T> = T & { data: { config?: ConfigResourceNode | undefined } }
 type GetConfig = AsyncReturnType<typeof sdk.getConfig>
 type GetPage = Confify<AsyncReturnType<typeof sdk.getPage>>
@@ -255,7 +255,7 @@ export function getPages(variables?: {
     Errors.other('Api#getPages', error instanceof Error ? error : undefined)
   ).andThen((input) => {
     return parse(pagesDataSchema, input).asyncAndThen((pages) => {
-      return combine(
+      return ResultAsync.combine(
         pages.map((post) => {
           return getTimestamp(post.data.data.page._sys.path).map(
             (timestamp) => {
@@ -295,7 +295,7 @@ export function getPosts(variables?: {
     Errors.other('Api#getPosts', error instanceof Error ? error : undefined)
   ).andThen((input) => {
     return parse(postsDataSchema, input).asyncAndThen((posts) => {
-      return combine(
+      return ResultAsync.combine(
         posts.map((post) => {
           return getTimestamp(post.data.data.post._sys.path).map(
             (timestamp) => {
@@ -335,7 +335,7 @@ export function getAuthors(variables?: {
     Errors.other('Api#getAuthors', error instanceof Error ? error : undefined)
   ).andThen((input) => {
     return parse(authorsDataSchema, input).asyncAndThen((authors) => {
-      return combine(
+      return ResultAsync.combine(
         authors.map((post) => {
           return getTimestamp(post.data.data.author._sys.path).map(
             (timestamp) => {
@@ -375,7 +375,7 @@ export function getTags(variables?: {
     Errors.other('Api#getTags', error instanceof Error ? error : undefined)
   ).andThen((input) => {
     return parse(tagsDataSchema, input).asyncAndThen((tags) => {
-      return combine(
+      return ResultAsync.combine(
         tags.map((post) => {
           return getTimestamp(post.data.data.tag._sys.path).map((timestamp) => {
             return {

@@ -2,7 +2,7 @@ import {
   idSchema,
   slugSchema,
   pathSchema,
-  Result,
+  GspenstResult,
   Option,
   err,
   z,
@@ -315,7 +315,7 @@ export function createLocatorResource(
 
 export function createDynamicVariables(
   node: Partial<LocatorResourceNode>
-): Result<DynamicVariables> {
+): GspenstResult<DynamicVariables> {
   const { _sys: { filename } = {}, id } = node
 
   const { slug, primary_tag, primary_author } = do_(() => {

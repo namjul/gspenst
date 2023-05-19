@@ -1,5 +1,5 @@
 import {
-  type Result,
+  type GspenstResult,
   idSchema,
   pathSchema,
   dateSchema,
@@ -28,7 +28,7 @@ export type Tag = z.infer<typeof tagSchema>
 export function createTag(
   node: TagNodeFragment,
   routingMapping: RoutingMapping = {}
-): Result<Tag> {
+): GspenstResult<Tag> {
   const { id, name, date, slug } = node
 
   const idResult = parse(idSchema, id)
