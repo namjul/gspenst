@@ -11,14 +11,15 @@ describe('router resolvePaths', () => {
     test('empty config', async () => {
       const routesConfig = {}
       const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
+      const routesResource = resources.find(isRoutesResource)
+      const router = routerManager(routesResource?.data!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
       const locatorResources = resources.filter(filterLocatorResources)
-      const router = routerManager(routesConfig)
       const result = router.resolvePaths(locatorResources)
       expect(result).toEqual(['/about', '/home', '/portfolio'])
     })
 
     test('default routing config', async () => {
-      const resources = (await repository.collect({}))._unsafeUnwrap()
+      const resources = (await repository.collect())._unsafeUnwrap()
       const routesResource = resources.find(isRoutesResource)
       const router = routerManager(routesResource?.data!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
       const locatorResources = resources.filter(filterLocatorResources)
