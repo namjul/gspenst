@@ -48,12 +48,14 @@ const orderSchema = z.preprocess(
         }
       })
   },
-  z.array(
-    z.object({
-      field: z.string(),
-      order: z.union([z.literal('asc'), z.literal('desc')]),
-    })
-  )
+  z
+    .array(
+      z.object({
+        field: z.string(),
+        order: z.union([z.literal('asc'), z.literal('desc')]),
+      })
+    )
+    .default([{ field: 'date', order: 'asc' }])
 )
 
 // const filterSchema = z.preprocess((input) => {
