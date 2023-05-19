@@ -8,7 +8,10 @@ export const resourceTypeRoutes = z.literal('routes')
 export const routesResourceSchema = resourceBaseSchema.merge(
   z.object({
     type: resourceTypeRoutes,
-    data: routesSchema,
+    data: z.preprocess(
+      (input) => (input === null ? undefined : input),
+      routesSchema
+    ),
   })
 )
 
