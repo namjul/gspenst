@@ -22,7 +22,6 @@
     "react-dom": "*"
   },
   "devDependencies": {
-    "@tinacms/cli": "^1.5.2",
     "eslint-config-next": "12.2.5"
   }
 }
