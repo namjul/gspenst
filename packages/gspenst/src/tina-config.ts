@@ -13,7 +13,9 @@ export const tinaConfig = {
 
 type Options = { schema: Schema }
 
-export function defineConfig({ schema }: Options) {
+export function defineConfig({
+  schema,
+}: Options): ReturnType<typeof _defineConfig> {
   return _defineConfig({
     schema,
     ...tinaConfig,
