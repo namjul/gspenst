@@ -45,6 +45,8 @@ export const configResourceSchema = resourceBaseSchema.merge(
   })
 )
 
+configResourceSchema.describe('configResourceSchema')
+
 export type ConfigResource = z.infer<typeof configResourceSchema>
 
 export function createConfigResource(

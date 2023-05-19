@@ -12,6 +12,8 @@ export const routesResourceSchema = resourceBaseSchema.merge(
   })
 )
 
+routesResourceSchema.describe('routesResourceSchema')
+
 export type RoutesResource = z.infer<typeof routesResourceSchema>
 
 export function createRoutesResource(data: RoutesConfigInput) {

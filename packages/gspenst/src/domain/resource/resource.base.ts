@@ -7,3 +7,5 @@ export const resourceBaseSchema = z.object({
   data: z.any(),
   metadata: z.record(z.any()),
 })
+
+resourceBaseSchema.describe('resourceBaseSchema')
