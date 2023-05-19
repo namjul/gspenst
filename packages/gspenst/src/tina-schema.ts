@@ -2,7 +2,7 @@ import {
   defineSchema as _defineSchema,
   /*DateFieldPlugin, */
   type Collection,
-  // type Template,
+  type Template,
   type TinaField,
   type Schema,
 } from 'tinacms'
@@ -92,8 +92,8 @@ const commonFields: TinaField[] = [
 ]
 
 export function defineSchema(): Schema {
-  // templates: Template[] = [],
-  // themeFields: SchemaField[] = []
+  const templates: Template[] = []
+  const themeFields: TinaField[] = []
   const postFields: TinaField[] = [
     {
       type: 'string',
@@ -107,7 +107,7 @@ export function defineSchema(): Schema {
       },
       label: 'Excerpt',
       name: 'excerpt',
-      // templates,
+      templates,
     },
     {
       label: 'Authors',
@@ -160,7 +160,7 @@ export function defineSchema(): Schema {
             },
           ],
         },
-        // ...templates,
+        ...templates,
       ],
       isBody: true,
     },
@@ -178,7 +178,7 @@ export function defineSchema(): Schema {
         name: 'Placeholder',
       },
     ],
-    // ...(themeFields.length && { fields: themeFields }),
+    ...(themeFields.length && { fields: themeFields }),
   }
 
   const pageCollection: Collection = {
