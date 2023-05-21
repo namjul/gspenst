@@ -5,11 +5,12 @@ import { type Configuration } from 'webpack' // eslint-disable-line import/no-ex
 import { type NextConfig } from 'next'
 import { env } from 'gspenst'
 import { log } from './logger'
-import { type LoaderOptions } from './loader'
+import { type GspenstConfig, type LoaderOptions } from './types'
 import {
   YAML_EXTENSION_REGEX,
   DEFAULT_EXTENSIONS,
   YAML_EXTENSIONS,
+  DEFAULT_CONFIG,
 } from './constants'
 import { GspenstPlugin } from './plugin'
 
@@ -22,12 +23,14 @@ const mediaDir = path.join(
 // make sure that uploads folder exist
 void fse.ensureDir(mediaDir)
 
-export default (...args: [string | LoaderOptions, string]) =>
+export default (...args: [string | GspenstConfig, string]) =>
   (nextConfig: NextConfig = {}): NextConfig => {
-    const options =
-      typeof args[0] === 'string'
+    const gspenstConfig = {
+      ...DEFAULT_CONFIG,
+      ...(typeof args[0] === 'string'
         ? { theme: args[0], themeConfig: args[1] }
-        : args[0]
+        : args[0]),
+    }
 
     log('Initializing next config')
 
@@ -40,7 +43,7 @@ export default (...args: [string | LoaderOptions, string]) =>
     const gspenstPlugin = new GspenstPlugin()
 
     const gspenstLoaderOptions: LoaderOptions = {
-      ...options,
+      ...gspenstConfig,
       isStaticHTMLExport,
     }
 

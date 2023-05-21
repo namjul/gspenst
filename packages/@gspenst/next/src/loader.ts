@@ -6,13 +6,7 @@ import { build, buildTina } from 'gspenst/server'
 import { findContentDir } from './utils'
 import { log } from './logger'
 import { PARAM_REGEX, IS_PRODUCTION } from './constants'
-
-export type LoaderOptions = {
-  theme: string
-  themeConfig?: string
-  isServer?: boolean
-  isStaticHTMLExport: boolean
-}
+import { type LoaderOptions } from './types'
 
 const contentDir = path.resolve(findContentDir())
 
