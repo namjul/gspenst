@@ -6,30 +6,24 @@ import {
   type NextraThemeLayoutProps,
 } from 'nextra'
 import { useStore, selectData, selectConfig } from 'gspenst/data'
-import getComponent from '@gspenst/next/componentRegistry'
+import { MDXProvider } from 'gspenst/mdx'
 import { useMDXComponents } from '@mdx-js/react'
 import { BlockQuote } from './components/testimonial'
 import { Cta } from './components/cta'
 import { type TinaConfig, type NextraBlogTheme, defaultConfig } from './config'
 
-const GspenstMdxTheme = getComponent('MdxTheme')
-
-const MdxTheme = (props: { content: Root | undefined }) => {
+const MdxTheme = (props: { children: Root | undefined }) => {
   const { wrapper: MDXLayout, ...components } = {
     ...useMDXComponents(),
     BlockQuote,
     Cta,
   }
 
-  if (GspenstMdxTheme) {
-    const mdxTheme = (
-      // @ts-expect-error --- TODO solve type incompatibility between tinacms `Components` and `@mdx-js/react`'s `MDXComponents`
-      <GspenstMdxTheme components={components} content={props.content} />
-    )
-    return MDXLayout ? <MDXLayout>mdxTheme</MDXLayout> : mdxTheme
-  }
-
-  return null
+  const mdxTheme = (
+    // @ts-expect-error --- TODO solve type incompatibility between tinacms `Components` and `@mdx-js/react`'s `MDXComponents`
+    <MDXProvider components={components}>{props.children}</MDXProvider>
+  )
+  return MDXLayout ? <MDXLayout>mdxTheme</MDXLayout> : mdxTheme
 }
 
 const createTheme = (_config: NextraBlogTheme) => {
@@ -161,7 +155,7 @@ const createTheme = (_config: NextraBlogTheme) => {
     }
 
     const children = entryResource?.content ? (
-      <MdxTheme content={entryResource.content} />
+      <MdxTheme>{entryResource.content}</MdxTheme>
     ) : (
       ''
     )

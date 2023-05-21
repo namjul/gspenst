@@ -11,10 +11,6 @@
       "module": "./loader/dist/gspenst-next-loader.esm.js",
       "default": "./loader/dist/gspenst-next-loader.cjs.js"
     },
-    "./componentRegistry": {
-      "module": "./componentRegistry/dist/gspenst-next-componentRegistry.esm.js",
-      "default": "./componentRegistry/dist/gspenst-next-componentRegistry.cjs.js"
-    },
     "./package.json": "./package.json"
   },
   "main": "dist/gspenst-next.cjs.js",
@@ -23,8 +19,7 @@
     "dist",
     "loader",
     "client",
-    "server",
-    "componentRegistry"
+    "server"
   ],
   "scripts": {
     "lint:types": "tsc --noEmit"
@@ -51,8 +46,7 @@
     "exports": true,
     "entrypoints": [
       "index.ts",
-      "loader.ts",
-      "componentRegistry.ts"
+      "loader.ts"
     ]
   }
 }

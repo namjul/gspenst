@@ -82,7 +82,6 @@ import { PHASE_PRODUCTION_BUILD, PHASE_EXPORT } from 'next/constants'
 import { Errors } from 'gspenst'
 import { getPaths, getProps } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
-import getComponent from '@gspenst/next/componentRegistry'
 import __gspenst_withTheme__ from '${themePath}'
 ${
   themeConfigPath
