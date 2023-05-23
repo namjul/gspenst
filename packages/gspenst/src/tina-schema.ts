@@ -180,6 +180,9 @@ export function defineSchema(): Schema {
         name: 'Placeholder',
       },
     ],
+    ui: {
+      global: true,
+    },
     ...(themeFields.length && { fields: themeFields }),
   }
 
