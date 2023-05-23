@@ -194,7 +194,7 @@ export function defineSchema(): Schema {
     fields: [...commonFields, ...postFields],
     ui: {
       router: ({ document }) => {
-        return (routingMapping)[document._sys.path]
+        return routingMapping[document._sys.path]
       },
     },
   }
@@ -207,7 +207,7 @@ export function defineSchema(): Schema {
     fields: [...commonFields, ...postFields],
     ui: {
       router: ({ document }) => {
-        return (routingMapping)[document._sys.path]
+        return routingMapping[document._sys.path]
       },
     },
   }
@@ -242,7 +242,7 @@ export function defineSchema(): Schema {
     fields: [...taxonomyFields('author'), ...commonFields],
     ui: {
       router: ({ document }) => {
-        return (routingMapping)[document._sys.path]
+        return routingMapping[document._sys.path]
       },
     },
   }
@@ -255,7 +255,7 @@ export function defineSchema(): Schema {
     fields: [...taxonomyFields('tag'), ...commonFields],
     ui: {
       router: ({ document }) => {
-        return (routingMapping)[document._sys.path]
+        return routingMapping[document._sys.path]
       },
     },
   }
