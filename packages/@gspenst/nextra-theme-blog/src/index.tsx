@@ -26,10 +26,9 @@ const MdxTheme = (props: { children: Root | undefined }) => {
   return MDXLayout ? <MDXLayout>mdxTheme</MDXLayout> : mdxTheme
 }
 
-const createTheme = (_config: NextraBlogTheme) => {
+const createTheme = () => {
   const themeConfig: NextraBlogTheme = {
     ...defaultConfig,
-    ..._config,
   }
 
   const Page = () => {

@@ -28,7 +28,7 @@ export default (...args: [string | GspenstConfig, string]) =>
     const gspenstConfig = {
       ...DEFAULT_CONFIG,
       ...(typeof args[0] === 'string'
-        ? { theme: args[0], themeConfig: args[1] }
+        ? { theme: args[0] }
         : args[0]),
     }
 

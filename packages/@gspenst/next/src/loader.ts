@@ -4,7 +4,6 @@ import { type LoaderContext } from 'webpack' // eslint-disable-line import/no-ex
 import { Errors } from 'gspenst'
 import { build, buildTina } from 'gspenst/server'
 import { findContentDir } from './utils'
-import { log } from './logger'
 import { PARAM_REGEX, IS_PRODUCTION } from './constants'
 import { type LoaderOptions } from './types'
 
@@ -16,28 +15,18 @@ async function loader(
   source: string
 ): Promise<string | Buffer> {
   context.cacheable(true)
-
-  log('Run Loader')
-
   const options = context.getOptions()
-  const { theme, themeConfig, isServer } = options
+  const { theme, isServer } = options
 
   if (!theme) {
     context.emitError(new Error('No Gspenst Theme found.'))
   }
 
   let themePath = theme
-  let themeConfigPath = themeConfig ?? null
 
   // Relative path instead of a package name
   if (theme.startsWith('.') || theme.startsWith('/')) {
     themePath = path.resolve(theme)
-  }
-
-  if (themeConfigPath) {
-    // TODO use https://github.com/sindresorhus/slash
-    // https://github.com/preconstruct/preconstruct/pull/435
-    themeConfigPath = path.resolve(themeConfigPath)
   }
 
   if (!IS_PRODUCTION) {
@@ -77,19 +66,12 @@ import { Errors } from 'gspenst'
 import { getPaths, getProps } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
 import __gspenst_withTheme__ from '${themePath}'
-${
-  themeConfigPath
-    ? `import __gspenst_themeConfig__ from '${themeConfigPath}'`
-    : ''
-}
-`
+$`
 
   const component = `
 const pageMap = ${JSON.stringify(pageMap)}
 const GspenstThemeComponent = __gspenst_withData__(
-  __gspenst_withTheme__(${
-    themeConfigPath ? '__gspenst_themeConfig__' : 'null'
-  }), {
+  __gspenst_withTheme__(null), {
     pageMap,
   }
 )

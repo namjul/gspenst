@@ -33,7 +33,7 @@ export const defaultConfig = {
     <small style={{ display: 'block', marginTop: '8rem' }}>my footer</small>
   ),
   titleSuffix: 'titleSuffix',
-  postFooter: null,
+  postFooter: undefined,
 }
 
 export const fields: SchemaField[] = [
