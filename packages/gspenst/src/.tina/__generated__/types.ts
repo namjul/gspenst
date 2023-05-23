@@ -42,6 +42,12 @@ export type SystemInfoBreadcrumbsArgs = {
   excludeExtension?: InputMaybe<Scalars['Boolean']>;
 };
 
+export type Folder = {
+  __typename?: 'Folder';
+  name: Scalars['String'];
+  path: Scalars['String'];
+};
+
 export type PageInfo = {
   __typename?: 'PageInfo';
   hasPreviousPage: Scalars['Boolean'];
@@ -223,9 +229,10 @@ export type CollectionDocumentsArgs = {
   last?: InputMaybe<Scalars['Float']>;
   sort?: InputMaybe<Scalars['String']>;
   filter?: InputMaybe<DocumentFilter>;
+  folder?: InputMaybe<Scalars['String']>;
 };
 
-export type DocumentNode = Config | Page | Post | Author | Tag;
+export type DocumentNode = Config | Page | Post | Author | Tag | Folder;
 
 export type Config = Node & Document & {
   __typename?: 'Config';
