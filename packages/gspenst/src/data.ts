@@ -1,8 +1,6 @@
 import merge from 'deepmerge'
 import { useReducer } from 'react'
-import { useTina } from 'tinacms/dist/react'
 import { type ThemeContext } from './domain/theming'
-import { type Resource } from './domain/resource'
 import { assertUnreachable, do_ } from './shared/utils'
 import { type Json } from './shared/kernel'
 import { normalizeResource, denormalizeEntities } from './helpers/normalize'
@@ -38,25 +36,7 @@ export function useGspenstState(
   const routingMapping = getRoutingMapping(pageMap) // TODO memorize
   const [state, dispatch] = useReducer(storeReducer, context)
 
-  if (state.resource.type === 'routes') {
-    throw new Error('routes resource should not land on client')
-  }
-
-  const { data } = state.resource
-
-  const { data: tinaData } = useTina({
-    query: data.query,
-    variables: data.variables,
-    data: data.data,
-  })
-
-  const resource = {
-    ...state.resource,
-    data: {
-      ...data,
-      data: { ...data.data, ...tinaData },
-    },
-  } as Resource
+  const { resource } = state
 
   const normalizeResourceResult = normalizeResource(resource, routingMapping)
 
