@@ -1,16 +1,9 @@
-import { useStore } from 'gspenst/data'
+import { type GspenstThemeLayoutProps } from '@gspenst/next'
 
-const createLayout = () => {
-  const Page = () => {
-    const { state } = useStore()
-    return (
-      <div>
-        <pre>{JSON.stringify(state, null, 2)}</pre>
-      </div>
-    )
-  }
-
-  return Page
+export default function Layout({ context, pageMap }: GspenstThemeLayoutProps) {
+  return (
+    <div>
+      <pre>{JSON.stringify({ context, pageMap }, null, 2)}</pre>
+    </div>
+  )
 }
-
-export default createLayout
