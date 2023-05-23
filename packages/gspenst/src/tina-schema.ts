@@ -7,11 +7,15 @@ import {
   type Schema,
 } from 'tinacms'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import routingMapping from 'gspenst/routingMapping.json'
+import pageMap from 'gspenst/pageMap.json'
 import { createLogger } from './logger'
-import { type RoutingMapping } from './helpers/getPageMap'
+import { getRoutingMapping, type PageMapItem } from './helpers/getPageMap'
 
 const log = createLogger('tinaschema')
+
+log('BUILDING with the following pageMap', pageMap)
+
+const routingMapping = getRoutingMapping(pageMap as PageMapItem[])
 
 // import slugify from 'slugify'
 
@@ -26,8 +30,6 @@ const log = createLogger('tinaschema')
 
 // TODO use https://tina.io/docs/contextual-editing/router/
 //
-
-log('BUILDING with the following routingMapping', routingMapping)
 
 const dateFormat = 'YYYY MM DD'
 const commonFields: TinaField[] = [
@@ -189,7 +191,7 @@ export function defineSchema(): Schema {
     fields: [...commonFields, ...postFields],
     ui: {
       router: ({ document }) => {
-        return (routingMapping as RoutingMapping)[document._sys.path]
+        return (routingMapping)[document._sys.path]
       },
     },
   }
@@ -202,7 +204,7 @@ export function defineSchema(): Schema {
     fields: [...commonFields, ...postFields],
     ui: {
       router: ({ document }) => {
-        return (routingMapping as RoutingMapping)[document._sys.path]
+        return (routingMapping)[document._sys.path]
       },
     },
   }
@@ -237,7 +239,7 @@ export function defineSchema(): Schema {
     fields: [...taxonomyFields('author'), ...commonFields],
     ui: {
       router: ({ document }) => {
-        return (routingMapping as RoutingMapping)[document._sys.path]
+        return (routingMapping)[document._sys.path]
       },
     },
   }
@@ -250,7 +252,7 @@ export function defineSchema(): Schema {
     fields: [...taxonomyFields('tag'), ...commonFields],
     ui: {
       router: ({ document }) => {
-        return (routingMapping as RoutingMapping)[document._sys.path]
+        return (routingMapping)[document._sys.path]
       },
     },
   }

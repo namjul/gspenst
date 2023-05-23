@@ -27,9 +27,7 @@ export default (...args: [string | GspenstConfig, string]) =>
   (nextConfig: NextConfig = {}): NextConfig => {
     const gspenstConfig = {
       ...DEFAULT_CONFIG,
-      ...(typeof args[0] === 'string'
-        ? { theme: args[0] }
-        : args[0]),
+      ...(typeof args[0] === 'string' ? { theme: args[0] } : args[0]),
     }
 
     log('Initializing next config')

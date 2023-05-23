@@ -22,12 +22,8 @@ async function loader(
     context.emitError(new Error('No Gspenst Theme found.'))
   }
 
-  let themePath = theme
-
-  // Relative path instead of a package name
-  if (theme.startsWith('.') || theme.startsWith('/')) {
-    themePath = path.resolve(theme)
-  }
+  const isLocalTheme = theme.startsWith('.') || theme.startsWith('/') // Relative path instead of a package name
+  const layout = isLocalTheme ? path.resolve(theme) : theme
 
   if (!IS_PRODUCTION) {
     // Add the entire directory `content` as the dependency
@@ -58,29 +54,18 @@ async function loader(
 
   const routesConfigStringified = JSON.stringify(routesConfig)
 
-  // const tinaConfigPath = path.resolve(process.cwd(), '.tina', 'config')
-
-  const imports = `
+  return `
 import { PHASE_PRODUCTION_BUILD, PHASE_EXPORT } from 'next/constants'
 import { Errors } from 'gspenst'
 import { getPaths, getProps } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
-import __gspenst_withTheme__ from '${themePath}'
-$`
+import __gspenst_layout from '${layout}'
 
-  const component = `
-const pageMap = ${JSON.stringify(pageMap)}
-const GspenstThemeComponent = __gspenst_withData__(
-  __gspenst_withTheme__(null), {
-    pageMap,
-  }
-)
 
-export default function GspenstLayout (props) {
-  return <GspenstThemeComponent {...props} />
-}`
-
-  const dataFetchingFunctions = `
+const GSPENST_INTERNAL = Symbol.for('__gspenst_internal__')
+const __gspenst_internal__ = ((globalThis)[GSPENST_INTERNAL] ||= Object.create(null))
+__gspenst_internal__.Layout = __gspenst_layout
+__gspenst_internal__.pageMap = ${JSON.stringify(pageMap)}
 
 const routesConfig = ${routesConfigStringified}
 const routingParameter = '${routingParameter}'
@@ -88,7 +73,7 @@ const nextPhase = process.env.NEXT_PHASE
 const isBuildPhase = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
 const isStaticHTMLExport = !!${options.isStaticHTMLExport}
 
-export const getStaticPaths = async () => { 
+export const getStaticPaths = async () => {
   const pathResult = await getPaths({ routesConfig })
   if (pathResult.isOk()) {
     const paths = pathResult.value
@@ -130,9 +115,9 @@ export const getStaticProps = async ({ params }) => {
 
   throw Errors.format(propsResult.error)
 }
-`
 
-  return [imports, component, dataFetchingFunctions].join('\n')
+export { default } from '@gspenst/next/layout'
+`
 }
 
 export default function syncLoader(

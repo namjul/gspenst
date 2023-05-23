@@ -11,11 +11,7 @@ import repository from './repository'
 import { routerManager } from './router'
 import { controller } from './controller'
 import { createLoaders } from './helpers/processQuery'
-import {
-  getPageMap,
-  getRoutingMapping,
-  type PageMap,
-} from './helpers/getPageMap'
+import { getPageMap, type PageMapItem } from './helpers/getPageMap'
 import { createLogger } from './logger'
 import { startSubprocess } from './utils'
 
@@ -96,17 +92,16 @@ export async function startTinaServer(
   }
 }
 
-export function updateRoutingMapping(pageMap: PageMap) {
+export function updateRoutingMapping(pageMap: PageMapItem[]) {
   log('Writing `routingMapping.json`...')
-  const routingMapping = getRoutingMapping(pageMap)
   const packagePath: string = path.dirname(
     require.resolve(`gspenst/package.json`)
   )
   const routingMappingFilePath = path.resolve(
     packagePath,
-    './routingMapping.json'
+    './pageMap.json'
   )
-  return fse.writeJsonSync(routingMappingFilePath, routingMapping)
+  return fse.writeJsonSync(routingMappingFilePath, pageMap)
 }
 
 export { collect } from './collect'

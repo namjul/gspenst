@@ -11,3 +11,5 @@ export const DEFAULT_EXTENSIONS = ['js', 'jsx', 'ts', 'tsx']
 export const YAML_EXTENSIONS = ['yml', 'yaml']
 
 export const DEFAULT_CONFIG: Omit<GspenstConfig, 'theme'> = {}
+
+export const GSPENT_INTERNAL = Symbol.for('__gspenst_internal__')

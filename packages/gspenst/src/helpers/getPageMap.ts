@@ -14,6 +14,7 @@ import { type RouteType } from '../domain/routing'
 
 type ResourcePath = LocatorResource['path']
 type Path = LocatorResource['metadata']['path']
+
 export type RoutingMapping = {
   [resourcePath: ResourcePath]: Path
 }
@@ -25,11 +26,6 @@ export type PageMapItem = {
   filepath?: string
   children?: PageMapItem[]
   resourceType?: LocatorResourceType
-  // locale?: string
-  // timestamp?: number
-  // frontMatter?: Record<string, any>
-  // meta?: Record<string, any>
-  // active?: boolean
 }
 
 function getLocatorResources(resources: Resource[] = []): PageMapItem[] {
@@ -57,15 +53,7 @@ function getLocatorResources(resources: Resource[] = []): PageMapItem[] {
   })
 }
 
-export type PageMap = PageMapItem[]
-
-export function getPageMap(
-  resources: Resource[]
-  // currentResourcePath: string,
-  // pageMaps: PageMapItem[],
-  // fileMap: Record<string, PageMapItem>,
-  // defaultLocale: string
-): PageMap {
+export function getPageMap(resources: Resource[]): PageMapItem[] {
   const routesResource = resources.find(isRoutesResource)
   const routesConfig: RoutesConfig = routesResource?.data ?? {}
 

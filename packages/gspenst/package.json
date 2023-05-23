@@ -20,7 +20,7 @@
       "default": "./server/dist/gspenst-server.cjs.js"
     },
     "./package.json": "./package.json",
-    "./routingMapping.json": "./routingMapping.json"
+    "./pageMap.json": "./pageMap.json"
   },
   "main": "dist/gspenst.cjs.js",
   "module": "dist/gspenst.esm.js",
@@ -75,7 +75,7 @@
   "preconstruct": {
     "exports": {
       "extra": {
-        "./routingMapping.json": "./routingMapping.json"
+        "./pageMap.json": "./pageMap.json"
       }
     },
     "entrypoints": [
