@@ -1,5 +1,5 @@
 import merge from 'deepmerge'
-import { useReducer } from 'react'
+import { useReducer, useEffect } from 'react'
 import { type ThemeContext } from './domain/theming'
 import { assertUnreachable, do_ } from './shared/utils'
 import { type Json } from './shared/kernel'
@@ -37,6 +37,10 @@ export function useGspenstState(
   const [state, dispatch] = useReducer(storeReducer, context)
 
   const { resource } = state
+
+  useEffect(() => {
+    dispatch({ type: 'HYDRATE', payload: context })
+  }, [context, dispatch])
 
   const normalizeResourceResult = normalizeResource(resource, routingMapping)
 
