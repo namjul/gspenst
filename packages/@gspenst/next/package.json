@@ -32,10 +32,11 @@
   "dependencies": {
     "@preconstruct/next": "^4.0.0",
     "debug": "^4.3.3",
+    "deepmerge": "^4.2.2",
     "fs-extra": "^10.0.0",
     "gspenst": "^0.1.0",
-    "tinacms": "^1.5.6",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "tinacms": "^1.5.6"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",

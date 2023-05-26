@@ -13,14 +13,14 @@ export interface LoaderOptions extends GspenstConfig {
   isStaticHTMLExport: boolean
 }
 
-export type GspenstInternalGlobal = typeof globalThis & {
-  [GSPENT_INTERNAL]: {
-    Layout: FC<any>
-    pageMap: PageMapItem[]
-  }
+export type GspenstThemeLayoutProps = {
+  pageMap: PageMapItem[]
+  context: ThemeContext
 }
 
-export type GspenstThemeLayoutProps = {
-  context: ThemeContext
-  pageMap: PageMapItem[]
+export type GspenstInternalGlobal = typeof globalThis & {
+  [GSPENT_INTERNAL]: {
+    Layout: FC<GspenstThemeLayoutProps>
+    pageMap: PageMapItem[]
+  }
 }

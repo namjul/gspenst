@@ -1,6 +1,6 @@
 import { type Root } from 'gspenst'
 import { type GspenstThemeLayoutProps } from '@gspenst/next'
-import { useGspenstState, selectData, selectConfig } from 'gspenst/data'
+import { selectData, selectConfig } from 'gspenst/data'
 import { MDXProvider } from 'gspenst/mdx'
 import NextraLayout from 'nextra-theme-blog'
 import {
@@ -27,20 +27,16 @@ const MdxTheme = (props: { children: Root | undefined }) => {
   return MDXLayout ? <MDXLayout>mdxTheme</MDXLayout> : mdxTheme
 }
 
-export default function Layout({
-  context,
-  pageMap,
-}: GspenstThemeLayoutProps) {
+export default function Layout({ context, pageMap }: GspenstThemeLayoutProps) {
   const themeConfig: NextraBlogTheme = {
     ...defaultConfig,
   }
 
-  const { state } = useGspenstState(context, pageMap)
-  const { route } = state
+  const { route } = context
 
-  const { resources } = selectData(state)
-  const { resources: postResources } = selectData(state, 'posts')
-  const ignoredtinaConfig = selectConfig<TinaConfig>(state)
+  const { resources } = selectData(context)
+  const { resources: postResources } = selectData(context, 'posts')
+  const ignoredtinaConfig = selectConfig<TinaConfig>(context)
   const resource = resources[0]
 
   if (!resource) {
@@ -62,16 +58,16 @@ export default function Layout({
   const postsPageMap: PageMapItem[] = postResources.flatMap((post) =>
     post.type === 'post'
       ? {
-        kind: 'MdxPage',
-        name: post.title || post.slug || 'Untitled', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
-        route: post.path,
-        frontMatter: {
-          type: 'post',
-          date: post.date,
-          description: post.excerpt,
-          title: post.title,
-        },
-      }
+          kind: 'MdxPage',
+          name: post.title || post.slug || 'Untitled', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
+          route: post.path,
+          frontMatter: {
+            type: 'post',
+            date: post.date,
+            description: post.excerpt,
+            title: post.title,
+          },
+        }
       : []
   )
 
@@ -96,18 +92,18 @@ export default function Layout({
     route,
     frontMatter: {
       type: (() => {
-        if (state.context?.includes('index')) {
+        if (context.context?.includes('index')) {
           return 'posts'
         }
-        return state.context?.at(0) ?? 'post'
+        return context.context?.at(0) ?? 'post'
       })(),
       ...(entryResource
         ? {
-          title: entryResource.title,
-          author: entryResource.primary_author?.name ?? 'no author',
-          tag: entryResource.primary_tag?.name ?? 'no tag',
-          date: entryResource.date,
-        }
+            title: entryResource.title,
+            author: entryResource.primary_author?.name ?? 'no author',
+            tag: entryResource.primary_tag?.name ?? 'no tag',
+            date: entryResource.date,
+          }
         : {}),
     },
     pageMap: [
@@ -172,7 +168,7 @@ export default function Layout({
   return (
     <>
       <NextraLayout {...nextraThemeLayoutProps} />
-      <pre>{JSON.stringify(state, null, 2)}</pre>
+      <pre>{JSON.stringify(context, null, 2)}</pre>
     </>
   )
 }

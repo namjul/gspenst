@@ -1,79 +1,24 @@
-import merge from 'deepmerge'
-import { useReducer, useEffect } from 'react'
 import { type ThemeContext } from './domain/theming'
-import { assertUnreachable, do_ } from './shared/utils'
+import { do_ } from './shared/utils'
 import { type Json } from './shared/kernel'
-import { normalizeResource, denormalizeEntities } from './helpers/normalize'
+import { denormalizeEntities } from './helpers/normalize'
 import * as Errors from './errors'
-import {
-  type PageMapItem,
-  getRoutingMapping
-} from './helpers/getPageMap'
 // import { getHeaders } from './helpers/getHeaders';
 
-type Action = { type: 'HYDRATE'; payload: State }
-type Dispatch = (action: Action) => void
-type State = ThemeContext
-
-function storeReducer(state: State, action: Action) {
-  switch (action.type) {
-    case 'HYDRATE': {
-      return { ...state, ...action.payload }
-    }
-    default: {
-      return assertUnreachable(action.type)
-    }
-  }
-}
-
-export function useGspenstState(
+export function selectData(
   context: ThemeContext,
-  pageMap: PageMapItem[]
-): {
-  state: State
-  dispatch: Dispatch
-} {
-  const routingMapping = getRoutingMapping(pageMap) // TODO memorize
-  const [state, dispatch] = useReducer(storeReducer, context)
-
-  const { resource } = state
-
-  useEffect(() => {
-    dispatch({ type: 'HYDRATE', payload: context })
-  }, [context, dispatch])
-
-  const normalizeResourceResult = normalizeResource(resource, routingMapping)
-
-  if (normalizeResourceResult.isErr()) {
-    throw Errors.format(normalizeResourceResult.error)
-  }
-
-  return {
-    state: {
-      ...state,
-      resource,
-      entities: merge(state.entities, normalizeResourceResult.value.entities, {
-        isMergeableObject: (value) => {
-          return !('type' in value)
-        },
-      }),
-    } as State,
-    dispatch,
-  }
-}
-
-
-export function selectData(state: State, key: string | undefined = undefined) {
+  key: string | undefined = undefined
+) {
   const { resources, pagination } = do_(() => {
-    if (key === state.resource.type || key === undefined) {
+    if (key === context.resource.type || key === undefined) {
       return {
         resources: {
-          [state.resource.type]: [state.resource.id],
+          [context.resource.type]: [context.resource.id],
         },
       }
     }
 
-    const dataEntry = state.data[key]
+    const dataEntry = context.data[key]
     if (dataEntry) {
       if (dataEntry.type === 'read') {
         return {
@@ -97,7 +42,7 @@ export function selectData(state: State, key: string | undefined = undefined) {
 
   const entitiesDenormalizedResult = denormalizeEntities(
     resources,
-    state.entities
+    context.entities
   )
 
   if (entitiesDenormalizedResult.isErr()) {
@@ -110,10 +55,9 @@ export function selectData(state: State, key: string | undefined = undefined) {
   }
 }
 
-export function selectConfig<T extends Json>(state: State) {
-  const config = Object.values(state.entities.config).at(0)
+export function selectConfig<T extends Json>(context: ThemeContext) {
+  const config = Object.values(context.entities.config).at(0)
   if (config) {
     return config.values as T
   }
 }
-
