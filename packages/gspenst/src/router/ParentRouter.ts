@@ -50,12 +50,6 @@ class ParentRouter {
     )
   }
 
-  handleRequest(
-    _regExpexecArray: RegExpExecArray
-  ): GspenstResult<Option<RoutingContext>> {
-    return ok(undefined)
-  }
-
   handle(
     request: string,
     contexts: GspenstResult<Option<RoutingContext>>[],

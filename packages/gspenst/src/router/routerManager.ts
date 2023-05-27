@@ -22,8 +22,7 @@ import TaxonomyRouter from './TaxonomyRouter'
 import StaticRoutesRouter from './StaticRoutesRouter'
 import ParentRouter from './ParentRouter'
 
-export const routerManager = (routesConfig: RoutesConfig) => {
-  const config: RoutesConfig = routesConfig
+export const routerManager = (routesConfig: Partial<RoutesConfig>) => {
   const router: ParentRouter = new ParentRouter('SiteRouter')
   const routers: ParentRouter[] = []
 
@@ -42,7 +41,7 @@ export const routerManager = (routesConfig: RoutesConfig) => {
   routers.push(adminRouter)
 
   // 2.
-  getRoutes(config).forEach(([key, value]) => {
+  getRoutes(routesConfig).forEach(([key, value]) => {
     const staticRoutesRouter = new StaticRoutesRouter(key, value)
     routers.push(staticRoutesRouter)
   })
@@ -50,13 +49,13 @@ export const routerManager = (routesConfig: RoutesConfig) => {
   // 3.
 
   const postSet = new Set<ID>()
-  getCollections(config).forEach(([key, value]) => {
+  getCollections(routesConfig).forEach(([key, value]) => {
     const collectionRouter = new CollectionRouter(key, value, postSet)
     routers.push(collectionRouter)
   })
 
   // 4.
-  getTaxonomies(config).forEach(([key, value]) => {
+  getTaxonomies(routesConfig).forEach(([key, value]) => {
     const taxonomyRouter = new TaxonomyRouter(key, value)
     routers.push(taxonomyRouter)
   })

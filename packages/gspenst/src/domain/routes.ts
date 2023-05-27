@@ -262,25 +262,20 @@ export const routesSchema = z
           route
         )
       )
-      .nullable()
-      .optional(),
-    collections: z.record(collection).nullable().optional(),
-    taxonomies: taxonomies.nullable().optional(),
-  })
-  .strict()
-  .default({
-    routes: {},
-    collections: {
+      .default({}),
+    collections: z.record(collection).default({
       '/': {
         permalink: '/{slug}/',
         template: 'index',
       },
-    },
-    taxonomies: {
+    }),
+    taxonomies: taxonomies.default({
       tag: '/tag/{slug}',
       author: '/author/{slug}',
-    },
+    }),
   })
+  .strict()
+  .default({})
 
 routesSchema.describe('routesSchema')
 
@@ -317,19 +312,19 @@ export function parseRoutes(input: unknown) {
   return Result.combineWithAllErrors(resultList)
 }
 
-export function getRoutes(routesConfig: RoutesConfig) {
+export function getRoutes(routesConfig: Partial<RoutesConfig>) {
   return Object.entries(routesConfig.routes ?? {}) as Entries<
     typeof routesConfig.routes
   >
 }
 
-export function getCollections(routesConfig: RoutesConfig) {
+export function getCollections(routesConfig: Partial<RoutesConfig>) {
   return Object.entries(routesConfig.collections ?? {}) as Entries<
     typeof routesConfig.collections
   >
 }
 
-export function getTaxonomies(routesConfig: RoutesConfig) {
+export function getTaxonomies(routesConfig: Partial<RoutesConfig>) {
   return Object.entries(routesConfig.taxonomies ?? {}) as Entries<
     typeof routesConfig.taxonomies
   >

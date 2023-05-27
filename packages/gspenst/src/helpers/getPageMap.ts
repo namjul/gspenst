@@ -9,7 +9,6 @@ import {
   type LocatorResource,
   type LocatorResourceType,
 } from '../domain/resource/resource.locator'
-import { type RoutesConfig } from '../domain/routes'
 import { type RouteType } from '../domain/routing'
 
 type ResourcePath = LocatorResource['path']
@@ -55,10 +54,10 @@ function getLocatorResources(resources: Resource[] = []): PageMapItem[] {
 
 export function getPageMap(resources: Resource[]): PageMapItem[] {
   const routesResource = resources.find(isRoutesResource)
-  const routesConfig: RoutesConfig = routesResource?.data ?? {}
+  const routesConfig = routesResource?.data
 
   const result: PageMapItem[] = []
-  Object.keys(routesConfig.routes ?? {}).forEach((route) => {
+  Object.keys(routesConfig?.routes ?? {}).forEach((route) => {
     result.push({
       type: 'custom',
       name: route.split('/').join(''),
@@ -67,7 +66,7 @@ export function getPageMap(resources: Resource[]): PageMapItem[] {
     })
   })
 
-  Object.keys(routesConfig.collections ?? {}).forEach((route) => {
+  Object.keys(routesConfig?.collections ?? {}).forEach((route) => {
     result.push({
       type: 'collection',
       name: route.split('/').join('') || 'index',
