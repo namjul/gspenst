@@ -1,8 +1,7 @@
-import { ReactElement, useReducer, useEffect } from 'react'
+import { ReactElement, useMemo } from 'react'
 import merge from 'deepmerge'
 import {
   type ThemeContext,
-  type Resource,
   type PageMapItem,
   getRoutingMapping,
   normalizeResource,
@@ -10,86 +9,55 @@ import {
 } from 'gspenst'
 import { useTina } from 'tinacms/dist/react'
 import { useInternals } from './use-internals'
-import { assertUnreachable } from "./utils";
 
-type Action = { type: 'HYDRATE'; payload: State }
-type Dispatch = (action: Action) => void
-type State = ThemeContext
-
-
-function storeReducer(state: State, action: Action) {
-  switch (action.type) {
-    case 'HYDRATE': {
-      return { ...state, ...action.payload }
-    }
-    default: {
-      return assertUnreachable(action.type)
-    }
-  }
-}
-
-export function useGspenstState(
-  context: ThemeContext,
-  pageMap: PageMapItem[]
-): {
-  state: State
-  dispatch: Dispatch
-} {
-  const routingMapping = getRoutingMapping(pageMap) // TODO memorize
-  const [state, dispatch] = useReducer(storeReducer, context)
-
-  const { resource } = state
-
-  useEffect(() => {
-    dispatch({ type: 'HYDRATE', payload: context })
-  }, [context])
-
-  const normalizeResourceResult = normalizeResource(resource, routingMapping)
-
-  if (normalizeResourceResult.isErr()) {
-    throw Errors.format(normalizeResourceResult.error)
+function useContext(context: ThemeContext, pageMap: PageMapItem[]) {
+  const { resource } = context
+  if (resource.type === 'routes') {
+    throw new Error('routes resource should not land on client')
   }
 
-  return {
-    state: {
-      ...state,
-      resource,
-      entities: merge(state.entities, normalizeResourceResult.value.entities, {
+  const { data: tinaData } = useTina({
+    query: resource.data.query,
+    variables: resource.data.variables,
+    data: resource.data.data,
+  })
+
+  const resourceEntities = useMemo(() => {
+    const routingMapping = getRoutingMapping(pageMap)
+    const normalizedResourceResult = normalizeResource(resource, routingMapping)
+
+    if (normalizedResourceResult.isErr()) {
+      throw Errors.format(normalizedResourceResult.error)
+    }
+
+    return normalizedResourceResult.value.entities
+  }, [resource, pageMap])
+
+  return useMemo(() => {
+    return {
+      ...context,
+      resource: {
+        ...resource,
+        data: {
+          ...resource.data,
+          data: { ...resource.data.data, ...tinaData },
+        },
+      },
+      entities: merge(context.entities, resourceEntities, {
         isMergeableObject: (value) => {
           return !('type' in value)
         },
       }),
-    } as State,
-    dispatch,
-  }
+    } as ThemeContext
+  }, [tinaData, context, resourceEntities, resource])
 }
 
 export default function Gspenst(props: ThemeContext): ReactElement {
   const { Layout, pageMap } = useInternals()
 
-  if (props.resource.type === 'routes') {
-    throw new Error('routes resource should not land on client')
-  }
+  const context = useContext(props, pageMap)
 
-  const { data } = props.resource
+  console.log("render Layout");
 
-  const { data: tinaData } = useTina({
-    query: data.query,
-    variables: data.variables,
-    data: data.data,
-  })
-
-  const resource = {
-    ...props.resource,
-    data: {
-      ...data,
-      data: { ...data.data, ...tinaData },
-    },
-  } as Resource
-
-  const context = { ...props, resource }
-
-  const { state } = useGspenstState(context, pageMap)
-
-  return <Layout context={state} pageMap={pageMap} />
+  return <Layout context={context} pageMap={pageMap} />
 }

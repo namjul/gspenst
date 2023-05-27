@@ -17,7 +17,3 @@ export function findContentDir(dir: string = process.cwd()): string {
     "> Couldn't find a `content` directory. Please create one under the project root"
   )
 }
-
-export function assertUnreachable(_: never, context?: string): never {
-  throw new Error(`absurd ${context}`)
-}
