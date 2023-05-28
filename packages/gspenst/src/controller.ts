@@ -20,7 +20,7 @@ import {
   type DataLoaders,
   createLoaders,
   processData,
-} from './helpers/processQuery'
+} from './processQuery'
 import { filterLocatorResources } from './helpers/resource'
 import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'

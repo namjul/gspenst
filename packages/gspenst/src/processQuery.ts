@@ -13,29 +13,23 @@ import {
   type GspenstResult,
   type GspenstResultAsync,
   type ID,
-} from '../shared/kernel'
-import { type Resource, type ResourceType } from '../domain/resource'
-import { dynamicVariablesSchema } from '../domain/resource/resource.locator'
-import { type DataQuery } from '../domain/routes'
-import { type Pagination, type Data } from '../domain/theming'
-import { type Entities } from '../domain/entity'
-import { assertUnreachable, removeNullish, do_ } from '../shared/utils'
-import repository from '../repository'
-import * as api from '../api'
-import * as Errors from '../errors'
-import { createLogger } from '../logger'
-// import {
-//   isPostResource,
-//   isPageResource,
-//   isAuthorResource,
-//   isTagResource,
-// } from './resource'
-import { parse } from './parser'
+} from './shared/kernel'
+import { type Resource, type ResourceType } from './domain/resource'
+import { dynamicVariablesSchema } from './domain/resource/resource.locator'
+import { type DataQuery } from './domain/routes'
+import { type Pagination, type Data } from './domain/theming'
+import { type Entities } from './domain/entity'
+import { assertUnreachable, removeNullish, do_ } from './shared/utils'
+import repository from './repository'
+import * as api from './api'
+import * as Errors from './errors'
+import { createLogger } from './logger'
+import { parse } from './helpers/parser'
 import {
   normalizeResource,
   normalizeResources,
   resolveResourceData,
-} from './normalize'
+} from './helpers/normalize'
 
 const uniqid = Date.now()
 
