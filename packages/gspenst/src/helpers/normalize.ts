@@ -11,6 +11,7 @@ import {
   Result,
   fromThrowable,
   z,
+  assertUnreachable, do_
 } from '../shared/kernel'
 import * as Errors from '../errors'
 import { type Resource } from '../domain/resource'
@@ -21,7 +22,6 @@ import { pageSchema, createPage, type Page } from '../domain/page'
 import { authorSchema, createAuthor, type Author } from '../domain/author'
 import { tagSchema, createTag, type Tag } from '../domain/tag'
 import { configSchema, createConfig, type Config } from '../domain/config'
-import { assertUnreachable, do_ } from '../shared/utils'
 import { type Entities } from '../domain/entity'
 
 export const normalize = fromThrowable(_normalize, (error) =>

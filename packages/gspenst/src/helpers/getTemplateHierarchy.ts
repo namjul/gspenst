@@ -1,5 +1,5 @@
 import { type RoutingContext } from '../domain/routing'
-import { assertUnreachable } from '../shared/utils'
+import { assertUnreachable } from '../shared/kernel'
 
 export function getTemplateHierarchy(routingContext: RoutingContext) {
   const { type } = routingContext

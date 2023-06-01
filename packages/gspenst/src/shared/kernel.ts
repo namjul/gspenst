@@ -20,7 +20,6 @@ import {
   Opaque,
 } from 'type-fest'
 import { type GspenstError } from '../errors'
-import { do_ } from './utils'
 
 export {
   ok,
@@ -33,6 +32,12 @@ export {
   ResultAsync,
 } from 'neverthrow'
 export { z }
+
+export const do_ = <T>(f: () => T): T => f()
+
+export function assertUnreachable(_: never, context?: string): never {
+  throw new Error(`absurd ${context}`)
+}
 
 export type ID = Opaque<number, 'ID'>
 export const idSchema = z.union([z.string(), z.number()]).transform((value) => {

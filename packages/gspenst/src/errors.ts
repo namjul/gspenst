@@ -1,5 +1,4 @@
-import { z, type Entries } from './shared/kernel'
-import { do_, assertUnreachable as absurd_ } from './shared/utils'
+import { z, type Entries, assertUnreachable, do_ } from './shared/kernel'
 
 export type GspenstError =
   | { type: 'Other'; error: Error | undefined; context?: string }
@@ -87,7 +86,7 @@ description: ${error.description ?? 'NA'}
       case 'Absurd':
         return `${error.type}: ${error.message}`
       default:
-        return absurd_(type)
+        return assertUnreachable(type)
     }
   }
 

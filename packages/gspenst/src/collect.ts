@@ -2,6 +2,8 @@ import {
   type GspenstResultAsync,
   ok,
   err,
+  do_,
+  assertUnreachable,
   Result,
   ResultAsync,
 } from './shared/kernel'
@@ -22,7 +24,7 @@ import { createTag } from './domain/tag'
 import * as api from './api'
 import { compilePermalink } from './utils'
 import { makeNqlFilter } from './helpers/nqlFilter'
-import { do_, assertUnreachable, isString } from './shared/utils'
+import { isString } from './shared/utils'
 import { createLogger } from './logger'
 import * as Errors from './errors'
 import { createConfigResource } from './domain/resource/resource.config'

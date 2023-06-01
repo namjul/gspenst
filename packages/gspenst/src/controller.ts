@@ -5,6 +5,8 @@ import {
   type Option,
   ok,
   err,
+  do_,
+  assertUnreachable,
 } from './shared/kernel'
 import {
   type RoutingContext,
@@ -25,7 +27,6 @@ import { filterLocatorResources } from './helpers/resource'
 import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import * as Errors from './errors'
-import { do_, assertUnreachable } from './shared/utils'
 import { type ThemeContext, type Data } from './domain/theming'
 import { type Entities } from './domain/entity'
 import { configId } from './constants'

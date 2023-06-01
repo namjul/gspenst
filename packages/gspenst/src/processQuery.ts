@@ -10,6 +10,8 @@ import {
   okAsync,
   errAsync,
   fromPromise,
+  assertUnreachable,
+  do_,
   type GspenstResult,
   type GspenstResultAsync,
   type ID,
@@ -18,8 +20,8 @@ import { type Resource, type ResourceType } from './domain/resource'
 import { dynamicVariablesSchema } from './domain/resource/resource.locator'
 import { type DataQuery } from './domain/routes'
 import { type Pagination, type Data } from './domain/theming'
-import { type Entities } from './domain/entity'
-import { assertUnreachable, removeNullish, do_ } from './shared/utils'
+import { type NormalizedEntities } from './domain/entity'
+import { removeNullish } from './shared/utils'
 import repository from './repository'
 import * as api from './api'
 import * as Errors from './errors'
