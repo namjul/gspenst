@@ -4,7 +4,6 @@ import {
   denormalize as _denormalize,
   type NormalizedSchema,
 } from 'normalizr'
-import { type ValueOf } from 'type-fest'
 import {
   type GspenstResult,
   type ID,
@@ -22,7 +21,7 @@ import { pageSchema, createPage, type Page } from '../domain/page'
 import { authorSchema, createAuthor, type Author } from '../domain/author'
 import { tagSchema, createTag, type Tag } from '../domain/tag'
 import { configSchema, createConfig, type Config } from '../domain/config'
-import { type Entities } from '../domain/entity'
+import { type NormalizedEntities } from '../domain/entity'
 
 export const normalize = fromThrowable(_normalize, (error) =>
   Errors.other(
@@ -81,13 +80,12 @@ type DenormalizedEntities = {
   page?: Page[]
   tag?: Tag[]
   author?: Author[]
-  resource?: Resource[]
 }
 
 export function normalizeEntities(data: DenormalizedEntities) {
   return normalize(data, entitiesSchema) as GspenstResult<
     NormalizedSchema<
-      Entities,
+      NormalizedEntities,
       {
         [name in keyof typeof data]?: ID[]
       }
@@ -95,15 +93,13 @@ export function normalizeEntities(data: DenormalizedEntities) {
   >
 }
 
-export function denormalizeEntities<T extends Partial<Entities>>(
-  data: {
+export function denormalizeEntities<T extends Partial<NormalizedEntities>>(
+  input: {
     [name in keyof T]?: ID[]
   },
   entities: T
-): GspenstResult<{
-  [name in keyof T]: NonNullable<ValueOf<T[name]>>[]
-}> {
-  return denormalize(data, entitiesSchema, entities)
+): GspenstResult<DenormalizedEntities> {
+  return denormalize(input, entitiesSchema, entities)
 }
 
 export function normalizeResource(
@@ -142,7 +138,6 @@ export function normalizeResource(
           page: [],
           tag: [],
           author: [],
-          resource: [resource],
         }
       ),
     }
@@ -168,7 +163,6 @@ export function normalizeResources(
           const resource = resources[index]
           if (resource) {
             entities.forEach((entity) => {
-              acc.resource.push(resource)
               const { type } = resource
               if (type === 'post' && entity.type === 'post') {
                 acc.post.push(entity)
@@ -191,7 +185,6 @@ export function normalizeResources(
           page: [],
           tag: [],
           author: [],
-          resource: [],
         }
       )
     ).map(({ entities }) => {

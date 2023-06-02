@@ -94,11 +94,7 @@ export type {
   Get,
   SetOptional,
 }
-export type ValidateShape<T, Shape> = T extends Shape
-  ? Exclude<keyof T, keyof Shape> extends never
-    ? T
-    : never
-  : never
+
 
 /* --- MDX --- */
 

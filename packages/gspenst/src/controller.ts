@@ -1,4 +1,3 @@
-import filterObject from 'filter-obj'
 import {
   type GspenstResult,
   type GspenstResultAsync,
@@ -18,17 +17,13 @@ import {
 } from './domain/routing'
 import { type LocatorResource } from './domain/resource/resource.locator'
 import { type DataQuery } from './domain/routes'
-import {
-  type DataLoaders,
-  createLoaders,
-  processData,
-} from './processQuery'
+import { type DataLoaders, createLoaders, processData } from './processQuery'
 import { filterLocatorResources } from './helpers/resource'
 import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import * as Errors from './errors'
 import { type ThemeContext, type Data } from './domain/theming'
-import { type Entities } from './domain/entity'
+import { type NormalizedEntities } from './domain/entity'
 import { configId } from './constants'
 import repository from './repository'
 import { confifyTinaData } from './helpers/confifyTinaData'
@@ -96,13 +91,7 @@ async function routeController(
           resource: mainResourceResult.value,
           templates: getTemplateHierarchy(routingContext),
           data,
-          entities: filterObject(entities, [
-            'post',
-            'page',
-            'author',
-            'tag',
-            'config',
-          ]),
+          entities,
           route: routingContext.request.path,
         })
       }
@@ -176,7 +165,7 @@ export function controller(
 
 function findMainResource(
   data: Record<string, Data>,
-  entities: Entities
+  entities: NormalizedEntities
 ): Option<LocatorResource> {
   const entries = Object.entries(data)
   const mainIndex = entries.findIndex(([key]) => key === MAIN_ENTRY)

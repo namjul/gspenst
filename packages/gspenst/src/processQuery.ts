@@ -41,7 +41,7 @@ export type QueryOutcomeRead = {
   type: 'read'
   resourceType: ResourceType
   resource: Resource
-  entities: Entities
+  entities: NormalizedEntities
 }
 
 export type QueryOutcomeBrowse = {
@@ -49,7 +49,7 @@ export type QueryOutcomeBrowse = {
   resourceType: ResourceType
   pagination: Pagination
   resources: ID[]
-  entities: Entities
+  entities: NormalizedEntities
 }
 
 export type QueryOutcome = QueryOutcomeRead | QueryOutcomeBrowse
@@ -81,24 +81,16 @@ export function processQuery(
           return repository
             .find({ metadata: removeNullish(dynamicVariables) })
             .andThen(loadResource)
-            .andThen(normalizeResource)
-            .andThen(({ result, entities }) => {
-              const resource = entities.resource[result]
-              if (!resource) {
-                return err(
-                  Errors.absurd(
-                    `Should not happen: resource ${result} not found`
-                  )
-                )
-              }
-
-              const queryOutcomeRead: QueryOutcomeRead = {
-                type,
-                resourceType: query.resourceType,
-                resource,
-                entities,
-              }
-              return ok(queryOutcomeRead)
+            .andThen((resource) => {
+              return normalizeResource(resource).andThen(({ entities }) => {
+                const queryOutcomeRead: QueryOutcomeRead = {
+                  type,
+                  resourceType: query.resourceType,
+                  resource,
+                  entities,
+                }
+                return ok(queryOutcomeRead)
+              })
             })
         }
       )
@@ -167,20 +159,12 @@ export function processQuery(
         )
         .andThen(({ resources, ...rest }) =>
           normalizeResources(resources).map(({ result, entities }) => {
-            return { result, entities, ...rest }
+            return { result, entities, resources, ...rest }
           })
         )
-        .andThen(({ result, entities, total, start, end }) => {
+        .andThen(({ result, entities, resources, total, start, end }) => {
           const entityResourcesResult = Result.combine(
-            result.map((id) => {
-              const resource = entities.resource[id]
-              if (!resource) {
-                return err(
-                  Errors.absurd(
-                    `Should not happen: resource ${result} not found`
-                  )
-                )
-              }
+            resources.map((resource) => {
 
               if (resource.type === 'routes') {
                 return err(
@@ -188,7 +172,7 @@ export function processQuery(
                 )
               }
 
-              const entity = entities[resource.type][id]
+              const entity = entities[resource.type][resource.id]
               return ok({
                 resource,
                 entity,
@@ -238,7 +222,7 @@ export function processQuery(
 
 type ProcessData = {
   data: Record<string, Data>
-  entities: Entities
+  entities: NormalizedEntities
 }
 export function processData(
   dataLoaders: DataLoaders,

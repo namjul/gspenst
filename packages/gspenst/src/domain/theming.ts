@@ -1,7 +1,7 @@
 import { z, idSchema, pathSchema } from '../shared/kernel'
 import { limitSchema } from './routes'
 import { resourceSchema, resourceTypeSchema } from './resource'
-import { entriesEntitiesSchema } from './entity'
+import { entriesEntitiesNormalizedSchema } from './entity'
 
 const paginationSchema = z.object({
   page: z.number(), // the current page number
@@ -44,8 +44,8 @@ export const themeContextSchema = z
     templates: z.array(z.string()),
     data: z.record(dataSchema),
     context: z.array(z.string()).nullable(),
-    resource: resourceSchema,
-    entities: entriesEntitiesSchema,
+    resource: resourceSchema, // TODO remove routes. Make a resourceEntitySchema
+    entities: entriesEntitiesNormalizedSchema,
     route: pathSchema,
   })
   .strict()
