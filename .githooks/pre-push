@@ -20,7 +20,7 @@ if [ $? -eq 1 ]; then
   PASS=false
 fi
 
-yarn lint:format
+yarn format
 
 if [ $? -eq 1 ]; then
   PASS=false
