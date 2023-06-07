@@ -4,11 +4,9 @@ import { type PageNodeFragment } from '../.tina/__generated__/types'
 import { type RoutingMapping } from '../helpers/getPageMap'
 import { postSchema, postNormalizedSchema, createPost } from './post'
 
-export const pageSchema = postSchema.merge(
-  z.object({ type: z.literal('page') })
-)
-
-pageSchema.describe('pageSchema')
+export const pageSchema = postSchema
+  .merge(z.object({ type: z.literal('page') }))
+  .describe('pageSchema')
 
 export const pageNormalizedSchema = postNormalizedSchema.merge(
   z.object({ type: z.literal('page') })

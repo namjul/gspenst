@@ -38,8 +38,7 @@ export const postSchema = z
     authors: z.array(authorSchema),
   })
   .strict()
-
-postSchema.describe('postSchema')
+  .describe('postSchema')
 
 export type Post = z.infer<typeof postSchema>
 

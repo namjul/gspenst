@@ -20,8 +20,7 @@ export const authorSchema = z
     path: pathSchema,
   })
   .strict()
-
-authorSchema.describe('authorSchema')
+  .describe('authorSchema')
 
 export type Author = z.infer<typeof authorSchema>
 

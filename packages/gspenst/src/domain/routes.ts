@@ -276,8 +276,7 @@ export const routesSchema = z
   })
   .strict()
   .default({})
-
-routesSchema.describe('routesSchema')
+  .describe('routesSchema')
 
 export type RoutesConfigInput = z.input<typeof routesSchema> | unknown
 export type RoutesConfig = z.output<typeof routesSchema>

@@ -20,8 +20,7 @@ export const tagSchema = z
     path: pathSchema,
   })
   .strict()
-
-tagSchema.describe('tagSchema')
+  .describe('tagSchema')
 
 export type Tag = z.infer<typeof tagSchema>
 

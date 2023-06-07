@@ -5,17 +5,18 @@ import { resourceBaseSchema } from './resource.base'
 
 export const resourceTypeRoutes = z.literal('routes')
 
-export const routesResourceSchema = resourceBaseSchema.merge(
-  z.object({
-    type: resourceTypeRoutes,
-    data: z.preprocess(
-      (input) => (input === null ? undefined : input),
-      routesSchema
-    ),
-  })
-)
-
-routesResourceSchema.describe('routesResourceSchema')
+export const routesResourceSchema = resourceBaseSchema
+  .merge(
+    z.object({
+      type: resourceTypeRoutes,
+      data: z
+        .preprocess(
+          (input) => (input === null ? undefined : input),
+          routesSchema
+        )
+    })
+  )
+  .describe('routesResourceSchema')
 
 export type RoutesResource = z.infer<typeof routesResourceSchema>
 

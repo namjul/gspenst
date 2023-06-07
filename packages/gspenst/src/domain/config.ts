@@ -15,8 +15,7 @@ export const configSchema = z
     values: jsonSchema,
   })
   .strict()
-
-configSchema.describe('configSchema')
+  .describe('configSchema')
 
 export type Config = z.infer<typeof configSchema>
 export type ConfigResourceNode = ThemeConfigNodeFragment & { values?: Json }

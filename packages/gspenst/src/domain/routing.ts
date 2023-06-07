@@ -114,14 +114,14 @@ export type RedirectRoutingContext = z.infer<
   typeof redirectRoutingContextSchema
 >
 
-const routingContextSchema = z.discriminatedUnion('type', [
-  collectionRoutingContextSchema,
-  channelRoutingContextSchema,
-  entryRoutingContextSchema,
-  customRoutingContextSchema,
-  redirectRoutingContextSchema,
-])
-
-routingContextSchema.describe('routingContextSchema')
+const routingContextSchema = z
+  .discriminatedUnion('type', [
+    collectionRoutingContextSchema,
+    channelRoutingContextSchema,
+    entryRoutingContextSchema,
+    customRoutingContextSchema,
+    redirectRoutingContextSchema,
+  ])
+  .describe('routingContextSchema')
 
 export type RoutingContext = z.infer<typeof routingContextSchema>
