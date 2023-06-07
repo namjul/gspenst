@@ -6,7 +6,6 @@ import { authorSchema } from './author'
 import { tagSchema } from './tag'
 import { resourceSchema } from './resource'
 
-
 export const entriesEntitiesNormalizedSchema = z
   .object({
     post: z.record(idSchema, postNormalizedSchema),

@@ -9,11 +9,10 @@ export const routesResourceSchema = resourceBaseSchema
   .merge(
     z.object({
       type: resourceTypeRoutes,
-      data: z
-        .preprocess(
-          (input) => (input === null ? undefined : input),
-          routesSchema
-        )
+      data: z.preprocess(
+        (input) => (input === null ? undefined : input),
+        routesSchema
+      ),
     })
   )
   .describe('routesResourceSchema')

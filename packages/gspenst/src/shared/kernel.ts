@@ -95,7 +95,6 @@ export type {
   SetOptional,
 }
 
-
 /* --- MDX --- */
 
 export interface Text extends Literal {

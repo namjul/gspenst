@@ -10,7 +10,8 @@ import {
   Result,
   fromThrowable,
   z,
-  assertUnreachable, do_
+  assertUnreachable,
+  do_,
 } from '../shared/kernel'
 import * as Errors from '../errors'
 import { type Resource } from '../domain/resource'

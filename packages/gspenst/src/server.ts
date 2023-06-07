@@ -97,10 +97,7 @@ export function updateRoutingMapping(pageMap: PageMapItem[]) {
   const packagePath: string = path.dirname(
     require.resolve(`gspenst/package.json`)
   )
-  const routingMappingFilePath = path.resolve(
-    packagePath,
-    './pageMap.json'
-  )
+  const routingMappingFilePath = path.resolve(packagePath, './pageMap.json')
   return fse.writeJsonSync(routingMappingFilePath, pageMap)
 }
 

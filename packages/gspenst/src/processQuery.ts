@@ -165,7 +165,6 @@ export function processQuery(
         .andThen(({ result, entities, resources, total, start, end }) => {
           const entityResourcesResult = Result.combine(
             resources.map((resource) => {
-
               if (resource.type === 'routes') {
                 return err(
                   Errors.other(`Routes resource should not be processed`)
