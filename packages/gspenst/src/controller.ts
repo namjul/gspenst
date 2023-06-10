@@ -17,21 +17,19 @@ import {
 } from './domain/routing'
 import { type LocatorResource } from './domain/resource/resource.locator'
 import { type DataQuery } from './domain/routes'
-import { type DataLoaders, createLoaders, processData } from './processQuery'
+import { type DataLoaders, createLoaders } from './processQuery'
+import { processData, type ProcessData } from './processData'
 import { filterLocatorResources } from './helpers/resource'
 import { getContext } from './helpers/getContext'
 import { getTemplateHierarchy } from './helpers/getTemplateHierarchy'
 import * as Errors from './errors'
-import { type ThemeContext, type Data } from './domain/theming'
-import { type NormalizedEntities } from './domain/entity'
-import { configId } from './constants'
+import { type ThemeContext } from './domain/theming'
+import { configId, MAIN_ENTRY } from './constants'
 import repository from './repository'
 import { confifyTinaData } from './helpers/confifyTinaData'
 
 type ControllerResult<T> = GspenstResult<T>
 type ControllerResultAsync<T> = GspenstResultAsync<T>
-
-const MAIN_ENTRY = '__gspenst_main_entry__'
 
 async function routeController(
   routingContext:
@@ -69,17 +67,20 @@ async function routeController(
 
   return repository.find({ id: configId }).andThen((configResource) => {
     return processData(dataLoaders, dataQueries).andThen(
-      ({ data, entities }) => {
+      (result) => {
+
         // TODO
         // if ((limit === 'all' && page > 1) || page > pages) {
         //   //redirect
         // }
 
+        const { data, entities } = result
+
         if (configResource.type !== 'config') {
           return err(Errors.absurd('Did not fetch config resource'))
         }
 
-        const mainResource = findMainResource(data, entities)
+        const mainResource = findMainResource(result)
         const mainResourceResult = confifyTinaData(configResource, mainResource)
 
         if (mainResourceResult.isErr()) {
@@ -164,8 +165,7 @@ export function controller(
 }
 
 function findMainResource(
-  data: Record<string, Data>,
-  entities: NormalizedEntities
+  { data, resources }: ProcessData
 ): Option<LocatorResource> {
   const entries = Object.entries(data)
   const mainIndex = entries.findIndex(([key]) => key === MAIN_ENTRY)
@@ -173,7 +173,7 @@ function findMainResource(
   return entries
     .flatMap<LocatorResource>(([_, dataSchema]) => {
       if (dataSchema.type === 'read') {
-        const resource = entities.resource[dataSchema.resource]
+        const resource = resources[dataSchema.resource]
         if (resource && filterLocatorResources(resource)) {
           return resource
         }

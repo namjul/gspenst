@@ -1,4 +1,3 @@
-import merge from 'deepmerge'
 import DataLoader from 'dataloader'
 import { type SemaphoreInterface, Semaphore } from 'async-mutex'
 import sortOn from 'sort-on'
@@ -19,7 +18,7 @@ import {
 import { type Resource, type ResourceType } from './domain/resource'
 import { dynamicVariablesSchema } from './domain/resource/resource.locator'
 import { type DataQuery } from './domain/routes'
-import { type Pagination, type Data } from './domain/theming'
+import { type Pagination } from './domain/theming'
 import { type NormalizedEntities } from './domain/entity'
 import { removeNullish } from './shared/utils'
 import repository from './repository'
@@ -48,7 +47,7 @@ export type QueryOutcomeBrowse = {
   type: 'browse'
   resourceType: ResourceType
   pagination: Pagination
-  resources: ID[]
+  resources: Resource[]
   entities: NormalizedEntities
 }
 
@@ -162,7 +161,7 @@ export function processQuery(
             return { result, entities, resources, ...rest }
           })
         )
-        .andThen(({ result, entities, resources, total, start, end }) => {
+        .andThen(({ entities, resources, total, start, end }) => {
           const entityResourcesResult = Result.combine(
             resources.map((resource) => {
               if (resource.type === 'routes') {
@@ -207,7 +206,7 @@ export function processQuery(
               prev,
               next,
             },
-            resources: result,
+            resources,
             resourceType: query.resourceType,
             entities,
           })
@@ -219,78 +218,6 @@ export function processQuery(
   }
 }
 
-type ProcessData = {
-  data: Record<string, Data>
-  entities: NormalizedEntities
-}
-export function processData(
-  dataLoaders: DataLoaders,
-  data: { [name: string]: DataQuery } = {}
-): GspenstResultAsync<ProcessData> {
-  const keys = Object.keys(data)
-  const result = ResultAsync.combine(
-    keys.map((key) => {
-      return processQuery(dataLoaders, data[key]!)
-    })
-  ).map((outcomes) => {
-    return keys.reduce<ProcessData>(
-      (acc, current, index) => {
-        const queryOutcome = outcomes[index]
-        if (!queryOutcome) {
-          return acc
-        }
-        const { entities, ...queryOutcomeRest } = queryOutcome
-
-        return {
-          data: {
-            ...acc.data,
-            [current]: do_(() => {
-              const { type } = queryOutcomeRest
-
-              switch (type) {
-                case 'read': {
-                  const { resource, resourceType } = queryOutcomeRest
-                  return {
-                    type,
-                    resourceType,
-                    resource: resource.id,
-                  }
-                }
-                case 'browse': {
-                  const { resources, pagination, resourceType } =
-                    queryOutcomeRest
-                  return {
-                    type,
-                    resourceType,
-                    resources,
-                    pagination,
-                  }
-                }
-                default:
-                  return assertUnreachable(type)
-              }
-            }),
-          },
-          // TODO maybe confify here
-          entities: merge(acc.entities, entities),
-        }
-      },
-      {
-        data: {},
-        entities: {
-          post: {},
-          page: {},
-          author: {},
-          tag: {},
-          config: {},
-          resource: {},
-        },
-      }
-    )
-  })
-
-  return result
-}
 
 export function createLoaders(
   sem: SemaphoreInterface = defaultSem,
@@ -321,139 +248,6 @@ export function createLoaders(
         'load',
         resources.map((resource) => resource.metadata.relativePath)
       )
-
-      // const batchResult = await sem.runExclusive(async () => {
-      //   if (resources.every(isPostResource)) {
-      //     return api
-      //       .getPosts({
-      //         filter: {
-      //           slug: {
-      //             in: resources.flatMap(
-      //               ({ tinaData }) => tinaData.data.post.slug ?? []
-      //             ),
-      //           },
-      //         },
-      //       })
-      //       .map((apiPostList) => {
-      //         return resources.map((resource) => {
-      //           const apiPost = apiPostList.find((_apiPost) => {
-      //             return (
-      //               _apiPost.data.data.post.slug ===
-      //               resource.tinaData.data.post.slug
-      //             )
-      //           })
-      //
-      //           if (apiPost) {
-      //             return ok({
-      //               ...resource,
-      //               tinaData: apiPost.data,
-      //             })
-      //           }
-      //           return err(Errors.absurd('batchLoadFromTina'))
-      //         })
-      //       })
-      //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
-      //   }
-      //
-      //   if (resources.every(isPageResource)) {
-      //     return api
-      //       .getPages({
-      //         filter: {
-      //           slug: {
-      //             in: resources.flatMap(
-      //               ({ tinaData }) => tinaData.data.page.slug ?? []
-      //             ),
-      //           },
-      //         },
-      //       })
-      //       .map((apiPageList) => {
-      //         return resources.map((resource) => {
-      //           const apiPage = apiPageList.find((_apiPage) => {
-      //             return (
-      //               _apiPage.data.data.page.slug ===
-      //               resource.tinaData.data.page.slug
-      //             )
-      //           })
-      //
-      //           if (apiPage) {
-      //             return ok({
-      //               ...resource,
-      //               tinaData: apiPage.data,
-      //             })
-      //           }
-      //           return err(Errors.absurd('batchLoadFromTina'))
-      //         })
-      //       })
-      //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
-      //   }
-      //
-      //   if (resources.every(isAuthorResource)) {
-      //     return api
-      //       .getAuthors({
-      //         filter: {
-      //           slug: {
-      //             in: resources.flatMap(
-      //               ({ tinaData }) => tinaData.data.author.slug ?? []
-      //             ),
-      //           },
-      //         },
-      //       })
-      //       .map((apiAuthorList) => {
-      //         return resources.map((resource) => {
-      //           const apiAuthor = apiAuthorList.find((_apiAuthor) => {
-      //             return (
-      //               _apiAuthor.data.data.author.slug ===
-      //               resource.tinaData.data.author.slug
-      //             )
-      //           })
-      //
-      //           if (apiAuthor) {
-      //             return ok({
-      //               ...resource,
-      //               tinaData: apiAuthor.data,
-      //             })
-      //           }
-      //           return err(Errors.absurd('batchLoadFromTina'))
-      //         })
-      //       })
-      //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
-      //   }
-      //
-      //   if (resources.every(isTagResource)) {
-      //     return api
-      //       .getTags({
-      //         filter: {
-      //           slug: {
-      //             in: resources.flatMap(
-      //               ({ tinaData }) => tinaData.data.tag.slug ?? []
-      //             ),
-      //           },
-      //         },
-      //       })
-      //       .map((apiTagList) => {
-      //         return resources.map((resource) => {
-      //           const apiTag = apiTagList.find((_apiTag) => {
-      //             return (
-      //               _apiTag.data.data.tag.slug === resource.tinaData.data.tag.slug
-      //             )
-      //           })
-      //
-      //           if (apiTag) {
-      //             return ok({
-      //               ...resource,
-      //               tinaData: apiTag.data,
-      //             })
-      //           }
-      //           return err(Errors.absurd('batchLoadFromTina'))
-      //         })
-      //       })
-      //       .unwrapOr([err(Errors.other('batchLoadFromTina#unwrap'))])
-      //   }
-      // })
-      //
-      // if (batchResult) {
-      //   return batchResult
-      // }
 
       return Promise.all(
         resources.map(async (resource) => {
