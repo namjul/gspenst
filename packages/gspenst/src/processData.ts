@@ -75,7 +75,7 @@ export function processData(
           entities: merge(acc.entities, entities),
           resources: {
             ...acc.resources,
-            ...dataBucket.resources?.reduce<ProcessData['resources']>(
+            ...dataBucket.resources.reduce<ProcessData['resources']>(
               (resources, resource) => {
                 return {
                   ...resources,

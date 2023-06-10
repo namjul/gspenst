@@ -16,7 +16,7 @@ import {
 import * as Errors from '../errors'
 import { type Resource } from '../domain/resource'
 import { type RoutingMapping } from '../helpers/getPageMap'
-import { filterLocatorResources, isConfigResource } from '../helpers/resource'
+import { filterLocatorResources } from '../helpers/resource'
 import { postSchema, createPost, type Post } from '../domain/post'
 import { pageSchema, createPage, type Page } from '../domain/page'
 import { authorSchema, createAuthor, type Author } from '../domain/author'
