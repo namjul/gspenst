@@ -39,8 +39,6 @@ function useThemeContext(context: ThemeContext, pageMap: PageMapItem[]) {
 
   // apply to context
   const contextMapped = useMemo(() => {
-    console.log('calc new contextMapped', resourceEntities)
-
     return {
       ...context,
       resource: {
@@ -66,10 +64,7 @@ export default function Gspenst(props: ThemeContext): ReactElement {
 
   const themeContext = useThemeContext(props, pageMap)
 
-  console.log('new calc', themeContext)
-
   const contextNew: ContextNew = useMemo(() => {
-    console.log('new themeContext', themeContext)
     const { route, templates, context } = themeContext
     const config = Object.values(themeContext.entities.config).at(0)
     const entry = selectData(themeContext).resources.at(0)
