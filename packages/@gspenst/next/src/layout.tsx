@@ -13,7 +13,7 @@ import { useTina } from 'tinacms/dist/react'
 import { useInternals } from './use-internals'
 import { type ContextNew } from './types'
 
-function useContext(context: ThemeContext, pageMap: PageMapItem[]) {
+function useThemeContext(context: ThemeContext, pageMap: PageMapItem[]) {
   const { resource } = context
   if (resource.type === 'routes') {
     throw new Error('routes resource should not land on client')
@@ -62,12 +62,12 @@ function useContext(context: ThemeContext, pageMap: PageMapItem[]) {
 export default function Gspenst(props: ThemeContext): ReactElement {
   const { Layout, pageMap } = useInternals()
 
-  const context = useContext(props, pageMap)
+  const themeContext = useThemeContext(props, pageMap)
 
   const contextNew: ContextNew = useMemo(() => {
-
-    const config = Object.values(context.entities.config).at(0)
-    const entry = selectData(context).resources.at(0)
+    const { route, templates, context } = themeContext
+    const config = Object.values(themeContext.entities.config).at(0)
+    const entry = selectData(themeContext).resources.at(0)
 
     if (!config) {
       throw new Error('Something went wrong. `config` missing.')
@@ -78,17 +78,22 @@ export default function Gspenst(props: ThemeContext): ReactElement {
     }
 
     const result = {
+      route,
+      templates,
+      context,
       config,
       entry,
       data: Object.fromEntries(
-        (Object.entries(context.data) as Entries<typeof context.data>).map(([key]) => {
-          return [key, selectData(context, key)]
+        (
+          Object.entries(themeContext.data) as Entries<typeof themeContext.data>
+        ).map(([key]) => {
+          return [key, selectData(themeContext, key)]
         })
       ),
     }
 
     return result
-  }, [context])
+  }, [themeContext])
 
-  return <Layout context={context} contextNew={contextNew} pageMap={pageMap} />
+  return <Layout context={contextNew} pageMap={pageMap} />
 }

@@ -22,7 +22,10 @@ export interface LoaderOptions extends GspenstConfig {
 
 export type ThemeConfig = Json
 
-export type ContextNew = {
+export type ContextNew = Pick<
+  ThemeContext,
+  'templates' | 'context' | 'route'
+> & {
   config: Json
   entry: Entity
   data: Record<
@@ -36,8 +39,7 @@ export type ContextNew = {
 
 export type GspenstThemeLayoutProps = {
   pageMap: PageMapItem[]
-  context: ThemeContext
-  contextNew: ContextNew
+  context: ContextNew
 }
 
 export type GspenstInternalGlobal = typeof globalThis & {
