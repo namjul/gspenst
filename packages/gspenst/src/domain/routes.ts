@@ -187,8 +187,8 @@ const route = z.preprocess(
   (value) =>
     isString(value)
       ? {
-        template: value,
-      }
+          template: value,
+        }
       : value,
   z
     .object({
@@ -258,11 +258,9 @@ const taxonomies = z
 
 export const routesSchema = z
   .object({
-    routes: z
-      .record(route)
-      .nullable()
-      .default({}),
-    collections: z.record(collection)
+    routes: z.record(route).nullable().default({}),
+    collections: z
+      .record(collection)
       .nullable()
       .default({
         '/': {
@@ -270,12 +268,10 @@ export const routesSchema = z
           template: 'index',
         },
       }),
-    taxonomies: taxonomies
-      .nullable()
-      .default({
-        tag: '/tag/{slug}',
-        author: '/author/{slug}',
-      }),
+    taxonomies: taxonomies.nullable().default({
+      tag: '/tag/{slug}',
+      author: '/author/{slug}',
+    }),
   })
   .strict()
   .default({})

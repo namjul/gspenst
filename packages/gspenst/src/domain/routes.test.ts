@@ -62,7 +62,7 @@ describe('GIVEN routing object', () => {
             template: 'test',
           },
         },
-        taxonomies: null
+        taxonomies: null,
       })
       expect(object).toEqual(
         ok([
@@ -84,7 +84,7 @@ describe('GIVEN routing object', () => {
                 limit: 5,
               },
             },
-            taxonomies: null
+            taxonomies: null,
           },
         ])
       )
@@ -129,7 +129,7 @@ describe('GIVEN routing object', () => {
             limit: 5,
           },
         },
-        taxonomies: null
+        taxonomies: null,
       })
       expect(object).toEqual(
         ok([
@@ -274,7 +274,7 @@ describe('GIVEN routing object', () => {
                 },
               },
             },
-            taxonomies: null
+            taxonomies: null,
           },
         ])
       )

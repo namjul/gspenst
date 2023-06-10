@@ -66,37 +66,34 @@ async function routeController(
   }
 
   return repository.find({ id: configId }).andThen((configResource) => {
-    return processData(dataLoaders, dataQueries).andThen(
-      (result) => {
+    return processData(dataLoaders, dataQueries).andThen((result) => {
+      // TODO
+      // if ((limit === 'all' && page > 1) || page > pages) {
+      //   //redirect
+      // }
 
-        // TODO
-        // if ((limit === 'all' && page > 1) || page > pages) {
-        //   //redirect
-        // }
+      const { data, entities } = result
 
-        const { data, entities } = result
-
-        if (configResource.type !== 'config') {
-          return err(Errors.absurd('Did not fetch config resource'))
-        }
-
-        const mainResource = findMainResource(result)
-        const mainResourceResult = confifyTinaData(configResource, mainResource)
-
-        if (mainResourceResult.isErr()) {
-          return err(mainResourceResult.error)
-        }
-
-        return ok({
-          context: getContext(routingContext),
-          resource: mainResourceResult.value,
-          templates: getTemplateHierarchy(routingContext),
-          data,
-          entities,
-          route: routingContext.request.path,
-        })
+      if (configResource.type !== 'config') {
+        return err(Errors.absurd('Did not fetch config resource'))
       }
-    )
+
+      const mainResource = findMainResource(result)
+      const mainResourceResult = confifyTinaData(configResource, mainResource)
+
+      if (mainResourceResult.isErr()) {
+        return err(mainResourceResult.error)
+      }
+
+      return ok({
+        context: getContext(routingContext),
+        resource: mainResourceResult.value,
+        templates: getTemplateHierarchy(routingContext),
+        data,
+        entities,
+        route: routingContext.request.path,
+      })
+    })
   })
 }
 
@@ -164,9 +161,10 @@ export function controller(
   })
 }
 
-function findMainResource(
-  { data, resources }: ProcessData
-): Option<LocatorResource> {
+function findMainResource({
+  data,
+  resources,
+}: ProcessData): Option<LocatorResource> {
   const entries = Object.entries(data)
   const mainIndex = entries.findIndex(([key]) => key === MAIN_ENTRY)
 
