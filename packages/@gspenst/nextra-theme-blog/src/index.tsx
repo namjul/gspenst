@@ -1,6 +1,5 @@
 import { type Root } from 'gspenst'
 import { type GspenstThemeLayoutProps } from '@gspenst/next'
-import { selectData, selectConfig } from 'gspenst/data'
 import { MDXProvider } from 'gspenst/mdx'
 import NextraLayout from 'nextra-theme-blog'
 import {
@@ -11,7 +10,7 @@ import {
 import { useMDXComponents } from '@mdx-js/react'
 import { BlockQuote } from './components/testimonial'
 import { Cta } from './components/cta'
-import { type TinaConfig, type NextraBlogTheme, defaultConfig } from './config'
+import { type NextraBlogTheme, defaultConfig } from './config'
 
 const MdxTheme = (props: { children: Root | undefined }) => {
   const { wrapper: MDXLayout, ...components } = {
@@ -27,35 +26,31 @@ const MdxTheme = (props: { children: Root | undefined }) => {
   return MDXLayout ? <MDXLayout>mdxTheme</MDXLayout> : mdxTheme
 }
 
-export default function Layout({ context, pageMap }: GspenstThemeLayoutProps) {
+export default function Layout({
+  pageMap,
+  context: contextNew,
+}: GspenstThemeLayoutProps) {
   const themeConfig: NextraBlogTheme = {
     ...defaultConfig,
   }
 
-  const { route } = context
+  const { entry, data, route, context } = contextNew
 
-  const { resources } = selectData(context)
-  const { resources: postResources } = selectData(context, 'posts')
-  const ignoredtinaConfig = selectConfig<TinaConfig>(context)
-  const resource = resources[0]
-
-  if (!resource) {
-    throw new Error('Resource missing')
-  }
+  const posts = data.posts
 
   const entryResource = (() => {
-    const { type } = resource
+    const { type } = entry
     switch (type) {
       case 'post':
       case 'page': {
-        return resource
+        return entry
       }
       default:
         return undefined
     }
   })()
 
-  const postsPageMap: PageMapItem[] = postResources.flatMap((post) =>
+  const postsPageMap: PageMapItem[] = (posts?.resources ?? []).flatMap((post) =>
     post.type === 'post'
       ? {
           kind: 'MdxPage',
@@ -92,10 +87,10 @@ export default function Layout({ context, pageMap }: GspenstThemeLayoutProps) {
     route,
     frontMatter: {
       type: (() => {
-        if (context.context?.includes('index')) {
+        if (context?.includes('index')) {
           return 'posts'
         }
-        return context.context?.at(0) ?? 'post'
+        return context?.at(0) ?? 'post'
       })(),
       ...(entryResource
         ? {
@@ -168,7 +163,7 @@ export default function Layout({ context, pageMap }: GspenstThemeLayoutProps) {
   return (
     <>
       <NextraLayout {...nextraThemeLayoutProps} />
-      <pre>{JSON.stringify(context, null, 2)}</pre>
+      <pre>{JSON.stringify(contextNew, null, 2)}</pre>
     </>
   )
 }
