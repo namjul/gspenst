@@ -1,17 +1,12 @@
-import { selectData } from 'gspenst/data'
 import { type GspenstThemeLayoutProps } from '@gspenst/next'
 import dynamic from 'next/dynamic'
 
 const DynamicReactJson = dynamic(import('react-json-view'), { ssr: false })
 
-export default function Layout({ context, pageMap }: GspenstThemeLayoutProps) {
-  const denormalizedContext = selectData(context)
+export default function Layout(props: GspenstThemeLayoutProps) {
   return (
     <div>
-      <DynamicReactJson
-        src={{ context, denormalizedContext, pageMap }}
-        collapsed={true}
-      />
+      <DynamicReactJson src={props} collapsed={true} />
     </div>
   )
 }
