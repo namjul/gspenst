@@ -221,8 +221,7 @@ export function resolveResourceData(
     }
   })
 
-  // TODO check why this is necessary
-  if (isConfigResource(resource)) {
+  if (filterLocatorResources(resource) && resource.data.data.config) {
     const configEntity = createConfig(resource.data.data.config)
     entitiesResultList.push(configEntity)
   }
