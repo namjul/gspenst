@@ -2,8 +2,8 @@ import repository from './repository'
 import { format } from './errors'
 import { createLoaders, processQuery } from './processQuery'
 
-jest.mock('../api')
-jest.mock('../redis')
+jest.mock('./api')
+jest.mock('./redis')
 
 const dataLoaders = createLoaders()
 
@@ -47,7 +47,7 @@ describe('processQuery', () => {
       expect(result).toHaveProperty('resources')
       expect(result).toHaveProperty('pagination')
       expect(result).toHaveProperty('pagination.total', 10)
-      expect(result).toHaveProperty('resources[0]', 57892423)
+      expect(result).toHaveProperty('resources[0].id', 57892423)
     })
 
     test('all', async () => {
@@ -93,7 +93,7 @@ describe('processQuery', () => {
 
       const result = (await processQuery(dataLoaders, query))._unsafeUnwrap()
       expect(result.resources).toHaveLength(3)
-      expect(result).toHaveProperty('resources[0]', 2502485806)
+      expect(result).toHaveProperty('resources[0].id', 2502485806)
     })
   })
 })

@@ -19,6 +19,8 @@ describe('GIVEN routing object', () => {
 
     test('THEN permalink transformation should be applied', () => {
       const object = parseRoutes({
+        collections: null,
+        routes: null,
         taxonomies: {
           tag: '/tag/{slug}',
           author: '/author/{slug}',
@@ -27,6 +29,8 @@ describe('GIVEN routing object', () => {
       expect(object).toEqual(
         ok([
           {
+            collections: null,
+            routes: null,
             taxonomies: {
               tag: {
                 permalink: '/tag/:slug',
@@ -58,6 +62,7 @@ describe('GIVEN routing object', () => {
             template: 'test',
           },
         },
+        taxonomies: null
       })
       expect(object).toEqual(
         ok([
@@ -79,6 +84,7 @@ describe('GIVEN routing object', () => {
                 limit: 5,
               },
             },
+            taxonomies: null
           },
         ])
       )
@@ -123,6 +129,7 @@ describe('GIVEN routing object', () => {
             limit: 5,
           },
         },
+        taxonomies: null
       })
       expect(object).toEqual(
         ok([
@@ -267,6 +274,7 @@ describe('GIVEN routing object', () => {
                 },
               },
             },
+            taxonomies: null
           },
         ])
       )
@@ -287,6 +295,8 @@ describe('GIVEN routing object', () => {
             template: 'Page',
           },
         },
+        collections: null,
+        taxonomies: null,
       })
 
       expect(object).toEqual(
@@ -316,6 +326,8 @@ describe('GIVEN routing object', () => {
                 },
               },
             },
+            collections: null,
+            taxonomies: null,
           },
         ])
       )

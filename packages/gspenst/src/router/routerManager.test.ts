@@ -9,7 +9,7 @@ jest.mock('../redis')
 describe('router resolvePaths', () => {
   describe('resolving paths', () => {
     test('empty config', async () => {
-      const routesConfig = {}
+      const routesConfig = { routes: null, collections: null, taxonomies: null }
       const resources = (await repository.collect(routesConfig))._unsafeUnwrap()
       const routesResource = resources.find(isRoutesResource)
       const router = routerManager(routesResource?.data!) // eslint-disable-line @typescript-eslint/no-non-null-asserted-optional-chain
