@@ -183,23 +183,31 @@ const dataForm = z
 
 export type Data = z.output<typeof dataForm>
 
-const route = z
-  .object({
-    template: template.optional(),
-    data: dataForm.optional(),
-    controller: z.literal('channel').optional(),
-  })
-  .merge(queryFilterOptions)
-  .strict()
-  .refine(
-    (value) => {
-      if ('controller' in value) {
-        return 'filter' in value
+const route = z.preprocess(
+  (value) =>
+    isString(value)
+      ? {
+        template: value,
       }
-      return true
-    },
-    () => ({ message: 'filter property required when using channel' })
-  )
+      : value,
+  z
+    .object({
+      template: template.optional(),
+      data: dataForm.optional(),
+      controller: z.literal('channel').optional(),
+    })
+    .merge(queryFilterOptions)
+    .strict()
+    .refine(
+      (value) => {
+        if ('controller' in value) {
+          return 'filter' in value
+        }
+        return true
+      },
+      () => ({ message: 'filter property required when using channel' })
+    )
+)
 
 export type Route = z.infer<typeof route>
 
@@ -251,28 +259,23 @@ const taxonomies = z
 export const routesSchema = z
   .object({
     routes: z
-      .record(
-        z.preprocess(
-          (value) =>
-            isString(value)
-              ? {
-                  template: value,
-                }
-              : value,
-          route
-        )
-      )
+      .record(route)
+      .nullable()
       .default({}),
-    collections: z.record(collection).default({
-      '/': {
-        permalink: '/{slug}/',
-        template: 'index',
-      },
-    }),
-    taxonomies: taxonomies.default({
-      tag: '/tag/{slug}',
-      author: '/author/{slug}',
-    }),
+    collections: z.record(collection)
+      .nullable()
+      .default({
+        '/': {
+          permalink: '/{slug}/',
+          template: 'index',
+        },
+      }),
+    taxonomies: taxonomies
+      .nullable()
+      .default({
+        tag: '/tag/{slug}',
+        author: '/author/{slug}',
+      }),
   })
   .strict()
   .default({})
