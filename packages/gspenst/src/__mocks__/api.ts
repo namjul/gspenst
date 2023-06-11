@@ -438,7 +438,10 @@ export const getPost = ({
     type: 'post',
     timestamp: 123,
     data: {
-      data: posts[relativePath]!,
+      data: {
+        config: null,
+        ...posts[relativePath]!
+      },
       variables: { relativePath },
       query: '{ todo }',
     },
@@ -460,7 +463,10 @@ export const getPage = ({
     type: 'page',
     timestamp: 123,
     data: {
-      data: pages[relativePath]!,
+      data: {
+        config: null,
+        ...pages[relativePath]!
+      },
       variables: { relativePath },
       query: '{ todo }',
     },
@@ -482,7 +488,10 @@ export const getAuthor = ({
     type: 'author',
     timestamp: 123,
     data: {
-      data: authors[relativePath]!,
+      data: {
+        config: null,
+        ...authors[relativePath]!
+      },
       variables: { relativePath },
       query: '{}',
     },
@@ -504,9 +513,12 @@ export const getTag = ({
     type: 'tag',
     timestamp: 123,
     data: {
-      data: tags[relativePath]!,
+      data: {
+        config: null,
+        ...tags[relativePath]!
+      },
       variables: { relativePath },
-      query: '{ todo }',
+    query: '{ todo }',
     },
   })
 }

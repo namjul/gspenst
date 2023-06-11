@@ -19,42 +19,43 @@ function useThemeContext(context: ThemeContext, pageMap: PageMapItem[]) {
     throw new Error('routes resource should not land on client')
   }
 
-  const { data: tinaData } = useTina({
-    query: resource.data.query,
-    variables: resource.data.variables,
-    data: resource.data.data,
-  })
+  const { data: tinaData } = useTina(resource.data)
 
-  resource.data.data = tinaData
-
-  // normalize resource after tinacms consumption
-  const routingMapping = getRoutingMapping(pageMap)
-  const normalizedResourceResult = normalizeResource(resource, routingMapping)
-
-  if (normalizedResourceResult.isErr()) {
-    throw Errors.format(normalizedResourceResult.error)
-  }
-
-  const resourceEntities = normalizedResourceResult.value.entities
-
-  // apply to context
   const contextMapped = useMemo(() => {
-    return {
-      ...context,
-      resource: {
-        ...resource,
+    const resourceWithTinaData = {
+      ...resource,
+      data: {
+        ...resource.data,
         data: {
-          ...resource.data,
-          data: { ...resource.data.data, ...tinaData },
+          ...resource.data.data,
+          ...tinaData,
         },
       },
+    }
+
+    // normalize resource after tinacms consumption
+    const routingMapping = getRoutingMapping(pageMap)
+    const normalizedResourceResult = normalizeResource(
+      resourceWithTinaData,
+      routingMapping
+    )
+
+    if (normalizedResourceResult.isErr()) {
+      throw Errors.format(normalizedResourceResult.error)
+    }
+
+    const resourceEntities = normalizedResourceResult.value.entities
+
+    return {
+      ...context,
+      resource: resourceWithTinaData,
       entities: merge(context.entities, resourceEntities, {
         isMergeableObject: (value) => {
           return !('type' in value)
         },
       }),
     } as ThemeContext
-  }, [tinaData, context, resourceEntities, resource])
+  }, [context, tinaData, pageMap, resource])
 
   return contextMapped
 }

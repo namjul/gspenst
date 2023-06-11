@@ -48,6 +48,7 @@ export const postTinaDataSchema = z
       return {
         data: {
           post: value,
+          config: null,
         },
         query: GetPostDocument,
         variables: {
@@ -57,7 +58,7 @@ export const postTinaDataSchema = z
     },
     z.object({
       data: z.object({
-        config: configFragmentSchema.optional(),
+        config: configFragmentSchema.nullable(),
         post: postFragmentSchema,
       }),
       query: z.string(),
@@ -78,6 +79,7 @@ export const pageTinaDataSchema = z
       return {
         data: {
           page: value,
+          config: null,
         },
         query: GetPageDocument,
         variables: {
@@ -87,7 +89,7 @@ export const pageTinaDataSchema = z
     },
     z.object({
       data: z.object({
-        config: configFragmentSchema.optional(),
+        config: configFragmentSchema.nullable(),
         page: pageFragmentSchema,
       }),
       query: z.string(),
@@ -108,6 +110,7 @@ export const tagTinaDataSchema = z
       return {
         data: {
           tag: value,
+          config: null,
         },
         query: GetTagDocument,
         variables: {
@@ -117,7 +120,7 @@ export const tagTinaDataSchema = z
     },
     z.object({
       data: z.object({
-        config: configFragmentSchema.optional(),
+        config: configFragmentSchema.nullable(),
         tag: tagFragmentSchema,
       }),
       query: z.string(),
@@ -138,6 +141,7 @@ export const authorTinaDataSchema = z
       return {
         data: {
           author: value,
+          config: null,
         },
         query: GetAuthorDocument,
         variables: {
@@ -149,7 +153,7 @@ export const authorTinaDataSchema = z
     },
     z.object({
       data: z.object({
-        config: configFragmentSchema.optional(),
+        config: configFragmentSchema.nullable(),
         author: authorFragmentSchema,
       }),
       query: z.string(),
@@ -298,9 +302,8 @@ export function createLocatorResource(
           ...dynamicVariables,
           relativePath,
           breadcrumbs,
-          path: `/${
-            nestedPath?.length ? `${nestedPath.join('/')}/` : ''
-          }${slug}`,
+          path: `/${nestedPath?.length ? `${nestedPath.join('/')}/` : ''
+            }${slug}`,
         },
       }
     }

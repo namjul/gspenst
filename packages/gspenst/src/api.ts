@@ -29,7 +29,7 @@ import {
 } from './.tina/__generated__/types'
 
 type ApiResultAsync<T> = GspenstResultAsync<T>
-type Confify<T> = T & { data: { config?: ConfigResourceNode | undefined } }
+type Confify<T> = T & { data: { config: ConfigResourceNode | null } }
 type GetConfig = AsyncReturnType<typeof sdk.getConfig>
 type GetPage = Confify<AsyncReturnType<typeof sdk.getPage>>
 type GetPost = Confify<AsyncReturnType<typeof sdk.getPost>>
