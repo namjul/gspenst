@@ -11,7 +11,7 @@
     "build": "preconstruct build",
     "checkall": "yarn test && yarn lint && yarn lint:types && yarn format",
     "clean": "rimraf packages/*/dist",
-    "format": "prettier --ignore-path .gitignore  . '!**/*-lock.json' '!**/*.(md|mdx)' -l",
+    "format": "prettier --ignore-path .gitignore  . '!**/*-lock.json' '!**/pageMap.json' '!**/*.(md|mdx)' -l",
     "lint": "yarn lint:types & yarn lint:eslint & yarn format",
     "lint:eslint": "eslint_d --cache --ignore-path .gitignore --report-unused-disable-directives --max-warnings 0 . --ext .ts,.tsx",
     "lint:types": "yarn workspaces run lint:types",
