@@ -1,5 +1,13 @@
 # @gspenst/nextra-theme-blog
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [853b62c]
+  - gspenst@0.1.2
+  - @gspenst/next@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

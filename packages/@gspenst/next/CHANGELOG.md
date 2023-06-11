@@ -1,5 +1,19 @@
 # @gspenst/next
 
+## 0.1.1
+
+### Patch Changes
+
+- 99c05fc: remove `themeConfig` config option. Theme config should be handled by tinacms.
+- 48e597f: refactor theme interface
+- Updated dependencies [2099193]
+- Updated dependencies [69799ae]
+- Updated dependencies [54b5801]
+- Updated dependencies [a373b0c]
+- Updated dependencies [48e597f]
+- Updated dependencies [853b62c]
+  - gspenst@0.1.2
+
 ## 0.1.0
 
 ### Minor Changes
