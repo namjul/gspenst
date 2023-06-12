@@ -42,14 +42,16 @@ export const getPaths = (config: Config) => {
     const paths = routerManager(config.routesConfig).resolvePaths(
       locatorResources
     )
-    log('Page [...slug].js getStaticPaths', JSON.stringify(paths, null, 2))
+    log('getPaths: ', JSON.stringify(paths, null, 2))
     return paths
   })
 }
 
 export const getProps = async (config: Config, params: string | string[]) => {
-  log('Page [...slug].js getStaticProps', params)
   const routingContext = routerManager(config.routesConfig).handle(params)
+
+  log('getProps: ', JSON.stringify({ params, routingContext }, null, 2))
+
   return controller(
     routingContext,
     createLoaders(undefined, config.isBuildPhase)
