@@ -2,3 +2,6 @@ collections:
   /:
     permalink: /post/{slug}
     limit: all
+taxonomies:
+  tag: /tags/{slug}/
+  author: /authors/{slug}/
