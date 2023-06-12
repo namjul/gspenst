@@ -96,7 +96,7 @@ export default function Layout({
         ? {
             title: entryResource.title,
             author: entryResource.primary_author?.name ?? 'no author',
-            tag: entryResource.primary_tag?.slug ?? 'no tag',
+            tag: entryResource.primary_tag?.name ?? 'no tag',
             date: entryResource.date,
           }
         : {}),
