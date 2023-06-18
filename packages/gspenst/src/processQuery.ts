@@ -20,7 +20,7 @@ import {
   normalizeResources,
   resolveResourceData,
 } from './helpers/normalize'
-import { DataLoaders } from "./dataLoader";
+import { DataLoaders } from './dataLoader'
 
 export type QueryOutcomeRead = {
   type: 'read'
@@ -51,7 +51,7 @@ export function processQuery(
   dataLoaders: DataLoaders,
   query: DataQuery
 ): GspenstResultAsync<QueryOutcome> {
-  const { loadResource, loadManyResource } =  dataLoaders
+  const { loadResource, loadManyResource } = dataLoaders
 
   const { type } = query
 

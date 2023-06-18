@@ -302,8 +302,9 @@ export function createLocatorResource(
           ...dynamicVariables,
           relativePath,
           breadcrumbs,
-          path: `/${nestedPath?.length ? `${nestedPath.join('/')}/` : ''
-            }${slug}`,
+          path: `/${
+            nestedPath?.length ? `${nestedPath.join('/')}/` : ''
+          }${slug}`,
         },
       }
     }
