@@ -1,6 +1,7 @@
 import repository from './repository'
 import { format } from './errors'
-import { createLoaders, processQuery } from './processQuery'
+import {  processQuery } from './processQuery'
+import { createLoaders } from './dataLoader'
 
 jest.mock('./api')
 jest.mock('./redis')

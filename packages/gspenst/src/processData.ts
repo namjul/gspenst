@@ -10,7 +10,8 @@ import { type DataQuery } from './domain/routes'
 import { type Data } from './domain/theming'
 import { type NormalizedEntities } from './domain/entity'
 import { type Resource } from './domain/resource'
-import { processQuery, type DataLoaders } from './processQuery'
+import { processQuery } from './processQuery'
+import { type DataLoaders } from './dataLoader'
 
 export type ProcessData = {
   data: Record<string, Data>

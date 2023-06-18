@@ -17,7 +17,7 @@ import {
 } from './domain/routing'
 import { type LocatorResource } from './domain/resource/resource.locator'
 import { type DataQuery } from './domain/routes'
-import { type DataLoaders, createLoaders } from './processQuery'
+import { type DataLoaders, createLoaders } from './dataLoader'
 import { processData, type ProcessData } from './processData'
 import { filterLocatorResources } from './helpers/resource'
 import { getContext } from './helpers/getContext'
