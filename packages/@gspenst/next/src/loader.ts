@@ -88,6 +88,9 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async ({ params }) => {
 
+  // triggers nextjs to recompute page props
+  const timestamp = ${Date.now()}
+
   const propsResult = await getProps({ routesConfig, isBuildPhase }, params?.[routingParameter])
 
   if (propsResult.isOk()) {

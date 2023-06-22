@@ -9,9 +9,10 @@ import {
   Errors,
 } from 'gspenst'
 import { selectData } from 'gspenst/data'
-import { useTina } from 'tinacms/dist/react'
+import { useTina, useEditState } from 'tinacms/dist/react'
 import { useInternals } from './use-internals'
 import { type ContextNew } from './types'
+import { log } from './logger'
 
 function useThemeContext(context: ThemeContext, pageMap: PageMapItem[]) {
   const { resource } = context
@@ -19,23 +20,30 @@ function useThemeContext(context: ThemeContext, pageMap: PageMapItem[]) {
     throw new Error('routes resource should not land on client')
   }
 
+  const { edit } = useEditState()
+
+  // TODO fix useTina usage which keeps reference to old state
+  // @ts-expect-error --- TODO fix `data.data.config` can be nullable
   const { data: tinaData } = useTina(resource.data)
 
   const contextMapped = useMemo(() => {
-    const resourceWithTinaData = {
-      ...resource,
-      data: {
-        ...resource.data,
-        data: {
-          ...resource.data.data,
-          ...tinaData,
-        },
-      },
-    }
+    const resourceWithTinaData = edit
+      ? {
+          ...resource,
+          data: {
+            ...resource.data,
+            data: {
+              ...resource.data.data,
+              ...tinaData,
+            },
+          },
+        }
+      : resource
 
     // normalize resource after tinacms consumption
     const routingMapping = getRoutingMapping(pageMap)
     const normalizedResourceResult = normalizeResource(
+      // @ts-expect-error --- TODO fix `data.data.config` can be nullable
       resourceWithTinaData,
       routingMapping
     )
@@ -55,7 +63,7 @@ function useThemeContext(context: ThemeContext, pageMap: PageMapItem[]) {
         },
       }),
     } as ThemeContext
-  }, [context, tinaData, pageMap, resource])
+  }, [context, tinaData, pageMap, resource, edit])
 
   return contextMapped
 }
@@ -95,6 +103,8 @@ export default function Gspenst(props: ThemeContext): ReactElement {
 
     return result
   }, [themeContext])
+
+  log('Theme Context: ', contextNew)
 
   return <Layout context={contextNew} pageMap={pageMap} />
 }

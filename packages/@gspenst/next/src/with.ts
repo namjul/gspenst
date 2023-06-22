@@ -20,7 +20,7 @@ const mediaDir = path.join(
   env.NEXT_PUBLIC_TINA_MEDIA_ROOT
 )
 
-// make sure that uploads folder exist
+// make sure that upload folder exist
 void fse.ensureDir(mediaDir)
 
 export default (...args: [string | GspenstConfig, string]) =>
