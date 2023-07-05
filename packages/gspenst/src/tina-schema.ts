@@ -182,6 +182,10 @@ export function defineSchema(): Schema {
     ],
     ui: {
       global: true,
+      allowedActions: {
+        create: false,
+        delete: false
+      }
     },
     ...(themeFields.length && { fields: themeFields }),
   }
