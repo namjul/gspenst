@@ -1,5 +1,6 @@
 import {
   type GspenstResult,
+  type SetOptional,
   idSchema,
   pathSchema,
   dateSchema,
@@ -25,7 +26,7 @@ export const authorSchema = z
 export type Author = z.infer<typeof authorSchema>
 
 export function createAuthor(
-  node: AuthorNodeFragment,
+  node: SetOptional<AuthorNodeFragment, '__typename'>,
   routingMapping: RoutingMapping = {}
 ): GspenstResult<Author> {
   const { id, name, date, slug } = node

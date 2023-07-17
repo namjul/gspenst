@@ -24,20 +24,6 @@ fragment PostNode on Post {
   }
   id
   ...PostParts
-  tags {
-    tag {
-      ... on Tag {
-        ...TagNode
-      }
-    }
-  }
-  authors {
-    author {
-      ... on Author {
-        ...AuthorNode
-      }
-    }
-  }
 }
 
 fragment PageNode on Page {
@@ -52,20 +38,6 @@ fragment PageNode on Page {
   }
   id
   ...PageParts
-  tags {
-    tag {
-      ... on Tag {
-        ...TagNode
-      }
-    }
-  }
-  authors {
-    author {
-      ... on Author {
-        ...AuthorNode
-      }
-    }
-  }
 }
 
 fragment AuthorNode on Author {

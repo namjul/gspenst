@@ -1,4 +1,5 @@
 import {
+  type SetOptional,
   type GspenstResult,
   idSchema,
   pathSchema,
@@ -25,7 +26,7 @@ export const tagSchema = z
 export type Tag = z.infer<typeof tagSchema>
 
 export function createTag(
-  node: TagNodeFragment,
+  node: SetOptional<TagNodeFragment, '__typename'>,
   routingMapping: RoutingMapping = {}
 ): GspenstResult<Tag> {
   const { id, name, date, slug } = node

@@ -36,7 +36,7 @@
     "fs-extra": "^10.0.0",
     "gspenst": "^0.1.2",
     "js-yaml": "^4.1.0",
-    "tinacms": "^1.5.11"
+    "tinacms": "^1.5.16"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",

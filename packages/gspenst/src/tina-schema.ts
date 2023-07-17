@@ -184,8 +184,8 @@ export function defineSchema(): Schema {
       global: true,
       allowedActions: {
         create: false,
-        delete: false
-      }
+        delete: false,
+      },
     },
     ...(themeFields.length && { fields: themeFields }),
   }
