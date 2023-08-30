@@ -1,5 +1,13 @@
 # gspenst
 
+## 0.1.3
+
+### Patch Changes
+
+- 277617c: upgrade tinacms
+- 045799b: prevent creation actions for config
+- c46b96f: move schema into its own entrypoint
+
 ## 0.1.2
 
 ### Patch Changes

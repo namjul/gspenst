@@ -1,5 +1,16 @@
 # @gspenst/next
 
+## 0.1.2
+
+### Patch Changes
+
+- c0ff5cf: fix: correctly apply `useTina` data
+- d720d8f: fix: make HMR work when not in edit(tina admin) mode
+- Updated dependencies [277617c]
+- Updated dependencies [045799b]
+- Updated dependencies [c46b96f]
+  - gspenst@0.1.3
+
 ## 0.1.1
 
 ### Patch Changes

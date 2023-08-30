@@ -1,5 +1,0 @@
----
-'gspenst': patch
----
-
-upgrade tinacms
