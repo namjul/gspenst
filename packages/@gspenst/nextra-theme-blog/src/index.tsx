@@ -53,18 +53,30 @@ export default function Layout({
   const postsPageMap: PageMapItem[] = (posts?.resources ?? []).flatMap((post) =>
     post.type === 'post'
       ? {
-          kind: 'MdxPage',
-          name: post.title || post.slug || 'Untitled', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
-          route: post.path,
-          frontMatter: {
-            type: 'post',
-            date: post.date,
-            description: post.excerpt,
-            title: post.title,
-          },
-        }
+        kind: 'MdxPage',
+        name: post.title || post.slug || 'Untitled', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
+        route: post.path,
+        frontMatter: {
+          type: 'post',
+          date: post.date,
+          description: post.excerpt,
+          title: post.title,
+        },
+      }
       : []
   )
+
+  const pagesPageMap = pageMap.flatMap((page) => {
+    if (page.resourceType === 'page') {
+      return {
+        kind: 'MdxPage' as const,
+        name: page.name,
+        route: page.route,
+        frontMatter: { type: page.resourceType },
+      }
+    }
+    return []
+  })
 
   const indexPageMap: PageMapItem[] = pageMap.flatMap((page) => {
     if (['collection', 'channel', 'custom'].includes(page.type)) {
@@ -94,28 +106,14 @@ export default function Layout({
       })(),
       ...(entryResource
         ? {
-            title: entryResource.title,
-            author: entryResource.primary_author?.name ?? 'no author',
-            tag: entryResource.primary_tag?.name ?? 'no tag',
-            date: entryResource.date,
-          }
+          title: entryResource.title,
+          author: entryResource.primary_author?.name ?? 'no author',
+          tag: entryResource.primary_tag?.name ?? 'no tag',
+          date: entryResource.date,
+        }
         : {}),
     },
-    pageMap: [
-      ...indexPageMap,
-      ...postsPageMap,
-      ...pageMap.flatMap((page) => {
-        if (page.resourceType === 'page') {
-          return {
-            kind: 'MdxPage' as const,
-            name: page.name,
-            route: page.route,
-            frontMatter: { type: page.resourceType },
-          }
-        }
-        return []
-      }),
-    ],
+    pageMap: [...indexPageMap, ...postsPageMap, ...pagesPageMap],
     title: entryResource?.title ?? '',
     headings:
       entryResource?.headings.map((heading) => {
