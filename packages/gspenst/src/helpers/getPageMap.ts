@@ -1,4 +1,3 @@
-import path from 'path'
 import {
   filterLocatorResources,
   filterPageResources,
@@ -32,7 +31,7 @@ function getLocatorResources(resources: Resource[] = []): PageMapItem[] {
   return locatorResources.map((resource) => {
     return {
       type: 'entry',
-      name: path.parse(resource.path).name,
+      name: resource.metadata.slug,
       route: resource.metadata.path,
       filepath: resource.path,
       resourceType: resource.type,
