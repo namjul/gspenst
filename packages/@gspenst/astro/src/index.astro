@@ -1,0 +1,16 @@
+---
+import type { InferGetStaticPropsType } from 'astro'
+
+export async function getStaticPaths() {
+  return [
+    {
+      params: { slug: undefined },
+      props: {},
+    },
+  ]
+}
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+---
+
+<div>hier</div>

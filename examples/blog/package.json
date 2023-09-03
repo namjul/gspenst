@@ -3,16 +3,22 @@
   "version": "0.1.1",
   "private": true,
   "scripts": {
-    "analyze": "ANALYZE=true npm run build",
-    "build": "next build",
-    "debug": "NODE_OPTIONS='--inspect' npm dev",
-    "dev": "next dev",
+    "next:analyze": "ANALYZE=true npm run build",
+    "next:dev": "next dev",
+    "next:start": "next start",
+    "next:build": "next build",
+    "next:debug": "NODE_OPTIONS='--inspect' npm dev",
+    "astro:dev": "astro dev",
+    "astro:start": "astro dev",
+    "astro:build": "astro build",
+    "astro:preview": "astro preview",
+    "astro:astro": "astro",
     "lint": "next lint",
-    "lint:types": "tsc --noEmit",
-    "start": "next start"
+    "lint:types": "tsc --noEmit"
   },
   "dependencies": {
     "@gspenst/next": "*",
+    "@gspenst/astro": "*",
     "@gspenst/nextra-theme-blog": "*",
     "@next/bundle-analyzer": "^12.2.2",
     "gspenst": "*",
