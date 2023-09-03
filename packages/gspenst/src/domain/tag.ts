@@ -17,7 +17,7 @@ export const tagSchema = z
     id: idSchema,
     name: z.string(),
     date: dateSchema,
-    slug: z.string(),
+    slug: z.string(), // TODO make optional and use slugify(title) as default
     path: pathSchema,
   })
   .strict()

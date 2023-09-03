@@ -56,7 +56,7 @@ async function loader(
 
   return `
 import { PHASE_PRODUCTION_BUILD, PHASE_EXPORT } from 'next/constants'
-import { Errors } from 'gspenst'
+import { Errors } from 'gspenst' // TODO remove dependency when importing gspenst
 import { getPaths, getProps } from 'gspenst/server'
 import { withData as __gspenst_withData__ } from 'gspenst/data'
 import __gspenst_layout from '${layout}'

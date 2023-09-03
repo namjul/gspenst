@@ -3,6 +3,8 @@ import { limitSchema } from './routes'
 import { resourceSchema, resourceTypeSchema } from './resource'
 import { entitiesNormalizedSchema } from './entity'
 
+// TODO rename to context/ouput/result
+
 const paginationSchema = z.object({
   page: z.number(), // the current page number
   prev: z.number().nullable(), // the previous page number
