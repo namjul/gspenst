@@ -22,12 +22,17 @@ export const build = (routesConfigInput: RoutesConfigInput) => {
     const routesResource = resources.find(isRoutesResource)
     const pageMap = getPageMap(resources)
     updateRoutingMapping(pageMap)
+
+    repository.notify((resource: any) => {
+      console.log('new resource', resource)
+    })
+
     return { pageMap, routesConfig: routesResource?.data }
   })
 }
 
 export const buildTina = (cwd: string) => {
-  return startSubprocess({ command: 'tinacms build', cwd })
+  return startSubprocess({ command: 'gspenst build', cwd })
 }
 
 type Config = {
@@ -66,7 +71,7 @@ export async function startTinaServer(
     log('Starting tina server', this.projectPath)
 
     const ps = await startSubprocess({
-      command: 'tinacms dev',
+      command: 'gspenst dev',
       cwd: this.projectPath,
     })
 
