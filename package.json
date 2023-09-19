@@ -2,11 +2,6 @@
   "name": "@gspenst/root",
   "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "packages/@gspenst/*",
-    "examples/*"
-  ],
   "scripts": {
     "build": "preconstruct build",
     "checkall": "yarn test && yarn lint && yarn lint:types && yarn format",
@@ -15,7 +10,7 @@
     "lint": "yarn lint:types & yarn lint:eslint & yarn format",
     "lint:eslint": "eslint_d --cache --ignore-path .gitignore --report-unused-disable-directives --max-warnings 0 . --ext .ts,.tsx",
     "lint:types": "yarn workspaces run lint:types",
-    "prepare": "git config --local core.hooksPath .githooks || echo 'not in git' && preconstruct dev",
+    "prepare": "git config --local core.hooksPath .githooks || echo 'not in git'",
     "prerelease": "yarn build",
     "release": "changeset publish",
     "test": "jest && yarn workspace gspenst test",
@@ -91,12 +86,6 @@
       "jest-watch-typeahead/testname"
     ]
   },
-  "resolutions": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
@@ -116,8 +105,17 @@
     "prettier-plugin-astro": "^0.12.0",
     "prettier-plugin-packagejson": "^2.2.17",
     "rimraf": "^3.0.2",
-    "ts-jest": "^27.1.4",
+    "ts-jest": "^29.1.1",
     "typescript": "5.0.3"
+  },
+  "packageManager": "pnpm@7.3.0",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "^18.2.0",
+      "@types/react-dom": "^18.2.0",
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0"
+    }
   },
   "preconstruct": {
     "packages": [
