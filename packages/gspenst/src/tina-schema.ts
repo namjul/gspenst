@@ -7,6 +7,7 @@ import {
   type Schema,
 } from 'tinacms'
 // eslint-disable-next-line import/no-extraneous-dependencies
+// @ts-ignore --- referencing its own package
 import pageMap from 'gspenst/pageMap.json'
 import { createLogger } from './logger'
 import { getRoutingMapping, type PageMapItem } from './helpers/getPageMap'
@@ -92,6 +93,10 @@ const commonFields: TinaField[] = [
     },
   },
 ]
+
+export type {
+  Schema
+}
 
 export function defineSchema(): Schema {
   const templates: Template[] = []
