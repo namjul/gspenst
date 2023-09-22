@@ -50,9 +50,9 @@
     "test": "tinacms audit --rootPath src"
   },
   "dependencies": {
-    "@napi-rs/simple-git": "^0.1.8",
-    "@tinacms/cli": "^1.5.25",
-    "@tryghost/nql": "^0.9.1",
+    "@napi-rs/simple-git": "^0.1.9",
+    "@tinacms/cli": "^1.5.29",
+    "@tryghost/nql": "^0.11.0",
     "async-mutex": "^0.3.2",
     "cross-spawn": "^7.0.3",
     "dataloader": "^2.1.0",
@@ -70,7 +70,7 @@
     "slugify": "^1.6.5",
     "sort-on": "^4.0.0",
     "styled-components": "^5.3.5",
-    "tinacms": "^1.5.16",
+    "tinacms": "^1.5.20",
     "zod": "^3.21.4"
   },
   "devDependencies": {
