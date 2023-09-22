@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index f7d40300d61ac35e4fa5022999788da985d3fd70..6273255fbaf1326b3ccd0732b0b4ea9975d3b7f9 100644
+--- a/package.json
++++ b/package.json
+@@ -3,7 +3,6 @@
+   "version": "2.5.3",
+   "description": "JavaScript implementation of MongoDB query language",
+   "main": "./dist/mingo.js",
+-  "module": "./lib/index.js",
+   "scripts": {
+     "clean": "rm -fr dist/*",
+     "build.umd": "rollup -c config/rollup.umd.js",

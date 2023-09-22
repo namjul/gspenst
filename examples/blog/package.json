@@ -17,10 +17,11 @@
     "lint:types": "tsc --noEmit"
   },
   "dependencies": {
-    "@gspenst/next": "*",
     "@gspenst/astro": "*",
+    "@gspenst/next": "*",
     "@gspenst/nextra-theme-blog": "*",
     "@next/bundle-analyzer": "^12.2.2",
+    "astro": "^3.0.12",
     "gspenst": "*",
     "next": ">=13",
     "next-bundle-analyzer": "^0.6.4",

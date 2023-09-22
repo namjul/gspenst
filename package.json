@@ -115,6 +115,9 @@
       "@types/react-dom": "^18.2.0",
       "react": "^18.2.0",
       "react-dom": "^18.2.0"
+    },
+    "patchedDependencies": {
+      "mingo@2.5.3": "patches/mingo@2.5.3.patch"
     }
   },
   "preconstruct": {

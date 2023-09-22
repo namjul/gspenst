@@ -1,16 +1,78 @@
 ---
 import type { InferGetStaticPropsType } from 'astro'
+import { Errors,Result } from 'gspenst'
+import { build, getPaths, getProps } from 'gspenst/server'
 
 export async function getStaticPaths() {
-  return [
-    {
-      params: { slug: undefined },
-      props: {},
-    },
-  ]
+
+  const pathsResult = await build({}).andThen(({ routesConfig }) =>
+    getPaths({ routesConfig, isBuildPhase: false }).map((paths) => ({
+      paths,
+      routesConfig,
+    })),
+  )
+
+  const result = await pathsResult
+    .asyncMap(async ({ paths, routesConfig }) => {
+      return await Result.combine(
+        await Promise.all(
+          paths.map(async (path) => {
+            return getProps(
+              {
+                routesConfig: routesConfig,
+                isBuildPhase: false,
+              },
+              path.split('/').filter(Boolean),
+            )
+          }),
+        ),
+      )
+        .asyncMap(async (promiseProps) => {
+          return Promise.all(promiseProps)
+        })
+        .map((results) => {
+          return results.map((result, index) => ({
+            result,
+            path: paths.at(index)!,
+          }))
+        })
+    })
+    .andThen((propsResults) => propsResults)
+    .map((results) => {
+
+      const staticPaths = results.flatMap(
+        ({ result, path }) => {
+          if (result.type === 'props' && result.props.isErr()) {
+              throw Errors.format(result.props.error)
+          }
+
+          return {
+            params: { slug: path === '/' ? undefined : path },
+            props: result
+          }
+
+        }
+      )
+
+      return staticPaths
+
+    })
+
+  if (result.isOk()) {
+    console.log('result.value;', result.value)
+    return result.value
+  }
+
+  throw Errors.format(result.error)
 }
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+
+if (Astro.props.type === "redirect") {
+  return Astro.redirect(Astro.props.redirect.destination);
+}
+
 ---
 
-<div>hier</div>
+<div>{JSON.stringify(Astro.props, null, 2)}</div>
