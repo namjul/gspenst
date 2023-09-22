@@ -107,6 +107,7 @@ export function controller(
     | GspenstResult<Option<RoutingContext>[]>,
   dataLoaders: DataLoaders = createLoaders()
 ): GspenstResult<Promise<ControllerReturnType>> {
+// TODO ): GspenstResult<ControllerResultAsync<ThemeContext> | ResultAsync<{}>> {
   return routingContextsResult.map(async (routingContext) => {
     for (const context of [routingContext].flat()) {
       if (context === undefined) {
