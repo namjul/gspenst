@@ -123,5 +123,9 @@
       "packages/*",
       "packages/@gspenst/*"
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "github:namjul/gspenst"
   }
 }
