@@ -11,10 +11,6 @@
       "module": "./data/dist/gspenst-data.esm.js",
       "default": "./data/dist/gspenst-data.cjs.js"
     },
-    "./mdx": {
-      "module": "./mdx/dist/gspenst-mdx.esm.js",
-      "default": "./mdx/dist/gspenst-mdx.cjs.js"
-    },
     ".": {
       "module": "./dist/gspenst.esm.js",
       "default": "./dist/gspenst.cjs.js"
@@ -37,7 +33,6 @@
     "server",
     "schema",
     "data",
-    "mdx",
     "cli",
     "routingMapping.json"
   ],
@@ -59,30 +54,26 @@
     "debug": "^4.3.3",
     "deepmerge": "^4.2.2",
     "dot-prop": "^6.0.1",
-    "fnv1a": "^1.0.0",
+    "fnv1a": "^1.1.1",
     "fs-extra": "^10.0.0",
     "graphql": "^16.6.0",
     "ioredis": "^5.0.3",
     "neverthrow": "^6.0.0",
     "normalizr": "^3.6.2",
     "path-to-regexp": "^6.2.0",
-    "react-is": ">=16.13.1",
     "slugify": "^1.6.5",
-    "sort-on": "^4.0.0",
+    "sort-on": "^4.1.1",
     "styled-components": "^5.3.5",
     "tinacms": "^1.5.20",
     "zod": "^3.21.4"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",
+    "@types/debug": "^4.1.9",
     "@types/fs-extra": "^9.0.13",
     "@types/mock-fs": "^4.13.1",
     "mock-fs": "^5.1.1",
     "type-fest": "^2.8.0"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
   },
   "preconstruct": {
     "exports": {
@@ -95,7 +86,6 @@
       "server.ts",
       "schema.ts",
       "data.ts",
-      "mdx.tsx",
       "cli.ts"
     ]
   }

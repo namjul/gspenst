@@ -1,3 +1,4 @@
+// @ts-expect-error
 import _nql from '@tryghost/nql'
 import { fromThrowable } from '../shared/kernel'
 import * as Errors from '../errors'
@@ -29,7 +30,15 @@ const EXPANSIONS = [
   },
 ]
 
-const cache = new Map<string, ReturnType<typeof _nql>>()
+type nql = (
+  filter: string,
+  options?: { expansions?: { key: string; replacement: string }[] }
+) => {
+  queryJSON: (obj: object) => boolean
+  parse: () => object
+}
+
+const cache = new Map<string, ReturnType<nql>>()
 
 export function makeNqlFilter(filter: string) {
   return fromThrowable(

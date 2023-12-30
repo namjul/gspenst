@@ -4,6 +4,8 @@ import EventEmitter from 'events'
 import { startTinaServer } from 'gspenst/server'
 import { type GspenstConfig } from './user-config'
 import { vitePluginGspenstVirtualModules } from './integration.virtual-modules'
+import { nativeNodeModulesPlugin } from "./native-node-module";
+
 
 class GspenstPlugin extends EventEmitter {
   projectPath: string = process.cwd()
@@ -41,16 +43,17 @@ export default function GspenstIntegration(
 
         const newConfig: AstroUserConfig = {
           vite: {
-            plugins: [vitePluginGspenstVirtualModules(_opts, config)],
+            plugins: [nativeNodeModulesPlugin(), vitePluginGspenstVirtualModules(_opts, config)],
           },
         }
+        console.log("astro:config:setup")
         updateConfig(newConfig)
       },
       'astro:server:setup': async () => {
         const plugin = new GspenstPlugin()
         await plugin.start()
       },
-      'astro:build:setup': async (options) => {},
+      // 'astro:build:setup': async (options) => {},
     },
   }
 

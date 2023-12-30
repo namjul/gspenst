@@ -23,10 +23,10 @@
     "@next/bundle-analyzer": "^12.2.2",
     "astro": "^3.0.12",
     "gspenst": "*",
-    "next": ">=13",
+    "next": "^13.4.19",
     "next-bundle-analyzer": "^0.6.4",
-    "react": "*",
-    "react-dom": "*"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "eslint-config-next": "12.2.5"

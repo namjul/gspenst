@@ -25,7 +25,7 @@ export const build = (routesConfigInput: RoutesConfigInput) => {
 
     if (routesResource) {
       const pageMap = getPageMap(resources)
-      updateRoutingMapping(pageMap)
+      // updateRoutingMapping(pageMap)
 
       repository.notify((resource: any) => {
         console.log('new resource', resource)
@@ -106,14 +106,14 @@ export async function startTinaServer(
   }
 }
 
-export function updateRoutingMapping(pageMap: PageMapItem[]) {
-  log('Writing `routingMapping.json`...')
-  const packagePath: string = path.dirname(
-    require.resolve(`gspenst/package.json`),
-  )
-  const routingMappingFilePath = path.resolve(packagePath, './pageMap.json')
-  return fse.writeJsonSync(routingMappingFilePath, pageMap)
-}
+// export function updateRoutingMapping(pageMap: PageMapItem[]) {
+//   log('Writing `routingMapping.json`...')
+//   const packagePath: string = path.dirname(
+//     require.resolve(`gspenst/package.json`)
+//   )
+//   const routingMappingFilePath = path.resolve(packagePath, './pageMap.json')
+//   return fse.writeJsonSync(routingMappingFilePath, pageMap)
+// }
 
 export { collect } from './collect'
 export { routerManager, controller, repository, parseRoutes, getPageMap }

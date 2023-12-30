@@ -1,4 +1,4 @@
-export type { Template, SchemaField } from 'tinacms'
+export type { Template, TinaField } from 'tinacms'
 export type { Resource } from './domain/resource'
 export type { LocatorResource } from './domain/resource/resource.locator'
 export type { Post } from './domain/post'
