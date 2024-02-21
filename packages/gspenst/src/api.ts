@@ -1,17 +1,12 @@
-import path from 'path'
 import * as Errors from './errors'
 import {
   type AsyncReturnType,
   type GspenstResultAsync,
-  type Option,
   z,
   fromPromise,
-  ResultAsync,
-  ok,
 } from './shared/kernel'
 import { client } from './shared/client'
 import { parse } from './helpers/parser'
-import { gitDiscover } from './utils'
 import {
   postTinaDataSchema,
   pageTinaDataSchema,
@@ -36,34 +31,13 @@ type GetPost = Confify<AsyncReturnType<typeof sdk.getPost>>
 type GetAuthor = Confify<AsyncReturnType<typeof sdk.getAuthor>>
 type GetTag = Confify<AsyncReturnType<typeof sdk.getTag>>
 
-export type Page = {
-  type: 'page'
-  data: GetPage
-  timestamp: Option<number>
-}
-export type Post = {
-  type: 'post'
-  data: GetPost
-  timestamp: Option<number>
-}
-export type Author = {
-  type: 'author'
-  data: GetAuthor
-  timestamp: Option<number>
-}
-export type Tag = { type: 'tag'; data: GetTag; timestamp: number | undefined }
-export type Config = {
-  type: 'config'
-  data: GetConfig
-  timestamp: Option<number>
-}
+export type Page = { type: 'page'; data: GetPage }
+export type Post = { type: 'post'; data: GetPost }
+export type Author = { type: 'author'; data: GetAuthor }
+export type Tag = { type: 'tag'; data: GetTag }
+export type Config = { type: 'config'; data: GetConfig }
+export type Entity = Page | Post | Author | Tag | Config
 export type ApiEntity = Page | Post | Author | Tag | Config
-
-const gitRepoResult = gitDiscover(process.cwd()).map((repository) => {
-  // repository.path() returns the `/path/to/repo/.git`, we need the parent directory of it
-  const gitRoot = path.join(repository.path(), '..')
-  return { repository, gitRoot }
-})
 
 const sdk = getSdk(async (query: any, variables: any): Promise<any> => {
   /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -211,41 +185,12 @@ export const tagsDataSchema = z
   )
   .describe('tagsDataSchema')
 
-const getTimestamp = (relativePath: string) => {
-  return gitRepoResult.asyncAndThen(({ repository, gitRoot }) => {
-    return fromPromise(
-      new Promise<number | undefined>((resolutionFunc, rejectionFunc) => {
-        repository
-          .getFileLatestModifiedDateAsync(path.relative(gitRoot, relativePath))
-          .then(resolutionFunc, rejectionFunc)
-      }),
-      (error) => {
-        return Errors.other(
-          '`getTimestamp`',
-          error instanceof Error ? error : undefined
-        )
-      }
-    ).orElse(() => {
-      // Failed to get timestamp for this file. Silently ignore it.
-      return ok(undefined)
-    })
-  })
-}
 export function getPage(variables: {
   relativePath: string
 }): ApiResultAsync<Page> {
   return fromPromise(sdk.getPage(variables), (error: unknown) =>
     Errors.other('Api#getPage', error instanceof Error ? error : undefined)
-  )
-    .andThen((input) => parse(pageDataSchema, input))
-    .andThen((page) => {
-      return getTimestamp(page.data.data.page._sys.path).map((timestamp) => {
-        return {
-          ...page,
-          timestamp,
-        }
-      })
-    })
+  ).andThen((input) => parse(pageDataSchema, input))
 }
 
 export function getPages(variables?: {
@@ -254,20 +199,7 @@ export function getPages(variables?: {
   return fromPromise(sdk.getPages(variables), (error: unknown) =>
     Errors.other('Api#getPages', error instanceof Error ? error : undefined)
   ).andThen((input) => {
-    return parse(pagesDataSchema, input).asyncAndThen((pages) => {
-      return ResultAsync.combine(
-        pages.map((post) => {
-          return getTimestamp(post.data.data.page._sys.path).map(
-            (timestamp) => {
-              return {
-                ...post,
-                timestamp,
-              }
-            }
-          )
-        })
-      )
-    })
+    return parse(pagesDataSchema, input)
   })
 }
 
@@ -276,16 +208,7 @@ export function getPost(variables: {
 }): ApiResultAsync<Post> {
   return fromPromise(sdk.getPost(variables), (error: unknown) =>
     Errors.other('Api#getPost', error instanceof Error ? error : undefined)
-  )
-    .andThen((input) => parse(postDataSchema, input))
-    .andThen((page) => {
-      return getTimestamp(page.data.data.post._sys.path).map((timestamp) => {
-        return {
-          ...page,
-          timestamp,
-        }
-      })
-    })
+  ).andThen((input) => parse(postDataSchema, input))
 }
 
 export function getPosts(variables?: {
@@ -294,20 +217,7 @@ export function getPosts(variables?: {
   return fromPromise(sdk.getPosts(variables), (error: unknown) =>
     Errors.other('Api#getPosts', error instanceof Error ? error : undefined)
   ).andThen((input) => {
-    return parse(postsDataSchema, input).asyncAndThen((posts) => {
-      return ResultAsync.combine(
-        posts.map((post) => {
-          return getTimestamp(post.data.data.post._sys.path).map(
-            (timestamp) => {
-              return {
-                ...post,
-                timestamp,
-              }
-            }
-          )
-        })
-      )
-    })
+    return parse(postsDataSchema, input)
   })
 }
 
@@ -316,16 +226,7 @@ export function getAuthor(variables: {
 }): ApiResultAsync<Author> {
   return fromPromise(sdk.getAuthor(variables), (error: unknown) =>
     Errors.other('Api#getAuthor', error instanceof Error ? error : undefined)
-  )
-    .andThen((input) => parse(authorDataSchema, input))
-    .andThen((page) => {
-      return getTimestamp(page.data.data.author._sys.path).map((timestamp) => {
-        return {
-          ...page,
-          timestamp,
-        }
-      })
-    })
+  ).andThen((input) => parse(authorDataSchema, input))
 }
 
 export function getAuthors(variables?: {
@@ -334,20 +235,7 @@ export function getAuthors(variables?: {
   return fromPromise(sdk.getAuthors(variables), (error: unknown) =>
     Errors.other('Api#getAuthors', error instanceof Error ? error : undefined)
   ).andThen((input) => {
-    return parse(authorsDataSchema, input).asyncAndThen((authors) => {
-      return ResultAsync.combine(
-        authors.map((post) => {
-          return getTimestamp(post.data.data.author._sys.path).map(
-            (timestamp) => {
-              return {
-                ...post,
-                timestamp,
-              }
-            }
-          )
-        })
-      )
-    })
+    return parse(authorsDataSchema, input)
   })
 }
 
@@ -356,16 +244,7 @@ export function getTag(variables: {
 }): ApiResultAsync<Tag> {
   return fromPromise(sdk.getTag(variables), (error: unknown) =>
     Errors.other('Api#getTag', error instanceof Error ? error : undefined)
-  )
-    .andThen((input) => parse(tagDataSchema, input))
-    .andThen((page) => {
-      return getTimestamp(page.data.data.tag._sys.path).map((timestamp) => {
-        return {
-          ...page,
-          timestamp,
-        }
-      })
-    })
+  ).andThen((input) => parse(tagDataSchema, input))
 }
 
 export function getTags(variables?: {
@@ -374,36 +253,14 @@ export function getTags(variables?: {
   return fromPromise(sdk.getTags(variables), (error: unknown) =>
     Errors.other('Api#getTags', error instanceof Error ? error : undefined)
   ).andThen((input) => {
-    return parse(tagsDataSchema, input).asyncAndThen((tags) => {
-      return ResultAsync.combine(
-        tags.map((post) => {
-          return getTimestamp(post.data.data.tag._sys.path).map((timestamp) => {
-            return {
-              ...post,
-              timestamp,
-            }
-          })
-        })
-      )
-    })
+    return parse(tagsDataSchema, input)
   })
 }
 
 export function getConfig(): ApiResultAsync<Config> {
   return fromPromise(sdk.getConfig(), (error: unknown) =>
     Errors.other('Api#getConfig', error instanceof Error ? error : undefined)
-  )
-    .andThen((input) => {
-      return parse(configDataSchema, input)
-    })
-    .andThen((config) => {
-      return getTimestamp(config.data.data.config._sys.path).map(
-        (timestamp) => {
-          return {
-            ...config,
-            timestamp,
-          }
-        }
-      )
-    })
+  ).andThen((input) => {
+    return parse(configDataSchema, input)
+  })
 }

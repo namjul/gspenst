@@ -48,7 +48,6 @@ describe('collect', () => {
         id: 1824064168,
         path: 'content/posts/3th-post.mdx',
         type: 'post',
-        time: 123,
         metadata: {
           breadcrumbs: ['3th-post'],
           path: '/post/3th-post/2021/',
@@ -70,7 +69,6 @@ describe('collect', () => {
         id: 1071642883,
         path: 'content/tags/tag-2.mdx',
         type: 'tag',
-        time: 123,
         metadata: {
           id: 1071642883,
           breadcrumbs: ['tag-2'],

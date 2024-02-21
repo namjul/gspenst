@@ -436,7 +436,6 @@ export const getPost = ({
 }): ApiResultAsync<Post> => {
   return okAsync({
     type: 'post',
-    timestamp: 123,
     data: {
       data: {
         config: null,
@@ -461,7 +460,6 @@ export const getPage = ({
 }): ApiResultAsync<Page> => {
   return okAsync({
     type: 'page',
-    timestamp: 123,
     data: {
       data: {
         config: null,
@@ -486,7 +484,6 @@ export const getAuthor = ({
 }): ApiResultAsync<Author> => {
   return okAsync({
     type: 'author',
-    timestamp: 123,
     data: {
       data: {
         config: null,
@@ -511,7 +508,6 @@ export const getTag = ({
 }): ApiResultAsync<Tag> => {
   return okAsync({
     type: 'tag',
-    timestamp: 123,
     data: {
       data: {
         config: null,
@@ -532,7 +528,6 @@ export const getTags = (): ApiResultAsync<Tag[]> => {
 export const getConfig = (): ApiResultAsync<Config> => {
   return okAsync({
     type: 'config',
-    timestamp: 123,
     data: {
       data: {
         config: {

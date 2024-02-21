@@ -46,7 +46,7 @@ export function collect(
         .andThen((configResourceNode) => {
           return createConfigResource(
             configResourceNode.data.data.config,
-            configResourceNode.timestamp
+            undefined
           )
         })
         .andThen((configResource) => {
@@ -77,7 +77,7 @@ export function collect(
                 })
                 return createLocatorResource(
                   resourceData,
-                  resourceNode.timestamp
+                  undefined
                 ).andThen((resource) => {
                   const { type } = resource
 

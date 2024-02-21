@@ -50,7 +50,6 @@
     "test": "tinacms audit --rootPath src"
   },
   "dependencies": {
-    "@napi-rs/simple-git": "^0.1.8",
     "@tinacms/cli": "^1.5.25",
     "@tryghost/nql": "^0.9.1",
     "async-mutex": "^0.3.2",

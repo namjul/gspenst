@@ -1,17 +1,9 @@
 import spawn from 'cross-spawn'
-import { Repository } from '@napi-rs/simple-git'
 import * as graphql from 'graphql'
 import { compile, pathToRegexp as _pathToRegexp } from 'path-to-regexp' // TODO use https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API#pattern_syntax
 import { type GspenstResult, fromThrowable } from '../shared/kernel'
 import { type DynamicVariables } from '../domain/resource/resource.locator'
 import * as Errors from '../errors'
-
-export const gitDiscover = fromThrowable(Repository.discover, (error) =>
-  Errors.other(
-    '`@napi-rs/simple-git`',
-    error instanceof Error ? error : undefined
-  )
-)
 
 export const pathToRegexp = fromThrowable(_pathToRegexp, (error) =>
   Errors.other('`path-to-regexp`', error instanceof Error ? error : undefined)
