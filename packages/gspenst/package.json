@@ -32,6 +32,9 @@
   },
   "main": "dist/gspenst.cjs.js",
   "module": "dist/gspenst.esm.js",
+  "bin": {
+    "gspenst": "./bin.js"
+  },
   "files": [
     "dist",
     "server",
@@ -41,9 +44,6 @@
     "cli",
     "routingMapping.json"
   ],
-  "bin": {
-    "gspenst": "./bin.js"
-  },
   "scripts": {
     "dev": "tinacms dev --rootPath src",
     "lint:types": "tsc --noEmit",

@@ -53,16 +53,16 @@ export default function Layout({
   const postsPageMap: PageMapItem[] = (posts?.resources ?? []).flatMap((post) =>
     post.type === 'post'
       ? {
-        kind: 'MdxPage',
-        name: post.title || post.slug || 'Untitled', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
-        route: post.path,
-        frontMatter: {
-          type: 'post',
-          date: post.date,
-          description: post.excerpt,
-          title: post.title,
-        },
-      }
+          kind: 'MdxPage',
+          name: post.title || post.slug || 'Untitled', // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
+          route: post.path,
+          frontMatter: {
+            type: 'post',
+            date: post.date,
+            description: post.excerpt,
+            title: post.title,
+          },
+        }
       : []
   )
 
@@ -106,11 +106,11 @@ export default function Layout({
       })(),
       ...(entryResource
         ? {
-          title: entryResource.title,
-          author: entryResource.primary_author?.name ?? 'no author',
-          tag: entryResource.primary_tag?.name ?? 'no tag',
-          date: entryResource.date,
-        }
+            title: entryResource.title,
+            author: entryResource.primary_author?.name ?? 'no author',
+            tag: entryResource.primary_tag?.name ?? 'no tag',
+            date: entryResource.date,
+          }
         : {}),
     },
     pageMap: [...indexPageMap, ...postsPageMap, ...pagesPageMap],

@@ -75,30 +75,29 @@ export function collect(
                       assertUnreachable(type, 'createResource')
                   }
                 })
-                return createLocatorResource(
-                  resourceData,
-                  undefined
-                ).andThen((resource) => {
-                  const { type } = resource
+                return createLocatorResource(resourceData, undefined).andThen(
+                  (resource) => {
+                    const { type } = resource
 
-                  if (type === 'tag' || type === 'author') {
-                    const taxonomyEntry = routesConfig.taxonomies?.[type]
-                    if (taxonomyEntry) {
-                      return compilePermalink(
-                        taxonomyEntry.permalink,
-                        resource.metadata
-                      ).map((permalink) => ({
-                        ...resource,
-                        metadata: {
-                          ...resource.metadata,
-                          path: permalink,
-                        },
-                      }))
+                    if (type === 'tag' || type === 'author') {
+                      const taxonomyEntry = routesConfig.taxonomies?.[type]
+                      if (taxonomyEntry) {
+                        return compilePermalink(
+                          taxonomyEntry.permalink,
+                          resource.metadata
+                        ).map((permalink) => ({
+                          ...resource,
+                          metadata: {
+                            ...resource.metadata,
+                            path: permalink,
+                          },
+                        }))
+                      }
                     }
-                  }
 
-                  return ok(resource)
-                })
+                    return ok(resource)
+                  }
+                )
               })
             return Result.combine(locatorResourcesResultList).andThen(
               (locatorResources) => {

@@ -2,6 +2,10 @@
   "name": "@gspenst/root",
   "version": "0.0.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "github:namjul/gspenst"
+  },
   "workspaces": [
     "packages/*",
     "packages/@gspenst/*",
@@ -117,9 +121,5 @@
       "packages/*",
       "packages/@gspenst/*"
     ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "github:namjul/gspenst"
   }
 }
