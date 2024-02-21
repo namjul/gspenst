@@ -1,6 +1,6 @@
 import path from 'path'
 import yaml from 'js-yaml'
-import { type LoaderContext } from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
+import { type LoaderContext } from 'webpack'
 import { Errors } from 'gspenst'
 import { build, buildTina } from 'gspenst/server'
 import { findContentDir } from './utils'

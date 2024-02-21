@@ -1,7 +1,7 @@
 import EventEmitter from 'events'
 import { type ChildProcess } from 'child_process'
 import path from 'path'
-import { type Compiler } from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
+import { type Compiler } from 'webpack'
 import { startTinaServer } from 'gspenst/server'
 import pkg from '../package.json'
 import { IS_PRODUCTION } from './constants'
